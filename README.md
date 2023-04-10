@@ -1,6 +1,6 @@
 # Hammerhead
 
-![Hammerhead icon](/assets/images/hammerhead-icon-512.png)
+![Hammerhead icon](/assets/images/hammerhead-icon-256.png)
 
 C# .NET utility for reading/writing cheat device firmware dumps (GameShark, Action Replay, Code Breaker, Xplorer64, etc.).
 
