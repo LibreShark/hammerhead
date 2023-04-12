@@ -166,7 +166,7 @@ abstract class RomBase
 
     protected void SeekGamesList()
     {
-        Seek(ReadVersion()?.Number >= 3 ? 0x00030000 : 0x0002E000);
+        Seek(ReadVersion()?.Number >= 2.5 ? 0x00030000 : 0x0002E000);
     }
 
     protected void SeekStart()
