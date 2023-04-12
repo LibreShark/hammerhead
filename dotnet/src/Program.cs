@@ -24,6 +24,8 @@ internal static class Program
             Console.WriteLine("");
             Console.WriteLine($"{romInfo.Version}");
             Console.WriteLine("");
+            Console.WriteLine($"File checksums: {romInfo.Checksum}");
+            Console.WriteLine("");
             if (romInfo.KeyCodes.Count > 0)
             {
                 string keyCodesStr = string.Join("\n", romInfo.KeyCodes.Select((kc) => kc.ToString()));
