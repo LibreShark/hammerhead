@@ -106,7 +106,7 @@ class ListReader
         else
         {
             Cheat = Game.AddCheat(name);
-            Cheat.Active = !off;
+            Cheat.IsActive = !off;
         }
     }
 

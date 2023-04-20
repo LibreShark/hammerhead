@@ -5,10 +5,10 @@ namespace LibreShark.Hammerhead.N64;
 
 public class Checksum
 {
-    public string Crc32 { get; set; }
-    public string Crc32C { get; set; }
-    public string MD5 { get; set; }
-    public string SHA1 { get; set; }
+    public string Crc32 { get; private set; }
+    public string Crc32C { get; private set; }
+    public string MD5 { get; private set; }
+    public string SHA1 { get; private set; }
 
     public static Checksum From(byte[] bytes)
     {
@@ -33,7 +33,7 @@ public class Checksum
         return checksum.ToString("X8");
     }
 
-    private static string ToString(byte[] bytes)
+    private static string ToString(IEnumerable<byte> bytes)
     {
         return string.Join("", bytes.Select((b) => b.ToString("X2")));
     }

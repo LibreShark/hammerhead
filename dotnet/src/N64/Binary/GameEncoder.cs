@@ -42,7 +42,7 @@ class GameEncoder
 
         int codes = cheat.Codes.Count;
 
-        if (cheat.Active)
+        if (cheat.IsActive)
         {
             Writer.WriteByte(cheat.Codes.Count | 0x80);
         }
