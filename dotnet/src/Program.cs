@@ -4,6 +4,21 @@ using N64;
 
 internal static class Program
 {
+    private static void ShowUsage()
+    {
+        Console.WriteLine(@"
+Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
+
+Commands:
+
+    copy-cheats FROM_GS_ROM.bin TO_GS_ROM.bin
+
+    import-cheats FROM_DATEL_FORMATTED.txt TO_GS_ROM.bin
+
+    export-cheats GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+");
+    }
+
     public static int Main(string[] args)
     {
         if (args.Length < 1)
@@ -144,20 +159,5 @@ internal static class Program
         }
 
         return 0;
-    }
-
-    private static void ShowUsage()
-    {
-        Console.WriteLine(@"
-Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
-
-Commands:
-
-    copy-cheats FROM_GS_ROM.bin TO_GS_ROM.bin
-
-    import-cheats FROM_DATEL_FORMATTED.txt TO_GS_ROM.bin
-
-    export-cheats GSROM1.bin GSROM2.z64 GSROM3.n64 ...
-");
     }
 }
