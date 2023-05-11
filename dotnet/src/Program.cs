@@ -34,9 +34,9 @@ internal static class Program
 
         var cheatFilePaths = new List<string>();
 
-        foreach (var filePath in args)
+        foreach (var romFilePath in args)
         {
-            RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(filePath));
+            RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
             if (romInfo == null)
             {
                 Console.Error.WriteLine("ERROR: Unable to read GS firmware file.");
@@ -48,7 +48,7 @@ internal static class Program
 
             Console.WriteLine(@"--------------------------------------------");
             Console.WriteLine("");
-            Console.WriteLine(Path.GetFileName(filePath));
+            Console.WriteLine(Path.GetFileName(romFilePath));
             Console.WriteLine("");
             Console.WriteLine($"{romInfo.Version}");
             Console.WriteLine("");
@@ -67,7 +67,7 @@ internal static class Program
             Console.WriteLine($"{cheats.Count:N0} cheats for {games.Count:N0} games");
             Console.WriteLine("");
 
-            var cheatFileName = Path.GetFileName(Path.ChangeExtension(filePath, "txt"));
+            var cheatFileName = Path.GetFileName(Path.ChangeExtension(romFilePath, "txt"));
             var cheatFileDir = Path.Join(Path.GetTempPath(), "gs");
             var cheatFilePath = Path.Join(cheatFileDir, cheatFileName);
             Directory.CreateDirectory(cheatFileDir);
