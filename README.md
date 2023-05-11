@@ -12,10 +12,10 @@ This project was forked from the fantastic [`BacteriaMage/n64-gameshark-data-mod
 
 2. [Download N64 GameShark firmware images](https://github.com/LibreShark/sharkdumps)
 
-3. Run the app:
+3. Run the CLI:
 
     ```bash
-    $ dotnet run --project dotnet/src/src.csproj -- ~/dev/libreshark/sharkdumps/n64/*.bin
+    $ dotnet run --project dotnet/src/src.csproj -- export-cheats ~/dev/libreshark/sharkdumps/n64/*.bin
     ```
 
 You should see output like this:
