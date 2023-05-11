@@ -1,8 +1,12 @@
 # Hammerhead
 
-C# .NET utility for reading/writing cheat device firmware dumps (GameShark, Action Replay, Code Breaker, Xplorer64, etc.).
+Swiss Army Knife for reading, writing, encrypting, and decrypting "video game enhancer" firmware dumps.
+
+Currently only N64 GameShark (aka Action Replay) ROMs are supported, but we hope to eventually support other consoles and device types as well (GBA, Xplorer 64, Code Breaker, etc.).
 
 ![Hammerhead icon](/assets/images/hammerhead-icon-256.png)
+
+Written in cross-platform C# and .NET.
 
 This project was forked from the fantastic [`BacteriaMage/n64-gameshark-data-model`](https://github.com/BacteriaMage/n64-gameshark-data-model) repo.
 

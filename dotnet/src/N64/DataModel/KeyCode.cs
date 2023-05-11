@@ -12,7 +12,7 @@ public class KeyCode
     /// The first 8 bytes of a key code are the CRC32 checksums of the GS ROM's IPL3 chunk and firmware program chunk.
     public byte[] ChecksumBytes => Bytes.Take(8).ToArray();
 
-    /// According to http://en64.shoutwiki.com/wiki/ROM#Cartridge_ROM_Header this is the Program Counter:
+    /// According to http://en64.shoutwiki.com/wiki/ROM#Cartridge_ROM_Header 0x08 is the Program Counter:
     ///
     /// > The program counter (PC) sets the boot location (RAM entry point) when preforming certain kinds of resets
     /// > (0x8000030C), however some CIC chips will alter the location like how they effect the CRC calculation.
