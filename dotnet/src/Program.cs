@@ -18,6 +18,10 @@ Commands:
     export-cheats GSROM1.bin GSROM2.z64 GSROM3.n64 ...
 
     scrub-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+
+    encrypt-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+
+    decrypt-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
 ");
     }
 
@@ -65,6 +69,24 @@ Commands:
                 return 1;
             }
             return ScrubRoms(args.Skip(1));
+        }
+        if (cmd == "encrypt-rom")
+        {
+            if (args.Length < 2)
+            {
+                ShowUsage();
+                return 1;
+            }
+            return EncryptRoms(args.Skip(1));
+        }
+        if (cmd == "decrypt-rom")
+        {
+            if (args.Length < 2)
+            {
+                ShowUsage();
+                return 1;
+            }
+            return DecryptRoms(args.Skip(1));
         }
 
         ShowUsage();
@@ -186,6 +208,30 @@ Commands:
             var outputFilePath = Path.ChangeExtension(romFilePath, "scrubbed.z64");
             Console.WriteLine($"Cleaning GS ROM file \"{romFilePath}\" -> \"{outputFilePath}\"...");
             RomWriter.ToFileAndReset(romInfo.Games, romFilePath, outputFilePath);
+        }
+
+        return 0;
+    }
+
+    private static int EncryptRoms(IEnumerable<string> romFilePaths)
+    {
+        foreach (var decryptedRomFilePath in romFilePaths)
+        {
+            var encryptedRomFilePath = Path.ChangeExtension(decryptedRomFilePath, "enc");
+            Console.WriteLine($"Encrypting GS ROM file \"{decryptedRomFilePath}\" -> \"{encryptedRomFilePath}\"...");
+            Examples.EncryptRom(decryptedRomFilePath, encryptedRomFilePath);
+        }
+
+        return 0;
+    }
+
+    private static int DecryptRoms(IEnumerable<string> romFilePaths)
+    {
+        foreach (var encryptedRomFilePath in romFilePaths)
+        {
+            var decryptedRomFilePath = Path.ChangeExtension(encryptedRomFilePath, "dec");
+            Console.WriteLine($"Decrypting GS ROM file \"{encryptedRomFilePath}\" -> \"{decryptedRomFilePath}\"...");
+            Examples.DecryptRom(encryptedRomFilePath, decryptedRomFilePath);
         }
 
         return 0;
