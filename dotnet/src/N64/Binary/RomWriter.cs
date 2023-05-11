@@ -83,12 +83,15 @@ class RomWriter : RomBase
         // the pristine decoded ROM from the ar3.enc file just has a block of 0xff where the
         // settings are usually stored. I assume this just causes it to write the default settings
         // on first use so just ignore it if this unused ROM image.
-        if (Reader.Seek(0x0002FB00).ReadUInt16() != 0xffff)
+        var isPristine = Reader.Seek(0x0002FB00).ReadUInt16() == 0xffff;
+        if (isPristine)
         {
-            // just reset the selected game back to nothing selected in case the existing
-            // selected index is no longer valid or the game has changed after the update.
-            Writer.Seek(0x0002FB05);
-            Writer.WriteByte(0x00);
+            return;
         }
+
+        // just reset the selected game back to nothing selected in case the existing
+        // selected index is no longer valid or the game has changed after the update.
+        Writer.Seek(0x0002FB05);
+        Writer.WriteByte(0x00);
     }
 }
