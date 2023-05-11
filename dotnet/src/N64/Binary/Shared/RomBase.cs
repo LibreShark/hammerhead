@@ -60,7 +60,7 @@ abstract class RomBase
             // e.g., "2.21"
             string titleVersionStr = Reader.ReadPrintableCString(5).Trim();
             double.TryParse(titleVersionStr, out titleVersion);
-            Console.Error.WriteLine($"titleVersion = {titleVersion}");
+            // Console.Error.WriteLine($"titleVersion = {titleVersion}");
         }
         SeekBuildTimestamp();
         return RomVersion.From(Reader.ReadPrintableCString(15));
