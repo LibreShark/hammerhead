@@ -67,6 +67,13 @@ class RomWriter : RomBase
 
     private void FixActiveGameIndex()
     {
+        // Earlier GameSharks don't store any user preferences.
+        var isAtLeastV250 = ReadVersion()?.Number >= 2.5;
+        if (!isAtLeastV250)
+        {
+            return;
+        }
+
         // 0x02FB02 = Sound (01 = On; 00 = Off)
         // 0x02FB04 = Background Image (02 = Default GameShark Logo; 03 = Green GameShark Logo)
         // 0x02FB05 = Currently Selected Game (00 = No Game Selected; else index of game starting at 1)
