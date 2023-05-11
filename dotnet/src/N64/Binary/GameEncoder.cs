@@ -7,11 +7,14 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class GameEncoder
 {
-    public BinaryWriter Writer { get; private set; }
+    private BinaryWriter Writer { get; set; }
 
-    public GameEncoder(BinaryWriter writer)
+    public RomVersion? Version { get; private set; }
+
+    public GameEncoder(BinaryWriter writer, RomVersion? version = null)
     {
         Writer = writer;
+        Version = version;
     }
 
     public void EncodeGame(Game game)
@@ -84,17 +87,26 @@ class GameEncoder
 
         if (name.Length < 1)
         {
-            throw new Exception("Name cannot be blank.");
+            throw new Exception("Names must contain at least 1 character.");
         }
 
         if (name.Length > 30)
         {
-            throw new Exception($"The name {name} is too long.");
+            throw new Exception($"Name \"{name}\" is too long (maxlen = 30, but found length = {name.Length}).");
         }
     }
 
     private void EncodeCommonWords(ref string name)
     {
+        // v1.02 does NOT support this.
+        // v1.04 DOES support this.
+        // Unknown if v1.03 supports this.
+        var isSupported = Version?.Number >= 1.04;
+        if (!isSupported)
+        {
+            return;
+        }
+
         name = name.Replace("Key", "`F6`");
         name = name.Replace("Have ", "`F7`");
         name = name.Replace("Lives", "`F8`");

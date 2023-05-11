@@ -12,12 +12,18 @@ This project was forked from the fantastic [`BacteriaMage/n64-gameshark-data-mod
 
 2. [Download N64 GameShark firmware images](https://github.com/LibreShark/sharkdumps)
 
-3. Run the CLI:
+3. Run the CLI with no arguments to see a list of supported commands:
 
     ```bash
-    dotnet run --project dotnet/src/src.csproj -- \
-        export-cheats ~/dev/libreshark/sharkdumps/n64/firmware/*.bin
+    dotnet run --project dotnet/src/src.csproj
     ```
+
+Example:
+
+```bash
+dotnet run --project dotnet/src/src.csproj -- \
+    export-cheats ~/dev/libreshark/sharkdumps/n64/firmware/*.bin
+```
 
 You should see output like this:
 

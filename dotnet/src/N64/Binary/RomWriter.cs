@@ -1,7 +1,5 @@
 ﻿// bacteriamage.wordpress.com
 
-using System.Collections.Generic;
-
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
@@ -23,49 +21,70 @@ class RomWriter : RomBase
         writer.WriteRomToFile(target);
     }
 
+    public static void ToFileAndReset(ICollection<Game> games, string source, string target)
+    {
+        RomWriter writer = new RomWriter();
+
+        writer.ReadRomFromFile(source);
+        writer.WriteGames(games);
+        writer.ResetActiveKeyCode();
+        writer.ResetUserPreferences();
+        writer.WriteRomToFile(target);
+    }
+
     private RomWriter()
     {
     }
 
     private void WriteGames(ICollection<Game> games)
     {
+        var version = ReadVersion();
+
         SeekGamesList();
 
         Writer.WriteSInt32(games.Count);
 
         foreach (Game game in games)
         {
-            WriteGame(game);
+            WriteGame(game, version);
         }
 
-        ZeroUnusedSpaceInCurrentPage();
+        Writer.WriteByte(0x00);
+
+        ClearUnusedSpaceInCurrentPage();
         ClearUnusedPages();
-
-        FixActiveGameIndex();
+        ResetActiveGameIndex();
     }
 
-    private void WriteGame(Game game)
+    private void WriteGame(Game game, RomVersion? version)
     {
-        new GameEncoder(Writer).EncodeGame(game);
+        new GameEncoder(Writer, version).EncodeGame(game);
     }
 
-    private void ZeroUnusedSpaceInCurrentPage()
+    private void ClearUnusedSpaceInCurrentPage()
     {
+        // Earlier GameSharks use 0x00 for padding, whereas later versions use 0xFF.
+        byte lastByte = Reader.Seek(Reader.Length - 1).PeekBytes(1).First();
         while (Writer.Position % 256 != 0)
         {
-            Writer.WriteByte(0x00);
+            Writer.WriteByte(lastByte);
         }
     }
 
     private void ClearUnusedPages()
     {
-        while (Writer.Position < Writer.Buffer?.Length)
+        // Earlier GameSharks use 0x00 for padding, whereas later versions use 0xFF.
+        byte lastByte = Reader.Seek(Reader.Length - 1).PeekBytes(1).First();
+        // Earlier ROMs have non-zero bytes at 0x0003E000. I don't know what they're for,
+        // so avoid overwriting them just to be safe.
+        // TODO(CheatoBaggins): Figure out what's at 0x0003E000.
+        while (Writer.Position < Writer.Buffer?.Length && Writer.Position < 0x0003E000)
         {
-            Writer.WriteByte(0xff);
+            Writer.WriteByte(lastByte);
         }
     }
 
-    private void FixActiveGameIndex()
+    private void ResetActiveGameIndex()
     {
         // Earlier GameSharks don't store any user preferences.
         var isAtLeastV250 = ReadVersion()?.Number >= 2.5;
@@ -93,5 +112,42 @@ class RomWriter : RomBase
         // selected index is no longer valid or the game has changed after the update.
         Writer.Seek(0x0002FB05);
         Writer.WriteByte(0x00);
+    }
+
+    private void ResetUserPreferences()
+    {
+        // Earlier GameSharks don't store any user preferences.
+        var isAtLeastV250 = ReadVersion()?.Number >= 2.5;
+        if (!isAtLeastV250)
+        {
+            return;
+        }
+
+        // just reset the selected game back to nothing selected in case the existing
+        // selected index is no longer valid or the game has changed after the update.
+        Writer.Seek(0x0002FB00);
+        for (int i = 0; i < 0x70; i++)
+        {
+            Writer.WriteByte(0xFF);
+        }
+    }
+
+    private void ResetActiveKeyCode()
+    {
+        var keyCodes = ReadKeyCodes();
+        if (keyCodes.Count == 0)
+        {
+            return;
+        }
+
+        var kc = keyCodes.First();
+        Writer.Seek(0x00000010);
+        Writer.WriteBytes(kc.ChecksumBytes);
+        if (kc.Bytes.Length >= 12)
+        {
+            Writer.Seek(0x00000008);
+            // TODO(CheatoBaggins): Figure out why this differs from pristine ROM bytes.
+            Writer.WriteBytes(kc.ProgramCounterBytes);
+        }
     }
 }
