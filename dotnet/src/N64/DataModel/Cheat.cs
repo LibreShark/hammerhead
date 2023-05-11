@@ -9,7 +9,25 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 public class Cheat
 {
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            if (value.Length is < 1 or > 30)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
+            }
+            _name = value;
+        }
+    }
+
+    private string _name = "";
 
     /// <summary>
     /// Indicates whether this cheat is enabled by default when the user boots up the GameShark and selects this game.
