@@ -59,7 +59,7 @@ namespace LibreShark.Hammerhead.N64
 
         public void WriteCheat(Cheat cheat)
         {
-            if (cheat.IsEnabledByDefault)
+            if (cheat.IsActiveByDefault)
             {
                 WriteLine(Quote(cheat.Name));
             }
