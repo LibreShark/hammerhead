@@ -1,4 +1,6 @@
-﻿namespace LibreShark.Hammerhead;
+﻿using System.Collections;
+
+namespace LibreShark.Hammerhead;
 
 using N64;
 
@@ -6,6 +8,32 @@ internal static class Program
 {
     public static void Main(string[] args)
     {
+        /*
+        var srcPath = "~/dev/libreshark/sharkdumps/n64/firmware/gs-2.00-19980305-pristine.bin";
+        var destPath = "~/dev/libreshark/sharkdumps/n64/firmware/gs-1.09-19980105-pristine.bin";
+
+        var srcBytes = File.ReadAllBytes(srcPath);
+        var destBytes = File.ReadAllBytes(destPath);
+
+        for (var i = 0x0002E000; i < 0x00039000; i++)
+        {
+            destBytes[i] = srcBytes[i];
+        }
+
+        File.WriteAllBytes(destPath, destBytes);
+
+        return;
+        */
+
+        // Examples.ImportGameListFromFile(
+        //     "/private/var/folders/7c/x55kqht93czbz4wls69ml0v00000gn/T/gs/gs-2.10-19980825-PRISTINE.txt",
+        //     "~/dev/libreshark/sharkdumps/n64/firmware/gs-2.10-19980825-ALMOST-PRISTINE.bin"
+        // );
+        //
+        // return;
+
+        var cheatFilePaths = new List<string>();
+
         foreach (var filePath in args)
         {
             RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(filePath));
@@ -38,7 +66,21 @@ internal static class Program
             Console.WriteLine("");
             Console.WriteLine($"{cheats.Count:N0} cheats for {games.Count:N0} games");
             Console.WriteLine("");
-            // ListWriter.ToStdOut(games);
+
+            var cheatFileName = Path.GetFileName(Path.ChangeExtension(filePath, "txt"));
+            var cheatFileDir = Path.Join(Path.GetTempPath(), "gs");
+            var cheatFilePath = Path.Join(cheatFileDir, cheatFileName);
+            Directory.CreateDirectory(cheatFileDir);
+            ListWriter.ToFile(cheatFilePath, games);
+            cheatFilePaths.Add(cheatFilePath);
+        }
+
+        Console.WriteLine(@"--------------------------------------------");
+        Console.WriteLine("");
+
+        foreach (var cheatFilePath in cheatFilePaths)
+        {
+            Console.WriteLine(cheatFilePath);
         }
     }
 }
