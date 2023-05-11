@@ -11,17 +11,17 @@ Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
 
 Commands:
 
-    copy-cheats FROM_GS_ROM.bin TO_GS_ROM.bin
+    copy-cheats     FROM_GS_ROM.bin            TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
 
-    import-cheats FROM_DATEL_FORMATTED.txt TO_GS_ROM.bin
+    import-cheats   FROM_DATEL_FORMATTED.txt   TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
 
-    export-cheats GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+    export-cheats   GS_ROM_1.bin [GS_ROM_2.bin ...]
 
-    scrub-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+    scrub-rom       GS_ROM_1.bin [GS_ROM_2.bin ...]
 
-    encrypt-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+    encrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
 
-    decrypt-rom GSROM1.bin GSROM2.z64 GSROM3.n64 ...
+    decrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
 ");
     }
 
@@ -41,7 +41,7 @@ Commands:
                 ShowUsage();
                 return 1;
             }
-            return CopyGameList(args[1], args[2]);
+            return CopyGameList(args[1], args.Skip(2));
         }
         if (cmd == "import-cheats")
         {
@@ -50,7 +50,7 @@ Commands:
                 ShowUsage();
                 return 1;
             }
-            return ImportCheats(args[1], args[2]);
+            return ImportCheats(args[1], args.Skip(2));
         }
         if (cmd == "export-cheats")
         {
@@ -93,47 +93,53 @@ Commands:
         return 1;
     }
 
-    private static int CopyGameList(string fromRomFilePath, string toRomFilePath)
+    private static int CopyGameList(string srcRomFilePath, IEnumerable<string> destRomFilePaths)
     {
-        var srcBytes = File.ReadAllBytes(fromRomFilePath);
-        var destBytes = File.ReadAllBytes(toRomFilePath);
-
+        var srcBytes = File.ReadAllBytes(srcRomFilePath);
         var srcInfo = RomReader.FromBytes(srcBytes);
-        var destInfo = RomReader.FromBytes(destBytes);
-
         if (srcInfo == null)
         {
-            Console.Error.Write($"Invalid GS ROM file source: \"{fromRomFilePath}\"");
-            return 1;
-        }
-        if (destInfo == null)
-        {
-            Console.Error.Write($"Invalid GS ROM file destination: \"{toRomFilePath}\"");
+            Console.Error.Write($"Invalid GS ROM file source: \"{srcRomFilePath}\"");
             return 1;
         }
 
-        for (var i = 0; i < 0x00010000; i++)
+        foreach (var destRomFilePath in destRomFilePaths)
         {
-            var to = destInfo.GameListOffset + i;
-            var from = srcInfo.GameListOffset + i;
-            if (to > 0x00040000 || from > 0x00040000)
+            var destBytes = File.ReadAllBytes(destRomFilePath);
+            var destInfo = RomReader.FromBytes(destBytes);
+            if (destInfo == null)
             {
-                break;
+                Console.Error.Write($"Invalid GS ROM file destination: \"{destRomFilePath}\"");
+                return 1;
             }
-            destBytes[to] = srcBytes[from];
-        }
 
-        File.WriteAllBytes(toRomFilePath, destBytes);
+            for (var i = 0; i < 0x00010000; i++)
+            {
+                var to = destInfo.GameListOffset + i;
+                var from = srcInfo.GameListOffset + i;
+                if (to > 0x00040000 || from > 0x00040000)
+                {
+                    break;
+                }
+                destBytes[to] = srcBytes[from];
+            }
+
+            File.WriteAllBytes(destRomFilePath, destBytes);
+        }
 
         return 0;
     }
 
-    private static int ImportCheats(string fromDatelFormattedTextFilePath, string toGsRomFilePath)
+    private static int ImportCheats(string srcDatelFormattedTextFilePath, IEnumerable<string> destRomFilePaths)
     {
-        Examples.ImportGameListFromFile(
-            fromDatelFormattedTextFilePath,
-            toGsRomFilePath
-        );
+        foreach (var destRomFilePath in destRomFilePaths)
+        {
+            Examples.ImportGameListFromFile(
+                srcDatelFormattedTextFilePath,
+                destRomFilePath
+            );
+        }
+
         return 0;
     }
 
