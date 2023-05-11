@@ -11,17 +11,34 @@ Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
 
 Commands:
 
-    copy-cheats     FROM_GS_ROM.bin            TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
+    export-cheats   GS_ROM_1.bin [GS_ROM_2.bin ...]
+
+                    Dumps the cheat lists from the given GS ROMs to
+                    Datel-formatted plain text files in the temp directory.
 
     import-cheats   FROM_DATEL_FORMATTED.txt   TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
 
-    export-cheats   GS_ROM_1.bin [GS_ROM_2.bin ...]
+                    Writes a Datel-formatted plain text cheat list to the given
+                    GS ROM files.
+
+    copy-cheats     FROM_GS_ROM.bin            TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
+
+                    Copies the list of cheats from one GS ROM file to another.
 
     scrub-rom       GS_ROM_1.bin [GS_ROM_2.bin ...]
 
+                    Attempts to clean up garbage cheats, reset user preferences,
+                    etc.
+
     encrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
 
+                    Encrypts the given unencrypted ROM files for use with the
+                    official Datel N64 Utils.
+
     decrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
+
+                    Decrypts the given Datel-encrypted ROM files so that they
+                    can be inspected and edited.
 ");
     }
 
