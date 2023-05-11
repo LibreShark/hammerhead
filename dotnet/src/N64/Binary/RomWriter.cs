@@ -67,6 +67,13 @@ class RomWriter : RomBase
 
     private void FixActiveGameIndex()
     {
+        // Earlier GameSharks don't store any user preferences.
+        var isAtLeastV250 = ReadVersion()?.Number >= 2.5;
+        if (!isAtLeastV250)
+        {
+            return;
+        }
+
         // 0x02FB02 = Sound (01 = On; 00 = Off)
         // 0x02FB04 = Background Image (02 = Default GameShark Logo; 03 = Green GameShark Logo)
         // 0x02FB05 = Currently Selected Game (00 = No Game Selected; else index of game starting at 1)
@@ -76,12 +83,15 @@ class RomWriter : RomBase
         // the pristine decoded ROM from the ar3.enc file just has a block of 0xff where the
         // settings are usually stored. I assume this just causes it to write the default settings
         // on first use so just ignore it if this unused ROM image.
-        if (Reader.Seek(0x0002FB00).ReadUInt16() != 0xffff)
+        var isPristine = Reader.Seek(0x0002FB00).ReadUInt16() == 0xffff;
+        if (isPristine)
         {
-            // just reset the selected game back to nothing selected in case the existing
-            // selected index is no longer valid or the game has changed after the update.
-            Writer.Seek(0x0002FB05);
-            Writer.WriteByte(0x00);
+            return;
         }
+
+        // just reset the selected game back to nothing selected in case the existing
+        // selected index is no longer valid or the game has changed after the update.
+        Writer.Seek(0x0002FB05);
+        Writer.WriteByte(0x00);
     }
 }

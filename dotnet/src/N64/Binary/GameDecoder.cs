@@ -22,9 +22,13 @@ class GameDecoder
 
     public Game ReadGame()
     {
+        // Console.WriteLine("----------------------------------------");
+        // Console.WriteLine($"Reading game at 0x{Reader.Position:X08}");
         Game game = Game.NewGame(ReadName());
+        // Console.WriteLine($"Found game \"{game.Name}\"");
 
         int cheats = Reader.ReadUByte();
+        // Console.WriteLine($"{cheats} cheat(s) expected");
 
         for (int cheat = 0; cheat < cheats; cheat++)
         {
@@ -36,6 +40,7 @@ class GameDecoder
 
     private void ReadCheat(Game game)
     {
+        // Console.WriteLine($"Reading cheat name at 0x{Reader.Position:X08}");
         Cheat cheat = game.AddCheat(ReadName());
 
         int codes = Reader.ReadUByte();
@@ -44,7 +49,7 @@ class GameDecoder
 
         codes &= 0x7F;
 
-        cheat.Active = cheatOn;
+        cheat.IsActiveByDefault = cheatOn;
 
         for (int code = 0; code < codes; code++)
         {
@@ -62,11 +67,13 @@ class GameDecoder
 
     private string ReadName()
     {
+        int pos = Reader.Position;
+
         string name = Reader.ReadCString(30);
 
         if (name.Length is < 1 or > 30)
         {
-            throw new Exception($"Invalid game or cheat name: '{name}'. Names be printable ASCII between 1-30 characters long, but found length = {name.Length}.");
+            throw new Exception($"Invalid game or cheat name: '{name}' at offset 0x{pos:X08}. Names be printable ASCII between 1-30 characters long, but found length = {name.Length}.");
         }
 
         name = name.Replace("`F6`", "Key");

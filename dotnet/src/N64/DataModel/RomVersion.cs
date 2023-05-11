@@ -57,7 +57,8 @@ public partial class RomVersion
             "10:05 Apr 6 98"  => Of(raw, 2.00, "April",    1998, 04, 06, 10, 05),
             "13:57 Aug 25 98" => Of(raw, 2.10, null,       1998, 08, 25, 13, 57),
             "12:47 Dec 18 98" => Of(raw, 2.21, null,       1998, 12, 18, 12, 47),
-            "12:58 May 4"     => Of(raw, 2.50, null,       1998, 12, 18, 12, 58),
+            // TODO: Confirm v2.5 build timestamp
+            "12:58 May 4"     => Of(raw, 2.50, null,       1999, 05, 04, 12, 58),
             "15:05 Apr 1 99"  => Of(raw, 3.00, null,       1999, 04, 01, 15, 05),
             "16:50 Jun 9 99"  => Of(raw, 3.10, null,       1999, 06, 09, 16, 50),
             "18:45 Jun 22 99" => Of(raw, 3.20, null,       1999, 06, 22, 18, 45),

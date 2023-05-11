@@ -5,33 +5,42 @@ using System.Collections.Generic;
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
-/// Represents one GameShark cheat which composed of individual codes.
+/// Represents one GameShark cheat which is composed of zero or more codes.
 /// </summary>
 public class Cheat
 {
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            if (value.Length is < 1 or > 30)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
+            }
+            _name = value;
+        }
+    }
 
-    public bool Active { get; set; }
+    private string _name = "";
+
+    /// <summary>
+    /// Indicates whether this cheat is enabled by default when the user boots up the GameShark and selects this game.
+    /// </summary>
+    public bool IsActiveByDefault { get; set; }
 
     public List<Code> Codes { get; private set; }
 
-    public Cheat()
+    public Cheat(string name = "", IEnumerable<Code>? codes = null)
     {
-        Name = "";
-        Active = false;
-        Codes = new List<Code>();
-    }
-
-    public Cheat(string name)
-        : this()
-    {
+        IsActiveByDefault = false;
         Name = name;
-    }
-
-    public Cheat(string name, IEnumerable<Code> codes)
-        : this(name)
-    {
-        Codes.AddRange(codes);
+        Codes = new List<Code>(codes ?? Array.Empty<Code>());
     }
 
     public Code AddCode(uint address, int value)
@@ -47,7 +56,7 @@ public class Cheat
 
     public override bool Equals(object? obj)
     {
-        return Equals(obj as Cheat);
+        return obj is Cheat cheat && Equals(cheat);
     }
 
     public bool Equals(Cheat? cheat)
@@ -57,11 +66,11 @@ public class Cheat
 
     public override int GetHashCode()
     {
-        return (Name?.GetHashCode() ?? 0) ^ unchecked((int)0xc90f4677);
+        return Name.GetHashCode() ^ unchecked((int)0xc90f4677);
     }
 
     public override string ToString()
     {
-        return string.Concat(Name ?? "", Active ? "" : " [off]").Trim();
+        return string.Concat(Name, IsActiveByDefault ? "" : " [off]").Trim();
     }
 }
