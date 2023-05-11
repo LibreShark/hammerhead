@@ -8,7 +8,13 @@ internal static class Program
 {
     public static void Main(string[] args)
     {
-        /*
+        CopyRomData();
+        ImportCheats();
+        ExportCheats(args);
+    }
+
+    private static void CopyRomData()
+    {
         var srcPath = "~/dev/libreshark/sharkdumps/n64/firmware/gs-2.00-19980305-pristine.bin";
         var destPath = "~/dev/libreshark/sharkdumps/n64/firmware/gs-1.09-19980105-pristine.bin";
 
@@ -21,17 +27,18 @@ internal static class Program
         }
 
         File.WriteAllBytes(destPath, destBytes);
+    }
 
-        return;
-        */
+    private static void ImportCheats()
+    {
+        Examples.ImportGameListFromFile(
+            "/private/var/folders/7c/x55kqht93czbz4wls69ml0v00000gn/T/gs/gs-2.10-19980825-PRISTINE.txt",
+            "~/dev/libreshark/sharkdumps/n64/firmware/gs-2.10-19980825-ALMOST-PRISTINE.bin"
+        );
+    }
 
-        // Examples.ImportGameListFromFile(
-        //     "/private/var/folders/7c/x55kqht93czbz4wls69ml0v00000gn/T/gs/gs-2.10-19980825-PRISTINE.txt",
-        //     "~/dev/libreshark/sharkdumps/n64/firmware/gs-2.10-19980825-ALMOST-PRISTINE.bin"
-        // );
-        //
-        // return;
-
+    private static void ExportCheats(string[] args)
+    {
         var cheatFilePaths = new List<string>();
 
         foreach (var romFilePath in args)
@@ -63,6 +70,7 @@ internal static class Program
             {
                 Console.WriteLine("No key codes found.");
             }
+
             Console.WriteLine("");
             Console.WriteLine($"{cheats.Count:N0} cheats for {games.Count:N0} games");
             Console.WriteLine("");
