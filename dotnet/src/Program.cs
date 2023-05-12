@@ -204,7 +204,6 @@ Commands:
             Console.WriteLine("- ❌ Dirty dump");
             Console.WriteLine("- ⚠️  Unknown provenance");
             Console.WriteLine("- 🦈 LibreShark firmware (open source!)");
-            Console.WriteLine();
 
             var fileTable = BuildFileTable(rom);
             var keyCodesTable = BuildKeyCodesTable(rom);
@@ -250,18 +249,32 @@ Commands:
             .AddRow("File CRC32", rom.Checksum?.Crc32)
             .AddRow("File CRC32C", rom.Checksum?.Crc32C)
             .AddRow("File MD5", rom.Checksum?.MD5)
-            .AddRow("File SHA1", rom.Checksum?.MD5)
+            .AddRow("File SHA1", rom.Checksum?.SHA1)
             .AddRow("", "")
-            .AddRow("IPL3 chunk CRC32", rom.ActiveKeyCodeOffset)
+            .AddRow("IPL3 chunk CRC32", Join(rom.ActiveKeyCode?.Ipl3ChunkCrcBytes).ForegroundColor(Color.LimeGreen))
+            .AddRow("Firmware chunk CRC32", Join(rom.ActiveKeyCode?.ProgramChunkCrcBytes).ForegroundColor(Color.DeepSkyBlue))
+            .AddRow("Program counter", Join(rom.ActiveKeyCode?.ProgramCounterBytes).ForegroundColor(Color.Red))
             ;
-        return table.ToString();
+        return $"\nFile properties:\n{table}";
+    }
+
+    private static string Join(byte[]? bytes)
+    {
+        if (bytes == null)
+        {
+            return "";
+        }
+
+        return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
     }
 
     private static string BuildKeyCodesTable(RomInfo rom)
     {
         if (rom.KeyCodes.Count == 0)
         {
-            return "\nNo key codes found.\n".SetStyle(FontStyleExt.Bold) + "\n".SetStyle(FontStyleExt.None);
+            return "\nKey codes:\n" +
+                   "No key codes found.".SetStyle(FontStyleExt.Bold) +
+                   "\n".SetStyle(FontStyleExt.None);
         }
 
         CellFormat headerFormat = new CellFormat()
@@ -272,15 +285,24 @@ Commands:
             BackgroundColor = Color.Black,
         };
 
+        var hasPcBytes = rom.KeyCodes.First()?.ProgramCounterBytes.Length > 0;
         Table table = new TableBuilder(headerFormat)
             .AddColumn("Game CIC",
-                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
-            .AddColumn("Key code")
-            .RowsFormat()
-            .ForegroundColor(Color.FromArgb(220, 220, 220))
-            .BackgroundColor(Color.Black)
-            .Alignment(Alignment.Left)
-            .HasInnerFormatting()
+                rowsFormat: new CellFormat(
+                    foregroundColor: Color.FromArgb(128, 129, 126),
+                    backgroundColor: Color.Black,
+                    innerFormatting: true,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("IPL3 CRC32  Firm CRC32  " + (hasPcBytes ? "ProgCounter " : "") + "Check",
+                rowsFormat: new CellFormat(
+                    foregroundColor: Color.FromArgb(220, 220, 220),
+                    backgroundColor: Color.Black,
+                    innerFormatting: true,
+                    alignment: Alignment.Left
+                )
+            )
             .Build();
 
         var ver = rom.Version;
@@ -291,11 +313,16 @@ Commands:
             var ipl3 = FormatKeyCodeBytes(kc.Ipl3ChunkCrcBytes).ForegroundColor(Color.LimeGreen);
             var fw = FormatKeyCodeBytes(kc.ProgramChunkCrcBytes).ForegroundColor(Color.DeepSkyBlue);
             var pc = FormatKeyCodeBytes(kc.ProgramCounterBytes).ForegroundColor(Color.Red);
+            if (kc.ProgramCounterBytes.Length > 0)
+            {
+                pc = " " + pc;
+            }
             var check = kc.CheckDigit.ToString("X02").ForegroundColor(Color.Yellow);
-            table.AddRow(kc.Name, $"{ipl3} {fw} {pc} {check}");
+            var name = (kc.IsActive ? kc.Name.Bold() : kc.Name) + " ".SetStyle(FontStyleExt.None);
+            table.AddRow(name, $"{ipl3} {fw}{pc} {check}");
         }
 
-        return table.ToString();
+        return $"\nKey codes: \n{table}";
     }
 
     private static string FormatKeyCodeBytes(byte[] bytes)
