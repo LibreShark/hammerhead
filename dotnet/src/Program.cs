@@ -1,4 +1,12 @@
-﻿namespace LibreShark.Hammerhead;
+﻿using System.Drawing;
+using BetterConsoles.Colors.Extensions;
+using BetterConsoles.Core;
+using BetterConsoles.Tables;
+using BetterConsoles.Tables.Builders;
+using BetterConsoles.Tables.Configuration;
+using BetterConsoles.Tables.Models;
+
+namespace LibreShark.Hammerhead;
 
 using N64;
 
@@ -11,17 +19,21 @@ Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
 
 Commands:
 
+    rom-info        GS_ROM_1.bin [GS_ROM_2.bin ...]
+
+                    Displays detailed information about the given GS ROM files.
+
     export-cheats   GS_ROM_1.bin [GS_ROM_2.bin ...]
 
                     Dumps the cheat lists from the given GS ROMs to
                     Datel-formatted plain text files in the temp directory.
 
-    import-cheats   FROM_DATEL_FORMATTED.txt   TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
+    import-cheats   FROM_DATEL_FORMATTED.txt TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
 
                     Writes a Datel-formatted plain text cheat list to the given
                     GS ROM files.
 
-    copy-cheats     FROM_GS_ROM.bin            TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
+    copy-cheats     FROM_GS_ROM.bin TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
 
                     Copies the list of cheats from one GS ROM file to another.
 
@@ -51,14 +63,24 @@ Commands:
         }
 
         var cmd = args[0];
-        if (cmd == "copy-cheats")
+
+        if (cmd == "rom-info")
         {
-            if (args.Length < 3)
+            if (args.Length < 2)
             {
                 ShowUsage();
                 return 1;
             }
-            return CopyGameList(args[1], args.Skip(2));
+            return PrintRomInfo(args.Skip(1));
+        }
+        if (cmd == "export-cheats")
+        {
+            if (args.Length < 2)
+            {
+                ShowUsage();
+                return 1;
+            }
+            return ExportCheats(args.Skip(1));
         }
         if (cmd == "import-cheats")
         {
@@ -69,14 +91,14 @@ Commands:
             }
             return ImportCheats(args[1], args.Skip(2));
         }
-        if (cmd == "export-cheats")
+        if (cmd == "copy-cheats")
         {
-            if (args.Length < 2)
+            if (args.Length < 3)
             {
                 ShowUsage();
                 return 1;
             }
-            return ExportCheats(args.Skip(1));
+            return CopyGameList(args[1], args.Skip(2));
         }
         if (cmd == "scrub-rom")
         {
@@ -158,6 +180,127 @@ Commands:
         }
 
         return 0;
+    }
+
+    private static int PrintRomInfo(IEnumerable<string> romFilePaths)
+    {
+        foreach (var romFilePath in romFilePaths)
+        {
+            RomInfo? rom = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
+            if (rom == null)
+            {
+                Console.Error.WriteLine("ERROR: Unable to read GS firmware file.");
+                continue;
+            }
+
+            Console.WriteLine(@"
+--------------------------------------------------------------------------------
+");
+            Console.WriteLine(Path.GetFileName(romFilePath));
+            Console.WriteLine();
+            Console.WriteLine("Dump integrity levels:");
+            Console.WriteLine("- ⭐️ Pristine dump");
+            Console.WriteLine("- ✅ Clean dump");
+            Console.WriteLine("- ❌ Dirty dump");
+            Console.WriteLine("- ⚠️  Unknown provenance");
+            Console.WriteLine("- 🦈 LibreShark firmware (open source!)");
+            Console.WriteLine();
+
+            var fileTable = BuildFileTable(rom);
+            var keyCodesTable = BuildKeyCodesTable(rom);
+
+            Console.Write(fileTable);
+            Console.Write(keyCodesTable);
+        }
+
+        return 0;
+    }
+
+    private static string BuildFileTable(RomInfo rom)
+    {
+        CellFormat headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = Color.FromArgb(152, 114, 159),
+            BackgroundColor = Color.Black,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Property",
+                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
+            .AddColumn("Value")
+            .RowsFormat()
+            .ForegroundColor(Color.FromArgb(220, 220, 220))
+            .BackgroundColor(Color.Black)
+            .Alignment(Alignment.Left)
+            .HasInnerFormatting()
+            .Build();
+
+        var ver = rom.Version;
+        table.Config = TableConfig.Unicode();
+        table
+            .AddRow("Dump integrity", "Pristine | Clean | Dirty | Unknown")
+            .AddRow("Brand", ver.DisplayBrand.ForegroundGradient(Color.FromArgb(180, 0, 0), Color.Red))
+            .AddRow("Version", ver.DisplayNumber.ForegroundColor(Color.LimeGreen))
+            .AddRow("Locale", ver.DisplayLocale)
+            .AddRow("ISO timestamp", ver.DisplayBuildTimestampIso.ForegroundColor(Color.DeepSkyBlue))
+            .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
+            .AddRow("", "")
+            .AddRow("File CRC32", rom.Checksum?.Crc32)
+            .AddRow("File CRC32C", rom.Checksum?.Crc32C)
+            .AddRow("File MD5", rom.Checksum?.MD5)
+            .AddRow("File SHA1", rom.Checksum?.MD5)
+            .AddRow("", "")
+            .AddRow("IPL3 chunk CRC32", rom.ActiveKeyCodeOffset)
+            ;
+        return table.ToString();
+    }
+
+    private static string BuildKeyCodesTable(RomInfo rom)
+    {
+        if (rom.KeyCodes.Count == 0)
+        {
+            return "\nNo key codes found.\n".SetStyle(FontStyleExt.Bold) + "\n".SetStyle(FontStyleExt.None);
+        }
+
+        CellFormat headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = Color.FromArgb(152, 114, 159),
+            BackgroundColor = Color.Black,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Game CIC",
+                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
+            .AddColumn("Key code")
+            .RowsFormat()
+            .ForegroundColor(Color.FromArgb(220, 220, 220))
+            .BackgroundColor(Color.Black)
+            .Alignment(Alignment.Left)
+            .HasInnerFormatting()
+            .Build();
+
+        var ver = rom.Version;
+        table.Config = TableConfig.Unicode();
+
+        foreach (var kc in rom.KeyCodes)
+        {
+            var ipl3 = FormatKeyCodeBytes(kc.Ipl3ChunkCrcBytes).ForegroundColor(Color.LimeGreen);
+            var fw = FormatKeyCodeBytes(kc.ProgramChunkCrcBytes).ForegroundColor(Color.DeepSkyBlue);
+            var pc = FormatKeyCodeBytes(kc.ProgramCounterBytes).ForegroundColor(Color.Red);
+            var check = kc.CheckDigit.ToString("X02").ForegroundColor(Color.Yellow);
+            table.AddRow(kc.Name, $"{ipl3} {fw} {pc} {check}");
+        }
+
+        return table.ToString();
+    }
+
+    private static string FormatKeyCodeBytes(byte[] bytes)
+    {
+        return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
     }
 
     private static int ExportCheats(IEnumerable<string> romFilePaths)

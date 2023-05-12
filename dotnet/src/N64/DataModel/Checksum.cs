@@ -17,10 +17,10 @@ public class Checksum
 
     private Checksum(byte[] bytes)
     {
-        Crc32 = ToString(Crc32Algorithm.Compute(bytes));
-        Crc32C = ToString(Crc32CAlgorithm.Compute(bytes));
-        MD5 = ToString(System.Security.Cryptography.MD5.HashData(bytes));
-        SHA1 = ToString(System.Security.Cryptography.SHA1.HashData(bytes));
+        Crc32 = U32ToString(Crc32Algorithm.Compute(bytes));
+        Crc32C = U32ToString(Crc32CAlgorithm.Compute(bytes));
+        MD5 = BytesToString(System.Security.Cryptography.MD5.HashData(bytes));
+        SHA1 = BytesToString(System.Security.Cryptography.SHA1.HashData(bytes));
     }
 
     public override string ToString()
@@ -28,12 +28,12 @@ public class Checksum
         return JsonSerializer.Serialize(this);
     }
 
-    private static string ToString(uint checksum)
+    private static string U32ToString(uint checksum)
     {
         return checksum.ToString("X8");
     }
 
-    private static string ToString(IEnumerable<byte> bytes)
+    private static string BytesToString(IEnumerable<byte> bytes)
     {
         return string.Join("", bytes.Select((b) => b.ToString("X2")));
     }

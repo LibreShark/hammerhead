@@ -33,8 +33,14 @@ public class KeyCode
     /// CRC32 of the GS ROM's IPL3 chunk.
     public u32 Ipl3ChunkCrc32 => GetU32(0);
 
+    /// CRC32 of the GS ROM's IPL3 chunk.
+    public byte[] Ipl3ChunkCrcBytes => Bytes.Take(4).ToArray();
+
     // CRC32 of the GS ROM's firmware program chunk.
     public u32 ProgramChunkCrc32 => GetU32(4);
+
+    // CRC32 of the GS ROM's firmware program chunk.
+    public byte[] ProgramChunkCrcBytes => Bytes.Skip(4).Take(4).ToArray();
 
     public u8 CheckDigit => Bytes.Last();
 
