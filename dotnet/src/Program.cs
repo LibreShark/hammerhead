@@ -310,16 +310,43 @@ Commands:
 
         foreach (var kc in rom.KeyCodes)
         {
-            var ipl3 = FormatKeyCodeBytes(kc.Ipl3ChunkCrcBytes).ForegroundColor(Color.LimeGreen);
-            var fw = FormatKeyCodeBytes(kc.ProgramChunkCrcBytes).ForegroundColor(Color.DeepSkyBlue);
-            var pc = FormatKeyCodeBytes(kc.ProgramCounterBytes).ForegroundColor(Color.Red);
+            FontStyleExt activeStyle = FontStyleExt.Bold | FontStyleExt.Underline;
+            FontStyleExt inactiveStyle = FontStyleExt.None;
+            FontStyleExt style = kc.IsActive ? activeStyle : inactiveStyle;
+
+            bool isActivePc =
+                kc.ProgramCounterBytes.SequenceEqual(rom.ActiveKeyCode?.ProgramCounterBytes ?? new byte[] { });
+
+            string ipl3 = FormatKeyCodeBytes(kc.Ipl3ChunkCrcBytes)
+                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
+                .ForegroundColor(Color.LimeGreen);
+            string fw = FormatKeyCodeBytes(kc.ProgramChunkCrcBytes)
+                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
+                .ForegroundColor(Color.DeepSkyBlue);
+            string pc = FormatKeyCodeBytes(kc.ProgramCounterBytes)
+                .SetStyle(isActivePc ? activeStyle : inactiveStyle)
+                .ForegroundColor(Color.Red);
+            string check = kc.CheckDigit.ToString("X02")
+                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
+                .ForegroundColor(Color.Yellow);
+
+            // If a 32-bit Program Counter (PC) value is present in the
+            // key code, add a space after it.
+            //
+            // All N64 ROMs (including GameShark firmware) store the PC at 0x08.
+            // Firmware v2.21 and later include the PC value in their key codes;
+            // v2.10 and earlier do not.
             if (kc.ProgramCounterBytes.Length > 0)
             {
                 pc = " " + pc;
             }
-            var check = kc.CheckDigit.ToString("X02").ForegroundColor(Color.Yellow);
-            var name = (kc.IsActive ? kc.Name.Bold() : kc.Name) + " ".SetStyle(FontStyleExt.None);
-            table.AddRow(name, $"{ipl3} {fw}{pc} {check}");
+
+            string nameActive   = $"> {kc.Name.SetStyle(style)}".ForegroundColor(Color.White);
+            string nameInactive = $"  {kc.Name}";
+            string name         = kc.IsActive ? nameActive : nameInactive;
+            string keyCode      = $"{ipl3} {fw}{pc} {check}";
+
+            table.AddRow(name, keyCode);
         }
 
         return $"\nKey codes: \n{table}";
