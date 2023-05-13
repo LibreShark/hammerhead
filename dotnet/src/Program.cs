@@ -205,11 +205,9 @@ Commands:
             Console.WriteLine("- ⚠️  Unknown provenance");
             Console.WriteLine("- 🦈 LibreShark firmware (open source!)");
 
-            var fileTable = BuildFileTable(rom);
-            var keyCodesTable = BuildKeyCodesTable(rom);
-
-            Console.Write(fileTable);
-            Console.Write(keyCodesTable);
+            Console.Write(BuildFileTable(rom));
+            Console.Write(BuildKeyCodesTable(rom));
+            Console.Write(BuildGameTable(rom));
         }
 
         return 0;
@@ -242,9 +240,9 @@ Commands:
             .AddRow("Dump integrity", "Pristine | Clean | Dirty | Unknown")
             .AddRow("Brand", ver.DisplayBrand.ForegroundGradient(Color.FromArgb(180, 0, 0), Color.Red))
             .AddRow("Version", ver.DisplayNumber.ForegroundColor(Color.LimeGreen))
-            .AddRow("Locale", ver.DisplayLocale)
             .AddRow("ISO timestamp", ver.DisplayBuildTimestampIso.ForegroundColor(Color.DeepSkyBlue))
             .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
+            .AddRow("Locale", ver.DisplayLocale)
             .AddRow("", "")
             .AddRow("File CRC32", rom.Checksum?.Crc32)
             .AddRow("File CRC32C", rom.Checksum?.Crc32C)
@@ -355,6 +353,45 @@ Commands:
     private static string FormatKeyCodeBytes(byte[] bytes)
     {
         return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
+    }
+
+    private static string BuildGameTable(RomInfo rom)
+    {
+        if (rom.Games.Count == 0)
+        {
+            return "\nGames (0):\n" +
+                   "No games found.".SetStyle(FontStyleExt.Bold) +
+                   "\n".SetStyle(FontStyleExt.None);
+        }
+
+        CellFormat headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = Color.FromArgb(152, 114, 159),
+            BackgroundColor = Color.Black,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Name",
+                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
+            .AddColumn("Cheats")
+            .RowsFormat()
+            .ForegroundColor(Color.FromArgb(220, 220, 220))
+            .BackgroundColor(Color.Black)
+            .Alignment(Alignment.Right)
+            .HasInnerFormatting()
+            .Build();
+
+        var ver = rom.Version;
+        table.Config = TableConfig.Unicode();
+
+        foreach (var game in rom.Games)
+        {
+            table.AddRow(game.Name, game.Cheats.Count);
+        }
+
+        return $"\nGames ({rom.Games.Count}):\n{table}";
     }
 
     private static int ExportCheats(IEnumerable<string> romFilePaths)
