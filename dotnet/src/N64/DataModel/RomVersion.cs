@@ -101,7 +101,8 @@ public partial class RomVersion
             "16:25 Sep 4 97"  => Of(raw, 1.05, "Thursday", 1997, 09, 04, 16, 25, 00, Brand.GAMESHARK, ENGLISH_US),
             "13:51 Sep 5 97"  => Of(raw, 1.05, "Friday",   1997, 09, 05, 13, 51, 00, Brand.GAMESHARK, ENGLISH_US),
             "14:25 Sep 19 97" => Of(raw, 1.06, null,       1997, 09, 19, 14, 25, 00, Brand.GAMESHARK, ENGLISH_US),
-            "10:24 Nov 7 97"  => Of(raw, 1.07, null,       1997, 11, 07, 10, 24, 00, Brand.GAMESHARK, ENGLISH_US),
+            "17:21 Oct 27 97" => Of(raw, 1.07, "October",  1997, 10, 27, 17, 21, 00, Brand.GAMESHARK, ENGLISH_US),
+            "10:24 Nov 7 97"  => Of(raw, 1.07, "November", 1997, 11, 07, 10, 24, 00, Brand.GAMESHARK, ENGLISH_US),
             "11:58 Nov 24 97" => Of(raw, 1.08, "November", 1997, 11, 24, 11, 58, 00, Brand.GAMESHARK, ENGLISH_US),
             "11:10 Dec 8 97"  => Of(raw, 1.08, "December", 1997, 12, 08, 11, 10, 00, Brand.GAMESHARK, ENGLISH_US),
             "17:40 Jan 5 98"  => Of(raw, 1.09, null,       1998, 01, 05, 17, 40, 00, Brand.GAMESHARK, ENGLISH_US),
@@ -119,7 +120,7 @@ public partial class RomVersion
             "15:56 Apr 4"     => Of(raw, 3.30, "April",    2000, 04, 04, 15, 56, 00, Brand.GAMESHARK, ENGLISH_US),
 
             // Trainers
-            "2003 iCEMARi0"   => Of(raw, 1.00, "Perfect Trainer 1.0b", 2003, 06, 18, 00, 00, 00, Brand.PERFECT_TRAINER, ENGLISH_US),
+            "2003 iCEMARi0"   => Of(raw, 1.00, "b",        2003, 06, 18, 00, 00, 00, Brand.PERFECT_TRAINER, ENGLISH_US),
 
             // Unknown
             _                 => null
