@@ -10,6 +10,10 @@ Written in cross-platform C# and .NET.
 
 This project was forked from the fantastic [`BacteriaMage/n64-gameshark-data-model`](https://github.com/BacteriaMage/n64-gameshark-data-model) repo.
 
+## Screenshots
+
+![Screenshot of hammerhead rom-info CLI output](/assets/screenshots/hammerhead-screenshot-20230514.png)
+
 ## Usage
 
 1. [Install the .NET 7 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/)

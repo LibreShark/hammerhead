@@ -219,19 +219,20 @@ Commands:
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159),
-            BackgroundColor = Color.Black,
+            ForegroundColor = Color.FromArgb(152, 114, 159)
         };
 
         Table table = new TableBuilder(headerFormat)
             .AddColumn("Property",
-                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
+                rowsFormat: new CellFormat(
+                    foregroundColor: Color.FromArgb(128, 129, 126)
+                )
+            )
             .AddColumn("Value")
-            .RowsFormat()
-            .ForegroundColor(Color.FromArgb(220, 220, 220))
-            .BackgroundColor(Color.Black)
-            .Alignment(Alignment.Left)
-            .HasInnerFormatting()
+                .RowsFormat()
+                    .ForegroundColor(Color.FromArgb(220, 220, 220))
+                    .Alignment(Alignment.Left)
+                    .HasInnerFormatting()
             .Build();
 
         var ver = rom.Version;
@@ -281,8 +282,7 @@ Commands:
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159),
-            BackgroundColor = Color.Black,
+            ForegroundColor = Color.FromArgb(152, 114, 159)
         };
 
         var hasPcBytes = rom.KeyCodes.First()?.ProgramCounterBytes.Length > 0;
@@ -290,7 +290,6 @@ Commands:
             .AddColumn("Game CIC",
                 rowsFormat: new CellFormat(
                     foregroundColor: Color.FromArgb(128, 129, 126),
-                    backgroundColor: Color.Black,
                     innerFormatting: true,
                     alignment: Alignment.Left
                 )
@@ -298,7 +297,6 @@ Commands:
             .AddColumn("IPL3 CRC32  Firm CRC32  " + (hasPcBytes ? "ProgCounter " : "") + "Check",
                 rowsFormat: new CellFormat(
                     foregroundColor: Color.FromArgb(220, 220, 220),
-                    backgroundColor: Color.Black,
                     innerFormatting: true,
                     alignment: Alignment.Left
                 )
@@ -370,17 +368,14 @@ Commands:
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159),
-            BackgroundColor = Color.Black,
+            ForegroundColor = Color.FromArgb(152, 114, 159)
         };
 
         var nameFormat = new CellFormat(
-            foregroundColor: Color.FromArgb(128, 129, 126),
-            backgroundColor: Color.Black
+            foregroundColor: Color.FromArgb(128, 129, 126)
         );
         var countFormat = new CellFormat(
             foregroundColor: Color.FromArgb(128, 129, 126),
-            backgroundColor: Color.Black,
             alignment: Alignment.Right
         );
         Table table = new TableBuilder(headerFormat)
