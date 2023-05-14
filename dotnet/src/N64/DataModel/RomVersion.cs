@@ -45,23 +45,26 @@ public partial class RomVersion
     public static readonly CultureInfo GERMAN_GERMANY = CultureInfo.GetCultureInfoByIetfLanguageTag("de-DE");
     public static readonly CultureInfo UNKNOWN_LOCALE = CultureInfo.InvariantCulture;
 
-    public readonly string Raw;
+    public readonly string RawTimestamp;
     public readonly double Number;
     public readonly string? Disambiguator;
     public readonly DateTime BuildTimestamp;
     public readonly Brand Brand;
     public readonly CultureInfo Locale;
 
+    public string? RawTitleVersionNumber { get; private set; }
+    public double? ParsedTitleVersionNumber => RawTitleVersionNumber != null ? double.Parse(RawTitleVersionNumber) : null;
+
     public bool HasDisambiguator => !string.IsNullOrEmpty(Disambiguator);
     public string DisplayBrand => Brand.ToFriendlyString();
     public string DisplayNumber => HasDisambiguator ? $"v{Number:F2} ({Disambiguator})" : $"v{Number:F2}";
     public string DisplayBuildTimestampIso => BuildTimestamp.ToString("yyyy-MM-ddTHH:mm");
-    public string DisplayBuildTimestampRaw => Raw;
+    public string DisplayBuildTimestampRaw => RawTimestamp;
     public string DisplayLocale => Locale.ToString();
 
     private RomVersion(string raw, double number, string? disambiguator, DateTime buildTimestamp, Brand brand, CultureInfo locale)
     {
-        Raw = raw;
+        RawTimestamp = raw;
         Number = number;
         Disambiguator = disambiguator;
         BuildTimestamp = buildTimestamp;
@@ -169,6 +172,12 @@ public partial class RomVersion
     {
         return $"{Brand.ToFriendlyString()} v{Number:F2}" +
                (string.IsNullOrEmpty(Disambiguator) ? "" : $" ({Disambiguator})") +
-               $", built on {BuildTimestamp:yyyy-MM-dd HH:mm} ('{Raw}') - {Locale}";
+               $", built on {BuildTimestamp:yyyy-MM-dd HH:mm} ('{RawTimestamp}') - {Locale}";
+    }
+
+    public RomVersion WithTitleVersionNumber(string? titleVersionStr)
+    {
+        RawTitleVersionNumber = titleVersionStr;
+        return this;
     }
 }

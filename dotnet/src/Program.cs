@@ -194,9 +194,9 @@ Commands:
             }
 
             Console.WriteLine(@"
---------------------------------------------------------------------------------
+================================================================================
 ");
-            Console.WriteLine(Path.GetFileName(romFilePath));
+            Console.WriteLine(Path.GetFileName(romFilePath).SetStyle(FontStyleExt.Bold).ForegroundColor(Color.LimeGreen));
             Console.WriteLine();
             Console.WriteLine("Dump integrity levels:");
             Console.WriteLine("- ⭐️ Pristine dump");
@@ -241,8 +241,10 @@ Commands:
             .AddRow("Brand", ver.DisplayBrand.ForegroundGradient(Color.FromArgb(180, 0, 0), Color.Red))
             .AddRow("Version", ver.DisplayNumber.ForegroundColor(Color.LimeGreen))
             .AddRow("ISO timestamp", ver.DisplayBuildTimestampIso.ForegroundColor(Color.DeepSkyBlue))
-            .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
             .AddRow("Locale", ver.DisplayLocale)
+            .AddRow("", "")
+            .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
+            .AddRow("Title version number", $"{ver.ParsedTitleVersionNumber:F2}")
             .AddRow("", "")
             .AddRow("File CRC32", rom.Checksum?.Crc32)
             .AddRow("File CRC32C", rom.Checksum?.Crc32C)
@@ -372,15 +374,20 @@ Commands:
             BackgroundColor = Color.Black,
         };
 
+        var nameFormat = new CellFormat(
+            foregroundColor: Color.FromArgb(128, 129, 126),
+            backgroundColor: Color.Black
+        );
+        var countFormat = new CellFormat(
+            foregroundColor: Color.FromArgb(128, 129, 126),
+            backgroundColor: Color.Black,
+            alignment: Alignment.Right
+        );
         Table table = new TableBuilder(headerFormat)
-            .AddColumn("Name",
-                rowsFormat: new CellFormat(foregroundColor: Color.FromArgb(128, 129, 126), backgroundColor: Color.Black))
-            .AddColumn("Cheats")
-            .RowsFormat()
-            .ForegroundColor(Color.FromArgb(220, 220, 220))
-            .BackgroundColor(Color.Black)
-            .Alignment(Alignment.Right)
-            .HasInnerFormatting()
+            .AddColumn("Name", rowsFormat: nameFormat)
+            .AddColumn("Cheats", rowsFormat: countFormat)
+            .AddColumn("Active", rowsFormat: countFormat)
+            .AddColumn("Codes", rowsFormat: countFormat)
             .Build();
 
         var ver = rom.Version;
@@ -388,7 +395,12 @@ Commands:
 
         foreach (var game in rom.Games)
         {
-            table.AddRow(game.Name, game.Cheats.Count);
+            table.AddRow(
+                game.Name,
+                game.Cheats.Count,
+                game.Cheats.Count(cheat => cheat.IsActiveByDefault),
+                game.Cheats.SelectMany(cheat => cheat.Codes).Count()
+                );
         }
 
         return $"\nGames ({rom.Games.Count}):\n{table}";
@@ -410,7 +422,7 @@ Commands:
             List<Game> games = romInfo.Games;
             List<Cheat> cheats = games.SelectMany((game) => game.Cheats).ToList();
 
-            Console.WriteLine(@"--------------------------------------------");
+            Console.WriteLine(@"================================================================================");
             Console.WriteLine("");
             Console.WriteLine(Path.GetFileName(romFilePath));
             Console.WriteLine("");
@@ -440,7 +452,7 @@ Commands:
             cheatFilePaths.Add(cheatFilePath);
         }
 
-        Console.WriteLine(@"--------------------------------------------");
+        Console.WriteLine(@"================================================================================");
         Console.WriteLine("");
 
         foreach (var cheatFilePath in cheatFilePaths)

@@ -51,19 +51,19 @@ abstract class RomBase
         SeekStart();
         string needle = "N64 GameShark Version ";
         byte[] haystack = Reader.PeekBytes(0x00030000);
-        double titleVersion = -1;
         int titleVersionPos = IndexOf(haystack, needle);
+        string? titleVersionNumberStr = null;
         if (titleVersionPos > -1)
         {
             titleVersionPos += needle.Length;
             Seek(titleVersionPos);
             // e.g., "2.21"
-            string titleVersionStr = Reader.ReadPrintableCString(5).Trim();
-            double.TryParse(titleVersionStr, out titleVersion);
-            // Console.Error.WriteLine($"titleVersion = {titleVersion}");
+            titleVersionNumberStr = Reader.ReadPrintableCString(5).Trim();
         }
         SeekBuildTimestamp();
-        return RomVersion.From(Reader.ReadPrintableCString(15));
+        return RomVersion
+            .From(Reader.ReadPrintableCString(15))
+            ?.WithTitleVersionNumber(titleVersionNumberStr);
     }
 
     protected KeyCode ReadActiveKeyCode()
