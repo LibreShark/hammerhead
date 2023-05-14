@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Immutable;
+using System.Drawing;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using BetterConsoles.Tables;
@@ -10,9 +11,36 @@ namespace LibreShark.Hammerhead;
 
 using N64;
 
-internal static class Program
+internal delegate int Runner(string[] args);
+
+internal class Command
 {
-    private static void ShowUsage()
+    private readonly string _id;
+    private readonly int _minArgCount;
+    private readonly int _maxArgCount;
+    private readonly Runner _runner;
+
+    public Command(string id, int minArgCount = 0, int maxArgCount = int.MaxValue, Runner? runner = null)
+    {
+        _id = id;
+        _minArgCount = minArgCount;
+        _maxArgCount = maxArgCount;
+        _runner = runner ?? (args => 0);
+    }
+
+    public bool IsMatch(string id)
+    {
+        return string.Equals(_id, id);
+    }
+
+    public int Run(IEnumerable<string> args)
+    {
+        var arr = args.ToArray();
+        var isOutOfBounds = arr.Length < _minArgCount || arr.Length > _maxArgCount - 1;
+        return isOutOfBounds ? ShowUsage() : _runner(arr);
+    }
+
+    public static int ShowUsage()
     {
         Console.WriteLine(@"
 Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
@@ -52,87 +80,47 @@ Commands:
                     Decrypts the given Datel-encrypted ROM files so that they
                     can be inspected and edited.
 ");
-    }
-
-    public static int Main(string[] args)
-    {
-        if (args.Length < 1)
-        {
-            ShowUsage();
-            return 1;
-        }
-
-        var cmd = args[0];
-
-        if (cmd == "rom-info")
-        {
-            if (args.Length < 2)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return PrintRomInfo(args.Skip(1));
-        }
-        if (cmd == "export-cheats")
-        {
-            if (args.Length < 2)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return ExportCheats(args.Skip(1));
-        }
-        if (cmd == "import-cheats")
-        {
-            if (args.Length < 3)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return ImportCheats(args[1], args.Skip(2));
-        }
-        if (cmd == "copy-cheats")
-        {
-            if (args.Length < 3)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return CopyGameList(args[1], args.Skip(2));
-        }
-        if (cmd == "scrub-rom")
-        {
-            if (args.Length < 2)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return ScrubRoms(args.Skip(1));
-        }
-        if (cmd == "encrypt-rom")
-        {
-            if (args.Length < 2)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return EncryptRoms(args.Skip(1));
-        }
-        if (cmd == "decrypt-rom")
-        {
-            if (args.Length < 2)
-            {
-                ShowUsage();
-                return 1;
-            }
-            return DecryptRoms(args.Skip(1));
-        }
-
-        ShowUsage();
         return 1;
     }
+}
 
-    private static int CopyGameList(string srcRomFilePath, IEnumerable<string> destRomFilePaths)
+internal static class Program
+{
+
+    public static int Main(string[] cliArgs)
+    {
+        if (cliArgs.Length < 1)
+        {
+            return Command.ShowUsage();
+        }
+
+        Command[] cmds = {
+            new(id: "rom-info", minArgCount: 1, runner: PrintRomInfo),
+            new(id: "export-cheats", minArgCount: 1, runner: ExportCheats),
+            new(id: "import-cheats", minArgCount: 2,
+                runner: (cmdArgs) => ImportCheats(cmdArgs[0], cmdArgs.Skip(1))),
+            new(id: "copy-cheats", minArgCount: 2,
+                runner: (cmdArgs) => CopyCheats(cmdArgs[0], cmdArgs.Skip(1))),
+            new(id: "scrub-rom", minArgCount: 1, runner: ScrubRoms),
+            new(id: "encrypt-rom", minArgCount: 1, runner: EncryptRoms),
+            new(id: "decrypt-rom", minArgCount: 1, runner: DecryptRoms),
+        };
+
+        var cmdId = cliArgs[0];
+        var cmdArgs = cliArgs.Skip(1).ToArray();
+
+        foreach (var cmd in cmds)
+        {
+            if (cmd.IsMatch(cmdId))
+            {
+                return cmd.Run(cmdArgs);
+            }
+        }
+
+        return Command.ShowUsage();
+    }
+
+    private static int CopyCheats(string srcRomFilePath, IEnumerable<string> destRomFilePaths)
     {
         var srcBytes = File.ReadAllBytes(srcRomFilePath);
         var srcInfo = RomReader.FromBytes(srcBytes);
