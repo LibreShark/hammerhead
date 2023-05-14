@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="BetterConsoleTables" Version="2.0.4-rc1" />
       <PackageReference Include="Crc32.NET" Version="1.2.0" />
     </ItemGroup>
 

@@ -26,7 +26,15 @@ class RomReader : RomBase
         if (version == null) {
             return null;
         }
-        return new RomInfo(version, reader.ReadGames(), reader.ReadKeyCodes(), Checksum.From(bytes));
+
+        ;
+        return new RomInfo(
+            version,
+            reader.ReadGames(),
+            reader.ReadKeyCodes(),
+            Checksum.From(bytes),
+            reader.ReadActiveKeyCode()
+                );
     }
 
     private RomReader()

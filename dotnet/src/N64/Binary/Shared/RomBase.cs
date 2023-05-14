@@ -51,19 +51,39 @@ abstract class RomBase
         SeekStart();
         string needle = "N64 GameShark Version ";
         byte[] haystack = Reader.PeekBytes(0x00030000);
-        double titleVersion = -1;
         int titleVersionPos = IndexOf(haystack, needle);
+        string? titleVersionNumberStr = null;
         if (titleVersionPos > -1)
         {
             titleVersionPos += needle.Length;
             Seek(titleVersionPos);
             // e.g., "2.21"
-            string titleVersionStr = Reader.ReadPrintableCString(5).Trim();
-            double.TryParse(titleVersionStr, out titleVersion);
-            // Console.Error.WriteLine($"titleVersion = {titleVersion}");
+            titleVersionNumberStr = Reader.ReadPrintableCString(5).Trim();
         }
         SeekBuildTimestamp();
-        return RomVersion.From(Reader.ReadPrintableCString(15));
+        return RomVersion
+            .From(Reader.ReadPrintableCString(15))
+            ?.WithTitleVersionNumber(titleVersionNumberStr);
+    }
+
+    protected KeyCode ReadActiveKeyCode()
+    {
+        SeekActiveKeyCode();
+        var crcBytes = Reader.PeekBytes(8);
+        SeekProgramCounter();
+        var pcBytes = Reader.PeekBytes(4);
+        var keyCodes = ReadKeyCodes();
+
+        string? name = null;
+        bool? isActive = null;
+        if (keyCodes.Count > 0)
+        {
+            var activeKeyCode = keyCodes.Find(kc => kc.ChecksumBytes.SequenceEqual(crcBytes));
+            name = activeKeyCode?.Name;
+            isActive = activeKeyCode?.IsActive;
+        }
+
+        return new KeyCode(name ?? "UNKNOWN", crcBytes.Concat(pcBytes).ToArray(), isActive ?? false);
     }
 
     protected List<KeyCode> ReadKeyCodes()
@@ -138,7 +158,9 @@ abstract class RomBase
         }
 
         UInt32 gsRomMagicNumber = rom.Seek(0x00000000).ReadUInt32();
-        if (gsRomMagicNumber != 0x80371240)
+        var isOemRom = gsRomMagicNumber == 0x80371240;
+        var isTrainer = gsRomMagicNumber == 0x28432920;
+        if (!isOemRom && !isTrainer)
         {
             // N64 ROM Magic Number
             Console.Error.WriteLine($"ERROR: Invalid GS ROM magic number: 0x{gsRomMagicNumber:X8}. Expected 0x80371240.");
@@ -193,6 +215,11 @@ abstract class RomBase
         Seek(0x00000030);
     }
 
+    protected void SeekProgramCounter()
+    {
+        Seek(0x00000008);
+    }
+
     protected void SeekActiveKeyCode()
     {
         Seek(0x00000010);
@@ -203,10 +230,9 @@ abstract class RomBase
         Seek(ReadVersion()?.Number >= 2.50 ? 0x0002FC00 : 0x0002D800);
     }
 
-    protected RomBase Seek(int address)
+    protected void Seek(int address)
     {
         Reader.Seek(address);
         Writer.Seek(address);
-        return this;
     }
 }
