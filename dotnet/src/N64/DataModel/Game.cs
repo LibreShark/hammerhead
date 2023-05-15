@@ -1,5 +1,7 @@
 ﻿// bacteriamage.wordpress.com
 
+using System.Text.RegularExpressions;
+
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
@@ -31,6 +33,49 @@ public class Game
     {
         Cheats.Add(cheat);
         return cheat;
+    }
+
+    public string[] GetWarnings()
+    {
+        List<string> warnings = new List<string>();
+        if (IsAllUpperCase(Name) && !IsAllowListed(Name))
+        {
+            warnings.Add("Custom user-entered game name");
+        }
+        if (LooksLikeACode(Name))
+        {
+            warnings.Add("Game name looks like a GS code");
+        }
+        return warnings.ToArray();
+    }
+
+    private static bool IsAllUpperCase(string name)
+    {
+        name = Regex.Replace(name, @"\bP[1-4]\b", "");
+        return Regex.IsMatch(name, "[A-Z]") &&
+               !Regex.IsMatch(name, "[a-z]");
+    }
+
+    private static bool IsAllowListed(string name)
+    {
+        var upper = name.ToUpperInvariant();
+        var allowlist = new string[]
+        {
+            "BUST-A-MOVE 2",
+            "FIFA 99",
+            "GT 64",
+            "MK4",
+            "NASCAR '99",
+            "NHL '99",
+            "S.C.A.R.S.",
+        };
+        return allowlist.Any(goodName => name == goodName);
+    }
+
+    private static bool LooksLikeACode(string name)
+    {
+        name = name.Trim();
+        return Regex.IsMatch(name, @"[0-9a-f]{8}.?[0-9a-f]{4}", RegexOptions.IgnoreCase);
     }
 
     public override bool Equals(object? obj)

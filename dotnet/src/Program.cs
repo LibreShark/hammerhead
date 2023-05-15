@@ -364,32 +364,47 @@ internal static class Program
 
         var nameFormat = new CellFormat(
             foregroundColor: TableKeyColor,
+            innerFormatting: true
         );
         var countFormat = new CellFormat(
             foregroundColor: TableKeyColor,
-            alignment: Alignment.Right
+            alignment: Alignment.Right,
+            innerFormatting: true
         );
         Table table = new TableBuilder(headerFormat)
             .AddColumn("Name", rowsFormat: nameFormat)
             .AddColumn("Cheats", rowsFormat: countFormat)
             .AddColumn("Active", rowsFormat: countFormat)
             .AddColumn("Codes", rowsFormat: countFormat)
+            .AddColumn("Warnings", rowsFormat: countFormat)
             .Build();
 
-        var ver = rom.Version;
         table.Config = TableConfig.Unicode();
 
         foreach (var game in rom.Games)
         {
+            var warningCountInt = game.GetWarnings().Length + game.Cheats.SelectMany(cheat => cheat.GetWarnings()).Count();
+            var hasWarnings = warningCountInt > 0;
+            var warningCountStr =
+                hasWarnings
+                    ? ErrorFont(warningCountInt)
+                    : warningCountInt.ToString();
+            var gameName = hasWarnings ? ErrorFont(game.Name) : game.Name;
             table.AddRow(
-                game.Name,
+                gameName,
                 game.Cheats.Count,
                 game.Cheats.Count(cheat => cheat.IsActiveByDefault),
-                game.Cheats.SelectMany(cheat => cheat.Codes).Count()
+                game.Cheats.SelectMany(cheat => cheat.Codes).Count(),
+                warningCountStr
                 );
         }
 
         return $"\nGames ({rom.Games.Count}):\n{table}";
+    }
+
+    private static string ErrorFont(Object o)
+    {
+        return o.ToString().ForegroundColor(Color.Red).SetStyle(FontStyleExt.Bold);
     }
 
     private static int ExportCheats(IEnumerable<string> romFilePaths)
