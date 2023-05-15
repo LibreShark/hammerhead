@@ -86,6 +86,9 @@ Commands:
 
 internal static class Program
 {
+    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
+    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
+    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
 
     public static int Main(string[] cliArgs)
     {
@@ -207,18 +210,18 @@ internal static class Program
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159)
+            ForegroundColor = TableHeaderColor
         };
 
         Table table = new TableBuilder(headerFormat)
             .AddColumn("Property",
                 rowsFormat: new CellFormat(
-                    foregroundColor: Color.FromArgb(128, 129, 126)
+                    foregroundColor: TableKeyColor
                 )
             )
             .AddColumn("Value")
                 .RowsFormat()
-                    .ForegroundColor(Color.FromArgb(220, 220, 220))
+                    .ForegroundColor(TableValueColor)
                     .Alignment(Alignment.Left)
                     .HasInnerFormatting()
             .Build();
@@ -270,21 +273,21 @@ internal static class Program
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159)
+            ForegroundColor = TableHeaderColor
         };
 
         var hasPcBytes = rom.KeyCodes.First()?.ProgramCounterBytes.Length > 0;
         Table table = new TableBuilder(headerFormat)
             .AddColumn("Game CIC",
                 rowsFormat: new CellFormat(
-                    foregroundColor: Color.FromArgb(128, 129, 126),
+                    foregroundColor: TableKeyColor,
                     innerFormatting: true,
                     alignment: Alignment.Left
                 )
             )
             .AddColumn("IPL3 CRC32  Firm CRC32  " + (hasPcBytes ? "ProgCounter " : "") + "Check",
                 rowsFormat: new CellFormat(
-                    foregroundColor: Color.FromArgb(220, 220, 220),
+                    foregroundColor: TableValueColor,
                     innerFormatting: true,
                     alignment: Alignment.Left
                 )
@@ -356,14 +359,14 @@ internal static class Program
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
-            ForegroundColor = Color.FromArgb(152, 114, 159)
+            ForegroundColor = TableHeaderColor
         };
 
         var nameFormat = new CellFormat(
-            foregroundColor: Color.FromArgb(128, 129, 126)
+            foregroundColor: TableKeyColor,
         );
         var countFormat = new CellFormat(
-            foregroundColor: Color.FromArgb(128, 129, 126),
+            foregroundColor: TableKeyColor,
             alignment: Alignment.Right
         );
         Table table = new TableBuilder(headerFormat)
