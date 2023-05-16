@@ -480,8 +480,13 @@ internal static class Program
             }
 
             var outputFilePath = Path.ChangeExtension(romFilePath, "scrubbed.z64");
-            Console.WriteLine($"Cleaning GS ROM file \"{romFilePath}\" -> \"{outputFilePath}\"...");
+
+            Console.WriteLine("================================================================================");
+            Console.WriteLine();
+            Console.WriteLine($"Scrubbing GS ROM file \"{romFilePath}\"...");
             RomWriter.ToFileAndReset(romInfo.Games, romFilePath, outputFilePath);
+            Console.WriteLine($"Scrubbed GS ROM file written to \"{outputFilePath}\"!");
+            Console.WriteLine();
         }
 
         return 0;

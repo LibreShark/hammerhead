@@ -44,9 +44,11 @@ class RomWriter : RomBase
 
         Writer.WriteSInt32(games.Count);
 
+        var i = 0;
         foreach (Game game in games)
         {
-            WriteGame(game, version);
+            WriteGame(game, version, i);
+            i++;
         }
 
         Writer.WriteByte(0x00);
@@ -56,9 +58,9 @@ class RomWriter : RomBase
         ResetActiveGameIndex();
     }
 
-    private void WriteGame(Game game, RomVersion? version)
+    private void WriteGame(Game game, RomVersion? version, int gameIndex)
     {
-        new GameEncoder(Writer, version).EncodeGame(game);
+        new GameEncoder(Writer, version).EncodeGame(game, gameIndex);
     }
 
     private void ClearUnusedSpaceInCurrentPage()
