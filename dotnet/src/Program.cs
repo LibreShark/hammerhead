@@ -428,13 +428,13 @@ internal static class Program
             List<Cheat> cheats = games.SelectMany((game) => game.Cheats).ToList();
 
             Console.WriteLine("================================================================================");
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine(Path.GetFileName(romFilePath));
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine($"{romInfo.Version}");
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine($"File checksums: {romInfo.Checksum}");
-            Console.WriteLine("");
+            Console.WriteLine();
             if (romInfo.KeyCodes.Count > 0)
             {
                 string keyCodesStr = string.Join("\n", romInfo.KeyCodes.Select((kc) => kc.ToString()));
@@ -445,9 +445,9 @@ internal static class Program
                 Console.WriteLine("No key codes found.");
             }
 
-            Console.WriteLine("");
+            Console.WriteLine();
             Console.WriteLine($"{cheats.Count:N0} cheats for {games.Count:N0} games");
-            Console.WriteLine("");
+            Console.WriteLine();
 
             var cheatFileName = Path.GetFileName(Path.ChangeExtension(romFilePath, "txt"));
             var cheatFileDir = Path.Join(Path.GetTempPath(), "gs");
@@ -458,7 +458,7 @@ internal static class Program
         }
 
         Console.WriteLine("================================================================================");
-        Console.WriteLine("");
+        Console.WriteLine();
 
         foreach (var cheatFilePath in cheatFilePaths)
         {
