@@ -94,7 +94,7 @@ internal static class Program
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
-        Console.WriteLine(Resources.N64_GS_Logo_ASCII_art_ANSI_txt);
+        Console.WriteLine(Resources.N64_GS_Logo_ASCII_art_ANSI_txt.Trim());
 
         if (cliArgs.Length < 1)
         {

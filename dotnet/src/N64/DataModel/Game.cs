@@ -69,7 +69,7 @@ public class Game
             "NHL '99",
             "S.C.A.R.S.",
         };
-        return allowlist.Any(goodName => name == goodName);
+        return allowlist.Any(allowed => name == allowed);
     }
 
     private static bool LooksLikeACode(string name)

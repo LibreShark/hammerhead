@@ -1,8 +1,5 @@
 ﻿// bacteriamage.wordpress.com
 
-using System.Collections.Generic;
-using System.IO;
-
 namespace LibreShark.Hammerhead.N64
 {
     /// <summary>
