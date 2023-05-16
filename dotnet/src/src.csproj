@@ -34,4 +34,9 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="N64\gs-logo-ascii-art-ansi.txt" />
+      <Resource Include="N64\gs-logo-ascii-art-ansi.txt" />
+    </ItemGroup>
+
 </Project>
