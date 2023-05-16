@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Drawing;
+﻿using System.Drawing;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using BetterConsoles.Tables;
@@ -92,6 +91,11 @@ internal static class Program
 
     public static int Main(string[] cliArgs)
     {
+        // ANSI color ASCII art generated with
+        // https://github.com/TheZoraiz/ascii-image-converter
+        Console.WriteLine();
+        Console.WriteLine(Resources.N64_GS_Logo_ASCII_art_ANSI_txt);
+
         if (cliArgs.Length < 1)
         {
             return Command.ShowUsage();
@@ -423,7 +427,7 @@ internal static class Program
             List<Game> games = romInfo.Games;
             List<Cheat> cheats = games.SelectMany((game) => game.Cheats).ToList();
 
-            Console.WriteLine(@"================================================================================");
+            Console.WriteLine("================================================================================");
             Console.WriteLine("");
             Console.WriteLine(Path.GetFileName(romFilePath));
             Console.WriteLine("");
@@ -453,7 +457,7 @@ internal static class Program
             cheatFilePaths.Add(cheatFilePath);
         }
 
-        Console.WriteLine(@"================================================================================");
+        Console.WriteLine("================================================================================");
         Console.WriteLine("");
 
         foreach (var cheatFilePath in cheatFilePaths)
