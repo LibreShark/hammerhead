@@ -472,6 +472,12 @@ internal static class Program
     {
         foreach (var romFilePath in romFilePaths)
         {
+            var outputFilePath = Path.ChangeExtension(romFilePath, "scrubbed.z64");
+
+            Console.WriteLine("================================================================================");
+            Console.WriteLine();
+            Console.WriteLine($"Scrubbing GS ROM file \"{romFilePath}\"...");
+
             RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
             if (romInfo == null)
             {
@@ -479,11 +485,6 @@ internal static class Program
                 continue;
             }
 
-            var outputFilePath = Path.ChangeExtension(romFilePath, "scrubbed.z64");
-
-            Console.WriteLine("================================================================================");
-            Console.WriteLine();
-            Console.WriteLine($"Scrubbing GS ROM file \"{romFilePath}\"...");
             RomWriter.ToFileAndReset(romInfo.Games, romFilePath, outputFilePath);
             Console.WriteLine($"Scrubbed GS ROM file written to \"{outputFilePath}\"!");
             Console.WriteLine();
