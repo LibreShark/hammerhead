@@ -457,7 +457,7 @@ internal static class Program
             Console.WriteLine();
 
             var cheatFileName = Path.GetFileName(Path.ChangeExtension(romFilePath, "txt"));
-            var cheatFileDir = Path.Join(Path.GetTempPath(), "gs");
+            var cheatFileDir = Path.Join(Path.GetTempPath(), "gs", DateTime.Now.ToString("yyyyMMdd-HHmmss-UTCzzz").Replace(":", ""));
             var cheatFilePath = Path.Join(cheatFileDir, cheatFileName);
             Directory.CreateDirectory(cheatFileDir);
             ListWriter.ToFile(cheatFilePath, games);
