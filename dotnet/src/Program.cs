@@ -12,14 +12,14 @@ using N64;
 
 internal delegate int Runner(string[] args);
 
-internal class Command
+internal class CliCmd
 {
     private readonly string _id;
     private readonly int _minArgCount;
     private readonly int _maxArgCount;
     private readonly Runner _runner;
 
-    public Command(string id, int minArgCount = 0, int maxArgCount = int.MaxValue, Runner? runner = null)
+    public CliCmd(string id, int minArgCount = 0, int maxArgCount = int.MaxValue, Runner? runner = null)
     {
         _id = id;
         _minArgCount = minArgCount;
@@ -27,7 +27,7 @@ internal class Command
         _runner = runner ?? (args => 0);
     }
 
-    public bool IsMatch(string id)
+    public bool Is(string id)
     {
         return string.Equals(_id, id);
     }
@@ -69,15 +69,15 @@ Commands:
                     Attempts to clean up garbage cheats, reset user preferences,
                     etc.
 
-    encrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Encrypts the given unencrypted ROM files for use with the
-                    official Datel N64 Utils.
-
     decrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
 
                     Decrypts the given Datel-encrypted ROM files so that they
                     can be inspected and edited.
+
+    encrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
+
+                    Encrypts the given unencrypted ROM files for use with the
+                    official Datel N64 Utils.
 ");
         return 1;
     }
@@ -99,10 +99,10 @@ internal static class Program
 
         if (cliArgs.Length < 1)
         {
-            return Command.ShowUsage();
+            return CliCmd.ShowUsage();
         }
 
-        Command[] cmds = {
+        CliCmd[] cmds = {
             new(id: "rom-info", minArgCount: 1, runner: PrintRomInfo),
             new(id: "export-cheats", minArgCount: 1, runner: ExportCheats),
             new(id: "import-cheats", minArgCount: 2,
@@ -119,13 +119,13 @@ internal static class Program
 
         foreach (var cmd in cmds)
         {
-            if (cmd.IsMatch(cmdId))
+            if (cmd.Is(cmdId))
             {
                 return cmd.Run(cmdArgs);
             }
         }
 
-        return Command.ShowUsage();
+        return CliCmd.ShowUsage();
     }
 
     private static int CopyCheats(string srcRomFilePath, IEnumerable<string> destRomFilePaths)
@@ -249,8 +249,8 @@ internal static class Program
             .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
             .AddRow("Title version number", $"{ver.ParsedTitleVersionNumber:F2}")
             .AddRow("", "")
-            .AddRow("File CRC32", rom.Checksum?.Crc32)
-            .AddRow("File CRC32C", rom.Checksum?.Crc32C)
+            .AddRow("File CRC32", rom.Checksum?.CRC32)
+            .AddRow("File CRC32C", rom.Checksum?.CRC32C)
             .AddRow("File MD5", rom.Checksum?.MD5)
             .AddRow("File SHA1", rom.Checksum?.SHA1)
             .AddRow("", "")

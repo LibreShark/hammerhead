@@ -5,8 +5,8 @@ namespace LibreShark.Hammerhead.N64;
 
 public class Checksum
 {
-    public string Crc32 { get; private set; }
-    public string Crc32C { get; private set; }
+    public string CRC32 { get; private set; }
+    public string CRC32C { get; private set; }
     public string MD5 { get; private set; }
     public string SHA1 { get; private set; }
 
@@ -17,8 +17,8 @@ public class Checksum
 
     private Checksum(byte[] bytes)
     {
-        Crc32 = U32ToString(Crc32Algorithm.Compute(bytes));
-        Crc32C = U32ToString(Crc32CAlgorithm.Compute(bytes));
+        CRC32 = U32ToString(Crc32Algorithm.Compute(bytes));
+        CRC32C = U32ToString(Crc32CAlgorithm.Compute(bytes));
         MD5 = BytesToString(System.Security.Cryptography.MD5.HashData(bytes));
         SHA1 = BytesToString(System.Security.Cryptography.SHA1.HashData(bytes));
     }
