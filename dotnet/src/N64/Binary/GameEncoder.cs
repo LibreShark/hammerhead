@@ -24,7 +24,7 @@ class GameEncoder
     public void EncodeGame(Game game, int gameIndex)
     {
         var gameName = game.Name;
-        SanitizeGameName(ref gameName);
+        SanitizeName(ref gameName);
         if (gameName.Length == 0)
         {
             Console.Error.WriteLine($"⚠️  WARNING: Skipping invalid game[{gameIndex}].Name: '{game.Name}'");
@@ -56,7 +56,7 @@ class GameEncoder
     private void WriteCheat(Cheat cheat, int cheatIndex, int gameIndex)
     {
         var cheatName = cheat.Name;
-        SanitizeGameName(ref cheatName);
+        SanitizeName(ref cheatName);
         if (cheatName.Length == 0)
         {
             Console.Error.WriteLine($"⚠️  WARNING: Skipping invalid game[{gameIndex}].cheat[{cheatIndex}].Name: '{cheat.Name}'");
@@ -87,11 +87,10 @@ class GameEncoder
         WriteCString(name);
     }
 
-    private static void SanitizeGameName(ref string name)
+    private static void SanitizeName(ref string name)
     {
-        name = name.Trim();
-        name = Regex.Replace(name, @"\s{2,}", " ");
-        if (LooksLikeACode(name))
+        if (LooksLikeACode(name) ||
+            string.IsNullOrWhiteSpace(name))
         {
             name = "";
         }
