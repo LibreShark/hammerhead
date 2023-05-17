@@ -42,8 +42,10 @@ namespace LibreShark.Hammerhead.N64
 
         public void WriteGame(Game game)
         {
+            WriteLine();
             WriteSeparator();
             WriteLine(Quote(game.Name));
+            WriteSeparator();
             WriteLine();
 
             foreach(Cheat cheat in game.Cheats)
@@ -75,7 +77,7 @@ namespace LibreShark.Hammerhead.N64
 
         private void WriteSeparator()
         {
-            WriteLine("\n;------------------------------------\n");
+            WriteLine(";------------------------------------");
         }
 
         private void WriteLine(string line)
