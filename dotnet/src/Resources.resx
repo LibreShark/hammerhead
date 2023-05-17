@@ -18,7 +18,10 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="N64_GS_Logo_ASCII_art_ANSI_txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <data name="N64_GS_LOGO_ASCII_ART_ANSI_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>N64/gs-logo-ascii-art-ansi.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>libreshark-wordmark-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
 </root>

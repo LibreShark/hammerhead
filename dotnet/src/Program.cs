@@ -94,7 +94,8 @@ internal static class Program
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
-        Console.WriteLine(Resources.N64_GS_Logo_ASCII_art_ANSI_txt.Trim());
+        Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
+        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
 
         if (cliArgs.Length < 1)
         {
@@ -137,8 +138,11 @@ internal static class Program
             return 1;
         }
 
+        Console.WriteLine($"Copying cheats from source GS ROM file: '{srcRomFilePath.SetStyle(FontStyleExt.Bold)}'\n");
+
         foreach (var destRomFilePath in destRomFilePaths)
         {
+            Console.WriteLine($"Writing cheats to destination GS ROM file: '{destRomFilePath.SetStyle(FontStyleExt.Bold)}'...");
             var destBytes = File.ReadAllBytes(destRomFilePath);
             var destInfo = RomReader.FromBytes(destBytes);
             if (destInfo == null)
@@ -166,8 +170,11 @@ internal static class Program
 
     private static int ImportCheats(string srcDatelFormattedTextFilePath, IEnumerable<string> destRomFilePaths)
     {
+        Console.WriteLine($"Import cheats from Datel-formatted plain text file: '{srcDatelFormattedTextFilePath.SetStyle(FontStyleExt.Bold)}'\n");
+
         foreach (var destRomFilePath in destRomFilePaths)
         {
+            Console.WriteLine($"Writing cheats to destination GS ROM file: '{destRomFilePath.SetStyle(FontStyleExt.Bold)}'...");
             Examples.ImportGameListFromFile(
                 srcDatelFormattedTextFilePath,
                 destRomFilePath

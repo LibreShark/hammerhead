@@ -37,6 +37,8 @@
     <ItemGroup>
       <None Remove="N64\gs-logo-ascii-art-ansi.txt" />
       <Resource Include="N64\gs-logo-ascii-art-ansi.txt" />
+      <None Remove="libreshark-wordmark-ascii-art-plain.txt" />
+      <Resource Include="libreshark-wordmark-ascii-art-plain.txt" />
     </ItemGroup>
 
 </Project>

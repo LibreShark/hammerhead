@@ -75,7 +75,7 @@ namespace LibreShark.Hammerhead.N64
 
         private void WriteSeparator()
         {
-            WriteLine(";------------------------------------");
+            WriteLine("\n;------------------------------------\n");
         }
 
         private void WriteLine(string line)
