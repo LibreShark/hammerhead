@@ -78,9 +78,25 @@ public class Cheat
     private static bool IsAllowListed(string name)
     {
         var upper = name.ToUpperInvariant();
-        return upper.Contains("MUST BE ON") ||
-               upper.Contains("(M)") ||
-               upper.Equals("2XRC-P90");
+        return
+            // This is only here for formatting purposes, to make it easier to duplicate lines below
+            // without worrying about the leading "OR".
+            false
+            // All brands
+            || upper.Contains("(M)")
+            || upper.Contains("2XRC-P90")
+            || upper.Contains("MUST BE ON")
+            // Equalizer (UK) and Game Buster (DE)
+            || upper.Contains("ALTERNATE VERSION")
+            || upper.Contains("CODES FOR ANIMALS YOU NEED")
+            || upper.Contains("DO NOT TURN ALL THESE ON")
+            || upper.Contains("FOR ANIMALS YOU NEED")
+            || upper.Contains("FOR LEVEL SELECT")
+            || upper.Contains("MUST HAVE CHEAT MENU ACTIVE")
+            || upper.Contains("ONLY USE 1 OF THESE")
+            || upper.Contains("ONLY USE INFINITE")
+            || upper.Contains("USE ONLY 1 OF THESE")
+            ;
     }
 
     private static bool LooksLikeACode(string name)

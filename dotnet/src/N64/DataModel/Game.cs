@@ -61,6 +61,7 @@ public class Game
         var upper = name.ToUpperInvariant();
         var allowlist = new string[]
         {
+            // GameShark (US) and Action Replay (UK)
             "BUST-A-MOVE 2",
             "FIFA 99",
             "GT 64",
@@ -68,6 +69,10 @@ public class Game
             "NASCAR '99",
             "NHL '99",
             "S.C.A.R.S.",
+            // Equalizer (UK) and Game Buster (DE)
+            "FIFA 64",
+            "FIFA 98 - TRTTWC",
+            "MRC",
         };
         return allowlist.Any(allowed => name == allowed);
     }
