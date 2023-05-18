@@ -273,9 +273,10 @@ internal static class Program
 
     private static string BuildKeyCodesTable(RomInfo rom)
     {
-        if (rom.KeyCodes.Count == 0)
+        var numKCs = rom.KeyCodes.Count;
+        if (numKCs == 0)
         {
-            return "\nKey codes:\n" +
+            return $"\nKey codes ({numKCs}):\n" +
                    "No key codes found.".SetStyle(FontStyleExt.Bold) +
                    "\n".SetStyle(FontStyleExt.None);
         }
@@ -349,7 +350,7 @@ internal static class Program
             table.AddRow(name, keyCode);
         }
 
-        return $"\nKey codes: \n{table}";
+        return $"\nKey codes ({numKCs}): \n{table}";
     }
 
     private static string FormatKeyCodeBytes(byte[] bytes)
@@ -410,7 +411,9 @@ internal static class Program
                 );
         }
 
-        return $"\nGames ({rom.Games.Count}):\n{table}";
+        var gameCount = rom.Games.Count;
+        var cheatCount = rom.Games.SelectMany((game) => game.Cheats).Count();
+        return $"\nGames ({gameCount}, with {cheatCount} cheats):\n{table}";
     }
 
     private static string ErrorFont(Object o)
