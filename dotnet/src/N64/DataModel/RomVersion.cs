@@ -122,6 +122,10 @@ public partial class RomVersion
             "09:54 Mar 27"    => Of(raw, 3.30, "March",    2000, 03, 27, 09, 54, 00, Brand.GAMESHARK, ENGLISH_US),
             "15:56 Apr 4"     => Of(raw, 3.30, "April",    2000, 04, 04, 15, 56, 00, Brand.GAMESHARK, ENGLISH_US),
 
+            // Equalizer
+            // TODO(CheatoBaggins): Confirm locale
+            "09:44 J5l 20 99" => Of(raw, 3.00, null, 1999, 07, 20, 09, 44, 00, N64.Brand.EQUALIZER, ENGLISH_UK),
+
             // Trainers
             "2003 iCEMARi0"   => Of(raw, 1.00, "b",        2003, 06, 18, 00, 00, 00, Brand.PERFECT_TRAINER, ENGLISH_US),
 
@@ -147,6 +151,13 @@ public partial class RomVersion
         var mm = match.Groups["mm"].Value;
         var MMM = match.Groups["MMM"].Value;
         var dd = match.Groups["dd"].Value;
+
+        // Equalizer vX.XX contains either a typo or corrupted data.
+        // TODO(CheatoBaggins): Dump more Equalizer ROMs for comparison
+        if (MMM == "J5l")
+        {
+            MMM = "Jul";
+        }
 
         // Versions 2.5, 3.21, and 3.3 omit the year from the end of the timestamp.
         // We specifically handle those cases above, but we're still missing dumps of v1.01, v1.02, and v2.03.

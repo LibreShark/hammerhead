@@ -153,31 +153,40 @@ abstract class RomBase
         if (bufferLength != 0x00040000)
         {
             // always 256 KiB
-            Console.Error.WriteLine($"ERROR: Invalid GS ROM file size: 0x{bufferLength:X8}. All GameShark ROMs are exactly 256 KiB.");
+            Console.Error.WriteLine($"ERROR: Invalid GS ROM file size: 0x{bufferLength:X8}. " +
+                                    $"All GameShark ROMs are exactly 256 KiB.");
             return false;
         }
 
         UInt32 gsRomMagicNumber = rom.Seek(0x00000000).ReadUInt32();
-        var isOemRom = gsRomMagicNumber == 0x80371240;
-        var isTrainer = gsRomMagicNumber == 0x28432920;
-        if (!isOemRom && !isTrainer)
+        var isGsOrArRom    = gsRomMagicNumber == 0x80371240;
+        // TODO(CheatoBaggins): Dump more Equalizer ROMs to determine if this is a consistent header value or corrupted data.
+        var isEqualizerRom = gsRomMagicNumber == 0x80371200;
+        var isTrainer      = gsRomMagicNumber == 0x28432920;
+        if (!isGsOrArRom && !isEqualizerRom && !isTrainer)
         {
             // N64 ROM Magic Number
-            Console.Error.WriteLine($"ERROR: Invalid GS ROM magic number: 0x{gsRomMagicNumber:X8}. Expected 0x80371240.");
+            Console.Error.WriteLine($"ERROR: Invalid GS ROM magic number: 0x{gsRomMagicNumber:X8}. " +
+                                    $"Expected 0x80371240, 0x80371200, or 0x28432920.");
             return false;
         }
 
-        string romHeader = rom.Seek(0x00000020).ReadPrintableCString(13);
-        const string v1or2Header = "(C) DATEL D&D";
-        const string v3ProHeader = "(C) MUSHROOM ";
-        const string trainHeader = "Perfect Train";
-        bool isV1or2 = Is(romHeader, v1or2Header);
-        bool isV3Pro = Is(romHeader, v3ProHeader);
-        bool isTrain = Is(romHeader, trainHeader);
-        if (!isV1or2 && !isV3Pro && !isTrain)
+        byte[] headerBytes = rom.Seek(0x00000020).ReadBytes(0x10);
+        string headerString = string.Join("", headerBytes.Select((b) => (char)b));
+        const string v1or2Header = "(C) DATEL D&D NU";
+        const string v3ProHeader = "(C) MUSHROOM &NU";
+        // TODO(CheatoBaggins): Dump more Equalizer ROMs to determine if this is a consistent header value or corrupted data.
+        const string equalHeader = "(\x03) M\x15S\x08R\x0FO\x0D &N\x15";
+        const string trainHeader = "Perfect Trainer ";
+        bool isV1or2 = Is(headerString, v1or2Header);
+        bool isV3Pro = Is(headerString, v3ProHeader);
+        bool isEqual = Is(headerString, equalHeader);
+        bool isTrain = Is(headerString, trainHeader);
+        if (!isV1or2 && !isV3Pro && !isEqual && !isTrain)
         {
             // ROM Header Name
-            Console.Error.WriteLine($"WARNING: Unknown GS ROM header name: '{romHeader}'. Expected '{v1or2Header}' or '{v3ProHeader}'.");
+            Console.Error.WriteLine($"WARNING: Unknown GS ROM header name: '{headerString}'. " +
+                                    $"Expected '{v1or2Header}', '{v3ProHeader}', '{equalHeader}', or '{trainHeader}'.");
         }
 
         // Magic Number for user settings block. Only present in GS ROMs v3.0 and higher.
