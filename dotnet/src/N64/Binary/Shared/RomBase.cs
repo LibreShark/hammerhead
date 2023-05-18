@@ -48,22 +48,28 @@ abstract class RomBase
 
     protected RomVersion? ReadVersion()
     {
+        string? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
+                                        ReadTitleVersion("N64 Equalizer Version ") ??
+                                        ReadTitleVersion("N64 Game Buster Version ");
+        SeekBuildTimestamp();
+        var rawTimestamp = Reader.ReadPrintableCString(15);
+        return RomVersion.From(rawTimestamp)?.WithTitleVersionNumber(titleVersionNumberStr);
+    }
+
+    private string? ReadTitleVersion(string needle)
+    {
         SeekStart();
-        string needle = "N64 GameShark Version ";
         byte[] haystack = Reader.PeekBytes(0x00030000);
         int titleVersionPos = IndexOf(haystack, needle);
-        string? titleVersionNumberStr = null;
         if (titleVersionPos > -1)
         {
             titleVersionPos += needle.Length;
             Seek(titleVersionPos);
             // e.g., "2.21"
-            titleVersionNumberStr = Reader.ReadPrintableCString(5).Trim();
+            return Reader.ReadPrintableCString(5).Trim();
         }
-        SeekBuildTimestamp();
-        return RomVersion
-            .From(Reader.ReadPrintableCString(15))
-            ?.WithTitleVersionNumber(titleVersionNumberStr);
+
+        return null;
     }
 
     protected KeyCode ReadActiveKeyCode()
