@@ -12,7 +12,7 @@ This project was forked from the fantastic [`BacteriaMage/n64-gameshark-data-mod
 
 ## Screenshots
 
-![Screenshot of hammerhead rom-info CLI output](/assets/screenshots/hammerhead-screenshot-20230514.png)
+![Screenshot of hammerhead rom-info CLI output](/assets/screenshots/hammerhead-screenshot-20230518.png)
 
 ## Usage
 

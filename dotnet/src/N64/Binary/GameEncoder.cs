@@ -1,5 +1,7 @@
 ﻿// bacteriamage.wordpress.com
 
+using System.Text.RegularExpressions;
+
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
@@ -7,6 +9,8 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class GameEncoder
 {
+    private const string ValidNameCharacters = "!$%^&*()[]{}0123456789,.ABCDEFGHIJKLMNOPQRSTUVWXYZ=#/<>;-+: abcdefghijklmnopqrstuvwxyz?'";
+
     private BinaryWriter Writer { get; set; }
 
     public RomVersion? Version { get; private set; }
@@ -17,10 +21,18 @@ class GameEncoder
         Version = version;
     }
 
-    public void EncodeGame(Game game)
+    public void EncodeGame(Game game, int gameIndex)
     {
+        var gameName = game.Name;
+        SanitizeName(ref gameName);
+        if (gameName.Length == 0)
+        {
+            Console.Error.WriteLine($"⚠️  WARNING: Skipping invalid game[{gameIndex}].Name: '{game.Name}'");
+            return;
+        }
+
         WriteGameName(game.Name);
-        WriteCheats(game.Cheats);
+        WriteCheats(game.Cheats, gameIndex);
     }
 
     private void WriteGameName(string name)
@@ -29,30 +41,32 @@ class GameEncoder
         WriteCString(name);
     }
 
-    private void WriteCheats(List<Cheat> cheats)
+    private void WriteCheats(List<Cheat> cheats, int gameIndex)
     {
         Writer.WriteByte(cheats.Count);
 
+        var i = 0;
         foreach (Cheat cheat in cheats)
         {
-            WriteCheat(cheat);
+            WriteCheat(cheat, i, gameIndex);
+            i++;
         }
     }
 
-    private void WriteCheat(Cheat cheat)
+    private void WriteCheat(Cheat cheat, int cheatIndex, int gameIndex)
     {
-        WriteCheatName(cheat.Name);
-
-        int codes = cheat.Codes.Count;
-
-        if (cheat.IsActiveByDefault)
+        var cheatName = cheat.Name;
+        SanitizeName(ref cheatName);
+        if (cheatName.Length == 0)
         {
-            Writer.WriteByte(cheat.Codes.Count | 0x80);
+            Console.Error.WriteLine($"⚠️  WARNING: Skipping invalid game[{gameIndex}].cheat[{cheatIndex}].Name: '{cheat.Name}'");
+            return;
         }
-        else
-        {
-            Writer.WriteByte(cheat.Codes.Count);
-        }
+
+        WriteCheatName(cheatName);
+
+        int activeBit = cheat.IsActiveByDefault ? 0x80 : 0x00;
+        Writer.WriteByte(cheat.Codes.Count | activeBit);
 
         foreach (Code code in cheat.Codes)
         {
@@ -73,13 +87,26 @@ class GameEncoder
         WriteCString(name);
     }
 
-    const string ValidNameCharacters = "!$%^&*()[]{}0123456789,.ABCDEFGHIJKLMNOPQRSTUVWXYZ=#/<>;-+: abcdefghijklmnopqrstuvwxyz?'";
+    private static void SanitizeName(ref string name)
+    {
+        if (LooksLikeACode(name) ||
+            string.IsNullOrWhiteSpace(name))
+        {
+            name = "";
+        }
+    }
+
+    private static bool LooksLikeACode(string name)
+    {
+        name = name.Trim();
+        return Regex.IsMatch(name, @"[0-9a-f]{8}.?[0-9a-f]{4}", RegexOptions.IgnoreCase);
+    }
 
     private void ValidateName(string name)
     {
         foreach (char c in name)
         {
-            if (!ValidNameCharacters.Contains(c.ToString()))
+            if (!ValidNameCharacters.Contains(c))
             {
                 throw new Exception($"The character '{c}' is not allowed in game or cheat names.");
             }

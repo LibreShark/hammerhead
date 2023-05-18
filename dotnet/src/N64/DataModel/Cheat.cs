@@ -1,6 +1,6 @@
 ﻿// bacteriamage.wordpress.com
 
-using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace LibreShark.Hammerhead.N64;
 
@@ -52,6 +52,41 @@ public class Cheat
     {
         Codes.Add(code);
         return code;
+    }
+
+    public string[] GetWarnings()
+    {
+        List<string> warnings = new List<string>();
+        if (IsAllUpperCase(Name) && !IsAllowListed(Name))
+        {
+            warnings.Add("Custom user-entered cheat name");
+        }
+        if (LooksLikeACode(Name))
+        {
+            warnings.Add("Cheat name looks like a GS code");
+        }
+        return warnings.ToArray();
+    }
+
+    private static bool IsAllUpperCase(string name)
+    {
+        name = Regex.Replace(name, @"\bP[1-4]\b", "");
+        return Regex.IsMatch(name, "[A-Z]") &&
+               !Regex.IsMatch(name, "[a-z]");
+    }
+
+    private static bool IsAllowListed(string name)
+    {
+        var upper = name.ToUpperInvariant();
+        return upper.Contains("MUST BE ON") ||
+               upper.Contains("(M)") ||
+               upper.Equals("2XRC-P90");
+    }
+
+    private static bool LooksLikeACode(string name)
+    {
+        name = name.Trim();
+        return Regex.IsMatch(name, @"[0-9a-f]{8}.?[0-9a-f]{4}", RegexOptions.IgnoreCase);
     }
 
     public override bool Equals(object? obj)

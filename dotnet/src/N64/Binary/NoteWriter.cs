@@ -13,8 +13,10 @@ class NoteWriter
 
     public static void ToFile(Game game, string path)
     {
+        // Controller Paks can only store cheats for ONE game.
+        const int gameIndex = 0;
         NoteWriter writer = new NoteWriter();
-        writer.WriteGameNote(game);
+        writer.WriteGameNote(game, gameIndex);
         File.WriteAllBytes(path, writer.Writer.Buffer ?? Array.Empty<byte>());
     }
 
@@ -23,12 +25,12 @@ class NoteWriter
         Writer = new BinaryWriter(16);
     }
 
-    public void WriteGameNote(Game game)
+    public void WriteGameNote(Game game, int gameIndex)
     {
         WriteMpkEditHeader();
         WriteMpkComment(game.Name);
         WriteNoteEntry();
-        WriteGame(game);
+        WriteGame(game, gameIndex);
     }
 
     private void WriteMpkEditHeader()
@@ -85,7 +87,7 @@ class NoteWriter
         });
     }
 
-    private void WriteGame(Game game)
+    private void WriteGame(Game game, int gameIndex)
     {
         Writer.SeekEnd();
         Writer.AutoExtendSize = 256;
@@ -95,16 +97,16 @@ class NoteWriter
         Writer.WriteUInt32(0);          // Length of note
         Writer.BytesWritten = 0;
 
-        EncodeGame(game);
+        EncodeGame(game, gameIndex);
 
         Writer.SeekOffset(-Writer.BytesWritten - 4);
         Writer.WriteSInt32(Writer.BytesWritten);
         Writer.SeekEnd();
     }
 
-    private void EncodeGame(Game game)
+    private void EncodeGame(Game game, int gameIndex)
     {
         GameEncoder encoder = new GameEncoder(Writer);
-        encoder.EncodeGame(game);
+        encoder.EncodeGame(game, gameIndex);
     }
 }

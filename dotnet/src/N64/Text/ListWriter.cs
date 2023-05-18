@@ -1,8 +1,5 @@
 ﻿// bacteriamage.wordpress.com
 
-using System.Collections.Generic;
-using System.IO;
-
 namespace LibreShark.Hammerhead.N64
 {
     /// <summary>
@@ -45,8 +42,10 @@ namespace LibreShark.Hammerhead.N64
 
         public void WriteGame(Game game)
         {
+            WriteLine();
             WriteSeparator();
             WriteLine(Quote(game.Name));
+            WriteSeparator();
             WriteLine();
 
             foreach(Cheat cheat in game.Cheats)

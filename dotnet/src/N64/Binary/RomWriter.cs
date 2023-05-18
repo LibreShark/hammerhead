@@ -44,9 +44,11 @@ class RomWriter : RomBase
 
         Writer.WriteSInt32(games.Count);
 
+        var i = 0;
         foreach (Game game in games)
         {
-            WriteGame(game, version);
+            WriteGame(game, version, i);
+            i++;
         }
 
         Writer.WriteByte(0x00);
@@ -56,9 +58,9 @@ class RomWriter : RomBase
         ResetActiveGameIndex();
     }
 
-    private void WriteGame(Game game, RomVersion? version)
+    private void WriteGame(Game game, RomVersion? version, int gameIndex)
     {
-        new GameEncoder(Writer, version).EncodeGame(game);
+        new GameEncoder(Writer, version).EncodeGame(game, gameIndex);
     }
 
     private void ClearUnusedSpaceInCurrentPage()
@@ -134,20 +136,26 @@ class RomWriter : RomBase
 
     private void ResetActiveKeyCode()
     {
+        var activeKeyCode = ReadActiveKeyCode();
         var keyCodes = ReadKeyCodes();
         if (keyCodes.Count == 0)
         {
             return;
         }
 
-        var kc = keyCodes.First();
+        var firstKeyCode = keyCodes.First();
+        if (activeKeyCode.ChecksumBytes.SequenceEqual(firstKeyCode.ChecksumBytes))
+        {
+            return;
+        }
+
         Writer.Seek(0x00000010);
-        Writer.WriteBytes(kc.ChecksumBytes);
-        if (kc.Bytes.Length >= 12)
+        Writer.WriteBytes(firstKeyCode.ChecksumBytes);
+        if (firstKeyCode.Bytes.Length >= 12)
         {
             Writer.Seek(0x00000008);
             // TODO(CheatoBaggins): Figure out why this differs from pristine ROM bytes.
-            Writer.WriteBytes(kc.ProgramCounterBytes);
+            Writer.WriteBytes(firstKeyCode.ProgramCounterBytes);
         }
     }
 }
