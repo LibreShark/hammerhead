@@ -95,7 +95,7 @@ internal static class Program
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
         Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
-        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
+        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT.Trim());
 
         if (cliArgs.Length < 1)
         {
@@ -237,6 +237,32 @@ internal static class Program
                     .HasInnerFormatting()
             .Build();
 
+        var ipl3Bytes = rom.ActiveKeyCode?.Ipl3ChunkCrcBytes;
+        var ipl3Crc32 = Join(ipl3Bytes)
+            .ForegroundColor(Color.LimeGreen)
+            .SetStyle(FontStyleExt.Underline);
+        var firmBytes = rom.ActiveKeyCode?.ProgramChunkCrcBytes;
+        var firmCrc32 = Join(firmBytes)
+            .ForegroundColor(Color.DeepSkyBlue)
+            .SetStyle(FontStyleExt.Underline);
+        var pcBytes = rom.ActiveKeyCode?.ProgramCounterBytes;
+        var pcCrc32 = Join(pcBytes)
+            .ForegroundColor(Color.Red)
+            .SetStyle(FontStyleExt.Underline);
+
+        foreach (var kc in rom.KeyCodes)
+        {
+            var kcShortName = kc.Name[..5];
+            if (ipl3Bytes != null && kc.Ipl3ChunkCrcBytes.SequenceEqual(ipl3Bytes))
+            {
+                ipl3Crc32 += $" ({kcShortName})";
+            }
+            if (pcBytes != null && kc.ProgramCounterBytes.SequenceEqual(pcBytes))
+            {
+                pcCrc32 += $" ({kcShortName})";
+            }
+        }
+
         var ver = rom.Version;
         table.Config = TableConfig.Unicode();
         table
@@ -254,9 +280,9 @@ internal static class Program
             .AddRow("File MD5", rom.Checksum?.MD5)
             .AddRow("File SHA1", rom.Checksum?.SHA1)
             .AddRow("", "")
-            .AddRow("IPL3 chunk CRC32", Join(rom.ActiveKeyCode?.Ipl3ChunkCrcBytes).ForegroundColor(Color.LimeGreen))
-            .AddRow("Firmware chunk CRC32", Join(rom.ActiveKeyCode?.ProgramChunkCrcBytes).ForegroundColor(Color.DeepSkyBlue))
-            .AddRow("Program counter", Join(rom.ActiveKeyCode?.ProgramCounterBytes).ForegroundColor(Color.Red))
+            .AddRow("IPL3 chunk CRC32", ipl3Crc32)
+            .AddRow("Firmware chunk CRC32", firmCrc32)
+            .AddRow("Program counter", pcCrc32)
             ;
         return $"\nFile properties:\n{table}";
     }
