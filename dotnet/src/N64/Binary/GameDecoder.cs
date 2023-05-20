@@ -69,11 +69,13 @@ class GameDecoder
     {
         int pos = Reader.Position;
 
+        // Firmware does not support names longer than 30 chars.
         string name = Reader.ReadCString(30);
 
-        if (name.Length is < 1 or > 30)
+        if (name.Length < 1)
         {
-            throw new Exception($"Invalid game or cheat name: '{name}' at offset 0x{pos:X08}. Names be printable ASCII between 1-30 characters long, but found length = {name.Length}.");
+            Console.Error.WriteLine($"WARNING at offset 0x{pos:X8}: Game and Cheat names should contain at least 1 character.");
+            return name;
         }
 
         name = name.Replace("`F6`", "Key");

@@ -1,5 +1,7 @@
 ﻿// bacteriamage.wordpress.com
 
+using System.Collections.Immutable;
+
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
@@ -24,6 +26,13 @@ class RomWriter : RomBase
     public static void ToFileAndReset(ICollection<Game> games, string source, string target)
     {
         RomWriter writer = new RomWriter();
+
+        // Skip games with zero cheats.
+        games = games.Where((game) =>
+        {
+            return game.Cheats.Count > 0 &&
+                   !string.IsNullOrWhiteSpace(game.Name);
+        }).ToImmutableArray();
 
         writer.ReadRomFromFile(source);
         writer.WriteGames(games);
