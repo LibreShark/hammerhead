@@ -20,8 +20,8 @@ public class Cheat
             }
             if (value.Length is < 1 or > 30)
             {
-                throw new ArgumentOutOfRangeException(
-                    $"Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
+                Console.Error.WriteLine(
+                    $"WARNING: Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
             }
             _name = value;
         }
