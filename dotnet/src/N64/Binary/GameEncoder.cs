@@ -112,14 +112,13 @@ class GameEncoder
             }
         }
 
-        if (name.Length < 1)
+        switch (name.Length)
         {
-            throw new Exception("Names must contain at least 1 character.");
-        }
-
-        if (name.Length > 30)
-        {
-            throw new Exception($"Name \"{name}\" is too long (maxlen = 30, but found length = {name.Length}).");
+            case < 1:
+                Console.Error.WriteLine("WARNING: Game and Cheat names should contain at least 1 character.");
+                break;
+            case > 30:
+                throw new Exception($"Name \"{name}\" is too long (maxlen = 30, but found length = {name.Length}).");
         }
     }
 
