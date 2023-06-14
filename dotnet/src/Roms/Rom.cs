@@ -54,6 +54,10 @@ public abstract class Rom
         {
             return new GbaTvTunerRom(romFilePath, bytes);
         }
+        if (GbcMonsterBrainRom.Is(bytes))
+        {
+            return new GbcMonsterBrainRom(romFilePath, bytes);
+        }
 
         return new UnknownRom(romFilePath, bytes);
     }

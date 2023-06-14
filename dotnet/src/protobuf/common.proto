@@ -16,6 +16,7 @@ enum RomType {
   N64_GBHUNTER = 0x03;
 
   GBC_CODEBREAKER = 0x41;
+  GBC_MONSTERBRAIN = 0x42;
 
   // Action Replay too
   GBC_GAMESHARK = 0x51;
