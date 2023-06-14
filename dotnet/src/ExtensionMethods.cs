@@ -1,10 +1,16 @@
+using System.Text;
+
 namespace LibreShark.Hammerhead;
 
 public static class ExtensionMethods
 {
     public static string ToUtf8String(this byte[] bytes)
     {
-        return System.Text.Encoding.UTF8.GetString(bytes);
+        var utf8 = Encoding.GetEncoding(
+            "utf-8",
+            new EncoderReplacementFallback("?"),
+            new DecoderReplacementFallback("?"));
+        return utf8.GetString(bytes);
     }
 
     public static bool Contains(this byte[] haystackBytes, string needleStr)
