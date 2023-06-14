@@ -125,7 +125,7 @@ public partial class RomVersion
             // Equalizer (UK)
             // According to this, Equalizer was a "budget" version of the Action Replay, and was also sold in the UK:
             // https://www.reddit.com/r/n64/comments/t2hdsh/comment/hymp77l/
-            "09:44 J5l 20 99" => Of(raw, 3.00, null,       1999, 07, 20, 09, 44, 00, Brand.EQUALIZER, ENGLISH_UK),
+            "09:44 Jul 20 99" => Of(raw, 3.00, null,       1999, 07, 20, 09, 44, 00, Brand.EQUALIZER, ENGLISH_UK),
 
             // Game Buster (Germany)
             "11:09 Aug 5 99"  => Of(raw, 3.21, null,       1999, 08, 05, 11, 09, 00, Brand.GAME_BUSTER, GERMAN_GERMANY),
