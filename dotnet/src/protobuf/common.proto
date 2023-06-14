@@ -14,6 +14,18 @@ enum RomType {
 
   // GB Hunter and Game Booster use the same ROM format
   N64_GBHUNTER = 0x03;
+
+  // AKA Xplorer GB
+  GBC_XPLODER = 0x2A;
+
+  GBC_SHARK_MX = 0x2F;
+
+  // GBA Code Breaker Lite: R1 prototype (2001-10-19)
+  // GBA GameShark Pro SP: MadCatz (2003-08-21)
+  // GBA GameShark Pro SP: karabiner (2006-06-14)
+  GBA_FCD_GAMESHARK = 0x30;
+
+  GBA_TV_TUNER = 0x3A;
 }
 
 message ChecksumSet {

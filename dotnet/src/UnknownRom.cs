@@ -2,8 +2,10 @@ namespace LibreShark.Hammerhead;
 
 public class UnknownRom : Rom
 {
+    private const RomType ThisRomType = RomType.UnknownRomType;
+
     public UnknownRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, RomType.UnknownRomType)
+        : base(filePath, bytes, ThisRomType)
     {
     }
 
@@ -12,6 +14,6 @@ public class UnknownRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"UNKNOWN ROM file: '{FilePath}'");
+        Console.WriteLine($"UNKNOWN ROM file with length = 0x{Bytes.Length:X8} ({Bytes.Length}): '{FilePath}'");
     }
 }

@@ -83,6 +83,22 @@ Commands:
         {
             return new N64XpRom(romFilePath, bytes);
         }
+        if (GbaFcdGsRom.Is(bytes))
+        {
+            return new GbaFcdGsRom(romFilePath, bytes);
+        }
+        if (GbcSharkMxRom.Is(bytes))
+        {
+            return new GbcSharkMxRom(romFilePath, bytes);
+        }
+        if (GbcXploderRom.Is(bytes))
+        {
+            return new GbcXploderRom(romFilePath, bytes);
+        }
+        if (GbaTvTunerRom.Is(bytes))
+        {
+            return new GbaTvTunerRom(romFilePath, bytes);
+        }
 
         return new UnknownRom(romFilePath, bytes);
     }

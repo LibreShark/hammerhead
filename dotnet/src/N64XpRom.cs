@@ -2,8 +2,10 @@ namespace LibreShark.Hammerhead;
 
 public class N64XpRom : Rom
 {
+    private const RomType ThisRomType = RomType.N64Xplorer64;
+
     public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, RomType.N64Xplorer64)
+        : base(filePath, bytes, ThisRomType)
     {
         IsEncrypted = DetectEncrypted(bytes);
         IsScrambled = DetectScrambled(bytes);
@@ -73,12 +75,12 @@ public class N64XpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == RomType.N64Gameshark;
+        return rom.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
     {
-        return type == RomType.N64Gameshark;
+        return type == ThisRomType;
     }
 
     public override void PrintSummary()
