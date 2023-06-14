@@ -26,10 +26,13 @@ enum RomType {
 
   GBC_SHARK_MX = 0x6F;
 
+  GBA_DATEL_GAMESHARK = 0x81;
+
   // GBA Code Breaker Lite: R1 prototype (2001-10-19)
+  // GBA Code Breaker Lite: R1 prototype (2002-11-15)
   // GBA GameShark Pro SP: MadCatz (2003-08-21)
   // GBA GameShark Pro SP: karabiner (2006-06-14)
-  GBA_FCD_GAMESHARK = 0x80;
+  GBA_FCD_GAMESHARK = 0x82;
 
   GBA_TV_TUNER = 0x8A;
 }
