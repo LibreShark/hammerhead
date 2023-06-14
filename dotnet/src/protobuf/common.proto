@@ -17,6 +17,9 @@ enum RomType {
 
   GBC_CODEBREAKER = 0x41;
 
+  // Action Replay too
+  GBC_GAMESHARK = 0x51;
+
   // AKA Xplorer GB
   GBC_XPLODER = 0x6A;
 

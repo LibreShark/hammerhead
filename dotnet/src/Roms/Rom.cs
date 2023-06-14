@@ -38,6 +38,10 @@ public abstract class Rom
         {
             return new GbcXploderRom(romFilePath, bytes);
         }
+        if (GbcGsRom.Is(bytes))
+        {
+            return new GbcGsRom(romFilePath, bytes);
+        }
         if (GbcSharkMxRom.Is(bytes))
         {
             return new GbcSharkMxRom(romFilePath, bytes);
