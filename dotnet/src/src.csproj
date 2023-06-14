@@ -17,6 +17,13 @@
     <ItemGroup>
       <PackageReference Include="BetterConsoleTables" Version="2.0.4-rc1" />
       <PackageReference Include="Crc32.NET" Version="1.2.0" />
+      <PackageReference Include="Google.Protobuf" Version="3.23.2" />
+      <PackageReference Include="Grpc.Tools" Version="2.54.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="protobuf-linq" Version="0.3.0" />
+      <PackageReference Include="Protobuf.Text" Version="0.7.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -41,4 +48,7 @@
       <Resource Include="libreshark-wordmark-ascii-art-plain.txt" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Protobuf Include="protobuf\**\*.proto" ProtoRoot="protobuf" GrpcServices="None" />
+    </ItemGroup>
 </Project>

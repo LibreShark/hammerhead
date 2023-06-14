@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+package libreshark.hammerhead.n64;
+option csharp_namespace = "LibreShark.Hammerhead.Proto";
+
+message N64GsCodeProto {
+  // 4 bytes long (e.g., 802C9735)
+  bytes address = 1;
+
+  // 2 bytes long (e.g., 00E0)
+  bytes value = 2;
+}
+
+message N64GsCheatProto {
+  // 1-30 plain printable ASCII chars.
+  // TODO(CheatoBaggins): Figure out how stars and other special symbols are encoded.
+  string name = 1;
+
+  // Indicates whether this cheat is enabled by default when the user boots up the GameShark and selects this game.
+  bool is_on = 2;
+
+  // List of codes to execute every interrupt cycle.
+  repeated N64GsCodeProto codes = 3;
+}
+
+message N64GsGameProto {
+  // 1-30 plain printable ASCII chars.
+  string name = 1;
+  repeated N64GsCheatProto cheats = 2;
+}
+
+message N64GsKeyCodeProto {
+  string name = 1;
+
+  // 9-13 bytes long
+  bytes bytes = 2;
+}
+
+message N64GsVersionProto {
+  string raw_header_timestamp = 1;
+  string raw_ui_title = 2;
+  string raw_magic_string = 3;
+  double number = 4;
+  string disambiguator = 5;
+  .google.protobuf.Timestamp build_timestamp = 6;
+}
+
+message N64GsRomProto {
+  bytes file_contents = 1;
+
+  Slice header_slice = 2;
+  Slice firmware_slice = 3;
+  Slice cheat_list_slice = 4;
+  Slice keycode_list_slice = 5;
+  Slice user_settings_slice = 6;
+
+  ChecksumSet file_checksums = 7;
+  ChecksumSet header_checksums = 8;
+  ChecksumSet firmware_checksums = 9;
+  ChecksumSet cheat_list_checksums = 10;
+  ChecksumSet keycode_list_checksums = 11;
+  ChecksumSet user_settings_checksums = 12;
+
+  N64GsVersionProto version = 13;
+  repeated N64GsGameProto games = 14;
+  repeated N64GsKeyCodeProto key_codes = 15;
+
+  // TODO(CheatoBaggins): User preferences (wallpaper, scrolling, sound, etc.)
+}
