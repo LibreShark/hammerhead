@@ -570,18 +570,12 @@ internal static class Program
         foreach (var inputRomFilePath in inputRomFilePaths)
         {
             var unscrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var scrambledBytes = new byte[unscrambledBytes.Length];
-
-            for (var realAddr = 0; realAddr < unscrambledBytes.Length; realAddr++)
-            {
-                // TODO(RWeick): Calculate fake (scrambled) address
-            }
-
             var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "scrambled.bin");
 
             Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
 
-            // TODO(RWeick): Write scrambled bytes to output file
+            var scrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, scrambledBytes);
         }
 
         return 0;
@@ -592,18 +586,12 @@ internal static class Program
         foreach (var inputRomFilePath in inputRomFilePaths)
         {
             var scrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var unscrambledBytes = new byte[scrambledBytes.Length];
-
-            for (var fakeAddr = 0; fakeAddr < scrambledBytes.Length; fakeAddr++)
-            {
-                // TODO(RWeick): Calculate real (unscrambled) address
-            }
-
             var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "unscrambled.bin");
 
             Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
 
-            // TODO(RWeick): Write unscrambled bytes to output file
+            var unscrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
         }
 
         return 0;
