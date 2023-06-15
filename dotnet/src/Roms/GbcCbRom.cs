@@ -1,10 +1,14 @@
 namespace LibreShark.Hammerhead;
 
-public sealed class GbcCodeBreakerRom : Rom
+/// <summary>
+/// Code Breaker for Game Boy Color and Game Boy Pocket,
+/// made by Future Console Design (FCD) and Pelican Accessories.
+/// </summary>
+public sealed class GbcCbRom : Rom
 {
     private const RomType ThisRomType = RomType.GbcCodebreaker;
 
-    public GbcCodeBreakerRom(string filePath, byte[] bytes)
+    public GbcCbRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
     }

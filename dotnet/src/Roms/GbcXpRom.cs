@@ -1,15 +1,16 @@
 namespace LibreShark.Hammerhead;
 
-// TODO(CheatoBaggins): Confirm whether this is actually made by Datel or FCD.
-public sealed class GbaDatelGsRom : Rom
+/// <summary>
+/// Xploder GB (aka "Xplorer GB") for Game Boy Color and Game Boy Pocket,
+/// made by Blaze and Future Console Design (FCD).
+/// </summary>
+public sealed class GbcXpRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbaFcdGameshark;
+    private const RomType ThisRomType = RomType.GbcXploder;
 
-    public GbaDatelGsRom(string filePath, byte[] bytes)
+    public GbcXpRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        var minorVersionNumber = Bytes[0x21004];
-        var majorVersionNumber = Bytes[0x21005];
     }
 
     public static bool Is(byte[] bytes)
@@ -20,9 +21,8 @@ public sealed class GbaDatelGsRom : Rom
 
     private static bool Detect(byte[] bytes)
     {
-        bool hasMagicNumber = bytes[..4].SequenceEqual(new byte[] { 0x2E, 0x00, 0x00, 0xEA });
-        bool hasMagicText = bytes[0x21000..0x21004].ToUtf8String().Equals("GBA_");
-        return hasMagicNumber && hasMagicText;
+        return bytes[0x00..0x0A].ToUtf8String() == "Xplorer-GB" &&
+               bytes.Contains("Future Console Design!");
     }
 
     public static bool Is(Rom rom)
@@ -40,6 +40,6 @@ public sealed class GbaDatelGsRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBA Datel GameShark ROM file: '{FilePath}'");
+        Console.WriteLine($"GBC Xploder ROM file: '{FilePath}'");
     }
 }

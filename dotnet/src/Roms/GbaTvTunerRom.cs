@@ -1,5 +1,9 @@
 namespace LibreShark.Hammerhead;
 
+/// <summary>
+/// TV Tuner for Game Boy Advance, made by Blaze and Pelican Accessories.
+/// There are NTSC and PAL variants.
+/// </summary>
 public sealed class GbaTvTunerRom : Rom
 {
     private const RomType ThisRomType = RomType.GbaTvTuner;

@@ -1,5 +1,9 @@
 namespace LibreShark.Hammerhead;
 
+/// <summary>
+/// GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
+/// made by Datel/InterAct.
+/// </summary>
 public sealed class GbcGsRom : Rom
 {
     private const RomType ThisRomType = RomType.GbcGameshark;

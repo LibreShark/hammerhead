@@ -1,10 +1,14 @@
 namespace LibreShark.Hammerhead;
 
-public sealed class GbaFcdGsRom : Rom
+/// <summary>
+/// GameShark and Action Replay for Game Boy Advance,
+/// made by Future Console Design (FCD).
+/// </summary>
+public sealed class GbaGsFcdRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbaFcdGameshark;
+    private const RomType ThisRomType = RomType.GbaGamesharkFcd;
 
-    public GbaFcdGsRom(string filePath, byte[] bytes)
+    public GbaGsFcdRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
     }

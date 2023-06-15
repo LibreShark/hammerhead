@@ -57,33 +57,39 @@ message RomF64 {
 enum RomType {
   UNKNOWN_ROM_TYPE = 0x00;
 
-  // GameShark, Action Replay, Equalizer, and Game Buster all use the same ROM format
+  // GameShark, Action Replay, Equalizer, and Game Buster all use the same ROM format.
   N64_GAMESHARK = 0x01;
 
   // AKA "Xploder 64"
   N64_XPLORER64 = 0x02;
 
-  // GB Hunter and Game Booster use the same ROM format
+  // GB Hunter and Game Booster use the same ROM format.
   N64_GBHUNTER = 0x03;
 
   GBC_CODEBREAKER = 0x41;
+
+  // Monster Brain and Brain Boy use the same ROM format.
   GBC_MONSTERBRAIN = 0x42;
 
   // Action Replay too
   GBC_GAMESHARK = 0x51;
 
-  // AKA Xplorer GB
+  // AKA "Xplorer GB"
   GBC_XPLODER = 0x6A;
 
+  // Email client
   GBC_SHARK_MX = 0x6F;
 
-  GBA_DATEL_GAMESHARK = 0x81;
+  // GBA GameShark made by Datel/InterAct (earlier generations).
+  GBA_GAMESHARK_DATEL = 0x81;
 
-  // GBA Code Breaker Lite: R1 prototype (2001-10-19)
-  // GBA Code Breaker Lite: R1 prototype (2002-11-15)
-  // GBA GameShark Pro SP: MadCatz (2003-08-21)
-  // GBA GameShark Pro SP: karabiner (2006-06-14)
-  GBA_FCD_GAMESHARK = 0x82;
+  // GBA GameShark made by Blaze/FCD (later generations).
+  //
+  // - GBA Code Breaker Lite: R1 prototype (2001-10-19)
+  // - GBA Code Breaker Lite: R1 prototype (2002-11-15)
+  // - GBA GameShark Pro SP: MadCatz (2003-08-21)
+  // - GBA GameShark Pro SP: karabiner (2006-06-14)
+  GBA_GAMESHARK_FCD = 0x82;
 
   GBA_TV_TUNER = 0x8A;
 }

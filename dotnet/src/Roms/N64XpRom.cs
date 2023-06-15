@@ -1,5 +1,11 @@
+using System.Collections;
+
 namespace LibreShark.Hammerhead;
 
+/// <summary>
+/// Xplorer 64 for Nintendo 64,
+/// made by Blaze and Future Console Design (FCD).
+/// </summary>
 public sealed class N64XpRom : Rom
 {
     private const RomType ThisRomType = RomType.N64Xplorer64;
@@ -37,7 +43,7 @@ public sealed class N64XpRom : Rom
         // TODO(RWeick): Implement
     }
 
-    public byte[] GetUnobfuscated()
+    public byte[] GetPlain()
     {
         // Return a copy of the array to prevent the caller from mutating
         // internal state.
@@ -86,7 +92,7 @@ public sealed class N64XpRom : Rom
         return isFirstEqual && isSecondEqual;
     }
 
-    private static bool DetectUnobfuscated(byte[] bytes)
+    private static bool DetectPlain(byte[] bytes)
     {
         var idBytes = bytes[0x40..0x55];
         var idStr = idBytes.ToUtf8String();
@@ -96,7 +102,7 @@ public sealed class N64XpRom : Rom
     public static bool Is(byte[] bytes)
     {
         bool is256KiB = bytes.Length == 0x00040000;
-        return is256KiB && (DetectScrambled(bytes) || DetectEncrypted(bytes) || DetectUnobfuscated(bytes));
+        return is256KiB && (DetectScrambled(bytes) || DetectEncrypted(bytes) || DetectPlain(bytes));
     }
 
     public static bool Is(Rom rom)

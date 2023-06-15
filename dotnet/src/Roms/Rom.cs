@@ -4,11 +4,17 @@ namespace LibreShark.Hammerhead;
 
 public abstract class Rom
 {
+    /// <summary>
+    /// Raw, unaltered bytes that were read in from the ROM file.
+    /// May be encrypted or scrambled, depending on the device.
+    /// </summary>
     protected readonly ImmutableArray<byte> InitialBytes;
 
-    // Plain, unencrypted, unobfuscated bytes.
-    // If the input file is encrypted/scrambled, it must be
-    // decrypted/descrambled immediately in the subclass constructor.
+    /// <summary>
+    /// Plain, unencrypted, unobfuscated bytes.
+    /// If the input file is encrypted/scrambled, it must be
+    /// decrypted/unscrambled immediately in the subclass constructor.
+    /// </summary>
     protected readonly byte[] Bytes;
 
     public readonly string FilePath;
@@ -39,13 +45,13 @@ public abstract class Rom
         {
             return new N64XpRom(romFilePath, bytes);
         }
-        if (GbcCodeBreakerRom.Is(bytes))
+        if (GbcCbRom.Is(bytes))
         {
-            return new GbcCodeBreakerRom(romFilePath, bytes);
+            return new GbcCbRom(romFilePath, bytes);
         }
-        if (GbcXploderRom.Is(bytes))
+        if (GbcXpRom.Is(bytes))
         {
-            return new GbcXploderRom(romFilePath, bytes);
+            return new GbcXpRom(romFilePath, bytes);
         }
         if (GbcGsRom.Is(bytes))
         {
@@ -55,13 +61,13 @@ public abstract class Rom
         {
             return new GbcSharkMxRom(romFilePath, bytes);
         }
-        if (GbaDatelGsRom.Is(bytes))
+        if (GbaGsDatelRom.Is(bytes))
         {
-            return new GbaDatelGsRom(romFilePath, bytes);
+            return new GbaGsDatelRom(romFilePath, bytes);
         }
-        if (GbaFcdGsRom.Is(bytes))
+        if (GbaGsFcdRom.Is(bytes))
         {
-            return new GbaFcdGsRom(romFilePath, bytes);
+            return new GbaGsFcdRom(romFilePath, bytes);
         }
         if (GbaTvTunerRom.Is(bytes))
         {

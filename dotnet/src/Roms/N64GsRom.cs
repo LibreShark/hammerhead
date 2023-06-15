@@ -1,5 +1,9 @@
 namespace LibreShark.Hammerhead;
 
+/// <summary>
+/// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
+/// Nintendo 64, made by Datel/InterAct.
+/// </summary>
 public sealed class N64GsRom : Rom
 {
     private const RomType ThisRomType = RomType.N64Gameshark;
@@ -11,6 +15,8 @@ public sealed class N64GsRom : Rom
         {
             Decrypt();
         }
+
+        // TODO(CheatoBaggins): Decompress v3.x ROM files
     }
 
     public override bool IsEncrypted()

@@ -1,16 +1,18 @@
 namespace LibreShark.Hammerhead;
 
 /// <summary>
-/// Shark MX email client for Game Boy Color and Game Boy Pocket,
+/// GameShark and Action Replay for Game Boy Advance,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbcSharkMxRom : Rom
+public sealed class GbaGsDatelRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbcSharkMx;
+    private const RomType ThisRomType = RomType.GbaGamesharkDatel;
 
-    public GbcSharkMxRom(string filePath, byte[] bytes)
+    public GbaGsDatelRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
+        var minorVersionNumber = Bytes[0x21004];
+        var majorVersionNumber = Bytes[0x21005];
     }
 
     public static bool Is(byte[] bytes)
@@ -21,8 +23,9 @@ public sealed class GbcSharkMxRom : Rom
 
     private static bool Detect(byte[] bytes)
     {
-        return bytes.Contains("Shark MX") &&
-               bytes.Contains("Datel Design LTD");
+        bool hasMagicNumber = bytes[..4].SequenceEqual(new byte[] { 0x2E, 0x00, 0x00, 0xEA });
+        bool hasMagicText = bytes[0x21000..0x21004].ToUtf8String().Equals("GBA_");
+        return hasMagicNumber && hasMagicText;
     }
 
     public static bool Is(Rom rom)
@@ -40,6 +43,6 @@ public sealed class GbcSharkMxRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBC Shark MX ROM file: '{FilePath}'");
+        Console.WriteLine($"GBA Datel GameShark ROM file: '{FilePath}'");
     }
 }
