@@ -64,6 +64,38 @@ public sealed class N64GsRom : Rom
         Metadata.DisplayVersion = version.DisplayNumber;
         Metadata.SortableVersion = version.Number;
         Metadata.LanguageIetfCode = version.Locale.Name;
+
+        // if (find(0x00000000, 0x00000007, 0xAE, 0x59, 0x63, 0x54) == 0) {
+        //     u8 encryptedBytes[0x00040000] @ 0x00000000;
+        // } else {
+        //     HeaderSection header @ 0x00000000;
+        //
+        //     bool isV3Firmware    = read_u32_at(0x00001000) == 0x00000000;
+        //     bool isV2GameList    = read_u32_at(0x0002DFF0) == 0x00000000;
+        //     bool isV2KeyCodeList = read_u32_at(0x0002D7F0) == 0x00000000;
+        //     bool isV3KeyCodeList = read_u32_at(0x0002FBF0) == 0xFFFFFFFF;
+        //     bool hasUserConfig   = read_u32_at(0x0002FAF0) == 0xFFFFFFFF;
+        //
+        //     u32 firmwareAddr    = isV3Firmware ? 0x00001080 : 0x00001000;
+        //     u32 gameListAddr    = isV2GameList ? 0x0002E000 : 0x00030000;
+        //     u32 keyCodeListAddr = isV3KeyCodeList ? 0x0002FC00 : (isV2KeyCodeList ? 0x0002D800 : 0xFFFFFFFF);
+        //
+        //     FirmwareSection firmware @ firmwareAddr;
+        //     GameListSection gameList @ gameListAddr;
+        //
+        //     std::print("");
+        //
+        //     if (keyCodeListAddr != 0xFFFFFFFF) {
+        //         KeyCodeListSection keyCodeList @ keyCodeListAddr;
+        //     }
+        //
+        //     if (!(keyCodeList.numKeyCodes > 0)) {
+        //         std::print("No key codes found.");
+        //     }
+        //
+        //     if (hasUserConfig) {
+        //         UserConfigSection userConfig @ 0x0002FB00;
+        //     }
     }
 
     private RomString? ReadTitleVersion(string needle)
@@ -144,15 +176,16 @@ public sealed class N64GsRom : Rom
             return;
         }
         // TODO(CheatoBaggins): Implement
+        Console.WriteLine("ENCRYPTED!");
     }
 
     public static bool Is(byte[] bytes)
     {
         bool is256KiB = bytes.Length == 0x00040000;
-        return is256KiB && (DetectDecrypted(bytes) || DetectEncrypted(bytes));
+        return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
     }
 
-    private static bool DetectDecrypted(byte[] bytes)
+    private static bool DetectPlain(byte[] bytes)
     {
         byte[] first4Bytes = bytes[..4];
         bool isN64 = first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x40 }) ||
@@ -164,8 +197,7 @@ public sealed class N64GsRom : Rom
 
     private static bool DetectEncrypted(byte[] bytes)
     {
-        // TODO(CheatoBaggins): Implement
-        return false;
+        return bytes[..7].Contains(new byte[] { 0xAE, 0x59, 0x63, 0x54 });
     }
 
     public static bool Is(Rom rom)
