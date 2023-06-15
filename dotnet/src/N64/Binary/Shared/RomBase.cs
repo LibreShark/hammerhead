@@ -52,7 +52,7 @@ abstract class RomBase
                                         ReadTitleVersion("N64 Equalizer Version ") ??
                                         ReadTitleVersion("N64 Game Buster Version ");
         SeekBuildTimestamp();
-        var rawTimestamp = Reader.ReadPrintableCString(15);
+        var rawTimestamp = Reader.ReadPrintableCString(Reader.Position, 15);
         return RomVersion.From(rawTimestamp)?.WithTitleVersionNumber(titleVersionNumberStr);
     }
 
@@ -66,7 +66,7 @@ abstract class RomBase
             titleVersionPos += needle.Length;
             Seek(titleVersionPos);
             // e.g., "2.21"
-            return Reader.ReadPrintableCString(5).Trim();
+            return Reader.ReadPrintableCString(Reader.Position, 5).Trim();
         }
 
         return null;
@@ -109,7 +109,7 @@ abstract class RomBase
         while (Reader.Position <= maxPos)
         {
             byte[] bytes = Reader.ReadBytes(keyCodeLength);
-            string name = Reader.ReadPrintableCString(0x1F);
+            string name = Reader.ReadPrintableCString(Reader.Position, 0x1F);
             while (Reader.PeekBytes(1)[0] == 0)
             {
                 Reader.ReadUByte();

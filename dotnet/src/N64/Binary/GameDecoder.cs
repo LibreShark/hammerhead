@@ -70,7 +70,7 @@ class GameDecoder
         int pos = Reader.Position;
 
         // Firmware does not support names longer than 30 chars.
-        string name = Reader.ReadCString(30);
+        string name = Reader.ReadCString(pos, 30);
 
         if (name.Length < 1)
         {

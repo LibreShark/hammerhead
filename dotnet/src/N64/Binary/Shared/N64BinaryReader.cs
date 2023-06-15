@@ -41,6 +41,12 @@ class N64BinaryReader
         return this;
     }
 
+    public byte[] PeekBytes(int addr, int count)
+    {
+        Seek(addr);
+        return PeekBytes(count);
+    }
+
     public byte[] PeekBytes(int count)
     {
         if (Buffer == null || Position == Buffer.Length)
@@ -52,6 +58,12 @@ class N64BinaryReader
             throw new IndexOutOfRangeException($"Invalid position: {Position+count} (0x{Position+count:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
         }
         return Buffer.Skip(Position).Take(count).ToArray();
+    }
+
+    public byte[] ReadBytes(int addr, int count)
+    {
+        Seek(addr);
+        return ReadBytes(count);
     }
 
     public byte[] ReadBytes(int count)
@@ -67,6 +79,12 @@ class N64BinaryReader
         byte[] bytes = Buffer.Skip(Position).Take(count).ToArray();
         Position += count;
         return bytes;
+    }
+
+    public byte ReadUByte(int addr)
+    {
+        Seek(addr);
+        return ReadUByte(addr);
     }
 
     public byte ReadUByte()
@@ -87,9 +105,21 @@ class N64BinaryReader
         return b;
     }
 
+    public sbyte ReadSByte(int addr)
+    {
+        Seek(addr);
+        return ReadSByte(addr);
+    }
+
     public sbyte ReadSByte()
     {
         return (sbyte)ReadUByte();
+    }
+
+    public UInt16 ReadUInt16(int addr)
+    {
+        Seek(addr);
+        return ReadUInt16();
     }
 
     public UInt16 ReadUInt16()
@@ -100,9 +130,21 @@ class N64BinaryReader
         return (UInt16) value;
     }
 
+    public Int16 ReadSInt16(int addr)
+    {
+        Seek(addr);
+        return ReadSInt16();
+    }
+
     public Int16 ReadSInt16()
     {
         return (short)ReadUInt16();
+    }
+
+    public UInt32 ReadUInt32(int addr)
+    {
+        Seek(addr);
+        return ReadUInt32();
     }
 
     public UInt32 ReadUInt32()
@@ -113,16 +155,24 @@ class N64BinaryReader
         return (high << 16) + low;
     }
 
+    public Int32 ReadSInt32(int addr)
+    {
+        Seek(addr);
+        return ReadSInt32();
+    }
+
     public Int32 ReadSInt32()
     {
         return (int)ReadUInt32();
     }
 
-    public string ReadCString(int max = 0)
+    public string ReadCString(int addr, int maxLen = 0)
     {
+        Seek(addr);
+
         StringBuilder builder = new StringBuilder();
 
-        while (NextCharacter(out string character) && (max < 1 || builder.Length < max))
+        while (NextCharacter(out string character) && (maxLen < 1 || builder.Length < maxLen))
         {
             builder.Append(character);
         }
@@ -144,11 +194,13 @@ class N64BinaryReader
         }
     }
 
-    public string ReadPrintableCString(int max = 0)
+    public string ReadPrintableCString(int addr, int maxLen = 0)
     {
+        Seek(addr);
+
         StringBuilder builder = new StringBuilder();
 
-        while (NextPrintableCharacter(out string character) && (max < 1 || builder.Length < max))
+        while (NextPrintableCharacter(out string character) && (maxLen < 1 || builder.Length < maxLen))
         {
             builder.Append(character);
         }

@@ -13,29 +13,15 @@ public sealed class N64XpRom : Rom
     public N64XpRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        if (IsEncrypted())
-        {
-            Decrypt();
-        }
-        else if (IsScrambled())
+        if (IsScrambled())
         {
             Unscramble();
         }
     }
 
-    public override bool IsEncrypted()
-    {
-        return DetectEncrypted(InitialBytes.ToArray());
-    }
-
     public override bool IsScrambled()
     {
         return DetectScrambled(InitialBytes.ToArray());
-    }
-
-    private void Decrypt()
-    {
-        // TODO(CheatoBaggins): Implement
     }
 
     private void Unscramble()
@@ -50,22 +36,17 @@ public sealed class N64XpRom : Rom
         return Bytes.ToArray();
     }
 
-    public byte[] GetEncrypted()
-    {
-        // TODO(CheatoBaggins): Implement
-        return new byte[] {};
-    }
-
     public byte[] GetScrambled()
     {
         // TODO(RWeick): Implement
         return new byte[] {};
     }
 
-    private static bool DetectEncrypted(byte[] bytes)
+    private static bool DetectPlain(byte[] bytes)
     {
-        // TODO(CheatoBaggins): Implement
-        return false;
+        var idBytes = bytes[0x40..0x55];
+        var idStr = idBytes.ToUtf8String();
+        return idStr == "FUTURE CONSOLE DESIGN";
     }
 
     private static bool DetectScrambled(byte[] bytes)
@@ -92,17 +73,10 @@ public sealed class N64XpRom : Rom
         return isFirstEqual && isSecondEqual;
     }
 
-    private static bool DetectPlain(byte[] bytes)
-    {
-        var idBytes = bytes[0x40..0x55];
-        var idStr = idBytes.ToUtf8String();
-        return idStr == "FUTURE CONSOLE DESIGN";
-    }
-
     public static bool Is(byte[] bytes)
     {
         bool is256KiB = bytes.Length == 0x00040000;
-        return is256KiB && (DetectScrambled(bytes) || DetectEncrypted(bytes) || DetectPlain(bytes));
+        return is256KiB && (DetectPlain(bytes) || DetectScrambled(bytes));
     }
 
     public static bool Is(Rom rom)
@@ -121,7 +95,6 @@ public sealed class N64XpRom : Rom
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
         Console.WriteLine($"N64 Xplorer 64 ROM file: '{Metadata.FilePath}'");
-        Console.WriteLine($"Encrypted: {IsEncrypted()}");
         Console.WriteLine($"Scrambled: {IsScrambled()}");
     }
 }
