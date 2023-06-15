@@ -67,7 +67,7 @@ class RomWriter : RomBase
         ResetActiveGameIndex();
     }
 
-    private void WriteGame(Game game, RomVersion? version, int gameIndex)
+    private void WriteGame(Game game, N64GsRomVersion? version, int gameIndex)
     {
         new GameEncoder(Writer, version).EncodeGame(game, gameIndex);
     }

@@ -46,14 +46,14 @@ abstract class RomBase
         Writer = new BinaryWriter(rom.Buffer ?? Array.Empty<byte>());
     }
 
-    protected RomVersion? ReadVersion()
+    protected N64GsRomVersion? ReadVersion()
     {
         string? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
                                         ReadTitleVersion("N64 Equalizer Version ") ??
                                         ReadTitleVersion("N64 Game Buster Version ");
         SeekBuildTimestamp();
         var rawTimestamp = Reader.ReadPrintableCString(Reader.Position, 15);
-        return RomVersion.From(rawTimestamp)?.WithTitleVersionNumber(titleVersionNumberStr);
+        return N64GsRomVersion.From(rawTimestamp)?.WithTitleVersionNumber(titleVersionNumberStr);
     }
 
     private string? ReadTitleVersion(string needle)

@@ -13,9 +13,9 @@ class GameEncoder
 
     private BinaryWriter Writer { get; set; }
 
-    public RomVersion? Version { get; private set; }
+    public N64GsRomVersion? Version { get; private set; }
 
-    public GameEncoder(BinaryWriter writer, RomVersion? version = null)
+    public GameEncoder(BinaryWriter writer, N64GsRomVersion? version = null)
     {
         Writer = writer;
         Version = version;

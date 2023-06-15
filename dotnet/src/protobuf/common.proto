@@ -122,7 +122,7 @@ message RomMetadata {
   double sortable_version = 5;
 
   // Raw, unprocessed build date found in the ROM file.
-  string build_date_raw = 6;
+  RomString build_date_raw = 6;
 
   // ISO 8601 date/time stamp of when the ROM was built.
   // E.g., "1997-08-01T12:50:00+0100".

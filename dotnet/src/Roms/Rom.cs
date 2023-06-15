@@ -33,6 +33,7 @@ public abstract class Rom
 
     public virtual bool IsEncrypted() { return false; }
     public virtual bool IsScrambled() { return false; }
+    public virtual bool IsCompressed() { return false; }
 
     public static Rom FromFile(string romFilePath)
     {
