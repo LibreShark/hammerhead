@@ -7,7 +7,7 @@ namespace LibreShark.Hammerhead.N64;
 /// <summary>
 /// Helper class for reading (big-endian) integers and c-style strings from byte buffers.
 /// </summary>
-class N64BinaryReader
+class BinaryReader
 {
     public byte[]? Buffer { get; set; }
     public int Position { get; set; }
@@ -16,26 +16,26 @@ class N64BinaryReader
     public int Length => Buffer?.Length ?? 0;
     public bool EndReached => Position >= Length;
 
-    public N64BinaryReader(byte[] buffer)
+    public BinaryReader(byte[] buffer)
     {
         Buffer = buffer;
     }
 
-    public N64BinaryReader()
+    public BinaryReader()
     {
     }
 
-    public static N64BinaryReader FromFile(string path)
+    public static BinaryReader FromFile(string path)
     {
-        return new N64BinaryReader(File.ReadAllBytes(path));
+        return new BinaryReader(File.ReadAllBytes(path));
     }
 
-    public static N64BinaryReader FromBytes(byte[] bytes)
+    public static BinaryReader FromBytes(byte[] bytes)
     {
-        return new N64BinaryReader(bytes);
+        return new BinaryReader(bytes);
     }
 
-    public N64BinaryReader Seek(int address)
+    public BinaryReader Seek(int address)
     {
         Position = address;
         return this;

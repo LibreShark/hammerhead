@@ -8,25 +8,25 @@ namespace LibreShark.Hammerhead.N64;
 /// <summary>
 /// Helper class for writing (big-endian) integers and c-style strings to byte buffers.
 /// </summary>
-class N64BinaryWriter
+class BinaryWriter
 {
     public byte[]? Buffer { get; set; }
     public int Position { get; set; }
     public int BytesWritten { get; set; }
     public int AutoExtendSize { get; set; }
 
-    public N64BinaryWriter(int bufferSize)
+    public BinaryWriter(int bufferSize)
         : this(new byte[bufferSize])
     {
     }
 
-    public N64BinaryWriter(byte[] buffer)
+    public BinaryWriter(byte[] buffer)
         : this()
     {
         Buffer = buffer;
     }
 
-    public N64BinaryWriter()
+    public BinaryWriter()
     {
     }
 

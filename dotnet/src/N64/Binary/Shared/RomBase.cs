@@ -7,22 +7,22 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 abstract class RomBase
 {
-    protected N64BinaryReader Reader { get; private set; }
-    protected N64BinaryWriter Writer { get; private set; }
+    protected BinaryReader Reader { get; private set; }
+    protected BinaryWriter Writer { get; private set; }
 
-    protected RomBase() : this(new N64BinaryReader())
+    protected RomBase() : this(new BinaryReader())
     {
     }
 
-    protected RomBase(N64BinaryReader reader)
+    protected RomBase(BinaryReader reader)
     {
         Reader = reader;
-        Writer = new N64BinaryWriter(reader.Buffer ?? Array.Empty<byte>());
+        Writer = new BinaryWriter(reader.Buffer ?? Array.Empty<byte>());
     }
 
     protected void ReadRomFromFile(string path)
     {
-        N64BinaryReader rom = N64BinaryReader.FromFile(path);
+        BinaryReader rom = BinaryReader.FromFile(path);
         Reader = rom;
 
         if (!ValidateRom(rom))
@@ -30,12 +30,12 @@ abstract class RomBase
             throw new Exception("Not a valid N64 GameShark ROM");
         }
 
-        Writer = new N64BinaryWriter(rom.Buffer ?? Array.Empty<byte>());
+        Writer = new BinaryWriter(rom.Buffer ?? Array.Empty<byte>());
     }
 
     protected void ReadRomFromBytes(byte[] bytes)
     {
-        N64BinaryReader rom = N64BinaryReader.FromBytes(bytes);
+        BinaryReader rom = BinaryReader.FromBytes(bytes);
         Reader = rom;
 
         if (!ValidateRom(rom))
@@ -43,7 +43,7 @@ abstract class RomBase
             throw new Exception("Not a valid N64 GameShark ROM");
         }
 
-        Writer = new N64BinaryWriter(rom.Buffer ?? Array.Empty<byte>());
+        Writer = new BinaryWriter(rom.Buffer ?? Array.Empty<byte>());
     }
 
     protected RomVersion? ReadVersion()
@@ -153,7 +153,7 @@ abstract class RomBase
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    private bool ValidateRom(N64BinaryReader rom)
+    private bool ValidateRom(BinaryReader rom)
     {
         int? bufferLength = rom.Buffer?.Length;
         if (bufferLength != 0x00040000)

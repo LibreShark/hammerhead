@@ -7,15 +7,15 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class GameDecoder
 {
-    public N64BinaryReader Reader { get; private set; }
+    public BinaryReader Reader { get; private set; }
 
-    public static Game FromReader(N64BinaryReader reader)
+    public static Game FromReader(BinaryReader reader)
     {
         GameDecoder encoder = new GameDecoder(reader);
         return encoder.ReadGame();
     }
 
-    public GameDecoder(N64BinaryReader reader)
+    public GameDecoder(BinaryReader reader)
     {
         Reader = reader;
     }

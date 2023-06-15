@@ -9,7 +9,7 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class NoteWriter
 {
-    public N64BinaryWriter Writer { get; set; }
+    public BinaryWriter Writer { get; set; }
 
     public static void ToFile(Game game, string path)
     {
@@ -22,7 +22,7 @@ class NoteWriter
 
     public NoteWriter()
     {
-        Writer = new N64BinaryWriter(16);
+        Writer = new BinaryWriter(16);
     }
 
     public void WriteGameNote(Game game, int gameIndex)
