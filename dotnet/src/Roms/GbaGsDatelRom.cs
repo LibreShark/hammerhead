@@ -30,7 +30,7 @@ public sealed class GbaGsDatelRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -43,6 +43,6 @@ public sealed class GbaGsDatelRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBA Datel GameShark ROM file: '{FilePath}'");
+        Console.WriteLine($"GBA Datel GameShark ROM file: '{Metadata.FilePath}'");
     }
 }

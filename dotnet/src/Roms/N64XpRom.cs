@@ -107,7 +107,7 @@ public sealed class N64XpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -120,7 +120,7 @@ public sealed class N64XpRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"N64 Xplorer 64 ROM file: '{FilePath}'");
+        Console.WriteLine($"N64 Xplorer 64 ROM file: '{Metadata.FilePath}'");
         Console.WriteLine($"Encrypted: {IsEncrypted()}");
         Console.WriteLine($"Scrambled: {IsScrambled()}");
     }

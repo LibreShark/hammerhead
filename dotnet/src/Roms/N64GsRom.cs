@@ -17,6 +17,13 @@ public sealed class N64GsRom : Rom
         }
 
         // TODO(CheatoBaggins): Decompress v3.x ROM files
+
+        Parse();
+    }
+
+    private void Parse()
+    {
+        ;
     }
 
     public override bool IsEncrypted()
@@ -54,7 +61,7 @@ public sealed class N64GsRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -67,7 +74,7 @@ public sealed class N64GsRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"N64 GameShark ROM file: '{FilePath}'");
+        Console.WriteLine($"N64 GameShark ROM file: '{Metadata.FilePath}'");
         Console.WriteLine($"Encrypted: {IsEncrypted()}");
     }
 }

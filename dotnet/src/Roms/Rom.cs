@@ -17,15 +17,16 @@ public abstract class Rom
     /// </summary>
     protected readonly byte[] Bytes;
 
-    public readonly string FilePath;
-    public readonly RomType Type;
+    public readonly RomMetadata Metadata;
 
     protected Rom(string filePath, byte[] bytes, RomType type)
     {
-        FilePath = filePath;
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
-        Type = type;
+
+        Metadata = new RomMetadata();
+        Metadata.FilePath = filePath;
+        Metadata.Type = type;
     }
 
     public abstract void PrintSummary();

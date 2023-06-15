@@ -29,7 +29,7 @@ public sealed class GbcMonsterBrainRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -42,6 +42,6 @@ public sealed class GbcMonsterBrainRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBC Monster Brain ROM file: '{FilePath}'");
+        Console.WriteLine($"GBC Monster Brain ROM file: '{Metadata.FilePath}'");
     }
 }

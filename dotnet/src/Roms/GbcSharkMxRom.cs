@@ -27,7 +27,7 @@ public sealed class GbcSharkMxRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -40,6 +40,6 @@ public sealed class GbcSharkMxRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBC Shark MX ROM file: '{FilePath}'");
+        Console.WriteLine($"GBC Shark MX ROM file: '{Metadata.FilePath}'");
     }
 }

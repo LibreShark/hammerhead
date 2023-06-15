@@ -3,20 +3,6 @@ syntax = "proto3";
 package libreshark.hammerhead;
 option csharp_namespace = "LibreShark.Hammerhead";
 
-message ChecksumResult {
-  bytes crc32_bytes = 1;
-  bytes crc32_string = 2;
-
-  bytes crc32c_bytes = 3;
-  bytes crc32c_string = 4;
-
-  bytes md5_bytes = 5;
-  bytes md5_string = 6;
-
-  bytes sha1_bytes = 7;
-  bytes sha1_string = 8;
-}
-
 message RomRange {
   uint32 start_index = 1;
   uint32 end_index = 2;
@@ -108,27 +94,47 @@ enum RomBrand {
   SHARK_MX = 0x10;
 }
 
+message ChecksumResult {
+  bytes crc32_bytes = 1;
+  bytes crc32_string = 2;
+
+  bytes crc32c_bytes = 3;
+  bytes crc32c_string = 4;
+
+  bytes md5_bytes = 5;
+  bytes md5_string = 6;
+
+  bytes sha1_bytes = 7;
+  bytes sha1_string = 8;
+}
+
 message RomMetadata {
+  string file_path = 1;
+  RomType type = 2;
+  RomBrand brand = 3;
+
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
   // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype".
-  string display_version = 1;
+  string display_version = 4;
 
   // Machine-readable version number for sorting purposes.
-  double sortable_version = 2;
+  double sortable_version = 5;
 
   // Raw, unprocessed build date found in the ROM file.
-  string build_date_raw = 3;
+  string build_date_raw = 6;
 
   // ISO 8601 date/time stamp of when the ROM was built.
   // E.g., "1997-08-01T12:50:00+0100".
-  string build_date_iso = 4;
+  string build_date_iso = 7;
 
   // Case-insensitive IETF BCP 47 language and region tag.
   // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
   // See RFC 5646 (obsoletes RFC 4646).
-  string language_ietf_code = 5;
+  string language_ietf_code = 8;
 
-  ChecksumResult file_checksum = 6;
-  ChecksumResult firmware_checksum = 7;
+  ChecksumResult file_checksum = 9;
+  ChecksumResult firmware_checksum = 10;
+
+  repeated RomString identifiers = 11;
 }

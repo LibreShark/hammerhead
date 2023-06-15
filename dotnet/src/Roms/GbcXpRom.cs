@@ -27,7 +27,7 @@ public sealed class GbcXpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -40,6 +40,6 @@ public sealed class GbcXpRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBC Xploder ROM file: '{FilePath}'");
+        Console.WriteLine($"GBC Xploder ROM file: '{Metadata.FilePath}'");
     }
 }

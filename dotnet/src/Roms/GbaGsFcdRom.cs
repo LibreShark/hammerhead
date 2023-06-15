@@ -35,7 +35,7 @@ public sealed class GbaGsFcdRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Type == ThisRomType;
+        return rom.Metadata.Type == ThisRomType;
     }
 
     public static bool Is(RomType type)
@@ -48,6 +48,6 @@ public sealed class GbaGsFcdRom : Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"GBA FCD GameShark ROM file: '{FilePath}'");
+        Console.WriteLine($"GBA FCD GameShark ROM file: '{Metadata.FilePath}'");
     }
 }
