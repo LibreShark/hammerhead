@@ -35,12 +35,12 @@ class RomCrypter : RomBase
 
 	private static void ProcessRom(string source, string target, Action<RomCrypter> action)
 	{
-		RomCrypter crypter = new RomCrypter(BinaryReader.FromFile(source));
+		RomCrypter crypter = new RomCrypter(N64BinaryReader.FromFile(source));
 		action(crypter);
 		crypter.WriteRomToFile(target);
 	}
 
-	private RomCrypter(BinaryReader reader)
+	private RomCrypter(N64BinaryReader reader)
 		: base(reader)
 	{
 	}

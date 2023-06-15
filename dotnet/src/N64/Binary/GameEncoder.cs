@@ -11,11 +11,11 @@ class GameEncoder
 {
     private const string ValidNameCharacters = "!$%^&*()[]{}0123456789,.ABCDEFGHIJKLMNOPQRSTUVWXYZ=#/<>;-+: abcdefghijklmnopqrstuvwxyz?'";
 
-    private BinaryWriter Writer { get; set; }
+    private N64BinaryWriter Writer { get; set; }
 
     public RomVersion? Version { get; private set; }
 
-    public GameEncoder(BinaryWriter writer, RomVersion? version = null)
+    public GameEncoder(N64BinaryWriter writer, RomVersion? version = null)
     {
         Writer = writer;
         Version = version;

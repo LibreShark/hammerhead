@@ -7,14 +7,14 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class NoteReader
 {
-    public BinaryReader Reader { get; set; }
+    public N64BinaryReader Reader { get; set; }
 
     public static Game FromFile(string path)
     {
-        return new NoteReader(BinaryReader.FromFile(path)).ReadGame();
+        return new NoteReader(N64BinaryReader.FromFile(path)).ReadGame();
     }
 
-    public NoteReader(BinaryReader reader)
+    public NoteReader(N64BinaryReader reader)
     {
         Reader = reader;
     }
