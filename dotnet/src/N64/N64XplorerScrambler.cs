@@ -22,7 +22,7 @@ public class N64XplorerScrambler
         byte[] high = new byte[plainBytes.Length / 2];
         byte[] low = new byte[plainBytes.Length / 2];
 
-        for (int i = 0; i < (plainBytes.Length / 2); i += 2)
+        for (int i = 0; i < plainBytes.Length; i += 2)
         {
             high[i / 2] = plainBytes[i];
             low[i / 2] = plainBytes[i + 1];
