@@ -13,6 +13,11 @@ public static class ExtensionMethods
         return utf8.GetString(bytes);
     }
 
+    public static string ToHexString(this byte[] bytes, string delimiter = "")
+    {
+        return string.Join(delimiter, bytes.Select((b) => $"{b:X2}"));
+    }
+
     public static bool Contains(this byte[] haystackBytes, string needleStr)
     {
         return haystackBytes.Find(needleStr) > -1;
@@ -20,10 +25,10 @@ public static class ExtensionMethods
 
     public static int Find(this byte[] haystackBytes, string needleStr)
     {
-        byte[] needleBytes = System.Text.Encoding.UTF8.GetBytes(needleStr);
+        byte[] needleBytes = Encoding.UTF8.GetBytes(needleStr);
         int needleLen = needleBytes.Length;
         int haystackLen = haystackBytes.Length;
-        for (int i = 0; i < haystackLen - needleLen - 1; i++)
+        for (int i = 0; i < haystackLen - needleLen; i++)
         {
             int end = i + needleLen;
             if (haystackBytes[i..end].SequenceEqual(needleBytes))

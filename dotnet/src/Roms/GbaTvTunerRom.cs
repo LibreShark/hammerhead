@@ -1,28 +1,26 @@
 namespace LibreShark.Hammerhead;
 
-public class GbaTvTunerRom : Rom
+public sealed class GbaTvTunerRom : Rom
 {
     private const RomType ThisRomType = RomType.GbaTvTuner;
 
     public GbaTvTunerRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        IsEncrypted = false;
-        IsScrambled = false;
     }
 
     public static bool Is(byte[] bytes)
     {
         bool is512KiB = bytes.Length == 0x00080000;
         bool is16MiB = bytes.Length == 0x01000000;
-        return (is512KiB || is16MiB) && DetectUnobfuscated(bytes);
+        return (is512KiB || is16MiB) && Detect(bytes);
     }
 
-    private static bool DetectUnobfuscated(byte[] bytes)
+    private static bool Detect(byte[] bytes)
     {
-        var b = bytes[0xA0..0xAB];
-        var s = b.ToUtf8String();
-        return s == "GBA_Capture";
+        var idBytes = bytes[0xA0..0xAB];
+        var idStr = idBytes.ToUtf8String();
+        return idStr == "GBA_Capture";
     }
 
     public static bool Is(Rom rom)

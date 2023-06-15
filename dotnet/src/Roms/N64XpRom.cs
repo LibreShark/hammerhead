@@ -1,23 +1,30 @@
 namespace LibreShark.Hammerhead;
 
-public class N64XpRom : Rom
+public sealed class N64XpRom : Rom
 {
     private const RomType ThisRomType = RomType.N64Xplorer64;
 
     public N64XpRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        IsEncrypted = DetectEncrypted(bytes);
-        IsScrambled = DetectScrambled(bytes);
-
-        if (IsEncrypted)
+        if (IsEncrypted())
         {
             Decrypt();
         }
-        else if (IsScrambled)
+        else if (IsScrambled())
         {
             Unscramble();
         }
+    }
+
+    public override bool IsEncrypted()
+    {
+        return DetectEncrypted(InitialBytes.ToArray());
+    }
+
+    public override bool IsScrambled()
+    {
+        return DetectScrambled(InitialBytes.ToArray());
     }
 
     private void Decrypt()
@@ -28,6 +35,31 @@ public class N64XpRom : Rom
     private void Unscramble()
     {
         // TODO(RWeick): Implement
+    }
+
+    public byte[] GetUnobfuscated()
+    {
+        // Return a copy of the array to prevent the caller from mutating
+        // internal state.
+        return Bytes.ToArray();
+    }
+
+    public byte[] GetEncrypted()
+    {
+        // TODO(CheatoBaggins): Implement
+        return new byte[] {};
+    }
+
+    public byte[] GetScrambled()
+    {
+        // TODO(RWeick): Implement
+        return new byte[] {};
+    }
+
+    private static bool DetectEncrypted(byte[] bytes)
+    {
+        // TODO(CheatoBaggins): Implement
+        return false;
     }
 
     private static bool DetectScrambled(byte[] bytes)
@@ -54,17 +86,11 @@ public class N64XpRom : Rom
         return isFirstEqual && isSecondEqual;
     }
 
-    private static bool DetectEncrypted(byte[] bytes)
-    {
-        // TODO(CheatoBaggins): Implement
-        return false;
-    }
-
     private static bool DetectUnobfuscated(byte[] bytes)
     {
-        var b = bytes[0x40..0x55];
-        var s = System.Text.Encoding.UTF8.GetString(b);
-        return s == "FUTURE CONSOLE DESIGN";
+        var idBytes = bytes[0x40..0x55];
+        var idStr = idBytes.ToUtf8String();
+        return idStr == "FUTURE CONSOLE DESIGN";
     }
 
     public static bool Is(byte[] bytes)
@@ -89,7 +115,7 @@ public class N64XpRom : Rom
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
         Console.WriteLine($"N64 Xplorer 64 ROM file: '{FilePath}'");
-        Console.WriteLine($"Encrypted: {IsEncrypted}");
-        Console.WriteLine($"Scrambled: {IsScrambled}");
+        Console.WriteLine($"Encrypted: {IsEncrypted()}");
+        Console.WriteLine($"Scrambled: {IsScrambled()}");
     }
 }

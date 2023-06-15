@@ -1,22 +1,31 @@
+using System.Collections.Immutable;
+
 namespace LibreShark.Hammerhead;
 
 public abstract class Rom
 {
-    public readonly string FilePath;
-    public readonly byte[] Bytes;
-    public readonly RomType Type;
+    protected readonly ImmutableArray<byte> InitialBytes;
 
-    public bool IsEncrypted { get; protected set; }
-    public bool IsScrambled { get; protected set; }
+    // Plain, unencrypted, unobfuscated bytes.
+    // If the input file is encrypted/scrambled, it must be
+    // decrypted/descrambled immediately in the subclass constructor.
+    protected readonly byte[] Bytes;
+
+    public readonly string FilePath;
+    public readonly RomType Type;
 
     protected Rom(string filePath, byte[] bytes, RomType type)
     {
         FilePath = filePath;
-        Bytes = bytes;
+        InitialBytes = bytes.ToImmutableArray();
+        Bytes = bytes.ToArray();
         Type = type;
     }
 
     public abstract void PrintSummary();
+
+    public virtual bool IsEncrypted() { return false; }
+    public virtual bool IsScrambled() { return false; }
 
     public static Rom FromFile(string romFilePath)
     {

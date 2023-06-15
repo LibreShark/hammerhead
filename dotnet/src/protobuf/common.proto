@@ -3,6 +3,57 @@ syntax = "proto3";
 package libreshark.hammerhead;
 option csharp_namespace = "LibreShark.Hammerhead";
 
+message ChecksumResult {
+  bytes crc32_bytes = 1;
+  bytes crc32_string = 2;
+
+  bytes crc32c_bytes = 3;
+  bytes crc32c_string = 4;
+
+  bytes md5_bytes = 5;
+  bytes md5_string = 6;
+
+  bytes sha1_bytes = 7;
+  bytes sha1_string = 8;
+}
+
+message RomRange {
+  uint32 start_index = 1;
+  uint32 end_index = 2;
+  uint32 length = 3;
+  bytes raw_bytes = 4;
+}
+
+// TODO(CheatoBaggins): Create ranges for parsed values to aid debugging.
+message RomString {
+  RomRange addr = 1;
+  string value = 2;
+}
+message RomU8 {
+  RomRange addr = 1;
+  uint32 value = 2;
+}
+message RomU16 {
+  RomRange addr = 1;
+  uint32 value = 2;
+}
+message RomU32 {
+  RomRange addr = 1;
+  uint32 value = 2;
+}
+message RomU64 {
+  RomRange addr = 1;
+  uint64 value = 2;
+}
+message RomF32 {
+  RomRange addr = 1;
+  uint32 value = 2;
+}
+message RomF64 {
+  RomRange addr = 1;
+  uint64 value = 2;
+}
+
 enum RomType {
   UNKNOWN_ROM_TYPE = 0x00;
 
@@ -37,16 +88,41 @@ enum RomType {
   GBA_TV_TUNER = 0x8A;
 }
 
-message ChecksumSet {
-  bytes crc32 = 1;
-  bytes crc32c = 2;
-  bytes md5 = 3;
-  bytes sha1 = 4;
+enum RomBrand {
+  UNKNOWN_BRAND = 0x00;
+  GAMESHARK = 0x01;
+  ACTION_REPLAY = 0x02;
+  EQUALIZER = 0x03;
+  GAME_BUSTER = 0x04;
+  GB_HUNTER = 0x05;
+  GAME_BOOSTER = 0x06;
+  CODE_BREAKER = 0x07;
+  XPLODER = 0x08;
+  GAME_GENIE = 0x09;
+  SHARK_MX = 0x10;
 }
 
-// TODO(CheatoBaggins): Create Slices for parsed values to aid debugging.
-message Slice {
-  uint32 start_index = 1;
-  uint32 end_index = 2;
-  uint32 length = 3;
+message RomMetadata {
+  // Human-friendly version number displayed to users in a UI, including a
+  // "v" prefix if applicable.
+  // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype".
+  string display_version = 1;
+
+  // Machine-readable version number for sorting purposes.
+  double sortable_version = 2;
+
+  // Raw, unprocessed build date found in the ROM file.
+  string build_date_raw = 3;
+
+  // ISO 8601 date/time stamp of when the ROM was built.
+  // E.g., "1997-08-01T12:50:00+0100".
+  string build_date_iso = 4;
+
+  // Case-insensitive IETF BCP 47 language and region tag.
+  // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
+  // See RFC 5646 (obsoletes RFC 4646).
+  string language_ietf_code = 5;
+
+  ChecksumResult file_checksum = 6;
+  ChecksumResult firmware_checksum = 7;
 }

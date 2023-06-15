@@ -1,31 +1,49 @@
 namespace LibreShark.Hammerhead;
 
-public class N64GsRom : Rom
+public sealed class N64GsRom : Rom
 {
     private const RomType ThisRomType = RomType.N64Gameshark;
 
     public N64GsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        IsEncrypted = DetectEncrypted(bytes);
+        if (IsEncrypted())
+        {
+            Decrypt();
+        }
+    }
 
-        // Not applicable to GameShark ROMs. Only Xplorer 64 scrambles bytes.
-        IsScrambled = false;
+    public override bool IsEncrypted()
+    {
+        return DetectEncrypted(InitialBytes.ToArray());
+    }
+
+    private void Decrypt()
+    {
+        if (!DetectEncrypted(Bytes))
+        {
+            return;
+        }
+        // TODO(CheatoBaggins): Implement
+    }
+
+    public static bool Is(byte[] bytes)
+    {
+        bool is256KiB = bytes.Length == 0x00040000;
+        return is256KiB && (DetectDecrypted(bytes) || DetectEncrypted(bytes));
+    }
+
+    private static bool DetectDecrypted(byte[] bytes)
+    {
+        byte[] first4Bytes = bytes[..4];
+        return first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x40 }) ||
+               first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x00 });
     }
 
     private static bool DetectEncrypted(byte[] bytes)
     {
         // TODO(CheatoBaggins): Implement
         return false;
-    }
-
-    public static bool Is(byte[] bytes)
-    {
-        bool is256KiB = bytes.Length == 0x00040000;
-        byte[] first4Bytes = bytes[..4];
-        return is256KiB &&
-               (first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x40 }) ||
-                first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x00 }));
     }
 
     public static bool Is(Rom rom)
@@ -44,6 +62,6 @@ public class N64GsRom : Rom
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
         Console.WriteLine($"N64 GameShark ROM file: '{FilePath}'");
-        Console.WriteLine($"Encrypted: {IsEncrypted}");
+        Console.WriteLine($"Encrypted: {IsEncrypted()}");
     }
 }

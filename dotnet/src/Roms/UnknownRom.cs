@@ -1,6 +1,6 @@
 namespace LibreShark.Hammerhead;
 
-public class UnknownRom : Rom
+public sealed class UnknownRom : Rom
 {
     private const RomType ThisRomType = RomType.UnknownRomType;
 

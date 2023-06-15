@@ -1,14 +1,12 @@
 namespace LibreShark.Hammerhead;
 
-public class GbcXploderRom : Rom
+public sealed class GbcXploderRom : Rom
 {
     private const RomType ThisRomType = RomType.GbcXploder;
 
     public GbcXploderRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
-        IsEncrypted = false;
-        IsScrambled = false;
     }
 
     public static bool Is(byte[] bytes)

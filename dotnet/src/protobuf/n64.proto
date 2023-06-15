@@ -51,18 +51,18 @@ message N64GsVersionProto {
 message N64GsRomProto {
   bytes file_contents = 1;
 
-  Slice header_slice = 2;
-  Slice firmware_slice = 3;
-  Slice cheat_list_slice = 4;
-  Slice keycode_list_slice = 5;
-  Slice user_settings_slice = 6;
+  RomRange header_slice = 2;
+  RomRange firmware_slice = 3;
+  RomRange cheat_list_slice = 4;
+  RomRange keycode_list_slice = 5;
+  RomRange user_settings_slice = 6;
 
-  ChecksumSet file_checksums = 7;
-  ChecksumSet header_checksums = 8;
-  ChecksumSet firmware_checksums = 9;
-  ChecksumSet cheat_list_checksums = 10;
-  ChecksumSet keycode_list_checksums = 11;
-  ChecksumSet user_settings_checksums = 12;
+  ChecksumResult file_checksums = 7;
+  ChecksumResult header_checksums = 8;
+  ChecksumResult firmware_checksums = 9;
+  ChecksumResult cheat_list_checksums = 10;
+  ChecksumResult keycode_list_checksums = 11;
+  ChecksumResult user_settings_checksums = 12;
 
   N64GsVersionProto version = 13;
   repeated N64GsGameProto games = 14;
