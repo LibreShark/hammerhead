@@ -78,6 +78,16 @@ Commands:
 
                     Encrypts the given unencrypted ROM files for use with the
                     official Datel N64 Utils.
+
+    scramble-xp64   XP64_ROM_1.bin [XP64_ROM_2.bin ...]
+
+                    Scrambles the given Xplorer 64 ROM files so that they can be
+                    written to the cart's two SST29EE010 EEPROM chips.
+
+    unscramble-xp64 XP64_ROM_1.bin [XP64_ROM_2.bin ...]
+
+                    Unscrambles Xplorer 64 ROM files that were dumped from the
+                    cart's two SST29EE010 EEPROM chips.
 ");
         return 1;
     }
@@ -95,7 +105,7 @@ internal static class Program
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
         Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
-        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT.Trim());
+        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
 
         if (cliArgs.Length < 1)
         {
@@ -112,6 +122,8 @@ internal static class Program
             new(id: "scrub-rom", minArgCount: 1, runner: ScrubRoms),
             new(id: "encrypt-rom", minArgCount: 1, runner: EncryptRoms),
             new(id: "decrypt-rom", minArgCount: 1, runner: DecryptRoms),
+            new(id: "scramble-xp64", minArgCount: 1, runner: ScrambleXp64),
+            new(id: "unscramble-xp64", minArgCount: 1, runner: UnscrambleXp64),
         };
 
         var cmdId = cliArgs[0];
@@ -548,6 +560,38 @@ internal static class Program
             var decryptedRomFilePath = Path.ChangeExtension(encryptedRomFilePath, "dec");
             Console.WriteLine($"Decrypting GS ROM file \"{encryptedRomFilePath}\" -> \"{decryptedRomFilePath}\"...");
             Examples.DecryptRom(encryptedRomFilePath, decryptedRomFilePath);
+        }
+
+        return 0;
+    }
+
+    private static int ScrambleXp64(IEnumerable<string> inputRomFilePaths)
+    {
+        foreach (var inputRomFilePath in inputRomFilePaths)
+        {
+            var unscrambledBytes = File.ReadAllBytes(inputRomFilePath);
+            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "scrambled.bin");
+
+            Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
+
+            var scrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, scrambledBytes);
+        }
+
+        return 0;
+    }
+
+    private static int UnscrambleXp64(IEnumerable<string> inputRomFilePaths)
+    {
+        foreach (var inputRomFilePath in inputRomFilePaths)
+        {
+            var scrambledBytes = File.ReadAllBytes(inputRomFilePath);
+            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "unscrambled.bin");
+
+            Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
+
+            var unscrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
         }
 
         return 0;
