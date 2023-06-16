@@ -59,7 +59,7 @@ public class N64XplorerScrambler
 
         for (int i = 0; i < (scrambledBytes.Length / 2); i++)
         {
-            int unscrambledAddress = Unscramble(i);
+            int unscrambledAddress = Scramble(i);
             scrambledHigh[i] = high[unscrambledAddress];
             scrambledLow[i] = low[unscrambledAddress];
         }
