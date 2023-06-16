@@ -10,12 +10,13 @@ public partial class N64GsRomVersion
     public static readonly CultureInfo GERMAN_GERMANY = CultureInfo.GetCultureInfoByIetfLanguageTag("de-DE");
     public static readonly CultureInfo UNKNOWN_LOCALE = CultureInfo.InvariantCulture;
 
+    public readonly bool IsInDatabase;
     public readonly string RawTimestamp;
-    public readonly double Number;
+    public double Number { get; private set; }
     public readonly string? Disambiguator;
     public readonly DateTime BuildTimestamp;
-    public readonly RomBrand Brand;
-    public readonly CultureInfo Locale;
+    public RomBrand Brand { get; private set; }
+    public CultureInfo Locale { get; private set; }
 
     public string? RawTitleVersionNumber { get; private set; }
     public double? ParsedTitleVersionNumber => RawTitleVersionNumber != null ? double.Parse(RawTitleVersionNumber) : null;
@@ -35,6 +36,7 @@ public partial class N64GsRomVersion
         BuildTimestamp = buildTimestamp;
         Brand = brand;
         Locale = locale;
+        IsInDatabase = Brand != RomBrand.UnknownBrand;
     }
 
     public static N64GsRomVersion? From(string raw)
@@ -96,7 +98,7 @@ public partial class N64GsRomVersion
             "11:09 Aug 5 99"  => Of(raw, 3.21, null,       1999, 08, 05, 11, 09, 00, RomBrand.GameBuster, GERMAN_GERMANY),
 
             // Unknown
-            _                 => null
+            _                 => null,
         };
     }
 
@@ -137,7 +139,7 @@ public partial class N64GsRomVersion
             return null;
         }
 
-        return Of(raw, 0.00, "UNKNOWN", timestamp);
+        return Of(raw, 0.00, "MISSING FROM OUR DATABASE!", timestamp);
     }
 
     private static bool Is(string rawDateTime, string dateTimeFormat, out DateTime datetime)
@@ -155,6 +157,37 @@ public partial class N64GsRomVersion
     public N64GsRomVersion WithTitleVersionNumber(string? titleVersionStr)
     {
         RawTitleVersionNumber = titleVersionStr;
+        if (Brand == RomBrand.UnknownBrand && titleVersionStr != null)
+        {
+            var match = Regex.Match(titleVersionStr, "(?:N64 )?(?<brand>.+) Version (?<vernum>[0-9.]+)");
+            if (match.Success)
+            {
+                string brand = match.Groups["brand"].Value;
+                string vernum = match.Groups["vernum"].Value;
+                Number = double.Parse(vernum);
+                switch (brand)
+                {
+                    case "GameShark":
+                    case "GameShark Pro":
+                        Brand = RomBrand.Gameshark;
+                        Locale = ENGLISH_US;
+                        break;
+                    case "Action Replay":
+                    case "Action Replay Pro":
+                        Brand = RomBrand.ActionReplay;
+                        Locale = ENGLISH_UK;
+                        break;
+                    case "Equalizer":
+                        Brand = RomBrand.Equalizer;
+                        Locale = ENGLISH_UK;
+                        break;
+                    case "Game Buster":
+                        Brand = RomBrand.GameBuster;
+                        Locale = GERMAN_GERMANY;
+                        break;
+                }
+            }
+        }
         return this;
     }
 }

@@ -16,8 +16,8 @@ public sealed class N64GsRom : Rom
     private bool _isCompressed;
     private bool _isV3Firmware;
     private bool _isV1GameList;
-    private bool _isV1KeyCodeList;
-    private bool _isV3KeyCodeList;
+    private bool _isV1KeyCodeListAddr;
+    private bool _isV3KeyCodeListAddr;
     private bool _supportsUserPrefs;
     private bool _supportsKeyCodes;
 
@@ -25,9 +25,15 @@ public sealed class N64GsRom : Rom
     private uint _gameListAddr;
     private uint _keyCodeListAddr;
     private uint _userPrefsAddr;
+    private RomString _headerId;
+    private RomString _rawTimestamp;
+    private N64GsRomVersion _version;
+    private List<KeyCode> _keyCodes;
+    private KeyCode _activeKeyCode;
 
     private const uint ProgramCounterAddr = 0x00000008;
     private const uint ActiveKeyCodeAddr  = 0x00000010;
+    private const uint HeaderIdAddr       = 0x00000020;
     private const uint BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
@@ -48,12 +54,86 @@ public sealed class N64GsRom : Rom
 
     private void Parse()
     {
-        var headerId = _reader.ReadCStringAt(0x20, 0x10);
-        Metadata.Identifiers.Add(headerId);
+        _headerId = _reader.ReadCStringAt(HeaderIdAddr, 0x10);
+        _rawTimestamp = _reader.ReadPrintableCStringAt(BuildTimestampAddr, 15);
 
-        var rawTimestamp = _reader.ReadPrintableCStringAt(BuildTimestampAddr, 15);
-        Metadata.Identifiers.Add(rawTimestamp);
+        Metadata.Identifiers.Add(_headerId);
+        Metadata.Identifiers.Add(_rawTimestamp);
 
+        _version = ReadVersion();
+
+        Metadata.Brand = _version.Brand;
+        Metadata.BuildDateRaw = _rawTimestamp;
+        Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
+        Metadata.DisplayVersion = _version.DisplayNumber;
+        Metadata.SortableVersion = _version.Number;
+        Metadata.IsKnownVersion = _version.IsKnown;
+        Metadata.LanguageIetfCode = _version.Locale.Name;
+
+        _isV3Firmware        = _reader.ReadUInt32(0x00001000) == 0x00000000;
+        _isV1GameList        = _reader.ReadUInt32(0x0002DFF0) == 0x00000000;
+        _isV1KeyCodeListAddr = _reader.ReadUInt32(0x0002D7F0) == 0x00000000;
+        _isV3KeyCodeListAddr = _reader.ReadUInt32(0x0002FBF0) == 0xFFFFFFFF;
+        _keyCodeListAddr     = (uint)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
+        _supportsKeyCodes    = _reader.ReadUInt32(_keyCodeListAddr) != 0x00000000;
+        _supportsUserPrefs   = _reader.ReadUInt32(0x0002FAF0) == 0xFFFFFFFF;
+        _firmwareAddr        = (uint)(_isV3Firmware ? 0x00001080 : 0x00001000);
+        _gameListAddr        = (uint)(_isV1GameList ? 0x0002E000 : 0x00030000);
+        _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
+
+        var keyCodes = ReadKeyCodes();
+        _activeKeyCode = ReadActiveKeyCode(keyCodes);
+        _keyCodes = keyCodes;
+    }
+
+    private KeyCode ReadActiveKeyCode(List<KeyCode> keyCodes)
+    {
+        byte[] crcBytes = _reader.PeekBytesAt(ActiveKeyCodeAddr, 8);
+        byte[] pcBytes = _reader.PeekBytesAt(ProgramCounterAddr, 4);
+
+        string? name = null;
+        if (keyCodes.Count > 0)
+        {
+            KeyCode? activeKeyCode = keyCodes.Find(kc => kc.ChecksumBytes.SequenceEqual(crcBytes));
+            name = activeKeyCode?.Name;
+        }
+
+        return new KeyCode(name ?? "probably CIC-NUS-6102", crcBytes.Concat(pcBytes).ToArray(), true);
+    }
+
+    private List<KeyCode> ReadKeyCodes()
+    {
+        byte[] activePrefix = _reader.PeekBytesAt(ActiveKeyCodeAddr, 8);
+
+        Seek(_keyCodeListAddr);
+        byte[] listBytes = _reader.PeekBytes(0xA0);
+        uint maxPos = _reader.Position + (uint)listBytes.Length;
+        int keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
+
+        // Valid key codes are either 9 or 13 bytes long.
+        if (keyCodeByteLength < 9)
+        {
+            return new List<KeyCode>();
+        }
+
+        var keyCodes = new List<KeyCode>();
+        while (_reader.Position <= maxPos)
+        {
+            byte[] bytes = _reader.ReadBytes((uint)keyCodeByteLength);
+            RomString name = _reader.ReadPrintableCString(0x1F);
+            while (_reader.PeekBytes(1)[0] == 0)
+            {
+                _reader.ReadUByte();
+            }
+            var isActive = bytes.Contains(activePrefix);
+            var keyCode = new KeyCode(name.Value, bytes, isActive);
+            keyCodes.Add(keyCode);
+        }
+        return keyCodes;
+    }
+
+    private N64GsRomVersion ReadVersion()
+    {
         // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
         RomString? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
                                            ReadTitleVersion("N64 Action Replay Version ") ??
@@ -65,29 +145,14 @@ public sealed class N64GsRom : Rom
             Metadata.Identifiers.Add(titleVersionNumberStr);
         }
 
-        var version = N64GsRomVersion.From(rawTimestamp.Value)?.WithTitleVersionNumber(titleVersionNumberStr?.Value);
+        var version = N64GsRomVersion.From(_rawTimestamp.Value)?
+            .WithTitleVersionNumber(titleVersionNumberStr?.Value);
         if (version == null)
         {
             throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
         }
 
-        Metadata.Brand = version.Brand;
-        Metadata.BuildDateRaw = rawTimestamp;
-        Metadata.BuildDateIso = version.DisplayBuildTimestampIso;
-        Metadata.DisplayVersion = version.DisplayNumber;
-        Metadata.SortableVersion = version.Number;
-        Metadata.LanguageIetfCode = version.Locale.Name;
-
-        _isV3Firmware      = _reader.ReadUInt32(0x00001000) == 0x00000000;
-        _isV1GameList      = _reader.ReadUInt32(0x0002DFF0) == 0x00000000;
-        _isV1KeyCodeList   = _reader.ReadUInt32(0x0002D7F0) == 0x00000000;
-        _isV3KeyCodeList   = _reader.ReadUInt32(0x0002FBF0) == 0xFFFFFFFF;
-        _supportsUserPrefs = _reader.ReadUInt32(0x0002FAF0) == 0xFFFFFFFF;
-        _firmwareAddr      = (uint)(_isV3Firmware ? 0x00001080 : 0x00001000);
-        _gameListAddr      = (uint)(_isV1GameList ? 0x0002E000 : 0x00030000);
-        _keyCodeListAddr   = _isV3KeyCodeList ? 0x0002FC00 : _isV1KeyCodeList ? 0x0002D800 : 0xFFFFFFFF;
-        _supportsKeyCodes  = _keyCodeListAddr != 0xFFFFFFFF;
-        _userPrefsAddr     = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
+        return version;
     }
 
     private RomString? ReadTitleVersion(string needle)
@@ -95,15 +160,16 @@ public sealed class N64GsRom : Rom
         byte[] haystack = Bytes[..0x30000];
         int titleVersionPos = haystack.Find(needle);
         _isCompressed = titleVersionPos == -1;
-
-        if (!_isCompressed)
+        if (_isCompressed)
         {
-            titleVersionPos += needle.Length;
-            // e.g., "2.21"
-            return _reader.ReadPrintableCStringAt((uint)titleVersionPos, 5).Trim();
+            return null;
         }
 
-        return null;
+        // Uncomment to return ONLY the number
+        // titleVersionPos += needle.Length;
+
+        // e.g., "2.21"
+        return _reader.ReadPrintableCStringAt((uint)titleVersionPos, needle.Length + 5).Trim();
     }
 
     private N64GsRom Seek(uint address)
@@ -186,13 +252,27 @@ public sealed class N64GsRom : Rom
             Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
         }
         Console.WriteLine();
-        var fwType = $"0x{_firmwareAddr:X8}";
-        var gameListType = $"0x{_gameListAddr:X8}";
-        var keyCodeListType = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
-        var userPrefsType = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
-        Console.WriteLine($"Firmware:   {fwType}");
-        Console.WriteLine($"Game list:  {gameListType}");
-        Console.WriteLine($"User prefs: {userPrefsType}");
-        Console.WriteLine($"Key codes:  {keyCodeListType}");
+        var firmwareAddr = $"0x{_firmwareAddr:X8}";
+        var gameListAddr = $"0x{_gameListAddr:X8}";
+        var keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
+        var userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
+        Console.WriteLine($"Firmware addr:      {firmwareAddr}");
+        Console.WriteLine($"Game list addr:     {gameListAddr}");
+        Console.WriteLine($"User prefs addr:    {userPrefsAddr}");
+        Console.WriteLine($"Key code list addr: {keyCodeListAddr}");
+        Console.WriteLine();
+        Console.WriteLine($"Active key code: {_activeKeyCode}");
+        if (_supportsKeyCodes)
+        {
+            Console.WriteLine("Key codes: ");
+            foreach (KeyCode keyCode in _keyCodes)
+            {
+                Console.WriteLine($"- {keyCode}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("This firmware version does not support additional key codes.");
+        }
     }
 }

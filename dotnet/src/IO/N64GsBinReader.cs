@@ -10,36 +10,68 @@ namespace LibreShark.Hammerhead.N64;
 class N64GsBinReader
 {
     private readonly byte[] _buffer;
-    private uint _position;
+
+    public uint Position;
 
     public N64GsBinReader(byte[] buffer)
     {
         _buffer = buffer;
     }
 
+    public int Find(string needle)
+    {
+        return _buffer.Find(needle);
+    }
+
+    public int Find(byte[] needle)
+    {
+        return _buffer.Find(needle);
+    }
+
+    public bool Contains(string needle)
+    {
+        return _buffer.Contains(needle);
+    }
+
+    public bool Contains(byte[] needle)
+    {
+        return _buffer.Contains(needle);
+    }
+
     public N64GsBinReader Seek(uint addr)
     {
-        _position = addr;
+        Position = addr;
         return this;
+    }
+
+    public byte[] PeekBytesAt(uint addr, uint count)
+    {
+        if (addr == _buffer.Length)
+        {
+            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
+        }
+        if (addr + count > _buffer.Length)
+        {
+            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+        }
+        return _buffer.Skip((int)addr).Take((int)count).ToArray();
     }
 
     public byte[] PeekBytes(uint count)
     {
-        if (_buffer == null || _position == _buffer.Length)
-        {
-            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer?.Length} (0x{_buffer?.Length:X8})");
-        }
-        if (_position + count > _buffer.Length)
-        {
-            throw new IndexOutOfRangeException($"Invalid position: {_position+count} (0x{_position+count:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
-        }
-        return _buffer.Skip((int)_position).Take((int)count).ToArray();
+        return PeekBytesAt(Position, count);
+    }
+
+    public byte[] ReadBytesAt(uint addr, uint count)
+    {
+        Seek(addr);
+        return ReadBytes(count);
     }
 
     public byte[] ReadBytes(uint count)
     {
         byte[] bytes = PeekBytes(count);
-        _position += count;
+        Position += count;
         return bytes;
     }
 
@@ -51,16 +83,16 @@ class N64GsBinReader
 
     public byte ReadUByte()
     {
-        if (_buffer == null || _position == _buffer.Length)
+        if (Position == _buffer.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer?.Length} (0x{_buffer?.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
         }
-        if (_position > _buffer.Length)
+        if (Position > _buffer.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {_position} (0x{_position:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
         }
 
-        return _buffer[_position++];
+        return _buffer[Position++];
     }
 
     public sbyte ReadSByte(uint addr)
@@ -148,7 +180,7 @@ class N64GsBinReader
 
     private RomString ReadCString(TryReadNextChar read, int maxLen)
     {
-        uint startPos = _position;
+        uint startPos = Position;
 
         StringBuilder builder = new StringBuilder();
 
@@ -157,7 +189,7 @@ class N64GsBinReader
             builder.Append(ch);
         }
 
-        uint endPos = _position;
+        uint endPos = Position;
         uint len = endPos - startPos;
 
         return new RomString

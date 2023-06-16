@@ -137,4 +137,8 @@ message RomMetadata {
   ChecksumResult firmware_checksum = 10;
 
   repeated RomString identifiers = 11;
+
+  // Whether the ROM's firmware version is found in Hammerhead's internal
+  // database of known versions.
+  bool is_known_version = 12;
 }
