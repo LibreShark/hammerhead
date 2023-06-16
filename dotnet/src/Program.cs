@@ -5,6 +5,7 @@ using BetterConsoles.Tables;
 using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
+using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead;
 
