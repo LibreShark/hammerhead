@@ -10,10 +10,9 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class N64GsBinWriter
 {
-    public byte[]? Buffer { get; set; }
-    public int Position { get; set; }
-    public int BytesWritten { get; set; }
-    public int AutoExtendSize { get; set; }
+    private readonly byte[] _buffer;
+
+    private uint _position;
 
     public N64GsBinWriter(int bufferSize)
         : this(new byte[bufferSize])
@@ -21,56 +20,49 @@ class N64GsBinWriter
     }
 
     public N64GsBinWriter(byte[] buffer)
-        : this()
     {
-        Buffer = buffer;
-    }
-
-    public N64GsBinWriter()
-    {
+        _buffer = buffer;
     }
 
     public void WriteToFile(string path)
     {
-        File.WriteAllBytes(path, Buffer ?? Array.Empty<byte>());
+        File.WriteAllBytes(path, _buffer);
     }
 
-    public void Seek(int position)
+    public void Seek(uint position)
     {
-        Position = position;
+        _position = position;
     }
 
     public void SeekEnd()
     {
-        Seek(Buffer?.Length ?? 0);
+        Seek((uint)_buffer.Length);
     }
 
-    public void SeekOffset(int offset)
+    public void SeekOffset(uint offset)
     {
-        offset += Position;
+        offset += _position;
 
-        if (offset < 0 || Buffer == null || offset >= Buffer.Length)
+        if (offset >= _buffer.Length)
         {
-            throw new IndexOutOfRangeException("Seek offset out of range");
+            throw new IndexOutOfRangeException($"Seek offset out of range: 0x{offset:X8}");
         }
 
-        Position = offset;
+        _position = offset;
     }
 
     public void WriteByte(int b)
     {
-        if (Buffer == null || Position == Buffer.Length)
+        if (_position >= _buffer.Length)
         {
-            AutoExtend();
+            throw new IndexOutOfRangeException($"Invalid position: 0x{_position:X8}");
         }
-        if (Position < 0 || Position > Buffer?.Length)
+        if (_position > _buffer.Length)
         {
-            throw new IndexOutOfRangeException("Invalid position");
+            throw new IndexOutOfRangeException($"Invalid position: 0x{_position:X8}");
         }
 
-        Buffer![Position++] = (byte)b;
-
-        BytesWritten++;
+        _buffer[_position++] = (byte)b;
     }
 
     public void WriteBytes(IEnumerable<byte> bytes)
@@ -79,28 +71,6 @@ class N64GsBinWriter
         {
             WriteByte(b);
         }
-    }
-
-    private void AutoExtend()
-    {
-        if (AutoExtendSize < 1)
-        {
-            throw new IndexOutOfRangeException("End of buffer reached");
-        }
-
-        byte[] newBuffer;
-
-        if (Buffer == null)
-        {
-            newBuffer = new byte[AutoExtendSize];
-        }
-        else
-        {
-            newBuffer = new byte[Buffer.Length + AutoExtendSize];
-            Array.Copy(Buffer, newBuffer, Buffer.Length);
-        }
-
-        Buffer = newBuffer;
     }
 
     public void WriteInt16(int i)
@@ -175,7 +145,7 @@ class N64GsBinWriter
         return false;
     }
 
-    private bool TryParseHex(string hex, out int result)
+    private static bool TryParseHex(string hex, out int result)
     {
         return int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result);
     }

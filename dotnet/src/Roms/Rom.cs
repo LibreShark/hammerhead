@@ -23,10 +23,11 @@ public abstract class Rom
     {
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
-
-        Metadata = new RomMetadata();
-        Metadata.FilePath = filePath;
-        Metadata.Type = type;
+        Metadata = new RomMetadata
+        {
+            FilePath = filePath,
+            Type = type,
+        };
     }
 
     public abstract void PrintSummary();

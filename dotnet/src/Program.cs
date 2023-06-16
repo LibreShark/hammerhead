@@ -16,7 +16,7 @@ internal static class Program
     private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
     private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
 
-    public static int ShowUsage()
+    private static int ShowUsage()
     {
         Console.WriteLine(@"
 Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]

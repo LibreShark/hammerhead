@@ -6,6 +6,20 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <AssemblyName>hammerhead</AssemblyName>
+        <RootNamespace>LibreShark.Hammerhead</RootNamespace>
+        <PackageId>LibreShark.Hammerhead</PackageId>
+        <Title>Hammerhead</Title>
+        <Authors>LibreShark project contributors</Authors>
+        <Description>A Swiss Army Knife for reading, writing, encrypting, and decrypting ROM/firmware dumps from 1990s-2000s era video game enhancers (GameShark, Action Replay, Code Breaker, Xplorer/Xploder, etc.).</Description>
+        <Copyright>2023</Copyright>
+        <PackageProjectUrl>https://github.com/LibreShark/hammerhead</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/LibreShark/hammerhead/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/LibreShark/hammerhead</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Company>LibreShark project</Company>
+        <Product>Hammerhead</Product>
+        <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,7 +36,6 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="protobuf-linq" Version="0.3.0" />
       <PackageReference Include="Protobuf.Text" Version="0.7.0" />
     </ItemGroup>
 

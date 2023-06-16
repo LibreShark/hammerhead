@@ -14,7 +14,7 @@ internal class CliCmd
         _id = id;
         _minArgCount = minArgCount;
         _maxArgCount = maxArgCount;
-        _runner = runner ?? (args => 0);
+        _runner = runner ?? (_ => 0);
     }
 
     public bool Is(string id)

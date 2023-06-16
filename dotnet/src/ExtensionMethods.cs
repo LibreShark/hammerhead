@@ -85,9 +85,10 @@ public static class ExtensionMethods
 
     public static RomString Trim(this RomString oldRomString)
     {
-        var newRomString = new RomString(oldRomString);
-        newRomString.Value = oldRomString.Value.Trim();
-        return newRomString;
+        return new RomString(oldRomString)
+        {
+            Value = oldRomString.Value.Trim(),
+        };
     }
 
     public static string ToDisplayString(this RomRange range)
