@@ -19,14 +19,14 @@ public abstract class Rom
 
     public readonly RomMetadata Metadata;
 
-    protected Rom(string filePath, byte[] bytes, RomType type)
+    protected Rom(string filePath, byte[] bytes, RomClass @class)
     {
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
         Metadata = new RomMetadata
         {
             FilePath = filePath,
-            Type = type,
+            Class = @class,
         };
     }
 

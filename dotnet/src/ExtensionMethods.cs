@@ -49,15 +49,15 @@ public static class ExtensionMethods
         return -1;
     }
 
-    public static string ToDisplayString(this RomType type)
+    public static string ToDisplayString(this RomClass type)
     {
         switch (type)
         {
-            case RomType.N64Gameshark:
+            case RomClass.N64Gameshark:
                 return "N64 GameShark";
-            case RomType.N64Gbhunter:
+            case RomClass.N64Gbhunter:
                 return "N64 GB Hunter";
-            case RomType.N64Xplorer64:
+            case RomClass.N64Xplorer64:
                 return "N64 Xplorer 64";
             default:
                 // TODO(CheatoBaggins): Implement all

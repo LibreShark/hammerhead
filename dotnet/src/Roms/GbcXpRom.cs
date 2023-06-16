@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbcXpRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbcXploder;
+    private const RomClass ThisRomClass = RomClass.GbcXploder;
 
     public GbcXpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
     }
 
@@ -27,12 +27,12 @@ public sealed class GbcXpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Type == ThisRomType;
+        return rom.Metadata.Class == ThisRomClass;
     }
 
-    public static bool Is(RomType type)
+    public static bool Is(RomClass type)
     {
-        return type == ThisRomType;
+        return type == ThisRomClass;
     }
 
     public override void PrintSummary()

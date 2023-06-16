@@ -8,7 +8,7 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class N64GsRom : Rom
 {
-    private const RomType ThisRomType = RomType.N64Gameshark;
+    private const RomClass ThisRomClass = RomClass.N64Gameshark;
 
     private readonly N64GsBinReader _reader;
     private readonly N64GsBinWriter _writer;
@@ -36,7 +36,7 @@ public sealed class N64GsRom : Rom
     private const uint BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
         if (IsEncrypted())
         {
@@ -219,12 +219,12 @@ public sealed class N64GsRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Type == ThisRomType;
+        return rom.Metadata.Class == ThisRomClass;
     }
 
-    public static bool Is(RomType type)
+    public static bool Is(RomClass type)
     {
-        return type == ThisRomType;
+        return type == ThisRomClass;
     }
 
     public override void PrintSummary()
@@ -234,14 +234,13 @@ public sealed class N64GsRom : Rom
         Console.WriteLine();
         Console.WriteLine($"N64 GameShark ROM file: '{Metadata.FilePath}'");
         Console.WriteLine();
-        Console.WriteLine($"Encrypted: {IsEncrypted()}");
-        Console.WriteLine($"Compressed: {IsCompressed()}");
-        Console.WriteLine();
-        Console.WriteLine($"Type: {Metadata.Type.ToDisplayString()}");
-        Console.WriteLine($"Brand: {Metadata.Brand.ToDisplayString()}");
-        Console.WriteLine($"Locale: {Metadata.LanguageIetfCode}");
-        Console.WriteLine($"Version: {Metadata.DisplayVersion}");
+        Console.WriteLine($"Class:      {Metadata.Class.ToDisplayString()}");
+        Console.WriteLine($"Brand:      {Metadata.Brand.ToDisplayString()}");
+        Console.WriteLine($"Locale:     {Metadata.LanguageIetfCode}");
+        Console.WriteLine($"Version:    {Metadata.DisplayVersion}");
         Console.WriteLine($"Build date: {Metadata.BuildDateIso}");
+        Console.WriteLine($"Encrypted:  {IsEncrypted()}");
+        Console.WriteLine($"Compressed: {IsCompressed()}");
         Console.WriteLine();
         Console.WriteLine("Identifiers:");
         foreach (var id in Metadata.Identifiers)

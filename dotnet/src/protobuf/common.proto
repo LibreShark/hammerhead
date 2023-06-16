@@ -40,7 +40,7 @@ message RomF64 {
   uint64 value = 2;
 }
 
-enum RomType {
+enum RomClass {
   UNKNOWN_ROM_TYPE = 0x00;
 
   // GameShark, Action Replay, Equalizer, and Game Buster all use the same ROM format.
@@ -110,7 +110,7 @@ message ChecksumResult {
 
 message RomMetadata {
   string file_path = 1;
-  RomType type = 2;
+  RomClass class = 2;
   RomBrand brand = 3;
 
   // Human-friendly version number displayed to users in a UI, including a

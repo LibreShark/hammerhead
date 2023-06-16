@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbcSharkMxRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbcSharkMx;
+    private const RomClass ThisRomClass = RomClass.GbcSharkMx;
 
     public GbcSharkMxRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
     }
 
@@ -27,12 +27,12 @@ public sealed class GbcSharkMxRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Type == ThisRomType;
+        return rom.Metadata.Class == ThisRomClass;
     }
 
-    public static bool Is(RomType type)
+    public static bool Is(RomClass type)
     {
-        return type == ThisRomType;
+        return type == ThisRomClass;
     }
 
     public override void PrintSummary()

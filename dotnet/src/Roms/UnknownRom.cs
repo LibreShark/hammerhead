@@ -2,10 +2,10 @@ namespace LibreShark.Hammerhead;
 
 public sealed class UnknownRom : Rom
 {
-    private const RomType ThisRomType = RomType.UnknownRomType;
+    private const RomClass ThisRomClass = RomClass.UnknownRomClass;
 
     public UnknownRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
     }
 

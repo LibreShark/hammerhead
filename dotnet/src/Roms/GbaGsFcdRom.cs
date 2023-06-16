@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbaGsFcdRom : Rom
 {
-    private const RomType ThisRomType = RomType.GbaGamesharkFcd;
+    private const RomClass ThisRomClass = RomClass.GbaGamesharkFcd;
 
     public GbaGsFcdRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
     }
 
@@ -35,12 +35,12 @@ public sealed class GbaGsFcdRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Type == ThisRomType;
+        return rom.Metadata.Class == ThisRomClass;
     }
 
-    public static bool Is(RomType type)
+    public static bool Is(RomClass type)
     {
-        return type == ThisRomType;
+        return type == ThisRomClass;
     }
 
     public override void PrintSummary()

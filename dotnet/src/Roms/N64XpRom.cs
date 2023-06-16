@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class N64XpRom : Rom
 {
-    private const RomType ThisRomType = RomType.N64Xplorer64;
+    private const RomClass ThisRomClass = RomClass.N64Xplorer64;
 
     public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomType)
+        : base(filePath, bytes, ThisRomClass)
     {
         if (IsScrambled())
         {
@@ -79,12 +79,12 @@ public sealed class N64XpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Type == ThisRomType;
+        return rom.Metadata.Class == ThisRomClass;
     }
 
-    public static bool Is(RomType type)
+    public static bool Is(RomClass type)
     {
-        return type == ThisRomType;
+        return type == ThisRomClass;
     }
 
     public override void PrintSummary()
