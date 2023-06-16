@@ -16,7 +16,6 @@ public sealed class N64GsRom : Rom
     private bool _isCompressed;
     private bool _isV3Firmware;
     private bool _isV1GameList;
-    private bool _isV1KeyCodeListAddr;
     private bool _isV3KeyCodeListAddr;
     private bool _supportsUserPrefs;
     private bool _supportsKeyCodes;
@@ -72,7 +71,6 @@ public sealed class N64GsRom : Rom
 
         _isV3Firmware        = _reader.ReadUInt32(0x00001000) == 0x00000000;
         _isV1GameList        = _reader.ReadUInt32(0x0002DFF0) == 0x00000000;
-        _isV1KeyCodeListAddr = _reader.ReadUInt32(0x0002D7F0) == 0x00000000;
         _isV3KeyCodeListAddr = _reader.ReadUInt32(0x0002FBF0) == 0xFFFFFFFF;
         _keyCodeListAddr     = (uint)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
         _supportsKeyCodes    = _reader.ReadUInt32(_keyCodeListAddr) != 0x00000000;
@@ -165,10 +163,9 @@ public sealed class N64GsRom : Rom
             return null;
         }
 
-        // Uncomment to return ONLY the number
+        // Uncomment to return ONLY the number (e.g., "2.21")
         // titleVersionPos += needle.Length;
 
-        // e.g., "2.21"
         return _reader.ReadPrintableCStringAt((uint)titleVersionPos, needle.Length + 5).Trim();
     }
 

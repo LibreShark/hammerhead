@@ -10,7 +10,7 @@ public partial class N64GsRomVersion
     public static readonly CultureInfo GERMAN_GERMANY = CultureInfo.GetCultureInfoByIetfLanguageTag("de-DE");
     public static readonly CultureInfo UNKNOWN_LOCALE = CultureInfo.InvariantCulture;
 
-    public readonly bool IsInDatabase;
+    public readonly bool IsKnown;
     public readonly string RawTimestamp;
     public double Number { get; private set; }
     public readonly string? Disambiguator;
@@ -19,7 +19,6 @@ public partial class N64GsRomVersion
     public CultureInfo Locale { get; private set; }
 
     public string? RawTitleVersionNumber { get; private set; }
-    public double? ParsedTitleVersionNumber => RawTitleVersionNumber != null ? double.Parse(RawTitleVersionNumber) : null;
 
     public bool HasDisambiguator => !string.IsNullOrEmpty(Disambiguator);
     public string DisplayBrand => Brand.ToDisplayString();
@@ -36,7 +35,7 @@ public partial class N64GsRomVersion
         BuildTimestamp = buildTimestamp;
         Brand = brand;
         Locale = locale;
-        IsInDatabase = Brand != RomBrand.UnknownBrand;
+        IsKnown = Brand != RomBrand.UnknownBrand;
     }
 
     public static N64GsRomVersion? From(string raw)
