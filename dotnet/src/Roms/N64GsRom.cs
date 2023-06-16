@@ -16,6 +16,15 @@ public sealed class N64GsRom : Rom
 
     private bool _isCompressed = false;
 
+    private bool _isV3Firmware;
+    private bool _isV2GameList;
+    private bool _isV2KeyCodeList;
+    private bool _isV3KeyCodeList;
+    private bool _hasUserConfig;
+    private uint _firmwareAddr;
+    private uint _gameListAddr;
+    private uint _keyCodeListAddr;
+
     public N64GsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomType)
     {
@@ -70,16 +79,15 @@ public sealed class N64GsRom : Rom
         // } else {
         //     HeaderSection header @ 0x00000000;
         //
-        //     bool isV3Firmware    = read_u32_at(0x00001000) == 0x00000000;
-        //     bool isV2GameList    = read_u32_at(0x0002DFF0) == 0x00000000;
-        //     bool isV2KeyCodeList = read_u32_at(0x0002D7F0) == 0x00000000;
-        //     bool isV3KeyCodeList = read_u32_at(0x0002FBF0) == 0xFFFFFFFF;
-        //     bool hasUserConfig   = read_u32_at(0x0002FAF0) == 0xFFFFFFFF;
-        //
-        //     u32 firmwareAddr    = isV3Firmware ? 0x00001080 : 0x00001000;
-        //     u32 gameListAddr    = isV2GameList ? 0x0002E000 : 0x00030000;
-        //     u32 keyCodeListAddr = isV3KeyCodeList ? 0x0002FC00 : (isV2KeyCodeList ? 0x0002D800 : 0xFFFFFFFF);
-        //
+        _isV3Firmware    = _reader.ReadUInt32(0x00001000) == 0x00000000;
+        _isV2GameList    = _reader.ReadUInt32(0x0002DFF0) == 0x00000000;
+        _isV2KeyCodeList = _reader.ReadUInt32(0x0002D7F0) == 0x00000000;
+        _isV3KeyCodeList = _reader.ReadUInt32(0x0002FBF0) == 0xFFFFFFFF;
+        _hasUserConfig   = _reader.ReadUInt32(0x0002FAF0) == 0xFFFFFFFF;
+        _firmwareAddr    = (uint)(_isV3Firmware ? 0x00001080 : 0x00001000);
+        _gameListAddr    = (uint)(_isV2GameList ? 0x0002E000 : 0x00030000);
+        _keyCodeListAddr = _isV3KeyCodeList ? 0x0002FC00 : _isV2KeyCodeList ? 0x0002D800 : 0xFFFFFFFF;
+
         //     FirmwareSection firmware @ firmwareAddr;
         //     GameListSection gameList @ gameListAddr;
         //
@@ -190,9 +198,9 @@ public sealed class N64GsRom : Rom
         byte[] first4Bytes = bytes[..4];
         bool isN64 = first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x40 }) ||
                      first4Bytes.SequenceEqual(new byte[] { 0x80, 0x37, 0x12, 0x00 });
-        const string v1or2Header = "(C) DATEL D&D ";
+        const string v1Or2Header = "(C) DATEL D&D ";
         const string v3ProHeader = "(C) MUSHROOM &";
-        return isN64 && (bytes.Contains(v1or2Header) || bytes.Contains(v3ProHeader));
+        return isN64 && (bytes.Contains(v1Or2Header) || bytes.Contains(v3ProHeader));
     }
 
     private static bool DetectEncrypted(byte[] bytes)
@@ -231,5 +239,14 @@ public sealed class N64GsRom : Rom
         {
             Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
         }
+        Console.WriteLine();
+        Console.WriteLine($"_isV3Firmware:    {_isV3Firmware}");
+        Console.WriteLine($"_isV2GameList:    {_isV2GameList}");
+        Console.WriteLine($"_isV2KeyCodeList: {_isV2KeyCodeList}");
+        Console.WriteLine($"_isV3KeyCodeList: {_isV3KeyCodeList}");
+        Console.WriteLine($"_hasUserConfig:   {_hasUserConfig}");
+        Console.WriteLine($"_firmwareAddr:    0x{_firmwareAddr:X8}");
+        Console.WriteLine($"_gameListAddr:    0x{_gameListAddr:X8}");
+        Console.WriteLine($"_keyCodeListAddr: 0x{_keyCodeListAddr:X8}");
     }
 }
