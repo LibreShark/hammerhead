@@ -36,7 +36,7 @@ Commands:
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
         Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
-        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT.Trim());
+        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
 
         if (cliArgs.Length < 1)
         {
@@ -68,6 +68,38 @@ Commands:
             Rom rom = Rom.FromFile(romFilePath);
             rom.PrintSummary();
         }
+        return 0;
+    }
+
+    private static int ScrambleXp64(IEnumerable<string> inputRomFilePaths)
+    {
+        foreach (var inputRomFilePath in inputRomFilePaths)
+        {
+            var unscrambledBytes = File.ReadAllBytes(inputRomFilePath);
+            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "scrambled.bin");
+
+            Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
+
+            var scrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, scrambledBytes);
+        }
+
+        return 0;
+    }
+
+    private static int UnscrambleXp64(IEnumerable<string> inputRomFilePaths)
+    {
+        foreach (var inputRomFilePath in inputRomFilePaths)
+        {
+            var scrambledBytes = File.ReadAllBytes(inputRomFilePath);
+            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "unscrambled.bin");
+
+            Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
+
+            var unscrambledBytes = N64XplorerScrambler.UnscrambleXpRom(scrambledBytes);
+            File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
+        }
+
         return 0;
     }
 }
