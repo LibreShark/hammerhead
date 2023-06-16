@@ -590,7 +590,7 @@ internal static class Program
 
             Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
 
-            var unscrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytesXXX);
+            var unscrambledBytes = N64XplorerScrambler.UnscrambleXpRom(scrambledBytes);
             File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
         }
 
