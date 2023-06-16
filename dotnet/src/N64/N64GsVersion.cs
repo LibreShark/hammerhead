@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace LibreShark.Hammerhead.N64;
 
-public partial class N64GsRomVersion
+public partial class N64GsVersion
 {
     public static readonly CultureInfo ENGLISH_US = CultureInfo.GetCultureInfoByIetfLanguageTag("en-US");
     public static readonly CultureInfo ENGLISH_UK = CultureInfo.GetCultureInfoByIetfLanguageTag("en-GB");
@@ -27,7 +27,7 @@ public partial class N64GsRomVersion
     public string DisplayBuildTimestampRaw => RawTimestamp;
     public string DisplayLocale => Locale.ToString();
 
-    private N64GsRomVersion(string raw, double number, string? disambiguator, DateTime buildTimestamp, RomBrand brand, CultureInfo locale)
+    private N64GsVersion(string raw, double number, string? disambiguator, DateTime buildTimestamp, RomBrand brand, CultureInfo locale)
     {
         RawTimestamp = raw;
         Number = number;
@@ -38,23 +38,23 @@ public partial class N64GsRomVersion
         IsKnown = Brand != RomBrand.UnknownBrand;
     }
 
-    public static N64GsRomVersion? From(string raw)
+    public static N64GsVersion? From(string raw)
     {
         return KnownVersion(raw) ?? UnknownVersion(raw);
     }
 
-    private static N64GsRomVersion Of(string raw, double number, string? disambiguator, DateTime buildTimestamp)
+    private static N64GsVersion Of(string raw, double number, string? disambiguator, DateTime buildTimestamp)
     {
-        return new N64GsRomVersion(raw, number, disambiguator, buildTimestamp, RomBrand.UnknownBrand, UNKNOWN_LOCALE);
+        return new N64GsVersion(raw, number, disambiguator, buildTimestamp, RomBrand.UnknownBrand, UNKNOWN_LOCALE);
     }
 
-    private static N64GsRomVersion Of(string raw, double number, string? disambiguator,
+    private static N64GsVersion Of(string raw, double number, string? disambiguator,
         int year, int month, int day, int hour, int minute, int second, RomBrand brand, CultureInfo locale)
     {
-        return new N64GsRomVersion(raw, number, disambiguator, new DateTime(year, month, day, hour, minute, second), brand, locale);
+        return new N64GsVersion(raw, number, disambiguator, new DateTime(year, month, day, hour, minute, second), brand, locale);
     }
 
-    private static N64GsRomVersion? KnownVersion(string raw)
+    private static N64GsVersion? KnownVersion(string raw)
     {
         // TODO: Find a v2.20 ROM and add its build timestamp here
         return raw.Trim() switch
@@ -104,7 +104,7 @@ public partial class N64GsRomVersion
     [GeneratedRegex("(?<HH>\\d\\d):(?<mm>\\d\\d) (?<MMM>\\w\\w\\w) (?<dd>\\d\\d?)(?: (?<yy>\\d\\d)?)?")]
     private static partial Regex TimestampRegex();
 
-    private static N64GsRomVersion? UnknownVersion(string raw)
+    private static N64GsVersion? UnknownVersion(string raw)
     {
         string trimmed = raw.Trim();
         var match = TimestampRegex().Match(trimmed);
@@ -153,7 +153,7 @@ public partial class N64GsRomVersion
                $", built on {BuildTimestamp:yyyy-MM-dd HH:mm} ('{RawTimestamp}') - {Locale}";
     }
 
-    public N64GsRomVersion WithTitleVersionNumber(string? titleVersionStr)
+    public N64GsVersion WithTitleVersionNumber(string? titleVersionStr)
     {
         RawTitleVersionNumber = titleVersionStr;
         if (Brand == RomBrand.UnknownBrand && titleVersionStr != null)

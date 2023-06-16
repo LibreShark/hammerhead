@@ -26,7 +26,7 @@ public sealed class N64GsRom : Rom
     private uint _userPrefsAddr;
     private RomString _headerId;
     private RomString _rawTimestamp;
-    private N64GsRomVersion _version;
+    private N64GsVersion _version;
     private List<KeyCode> _keyCodes;
     private KeyCode _activeKeyCode;
 
@@ -130,7 +130,7 @@ public sealed class N64GsRom : Rom
         return keyCodes;
     }
 
-    private N64GsRomVersion ReadVersion()
+    private N64GsVersion ReadVersion()
     {
         // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
         RomString? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
@@ -143,7 +143,7 @@ public sealed class N64GsRom : Rom
             Metadata.Identifiers.Add(titleVersionNumberStr);
         }
 
-        var version = N64GsRomVersion.From(_rawTimestamp.Value)?
+        var version = N64GsVersion.From(_rawTimestamp.Value)?
             .WithTitleVersionNumber(titleVersionNumberStr?.Value);
         if (version == null)
         {
@@ -192,8 +192,8 @@ public sealed class N64GsRom : Rom
         {
             return;
         }
-        Console.WriteLine("ENCRYPTED!");
-        byte[] decrypted = N64GsRomCrypter.Decrypt(Bytes);
+
+        byte[] decrypted = N64GsCrypter.Decrypt(Bytes);
         for (int i = 0; i < Bytes.Length; i++)
         {
             Bytes[i] = decrypted[i];
@@ -257,9 +257,9 @@ public sealed class N64GsRom : Rom
         var keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
         var userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
         Console.WriteLine($"Firmware addr:      {firmwareAddr}");
-        Console.WriteLine($"Game list addr:     {gameListAddr}");
         Console.WriteLine($"User prefs addr:    {userPrefsAddr}");
         Console.WriteLine($"Key code list addr: {keyCodeListAddr}");
+        Console.WriteLine($"Game list addr:     {gameListAddr}");
         Console.WriteLine();
         Console.WriteLine($"Active key code: {_activeKeyCode}");
         if (_supportsKeyCodes)

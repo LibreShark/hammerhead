@@ -81,7 +81,7 @@ Commands:
 
             Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
 
-            var scrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
+            var scrambledBytes = N64XpScrambler.ScrambleXpRom(unscrambledBytes);
             File.WriteAllBytes(outputRomFilePath, scrambledBytes);
         }
 
@@ -97,7 +97,7 @@ Commands:
 
             Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
 
-            var unscrambledBytes = N64XplorerScrambler.UnscrambleXpRom(scrambledBytes);
+            var unscrambledBytes = N64XpScrambler.UnscrambleXpRom(scrambledBytes);
             File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
         }
 

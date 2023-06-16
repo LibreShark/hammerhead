@@ -1,6 +1,10 @@
 namespace LibreShark.Hammerhead.N64;
 
-public class N64XplorerScrambler
+/// <summary>
+/// Unscrambles Xplorer 64 ROM files dumped directly from the two EEPROM chips,
+/// and re-scrambles them for flashing directly to the EEPROMs.
+/// </summary>
+public class N64XpScrambler
 {
     public static int Unscramble(int addr)
     {
@@ -18,7 +22,6 @@ public class N64XplorerScrambler
 
     public static byte[] ScrambleXpRom(byte[] plainBytes)
     {
-        byte[] scrambledBytes = new byte[plainBytes.Length];
         byte[] high = new byte[plainBytes.Length / 2];
         byte[] low = new byte[plainBytes.Length / 2];
 
@@ -38,13 +41,15 @@ public class N64XplorerScrambler
             unscrambledLow[i] = low[scrambledAddress];
         }
 
-        scrambledBytes = unscrambledHigh.Zip(unscrambledLow, (a, b) => new[] { a, b }).SelectMany(ab => ab).ToArray();
+        byte[] scrambledBytes = unscrambledHigh
+            .Zip(unscrambledLow, (a, b) => new[] { a, b })
+            .SelectMany(ab => ab)
+            .ToArray();
         return scrambledBytes;
     }
 
     public static byte[] UnscrambleXpRom(byte[] scrambledBytes)
     {
-        byte[] plainBytes = new byte[scrambledBytes.Length];
         byte[] high = new byte[scrambledBytes.Length / 2];
         byte[] low = new byte[scrambledBytes.Length / 2];
 
@@ -64,8 +69,10 @@ public class N64XplorerScrambler
             scrambledLow[i] = low[unscrambledAddress];
         }
 
-        plainBytes = scrambledHigh.Zip(scrambledLow, (a, b) => new[] { a, b }).SelectMany(ab => ab).ToArray();
-
+        byte[] plainBytes = scrambledHigh
+            .Zip(scrambledLow, (a, b) => new[] { a, b })
+            .SelectMany(ab => ab)
+            .ToArray();
         return plainBytes;
     }
 }

@@ -9,7 +9,7 @@ namespace LibreShark.Hammerhead.N64;
 /// <summary>
 /// Encrypt or decrypt a GameShark ROM image used with the offical N64Utils program.
 /// </summary>
-class N64GsRomCrypter
+class N64GsCrypter
 {
     public static byte[] Encrypt(byte[] input)
     {
@@ -21,9 +21,9 @@ class N64GsRomCrypter
         return ProcessRom(input, decoder => decoder.Decode());
     }
 
-    private static byte[] ProcessRom(byte[] input, Action<N64GsRomCrypter> action)
+    private static byte[] ProcessRom(byte[] input, Action<N64GsCrypter> action)
     {
-        N64GsRomCrypter crypter = new N64GsRomCrypter(input);
+        N64GsCrypter crypter = new N64GsCrypter(input);
         action(crypter);
         return crypter._output;
     }
@@ -32,7 +32,7 @@ class N64GsRomCrypter
     private readonly N64GsBinReader _reader;
     private readonly N64GsBinWriter _writer;
 
-    private N64GsRomCrypter(byte[] input)
+    private N64GsCrypter(byte[] input)
     {
         _output = input.ToArray();
         _reader = new N64GsBinReader(_output);
