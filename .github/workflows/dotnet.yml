@@ -21,8 +21,11 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore --project dotnet/src/src.csproj
+      working-directory: dotnet/src/
+      run: dotnet restore
     - name: Build
-      run: dotnet build --project dotnet/src/src.csproj --no-restore
+      working-directory: dotnet/src/
+      run: dotnet build --project src.csproj --no-restore
     - name: Test
-      run: dotnet test --project dotnet/src/src.csproj --no-build --verbosity normal
+      working-directory: dotnet/src/
+      run: dotnet test --project src.csproj --no-build --verbosity normal
