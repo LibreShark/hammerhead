@@ -41,7 +41,7 @@ message RomF64 {
 }
 
 enum RomClass {
-  UNKNOWN_ROM_TYPE = 0x00;
+  UNKNOWN_ROM_CLASS = 0x00;
 
   // GameShark, Action Replay, Equalizer, and Game Buster all use the same ROM format.
   N64_GAMESHARK = 0x01;

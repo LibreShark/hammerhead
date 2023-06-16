@@ -192,8 +192,12 @@ public sealed class N64GsRom : Rom
         {
             return;
         }
-        // TODO(CheatoBaggins): Implement
         Console.WriteLine("ENCRYPTED!");
+        byte[] decrypted = N64GsRomCrypter.Decrypt(Bytes);
+        for (int i = 0; i < Bytes.Length; i++)
+        {
+            Bytes[i] = decrypted[i];
+        }
     }
 
     public static bool Is(byte[] bytes)

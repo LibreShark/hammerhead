@@ -18,6 +18,8 @@ class N64GsBinReader
         _buffer = buffer;
     }
 
+    public bool EndReached => Position >= _buffer.Length;
+
     public int Find(string needle)
     {
         return _buffer.Find(needle);

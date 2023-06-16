@@ -14,19 +14,9 @@ class N64GsBinWriter
 
     private uint _position;
 
-    public N64GsBinWriter(int bufferSize)
-        : this(new byte[bufferSize])
-    {
-    }
-
     public N64GsBinWriter(byte[] buffer)
     {
         _buffer = buffer;
-    }
-
-    public void WriteToFile(string path)
-    {
-        File.WriteAllBytes(path, _buffer);
     }
 
     public void Seek(uint position)
@@ -53,16 +43,27 @@ class N64GsBinWriter
 
     public void WriteByte(int b)
     {
+        WriteByte((byte)b);
+    }
+
+    public void WriteByte(uint b)
+    {
+        WriteByte((byte)b);
+    }
+
+    public void WriteByte(char c)
+    {
+        WriteByte((byte)c);
+    }
+
+    public void WriteByte(byte b)
+    {
         if (_position >= _buffer.Length)
         {
             throw new IndexOutOfRangeException($"Invalid position: 0x{_position:X8}");
         }
-        if (_position > _buffer.Length)
-        {
-            throw new IndexOutOfRangeException($"Invalid position: 0x{_position:X8}");
-        }
 
-        _buffer[_position++] = (byte)b;
+        _buffer[_position++] = b;
     }
 
     public void WriteBytes(IEnumerable<byte> bytes)
