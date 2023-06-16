@@ -25,7 +25,7 @@ jobs:
       run: dotnet restore
     - name: Build
       working-directory: dotnet/src/
-      run: dotnet build --project src.csproj --no-restore
+      run: dotnet build --no-restore
     - name: Test
       working-directory: dotnet/src/
-      run: dotnet test --project src.csproj --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
