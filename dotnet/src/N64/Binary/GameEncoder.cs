@@ -65,7 +65,7 @@ class GameEncoder
 
         WriteCheatName(cheatName);
 
-        int activeBit = cheat.IsActiveByDefault ? 0x80 : 0x00;
+        int activeBit = cheat.IsActive ? 0x80 : 0x00;
         Writer.WriteByte(cheat.Codes.Count | activeBit);
 
         foreach (Code code in cheat.Codes)

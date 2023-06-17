@@ -32,13 +32,13 @@ public class Cheat
     /// <summary>
     /// Indicates whether this cheat is enabled by default when the user boots up the GameShark and selects this game.
     /// </summary>
-    public bool IsActiveByDefault { get; set; }
+    public bool IsActive { get; set; }
 
     public List<Code> Codes { get; private set; }
 
     public Cheat(string name = "", IEnumerable<Code>? codes = null)
     {
-        IsActiveByDefault = false;
+        IsActive = false;
         Name = name;
         Codes = new List<Code>(codes ?? Array.Empty<Code>());
     }
@@ -122,6 +122,6 @@ public class Cheat
 
     public override string ToString()
     {
-        return string.Concat(Name, IsActiveByDefault ? "" : " [off]").Trim();
+        return string.Concat(Name, IsActive ? "" : " [off]").Trim();
     }
 }
