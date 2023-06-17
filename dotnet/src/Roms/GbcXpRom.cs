@@ -21,7 +21,7 @@ public sealed class GbcXpRom : Rom
 
     private static bool Detect(byte[] bytes)
     {
-        return bytes[0x00..0x0A].ToUtf8String() == "Xplorer-GB" &&
+        return bytes[0x00..0x0A].ToAsciiString() == "Xplorer-GB" &&
                bytes.Contains("Future Console Design!");
     }
 

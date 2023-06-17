@@ -23,7 +23,7 @@ public sealed class GbaTvTunerRom : Rom
     private static bool Detect(byte[] bytes)
     {
         var idBytes = bytes[0xA0..0xAB];
-        var idStr = idBytes.ToUtf8String();
+        var idStr = idBytes.ToAsciiString();
         return idStr == "GBA_Capture";
     }
 

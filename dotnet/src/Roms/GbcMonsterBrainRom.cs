@@ -22,7 +22,7 @@ public sealed class GbcMonsterBrainRom : Rom
 
     private static bool Detect(byte[] bytes)
     {
-        string identifier = bytes[0x00..0x20].ToUtf8String();
+        string identifier = bytes[0x00..0x20].ToAsciiString();
         return identifier.StartsWith("BrainBoy") ||
                identifier.StartsWith("Monster Brain");
     }

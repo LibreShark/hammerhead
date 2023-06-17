@@ -24,7 +24,7 @@ public sealed class GbaGsDatelRom : Rom
     private static bool Detect(byte[] bytes)
     {
         bool hasMagicNumber = bytes[..4].SequenceEqual(new byte[] { 0x2E, 0x00, 0x00, 0xEA });
-        bool hasMagicText = bytes[0x21000..0x21004].ToUtf8String().Equals("GBA_");
+        bool hasMagicText = bytes[0x21000..0x21004].ToAsciiString().Equals("GBA_");
         return hasMagicNumber && hasMagicText;
     }
 

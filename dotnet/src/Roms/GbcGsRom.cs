@@ -23,7 +23,7 @@ public sealed class GbcGsRom : Rom
     {
         bool hasMagicNumber = bytes[..4].SequenceEqual(new byte[] { 0xC3, 0x50, 0x01, 0x78 });
 
-        string identifier = bytes[0x0134..0x0146].ToUtf8String();
+        string identifier = bytes[0x0134..0x0146].ToAsciiString();
         bool hasIdentifier = identifier.StartsWith("Gameshark     V") ||
                              identifier.StartsWith("Action Replay V");
 

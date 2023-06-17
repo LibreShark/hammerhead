@@ -28,8 +28,8 @@ public sealed class GbaGsFcdRom : Rom
     private static bool Detect(byte[] bytes)
     {
         bool isMagicNumberMatch = bytes[..4].SequenceEqual(new byte[] { 0x2E, 0x00, 0x00, 0xEA });
-        bool isCopyrightMatch = bytes[0x05..0x20].ToUtf8String() == "(C) Future Console Design *";
-        bool isFcdFcdFcdMatch = bytes[0x80..0xA0].ToUtf8String() == "FCDFCDFCDFCDFCD!FCDFCDFCDFCDFCD!";
+        bool isCopyrightMatch = bytes[0x05..0x20].ToAsciiString() == "(C) Future Console Design *";
+        bool isFcdFcdFcdMatch = bytes[0x80..0xA0].ToAsciiString() == "FCDFCDFCDFCDFCD!FCDFCDFCDFCDFCD!";
         return isMagicNumberMatch && isCopyrightMatch && isFcdFcdFcdMatch;
     }
 

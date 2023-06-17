@@ -21,7 +21,7 @@ public sealed class GbcCbRom : Rom
 
     private static bool Detect(byte[] bytes)
     {
-        var identifier = bytes[0x00..0x10].ToUtf8String();
+        var identifier = bytes[0x00..0x10].ToAsciiString();
         return identifier == "CodeBreaker / GB";
     }
 

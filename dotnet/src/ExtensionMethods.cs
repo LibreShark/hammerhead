@@ -4,13 +4,14 @@ namespace LibreShark.Hammerhead;
 
 public static class ExtensionMethods
 {
-    public static string ToUtf8String(this byte[] bytes)
+    private static readonly Encoding Ascii = Encoding.GetEncoding(
+        "ascii",
+        new EncoderReplacementFallback("?"),
+        new DecoderReplacementFallback("?"));
+
+    public static string ToAsciiString(this byte[] bytes)
     {
-        var utf8 = Encoding.GetEncoding(
-            "utf-8",
-            new EncoderReplacementFallback("?"),
-            new DecoderReplacementFallback("?"));
-        return utf8.GetString(bytes);
+        return Ascii.GetString(bytes);
     }
 
     public static string ToHexString(this byte[] bytes, string delimiter = "")

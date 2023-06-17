@@ -45,7 +45,7 @@ public sealed class N64XpRom : Rom
     private static bool DetectPlain(byte[] bytes)
     {
         var idBytes = bytes[0x40..0x55];
-        var idStr = idBytes.ToUtf8String();
+        var idStr = idBytes.ToAsciiString();
         return idStr == "FUTURE CONSOLE DESIGN";
     }
 
