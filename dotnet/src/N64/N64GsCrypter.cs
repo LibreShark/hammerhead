@@ -4,6 +4,8 @@
 // https://gameshark.fandom.com/wiki/Nintendo_64#GameShark_firmware
 // http://web.archive.org/web/20160324145321/http://doc.kodewerx.org/tools/n64/gs_n64_crypt.zip
 
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.N64;
 
 /// <summary>
@@ -29,14 +31,14 @@ class N64GsCrypter
     }
 
     private readonly byte[] _output;
-    private readonly N64GsBinReader _reader;
-    private readonly N64GsBinWriter _writer;
+    private readonly BigEndianReader _reader;
+    private readonly BigEndianWriter _writer;
 
     private N64GsCrypter(byte[] input)
     {
         _output = input.ToArray();
-        _reader = new N64GsBinReader(_output);
-        _writer = new N64GsBinWriter(_output);
+        _reader = new BigEndianReader(_output);
+        _writer = new BigEndianWriter(_output);
     }
 
     private static IReadOnlyList<uint> Seeds { get; } = new uint[]

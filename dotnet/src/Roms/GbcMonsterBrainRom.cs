@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// Monster Brain and Brain Boy for Game Boy Color and Game Boy Pocket,

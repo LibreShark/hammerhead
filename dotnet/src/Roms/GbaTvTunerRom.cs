@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// TV Tuner for Game Boy Advance, made by Blaze and Pelican Accessories.

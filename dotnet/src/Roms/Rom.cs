@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 public abstract class Rom
 {

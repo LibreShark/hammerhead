@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// Xploder GB (aka "Xplorer GB") for Game Boy Color and Game Boy Pocket,

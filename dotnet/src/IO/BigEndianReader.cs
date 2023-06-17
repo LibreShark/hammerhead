@@ -2,23 +2,22 @@
 
 using System.Text;
 
-namespace LibreShark.Hammerhead.N64;
+namespace LibreShark.Hammerhead.IO;
 
 /// <summary>
 /// Helper class for reading (big-endian) integers and c-style strings from byte buffers.
 /// </summary>
-class N64GsBinReader
+internal class BigEndianReader : IBinReader
 {
     private readonly byte[] _buffer;
 
-    public uint Position;
+    public uint Position { get; private set; }
+    public bool EndReached => Position >= _buffer.Length;
 
-    public N64GsBinReader(byte[] buffer)
+    public BigEndianReader(byte[] buffer)
     {
         _buffer = buffer;
     }
-
-    public bool EndReached => Position >= _buffer.Length;
 
     public int Find(string needle)
     {
@@ -40,7 +39,7 @@ class N64GsBinReader
         return _buffer.Contains(needle);
     }
 
-    public N64GsBinReader Seek(uint addr)
+    public IBinReader Seek(uint addr)
     {
         Position = addr;
         return this;

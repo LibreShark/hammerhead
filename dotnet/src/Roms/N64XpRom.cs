@@ -1,6 +1,6 @@
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// Xplorer 64 for Nintendo 64,

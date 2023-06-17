@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 public sealed class UnknownRom : Rom
 {

@@ -6,10 +6,9 @@ using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
 using LibreShark.Hammerhead.N64;
+using LibreShark.Hammerhead.Roms;
 
 namespace LibreShark.Hammerhead;
-
-// using Protos;
 
 internal static class Program
 {

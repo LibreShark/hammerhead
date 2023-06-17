@@ -1,6 +1,7 @@
+using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
@@ -10,8 +11,8 @@ public sealed class N64GsRom : Rom
 {
     private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
-    private readonly N64GsBinReader _reader;
-    private readonly N64GsBinWriter _writer;
+    private readonly BigEndianReader _reader;
+    private readonly BigEndianWriter _writer;
 
     private bool _isCompressed;
     private bool _isV3Firmware;
@@ -45,8 +46,8 @@ public sealed class N64GsRom : Rom
 
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
-        _reader = new N64GsBinReader(Bytes);
-        _writer = new N64GsBinWriter(Bytes);
+        _reader = new BigEndianReader(Bytes);
+        _writer = new BigEndianWriter(Bytes);
 
         Parse();
     }

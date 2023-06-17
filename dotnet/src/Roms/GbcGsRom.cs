@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
 /// GameShark and Action Replay for Game Boy Color and Game Boy Pocket,

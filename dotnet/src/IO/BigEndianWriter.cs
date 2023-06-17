@@ -3,18 +3,18 @@
 using System.Globalization;
 using System.Text;
 
-namespace LibreShark.Hammerhead.N64;
+namespace LibreShark.Hammerhead.IO;
 
 /// <summary>
 /// Helper class for writing (big-endian) integers and c-style strings to byte buffers.
 /// </summary>
-class N64GsBinWriter
+class BigEndianWriter
 {
     private readonly byte[] _buffer;
 
     private uint _position;
 
-    public N64GsBinWriter(byte[] buffer)
+    public BigEndianWriter(byte[] buffer)
     {
         _buffer = buffer;
     }
