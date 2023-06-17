@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbcMonsterBrainRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.GbcMonsterbrain;
+    private const RomFormat ThisRomFormat = RomFormat.GbcMonsterbrain;
 
     public GbcMonsterBrainRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
     }
 
@@ -29,15 +29,15 @@ public sealed class GbcMonsterBrainRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Class == ThisRomClass;
+        return rom.Metadata.Format == ThisRomFormat;
     }
 
-    public static bool Is(RomClass type)
+    public static bool Is(RomFormat type)
     {
-        return type == ThisRomClass;
+        return type == ThisRomFormat;
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

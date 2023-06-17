@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead;
 
@@ -19,18 +20,64 @@ public abstract class Rom
 
     public readonly RomMetadata Metadata;
 
-    protected Rom(string filePath, byte[] bytes, RomClass @class)
+    protected List<Game> Games = new();
+
+    protected Rom(string filePath, byte[] bytes, RomFormat format)
     {
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
         Metadata = new RomMetadata
         {
             FilePath = filePath,
-            Class = @class,
+            Format = format,
         };
     }
 
-    public abstract void PrintSummary();
+
+    public void PrintSummary()
+    {
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine();
+        Console.WriteLine($"N64 GameShark ROM file: '{Metadata.FilePath}'");
+        Console.WriteLine();
+        Console.WriteLine($"Format:     {Metadata.Format.ToDisplayString()}");
+        Console.WriteLine($"Brand:      {Metadata.Brand.ToDisplayString()}");
+        Console.WriteLine($"Locale:     {Metadata.LanguageIetfCode}");
+        Console.WriteLine($"Version:    {Metadata.DisplayVersion}");
+        Console.WriteLine($"Build date: {Metadata.BuildDateIso}");
+        Console.WriteLine($"Encrypted:  {IsEncrypted()}");
+        Console.WriteLine($"Compressed: {IsCompressed()}");
+        Console.WriteLine();
+        Console.WriteLine("Identifiers:");
+        foreach (RomString id in Metadata.Identifiers)
+        {
+            Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
+        }
+        Console.WriteLine();
+        PrintCustomHeader();
+        Console.WriteLine();
+        if (Games.Count > 0)
+        {
+            string games = Games.Count == 1 ? "game" : "games";
+            Console.WriteLine($"{Games.Count} {games}:");
+            foreach (Game game in Games)
+            {
+                string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
+                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No games/cheats found");
+        }
+    }
+
+    protected abstract void PrintCustomHeader();
+
+    public virtual bool SupportsEncryption() { return false; }
+    public virtual bool SupportsScrambling() { return false; }
+    public virtual bool SupportsCompression() { return false; }
 
     public virtual bool IsEncrypted() { return false; }
     public virtual bool IsScrambled() { return false; }

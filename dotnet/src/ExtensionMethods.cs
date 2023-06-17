@@ -49,16 +49,16 @@ public static class ExtensionMethods
         return -1;
     }
 
-    public static string ToDisplayString(this RomClass type)
+    public static string ToDisplayString(this RomFormat format)
     {
-        switch (type)
+        switch (format)
         {
-            case RomClass.N64Gameshark:
-                return "N64 GameShark";
-            case RomClass.N64Gbhunter:
-                return "N64 GB Hunter";
-            case RomClass.N64Xplorer64:
-                return "N64 Xplorer 64";
+            case RomFormat.N64Gameshark:
+                return "N64 GameShark ROM format";
+            case RomFormat.N64Gbhunter:
+                return "N64 GB Hunter ROM format";
+            case RomFormat.N64Xplorer64:
+                return "N64 Xplorer 64 ROM format";
             default:
                 // TODO(CheatoBaggins): Implement all
                 return "UNKNOWN";
@@ -77,6 +77,18 @@ public static class ExtensionMethods
                 return "Equalizer";
             case RomBrand.GameBuster:
                 return "Game Buster";
+            case RomBrand.Xploder:
+                return "Xploder/Xplorer";
+            case RomBrand.CodeBreaker:
+                return "Code Breaker";
+            case RomBrand.GbHunter:
+                return "GB Hunter";
+            case RomBrand.GameBooster:
+                return "Game Booster";
+            case RomBrand.GameGenie:
+                return "Game Genie";
+            case RomBrand.SharkMx:
+                return "Shark MX";
             default:
                 // TODO(CheatoBaggins): Implement all
                 return "UNKNOWN";

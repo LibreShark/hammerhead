@@ -8,7 +8,7 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class N64GsRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.N64Gameshark;
+    private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
     private readonly N64GsBinReader _reader;
     private readonly N64GsBinWriter _writer;
@@ -27,8 +27,8 @@ public sealed class N64GsRom : Rom
     private RomString _headerId;
     private RomString _rawTimestamp;
     private N64GsVersion _version;
-    private List<KeyCode> _keyCodes;
     private KeyCode _activeKeyCode;
+    private List<KeyCode> _keyCodes;
 
     private const uint ProgramCounterAddr = 0x00000008;
     private const uint ActiveKeyCodeAddr  = 0x00000010;
@@ -36,7 +36,7 @@ public sealed class N64GsRom : Rom
     private const uint BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
         if (IsEncrypted())
         {
@@ -79,9 +79,82 @@ public sealed class N64GsRom : Rom
         _gameListAddr        = (uint)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        var keyCodes = ReadKeyCodes();
+        List<KeyCode> keyCodes = ReadKeyCodes();
         _activeKeyCode = ReadActiveKeyCode(keyCodes);
         _keyCodes = keyCodes;
+
+        Games = ReadGames();
+    }
+
+    private List<Game> ReadGames()
+    {
+        List<Game> games = new List<Game>();
+        Seek(_gameListAddr);
+        int gamesCount = _reader.ReadSInt32();
+        for (int gameIndex = 0; gameIndex < gamesCount; gameIndex++)
+        {
+            games.Add(ReadGame());
+        }
+        return games;
+    }
+
+    private Game ReadGame()
+    {
+        Game game = Game.NewGame(ReadName());
+        int cheatCount = _reader.ReadUByte();
+        for (int cheat = 0; cheat < cheatCount; cheat++)
+        {
+            ReadCheat(game);
+        }
+        return game;
+    }
+
+    private void ReadCheat(Game game)
+    {
+        Cheat cheat = game.AddCheat(ReadName());
+        int codeCount = _reader.ReadUByte();
+        bool cheatOn = (codeCount & 0x80) > 0;
+        codeCount &= 0x7F;
+        cheat.IsActive = cheatOn;
+        for (int code = 0; code < codeCount; code++)
+        {
+            ReadCode(cheat);
+        }
+    }
+
+    private void ReadCode(Cheat cheat)
+    {
+        uint address = _reader.ReadUInt32();
+        int value = _reader.ReadUInt16();
+
+        cheat.AddCode(address, value);
+    }
+
+    private string ReadName()
+    {
+        uint pos = _reader.Position;
+
+        // Firmware does not support names longer than 30 chars.
+        string name = _reader.ReadCStringAt(pos, 30).Value;
+
+        if (name.Length < 1)
+        {
+            Console.Error.WriteLine($"WARNING at offset 0x{pos:X8}: Game and Cheat names should contain at least 1 character.");
+            return name;
+        }
+
+        name = name.Replace("`F6`", "Key");
+        name = name.Replace("`F7`", "Have ");
+        name = name.Replace("`F8`", "Lives");
+        name = name.Replace("`F9`", "Energy");
+        name = name.Replace("`FA`", "Health");
+        name = name.Replace("`FB`", "Activate ");
+        name = name.Replace("`FC`", "Unlimited ");
+        name = name.Replace("`FD`", "Player ");
+        name = name.Replace("`FE`", "Always ");
+        name = name.Replace("`FF`", "Infinite ");
+
+        return name;
     }
 
     private KeyCode ReadActiveKeyCode(List<KeyCode> keyCodes)
@@ -200,6 +273,11 @@ public sealed class N64GsRom : Rom
         }
     }
 
+    public byte[] GetEncrypted()
+    {
+        return N64GsCrypter.Encrypt(Bytes);
+    }
+
     public static bool Is(byte[] bytes)
     {
         bool is256KiB = bytes.Length == 0x00040000;
@@ -223,35 +301,16 @@ public sealed class N64GsRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Class == ThisRomClass;
+        return rom.Metadata.Format == ThisRomFormat;
     }
 
-    public static bool Is(RomClass type)
+    public static bool Is(RomFormat type)
     {
-        return type == ThisRomClass;
+        return type == ThisRomFormat;
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"N64 GameShark ROM file: '{Metadata.FilePath}'");
-        Console.WriteLine();
-        Console.WriteLine($"Class:      {Metadata.Class.ToDisplayString()}");
-        Console.WriteLine($"Brand:      {Metadata.Brand.ToDisplayString()}");
-        Console.WriteLine($"Locale:     {Metadata.LanguageIetfCode}");
-        Console.WriteLine($"Version:    {Metadata.DisplayVersion}");
-        Console.WriteLine($"Build date: {Metadata.BuildDateIso}");
-        Console.WriteLine($"Encrypted:  {IsEncrypted()}");
-        Console.WriteLine($"Compressed: {IsCompressed()}");
-        Console.WriteLine();
-        Console.WriteLine("Identifiers:");
-        foreach (var id in Metadata.Identifiers)
-        {
-            Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
-        }
-        Console.WriteLine();
         var firmwareAddr = $"0x{_firmwareAddr:X8}";
         var gameListAddr = $"0x{_gameListAddr:X8}";
         var keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";

@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbcCbRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.GbcCodebreaker;
+    private const RomFormat ThisRomFormat = RomFormat.GbcCodebreaker;
 
     public GbcCbRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
     }
 
@@ -27,15 +27,15 @@ public sealed class GbcCbRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Class == ThisRomClass;
+        return rom.Metadata.Format == ThisRomFormat;
     }
 
-    public static bool Is(RomClass type)
+    public static bool Is(RomFormat type)
     {
-        return type == ThisRomClass;
+        return type == ThisRomFormat;
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

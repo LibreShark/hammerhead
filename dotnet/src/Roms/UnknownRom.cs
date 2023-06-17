@@ -2,14 +2,14 @@ namespace LibreShark.Hammerhead;
 
 public sealed class UnknownRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.UnknownRomClass;
+    private const RomFormat ThisRomFormat = RomFormat.UnknownRomFormat;
 
     public UnknownRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

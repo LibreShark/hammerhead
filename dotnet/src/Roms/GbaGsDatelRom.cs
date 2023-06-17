@@ -6,10 +6,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class GbaGsDatelRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.GbaGamesharkDatel;
+    private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkDatel;
 
     public GbaGsDatelRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
         var minorVersionNumber = Bytes[0x21004];
         var majorVersionNumber = Bytes[0x21005];
@@ -30,15 +30,15 @@ public sealed class GbaGsDatelRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Class == ThisRomClass;
+        return rom.Metadata.Format == ThisRomFormat;
     }
 
-    public static bool Is(RomClass type)
+    public static bool Is(RomFormat type)
     {
-        return type == ThisRomClass;
+        return type == ThisRomFormat;
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

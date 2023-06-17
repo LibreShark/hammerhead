@@ -8,10 +8,10 @@ namespace LibreShark.Hammerhead;
 /// </summary>
 public sealed class N64XpRom : Rom
 {
-    private const RomClass ThisRomClass = RomClass.N64Xplorer64;
+    private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
 
     public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomClass)
+        : base(filePath, bytes, ThisRomFormat)
     {
         if (IsScrambled())
         {
@@ -81,15 +81,15 @@ public sealed class N64XpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Class == ThisRomClass;
+        return rom.Metadata.Format == ThisRomFormat;
     }
 
-    public static bool Is(RomClass type)
+    public static bool Is(RomFormat type)
     {
-        return type == ThisRomClass;
+        return type == ThisRomFormat;
     }
 
-    public override void PrintSummary()
+    protected override void PrintCustomHeader()
     {
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
