@@ -49,7 +49,7 @@ class GameDecoder
 
         codes &= 0x7F;
 
-        cheat.IsActiveByDefault = cheatOn;
+        cheat.IsActive = cheatOn;
 
         for (int code = 0; code < codes; code++)
         {

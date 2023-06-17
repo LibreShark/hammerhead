@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.N64;
+
 namespace LibreShark.Hammerhead;
 
 /// <summary>
@@ -24,7 +26,8 @@ public sealed class N64XpRom : Rom
 
     private void Unscramble()
     {
-        // TODO(RWeick): Implement
+        byte[] unscrambled = N64XpScrambler.UnscrambleXpRom(Bytes);
+        Array.Copy(unscrambled, Bytes, unscrambled.Length);
     }
 
     public byte[] GetPlain()
@@ -36,8 +39,7 @@ public sealed class N64XpRom : Rom
 
     public byte[] GetScrambled()
     {
-        // TODO(RWeick): Implement
-        return new byte[] {};
+        return N64XpScrambler.ScrambleXpRom(Bytes);
     }
 
     private static bool DetectPlain(byte[] bytes)
