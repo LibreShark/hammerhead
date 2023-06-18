@@ -40,9 +40,5 @@ public sealed class GbaGsDatelRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBA Datel GameShark ROM file: '{Metadata.FilePath}'");
     }
 }

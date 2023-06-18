@@ -39,9 +39,5 @@ public sealed class GbaTvTunerRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBA Blaze/Pelican TV Tuner ROM file: '{Metadata.FilePath}'");
     }
 }

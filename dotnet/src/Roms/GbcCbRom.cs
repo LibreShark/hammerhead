@@ -37,9 +37,5 @@ public sealed class GbcCbRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBC Code Breaker ROM file: '{Metadata.FilePath}'");
     }
 }

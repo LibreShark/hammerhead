@@ -39,15 +39,25 @@ public abstract class Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine($"N64 GameShark ROM file: '{Metadata.FilePath}'");
+        Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} ({Bytes.Length} bytes): '{Metadata.FilePath}'");
         Console.WriteLine();
-        Console.WriteLine($"Format:     {Metadata.Format.ToDisplayString()}");
-        Console.WriteLine($"Brand:      {Metadata.Brand.ToDisplayString()}");
-        Console.WriteLine($"Locale:     {Metadata.LanguageIetfCode}");
-        Console.WriteLine($"Version:    {Metadata.DisplayVersion}");
-        Console.WriteLine($"Build date: {Metadata.BuildDateIso}");
-        Console.WriteLine($"Encrypted:  {IsEncrypted()}");
-        Console.WriteLine($"Compressed: {IsCompressed()}");
+        Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
+        Console.WriteLine($"Brand:               {Metadata.Brand.ToDisplayString()}");
+        Console.WriteLine($"Locale:              {Metadata.LanguageIetfCode}");
+        Console.WriteLine($"Version:             {Metadata.DisplayVersion}");
+        Console.WriteLine($"Build date:          {Metadata.BuildDateIso}");
+        if (FormatSupportsFileEncryption())
+        {
+            Console.WriteLine($"File encrypted:      {IsFileEncrypted()}");
+        }
+        if (FormatSupportsFileScrambling())
+        {
+            Console.WriteLine($"File scrambled:      {IsFileScrambled()}");
+        }
+        if (FormatSupportsFirmwareCompression())
+        {
+            Console.WriteLine($"Firmware compressed: {IsFirmwareCompressed()}");
+        }
         Console.WriteLine();
         Console.WriteLine("Identifiers:");
         foreach (RomString id in Metadata.Identifiers)
@@ -75,13 +85,13 @@ public abstract class Rom
 
     protected abstract void PrintCustomHeader();
 
-    public virtual bool SupportsEncryption() { return false; }
-    public virtual bool SupportsScrambling() { return false; }
-    public virtual bool SupportsCompression() { return false; }
+    public virtual bool FormatSupportsFileEncryption() { return false; }
+    public virtual bool FormatSupportsFileScrambling() { return false; }
+    public virtual bool FormatSupportsFirmwareCompression() { return false; }
 
-    public virtual bool IsEncrypted() { return false; }
-    public virtual bool IsScrambled() { return false; }
-    public virtual bool IsCompressed() { return false; }
+    public virtual bool IsFileEncrypted() { return false; }
+    public virtual bool IsFileScrambled() { return false; }
+    public virtual bool IsFirmwareCompressed() { return false; }
 
     public static Rom FromFile(string romFilePath)
     {

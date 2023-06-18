@@ -11,9 +11,5 @@ public sealed class UnknownRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"UNKNOWN ROM file with length = 0x{Bytes.Length:X8} ({Bytes.Length}): '{Metadata.FilePath}'");
     }
 }

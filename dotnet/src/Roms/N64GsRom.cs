@@ -39,7 +39,7 @@ public sealed class N64GsRom : Rom
     public N64GsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
-        if (IsEncrypted())
+        if (IsFileEncrypted())
         {
             Decrypt();
         }
@@ -49,11 +49,6 @@ public sealed class N64GsRom : Rom
         _reader = new BigEndianReader(Bytes);
         _writer = new BigEndianWriter(Bytes);
 
-        Parse();
-    }
-
-    private void Parse()
-    {
         _headerId = _reader.ReadCStringAt(HeaderIdAddr, 0x10);
         _rawTimestamp = _reader.ReadPrintableCStringAt(BuildTimestampAddr, 15);
 
@@ -85,6 +80,11 @@ public sealed class N64GsRom : Rom
         _keyCodes = keyCodes;
 
         Games = ReadGames();
+    }
+
+    public override bool FormatSupportsFirmwareCompression()
+    {
+        return true;
     }
 
     private List<Game> ReadGames()
@@ -250,12 +250,12 @@ public sealed class N64GsRom : Rom
         return this;
     }
 
-    public override bool IsEncrypted()
+    public override bool IsFileEncrypted()
     {
         return DetectEncrypted(InitialBytes.ToArray());
     }
 
-    public override bool IsCompressed()
+    public override bool IsFirmwareCompressed()
     {
         return _isCompressed;
     }

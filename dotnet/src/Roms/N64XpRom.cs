@@ -13,13 +13,18 @@ public sealed class N64XpRom : Rom
     public N64XpRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
-        if (IsScrambled())
+        if (IsFileScrambled())
         {
             Unscramble();
         }
     }
 
-    public override bool IsScrambled()
+    public override bool FormatSupportsFileScrambling()
+    {
+        return true;
+    }
+
+    public override bool IsFileScrambled()
     {
         return DetectScrambled(InitialBytes.ToArray());
     }
@@ -91,10 +96,5 @@ public sealed class N64XpRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"N64 Xplorer 64 ROM file: '{Metadata.FilePath}'");
-        Console.WriteLine($"Scrambled: {IsScrambled()}");
     }
 }

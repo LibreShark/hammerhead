@@ -37,9 +37,5 @@ public sealed class GbcXpRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBC Xploder ROM file: '{Metadata.FilePath}'");
     }
 }

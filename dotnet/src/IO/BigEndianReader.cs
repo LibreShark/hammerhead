@@ -243,7 +243,7 @@ internal class BigEndianReader : IBinReader
         }
         else
         {
-            return Encoding.ASCII.GetString(new byte[] { b });
+            return new byte[] { b }.ToAsciiString();
         }
     }
 

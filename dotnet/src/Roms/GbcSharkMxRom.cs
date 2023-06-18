@@ -37,9 +37,5 @@ public sealed class GbcSharkMxRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBC Shark MX ROM file: '{Metadata.FilePath}'");
     }
 }

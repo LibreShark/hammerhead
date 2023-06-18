@@ -45,9 +45,5 @@ public sealed class GbaGsFcdRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBA FCD GameShark ROM file: '{Metadata.FilePath}'");
     }
 }

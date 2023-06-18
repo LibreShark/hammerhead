@@ -39,9 +39,5 @@ public sealed class GbcMonsterBrainRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBC Monster Brain ROM file: '{Metadata.FilePath}'");
     }
 }

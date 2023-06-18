@@ -42,9 +42,5 @@ public sealed class GbcGsRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine();
-        Console.WriteLine($"GBC GameShark ROM file: '{Metadata.FilePath}'");
     }
 }
