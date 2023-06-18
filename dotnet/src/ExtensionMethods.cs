@@ -108,4 +108,18 @@ public static class ExtensionMethods
     {
         return $"[0x{range.StartIndex:X8}, 0x{range.EndIndex - 1:X8}]";
     }
+
+    public static string ToIsoString(this DateTime dt)
+    {
+        // Wed Nov 24 15:25:52 GMT 1999
+        // 1999-11-24T15:25:52Z
+        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
+    }
+
+    public static string ToIsoString(this DateTimeOffset dt)
+    {
+        // Wed Nov 24 15:25:52 GMT 1999
+        // 1999-11-24T15:25:52Z
+        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
+    }
 }

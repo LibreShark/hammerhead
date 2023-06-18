@@ -1,6 +1,19 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+
 namespace LibreShark.Hammerhead.Roms;
+
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using f64 = Double;
 
 /// <summary>
 /// Xplorer 64 for Nintendo 64,
@@ -10,6 +23,9 @@ public sealed class N64XpRom : Rom
 {
     private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
 
+    private readonly BigEndianReader _reader;
+    private readonly BigEndianWriter _writer;
+
     public N64XpRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
@@ -17,6 +33,58 @@ public sealed class N64XpRom : Rom
         {
             Unscramble();
         }
+
+        _reader = new BigEndianReader(Bytes);
+        _writer = new BigEndianWriter(Bytes);
+
+        ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
+        Metadata.BuildDateIso = buildDateIso;
+        Metadata.Identifiers.Add(wayneStr);
+        Metadata.Identifiers.Add(buildDateRaw);
+    }
+
+    private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)
+    {
+        u32 waynePos = (u32)Bytes.Find("Wayne Hughes Beckett!");
+        wayneStr = _reader.ReadCStringAt(waynePos);
+        u32 buildDatePos = waynePos + 0x40;
+        buildDateRaw = _reader.ReadCStringAt(buildDatePos);
+        Match match = Regex.Match(buildDateRaw.Value,
+            @"(?<ddd>\w{3}) (?<MMM>\w{3}) (?<d>\d{1,2}) (?<H>\d{1,2}):(?<mm>\d{2}):(?<ss>\d{2}) (?<ZZZ>\w{2,3}) (?<yyyy>\d{4})");
+        if (!match.Success)
+        {
+            throw new FormatException(
+                $"Build date/time stamp '{buildDateRaw.Value}' at {buildDateRaw.Addr} " +
+                "does not match expected format `ddd MMM d H:mm:ss ZZZ yyyy`. " +
+                "See https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
+        }
+
+        string ddd = match.Groups["ddd"].Value;
+        string MMM = match.Groups["MMM"].Value;
+        string d = match.Groups["d"].Value;
+        string H = match.Groups["H"].Value;
+        string mm = match.Groups["mm"].Value;
+        string ss = match.Groups["ss"].Value;
+        string ZZZ = match.Groups["ZZZ"].Value;
+        // British Summer Time (BST)
+        if (ZZZ == "BST")
+        {
+            ZZZ = "GMT";
+        }
+        string yyyy = match.Groups["yyyy"].Value;
+        const string dateTimeFormat =
+            // Wed Nov 24 15:25:52 GMT 1999
+            "ddd MMM d H:mm:ss yyyy";
+        string buildDateFixed = $"{ddd} {MMM} {d} {H}:{mm}:{ss} {yyyy}";
+        DateTimeOffset buildDateTimeWithoutTz = DateTimeOffset.ParseExact(
+            buildDateFixed, dateTimeFormat,
+            CultureInfo.InvariantCulture, DateTimeStyles.None);
+        TimeZoneInfo tzInfo = TimeZoneInfo.FindSystemTimeZoneById(ZZZ);
+        DateTimeOffset cetTime = TimeZoneInfo.ConvertTime(buildDateTimeWithoutTz, tzInfo);
+        DateTimeOffset buildDateTimeWithTz = buildDateTimeWithoutTz
+            .Subtract(cetTime.Offset)
+            .ToOffset(cetTime.Offset);
+        buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
     public override bool FormatSupportsFileScrambling()

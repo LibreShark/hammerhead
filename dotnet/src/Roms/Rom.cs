@@ -33,11 +33,8 @@ public abstract class Rom
         };
     }
 
-
     public void PrintSummary()
     {
-        Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
         Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} ({Bytes.Length} bytes): '{Metadata.FilePath}'");
         Console.WriteLine();
@@ -81,6 +78,9 @@ public abstract class Rom
         {
             Console.WriteLine("No games/cheats found");
         }
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine();
     }
 
     protected abstract void PrintCustomHeader();

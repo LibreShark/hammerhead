@@ -65,6 +65,8 @@ Commands:
     {
         foreach (var romFilePath in args)
         {
+            Console.WriteLine(romFilePath);
+            Console.WriteLine();
             Rom rom = Rom.FromFile(romFilePath);
             rom.PrintSummary();
         }

@@ -4,6 +4,14 @@ using System.Text;
 
 namespace LibreShark.Hammerhead.IO;
 
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using f64 = Double;
+
 /// <summary>
 /// Helper class for reading (big-endian) integers and c-style strings from byte buffers.
 /// </summary>
