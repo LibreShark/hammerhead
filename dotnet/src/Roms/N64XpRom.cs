@@ -131,9 +131,9 @@ public sealed class N64XpRom : Rom
                     }
 
                     BigEndianReader codeReader = new BigEndianReader(codeBytes);
-                    u32 addressNum = codeReader.ReadUInt32();
-                    u16 valueNum = codeReader.ReadUInt16();
-                    cheat.AddCode(addressNum, valueNum);
+                    byte[] address = codeReader.ReadBytes(4);
+                    byte[] value = codeReader.ReadBytes(2);
+                    cheat.AddCode(address, value);
                 }
 
                 game.AddCheat(cheat);

@@ -17,20 +17,14 @@ using f64 = Double;
 /// </summary>
 public class Code
 {
-    public u32 Address { get; set; }
+    public byte[] Address { get; set; }
 
-    public u16 Value { get; set; }
+    public byte[] Value { get; set; }
 
-    public Code(u32 address, u16 value)
+    public Code(byte[] address, byte[] value)
     {
         Address = address;
         Value = value;
-    }
-
-    public Code()
-    {
-        Address = 0x80000000;
-        Value = 0x0000;
     }
 
     public override bool Equals(object? obj)

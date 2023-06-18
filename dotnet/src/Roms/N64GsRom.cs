@@ -139,9 +139,8 @@ public sealed class N64GsRom : Rom
 
     private void ReadCode(Cheat cheat)
     {
-        u32 address = _reader.ReadUInt32();
-        u16 value = _reader.ReadUInt16();
-
+        byte[] address = _reader.ReadBytes(4);
+        byte[] value = _reader.ReadBytes(2);
         cheat.AddCode(address, value);
     }
 

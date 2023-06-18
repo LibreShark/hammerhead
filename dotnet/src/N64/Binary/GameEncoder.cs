@@ -76,8 +76,8 @@ class GameEncoder
 
     private void WriteCode(Code code)
     {
-        Writer.WriteUInt32(code.Address);
-        Writer.WriteInt16(code.Value);
+        Writer.WriteBytes(code.Address);
+        Writer.WriteBytes(code.Value);
     }
 
     private void WriteCheatName(string name)

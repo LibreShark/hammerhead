@@ -50,7 +50,7 @@ public class Cheat
         Codes = new List<Code>(codes ?? Array.Empty<Code>());
     }
 
-    public Code AddCode(u32 address, u16 value)
+    public Code AddCode(byte[] address, byte[] value)
     {
         return AddCode(new Code(address, value));
     }

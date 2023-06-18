@@ -79,7 +79,7 @@ public abstract class Rom
                     Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes})");
                     foreach (Code code in cheat.Codes)
                     {
-                        Console.WriteLine($"        {code.Address:X8} {code.Value:X4}");
+                        Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
                     }
                 }
             }

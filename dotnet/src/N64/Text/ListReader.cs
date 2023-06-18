@@ -76,6 +76,17 @@ class ListReader
         }
     }
 
+    public static byte[] StringToByteArray(String hex)
+    {
+        int numChars = hex.Length;
+        byte[] bytes = new byte[numChars / 2];
+        for (int i = 0; i < numChars; i += 2)
+        {
+            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+        }
+        return bytes;
+    }
+
     private static bool MatchName(string line, out Match match)
     {
         return MatchRegex(line, @"^ *""(?<name>[^""]*)"" *(?<off>\.off)? *(?<comment>;.*)?$", out match);
@@ -117,15 +128,15 @@ class ListReader
 
     private void ProcessCodeMatch(Match match)
     {
-        uint address = uint.Parse(match.Groups["address"].Value, NumberStyles.HexNumber);
-        int value = int.Parse(match.Groups["value"].Value, NumberStyles.HexNumber);
+        byte[] address = StringToByteArray(match.Groups["address"].Value);
+        byte[] value = StringToByteArray(match.Groups["value"].Value);
 
         if (Cheat == null)
         {
             throw new Exception($"Code unexpected on line {LineNumber}.");
         }
 
-        Cheat.AddCode(address, (UInt16)value);
+        Cheat.AddCode(address, value);
     }
 
     private static bool MatchEnd(string line, out Match match)
