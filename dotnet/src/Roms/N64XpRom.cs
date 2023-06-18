@@ -146,8 +146,8 @@ public sealed class N64XpRom : Rom
     private static bool IsCodeEncrypted(byte[] code)
     {
         byte b0 = code[0];
-        // https://doc.kodewerx.org/hacking_n64.html#xp_code_types
         bool isDecrypted = b0 is
+                // Based on https://doc.kodewerx.org/hacking_n64.html#xp_code_types
                 0x2A or 0x2C or 0x3C or 0x3F or 0x50 or
                 0x80 or 0x81 or 0x82 or 0x83 or 0x85 or
                 0x88 or 0x89 or 0x8B or
