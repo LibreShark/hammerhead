@@ -125,7 +125,7 @@ class ListReader
             throw new Exception($"Code unexpected on line {LineNumber}.");
         }
 
-        Cheat.AddCode(address, value);
+        Cheat.AddCode(address, (UInt16)value);
     }
 
     private static bool MatchEnd(string line, out Match match)

@@ -3,9 +3,9 @@ using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-
 namespace LibreShark.Hammerhead.Roms;
+
+// ReSharper disable BuiltInTypeReferenceStyle
 
 using u8 = Byte;
 using s8 = SByte;
@@ -108,9 +108,32 @@ public sealed class N64XpRom : Rom
 
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
-                    u32 address = _reader.ReadUInt32();
-                    u16 value = _reader.ReadUInt16();
-                    cheat.AddCode(address, value);
+                    byte[] codeBytes = _reader.ReadBytes(6);
+                    string codeStrOld = codeBytes.ToN64CodeString();
+                    if (IsCodeEncrypted(codeBytes))
+                    {
+                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToN64CodeString();
+                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToN64CodeString();
+                        if (codeStrNew1 != codeStrNew2)
+                        {
+                            Console.WriteLine("-------------------");
+                            Console.WriteLine($"{cheatName.Value} ({cheatName.Addr})");
+                            Console.WriteLine("- encrypted: " + codeStrOld);
+                            Console.WriteLine("- method 1:  " + codeStrNew1);
+                            Console.WriteLine("- method 2:  " + codeStrNew2);
+                            Console.WriteLine("-------------------");
+                        }
+                        codeBytes = DecryptCodeMethod2(codeBytes);
+                        // if (codeStrNew1 == "A0B92EB4 AD87")
+                        // {
+                        //     Console.WriteLine();
+                        // }
+                    }
+
+                    BigEndianReader codeReader = new BigEndianReader(codeBytes);
+                    u32 addressNum = codeReader.ReadUInt32();
+                    u16 valueNum = codeReader.ReadUInt16();
+                    cheat.AddCode(addressNum, valueNum);
                 }
 
                 game.AddCheat(cheat);
@@ -119,6 +142,129 @@ public sealed class N64XpRom : Rom
             Games.Add(game);
         }
     }
+
+    private static bool IsCodeEncrypted(byte[] code)
+    {
+        byte b0 = code[0];
+        // https://doc.kodewerx.org/hacking_n64.html#xp_code_types
+        bool isDecrypted = b0 is
+                0x2A or 0x2C or 0x3C or 0x3F or 0x50 or
+                0x80 or 0x81 or 0x82 or 0x83 or 0x85 or
+                0x88 or 0x89 or 0x8B or
+                0xA0 or 0xA1 or 0xA3 or
+                0xB3 or 0xB4 or
+                0xD0 or 0xD1 or 0xD2 or
+                0xF0 or 0xF1
+            ;
+        return !isDecrypted;
+    }
+
+    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
+    private byte[] EncryptCode(byte[] code)
+    {
+        return new byte[] {};
+    }
+
+    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
+    private byte[] DecryptCodeMethod1(byte[] code)
+    {
+        byte a0 = code[0];
+        byte a1 = code[1];
+        byte a2 = code[2];
+        byte a3 = code[3];
+        byte d0 = code[4];
+        byte d1 = code[5];
+        a0 = (byte)((a0 ^ 0x68));
+        a1 = (byte)((a1 ^ 0x81) - 0x2B);
+        a2 = (byte)((a2 ^ 0x82) - 0x2B);
+        a3 = (byte)((a3 ^ 0x83) - 0x2B);
+        d0 = (byte)((d0 ^ 0x84) - 0x2B);
+        d1 = (byte)((d1 ^ 0x85) - 0x2B);
+        return new byte[] {a0, a1, a2, a3, d0, d1};
+    }
+    private byte[] DecryptCodeMethod2(byte[] code)
+    {
+        byte a0 = code[0];
+        byte a1 = code[1];
+        byte a2 = code[2];
+        byte a3 = code[3];
+        byte d0 = code[4];
+        byte d1 = code[5];
+        a0 = (byte)((a0 ^ 0x68));
+        a1 = (byte)((a1 + 0xAB) ^ 0x01);
+        a2 = (byte)((a2 + 0xAB) ^ 0x02);
+        a3 = (byte)((a3 + 0xAB) ^ 0x03);
+        d0 = (byte)((d0 + 0xAB) ^ 0x04);
+        d1 = (byte)((d1 + 0xAB) ^ 0x05);
+        return new byte[] {a0, a1, a2, a3, d0, d1};
+    }
+
+/*
+Encryption Algorithm
+A0A1A2A3 D0D1
+A0 = (a0 XOR 0x68)
+A1 = (a1 XOR 0x81) - 0x2B
+A2 = (a2 XOR 0x82) - 0x2B
+A3 = (a3 XOR 0x83) - 0x2B
+D0 = (d0 XOR 0x84) - 0x2B
+D1 = (d1 XOR 0x85) - 0x2B
+
+Alternate:
+A0 = (a0 XOR 0x68)
+A1 = (a1 XOR 0x01) - 0xAB
+A2 = (a2 XOR 0x02) - 0xAB
+A3 = (a3 XOR 0x03) - 0xAB
+D0 = (d0 XOR 0x04) - 0xAB
+D1 = (d1 XOR 0x05) - 0xAB
+
+Decryption Algorithm
+A0A1A2A3 D0D1
+A0 = (A0 XOR 0x68)
+A1 = (A1 + 0x2B) XOR 0x81
+A2 = (A2 + 0x2B) XOR 0x82
+A3 = (A3 + 0x2B) XOR 0x83
+D0 = (D0 + 0x2B) XOR 0x84
+D1 = (D1 + 0x2B) XOR 0x85
+
+Alternate Method:
+A0 = (A0 XOR 0x68)
+A1 = (A1 + 0xAB) XOR 0x01
+A2 = (A2 + 0xAB) XOR 0x02
+A3 = (A3 + 0xAB) XOR 0x03
+D0 = (D0 + 0xAB) XOR 0x04
+D1 = (D1 + 0xAB) XOR 0x05
+
+
+
+
+Xploder64 / Xplorer64 Code Types
+Type 	Description
+RAM Writes
+8-Bit
+80XXXXXX 00?? 	Writes 1 byte (??) to the specified address (XXXXXX) repeatedly.
+16-Bit
+81XXXXXX ???? 	Writes 2 bytes (????) to the specified address (XXXXXX) repeatedly.
+8-Bit XP Button
+88XXXXXX 00?? 	Writes 1 byte (??) to the specified address (XXXXXX) each time the XP Button is pressed.
+16-Bit XP Button
+89XXXXXX ???? 	Writes 2 bytes (????) to the specified address (XXXXXX) each time the XP Button is pressed.
+8-Bit Write Once
+F0XXXXXX 00?? 	Writes 1 byte (??) to the uncached address (XXXXXX) only once. These are most often used to disable certain types of protection that some games use to disable cheat devices.
+16-Bit Write Once
+F1XXXXXX ????
+Or
+2AXXXXXX ???? 	Writes 2 bytes (????) to the uncached address (XXXXXX) only once. These are most often used to disable certain types of protection that some games use to disable cheat devices.
+Conditional Codes
+8-Bit Equal To
+D0XXXXXX 00??
+YYYYYYYY ZZZZ 	If the byte at XXXXXXX is equal to ??, then the code on the next line is executed.
+16-Bit Equal To
+D1XXXXXX ????
+YYYYYYYY ZZZZ 	If the 2 bytes at XXXXXXX are equal to ????, then the code on the next line is executed.
+Special Codes
+Enabler
+3CXXXXXX ???? 	The exact effect of this code type is still a mystery.
+ */
 
     private string GetIetfCode(RomString languageRaw, RomString countryRaw)
     {

@@ -73,6 +73,15 @@ public abstract class Rom
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
                 Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
+                foreach (Cheat cheat in game.Cheats)
+                {
+                    string codes = cheat.Codes.Count == 1 ? "code" : "codes";
+                    Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes})");
+                    foreach (Code code in cheat.Codes)
+                    {
+                        Console.WriteLine($"        {code.Address:X8} {code.Value:X4}");
+                    }
+                }
             }
         }
         else

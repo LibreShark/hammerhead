@@ -3,6 +3,16 @@ using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead.Roms;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using f64 = Double;
+
 /// <summary>
 /// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
 /// Nintendo 64, made by Datel/InterAct.
@@ -21,20 +31,20 @@ public sealed class N64GsRom : Rom
     private bool _supportsUserPrefs;
     private bool _supportsKeyCodes;
 
-    private uint _firmwareAddr;
-    private uint _gameListAddr;
-    private uint _keyCodeListAddr;
-    private uint _userPrefsAddr;
+    private u32 _firmwareAddr;
+    private u32 _gameListAddr;
+    private u32 _keyCodeListAddr;
+    private u32 _userPrefsAddr;
     private RomString _headerId;
     private RomString _rawTimestamp;
     private N64GsVersion _version;
     private KeyCode _activeKeyCode;
     private List<KeyCode> _keyCodes;
 
-    private const uint ProgramCounterAddr = 0x00000008;
-    private const uint ActiveKeyCodeAddr  = 0x00000010;
-    private const uint HeaderIdAddr       = 0x00000020;
-    private const uint BuildTimestampAddr = 0x00000030;
+    private const u32 ProgramCounterAddr = 0x00000008;
+    private const u32 ActiveKeyCodeAddr  = 0x00000010;
+    private const u32 HeaderIdAddr       = 0x00000020;
+    private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
@@ -71,11 +81,11 @@ public sealed class N64GsRom : Rom
         _isV3Firmware        = _reader.ReadUInt32(0x00001000) == 0x00000000;
         _isV1GameList        = _reader.ReadUInt32(0x0002DFF0) == 0x00000000;
         _isV3KeyCodeListAddr = _reader.ReadUInt32(0x0002FBF0) == 0xFFFFFFFF;
-        _keyCodeListAddr     = (uint)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
+        _keyCodeListAddr     = (u32)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
         _supportsKeyCodes    = _reader.ReadUInt32(_keyCodeListAddr) != 0x00000000;
         _supportsUserPrefs   = _reader.ReadUInt32(0x0002FAF0) == 0xFFFFFFFF;
-        _firmwareAddr        = (uint)(_isV3Firmware ? 0x00001080 : 0x00001000);
-        _gameListAddr        = (uint)(_isV1GameList ? 0x0002E000 : 0x00030000);
+        _firmwareAddr        = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
+        _gameListAddr        = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
         List<KeyCode> keyCodes = ReadKeyCodes();
@@ -94,8 +104,9 @@ public sealed class N64GsRom : Rom
     {
         List<Game> games = new List<Game>();
         Seek(_gameListAddr);
+        // TODO(CheatoBaggins): Should this be a u32?
         int gamesCount = _reader.ReadSInt32();
-        for (int gameIndex = 0; gameIndex < gamesCount; gameIndex++)
+        for (uint gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
             games.Add(ReadGame());
         }
@@ -105,8 +116,8 @@ public sealed class N64GsRom : Rom
     private Game ReadGame()
     {
         Game game = Game.NewGame(ReadName());
-        int cheatCount = _reader.ReadUByte();
-        for (int cheat = 0; cheat < cheatCount; cheat++)
+        u8 cheatCount = _reader.ReadUByte();
+        for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
             ReadCheat(game);
         }
@@ -116,11 +127,11 @@ public sealed class N64GsRom : Rom
     private void ReadCheat(Game game)
     {
         Cheat cheat = game.AddCheat(ReadName());
-        int codeCount = _reader.ReadUByte();
+        u8 codeCount = _reader.ReadUByte();
         bool cheatOn = (codeCount & 0x80) > 0;
         codeCount &= 0x7F;
         cheat.IsActive = cheatOn;
-        for (int code = 0; code < codeCount; code++)
+        for (u8 codeIdx = 0; codeIdx < codeCount; codeIdx++)
         {
             ReadCode(cheat);
         }
@@ -128,15 +139,15 @@ public sealed class N64GsRom : Rom
 
     private void ReadCode(Cheat cheat)
     {
-        uint address = _reader.ReadUInt32();
-        int value = _reader.ReadUInt16();
+        u32 address = _reader.ReadUInt32();
+        u16 value = _reader.ReadUInt16();
 
         cheat.AddCode(address, value);
     }
 
     private string ReadName()
     {
-        uint pos = _reader.Position;
+        u32 pos = _reader.Position;
 
         // Firmware does not support names longer than 30 chars.
         string name = _reader.ReadCStringAt(pos, 30).Value;
@@ -182,8 +193,8 @@ public sealed class N64GsRom : Rom
 
         Seek(_keyCodeListAddr);
         byte[] listBytes = _reader.PeekBytes(0xA0);
-        uint maxPos = _reader.Position + (uint)listBytes.Length;
-        int keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
+        u32 maxPos = _reader.Position + (uint)listBytes.Length;
+        s32 keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
 
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
@@ -191,7 +202,7 @@ public sealed class N64GsRom : Rom
             return new List<KeyCode>();
         }
 
-        var keyCodes = new List<KeyCode>();
+        List<KeyCode> keyCodes = new();
         while (_reader.Position <= maxPos)
         {
             byte[] bytes = _reader.ReadBytes((uint)keyCodeByteLength);
@@ -200,8 +211,8 @@ public sealed class N64GsRom : Rom
             {
                 _reader.ReadUByte();
             }
-            var isActive = bytes.Contains(activePrefix);
-            var keyCode = new KeyCode(name.Value, bytes, isActive);
+            bool isActive = bytes.Contains(activePrefix);
+            KeyCode keyCode = new(name.Value, bytes, isActive);
             keyCodes.Add(keyCode);
         }
         return keyCodes;
@@ -220,7 +231,7 @@ public sealed class N64GsRom : Rom
             Metadata.Identifiers.Add(titleVersionNumberStr);
         }
 
-        var version = N64GsVersion.From(_rawTimestamp.Value)?
+        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value)?
             .WithTitleVersionNumber(titleVersionNumberStr?.Value);
         if (version == null)
         {
@@ -233,7 +244,7 @@ public sealed class N64GsRom : Rom
     private RomString? ReadTitleVersion(string needle)
     {
         byte[] haystack = Bytes[..0x30000];
-        int titleVersionPos = haystack.Find(needle);
+        s32 titleVersionPos = haystack.Find(needle);
         _isCompressed = titleVersionPos == -1;
         if (_isCompressed)
         {
@@ -271,7 +282,7 @@ public sealed class N64GsRom : Rom
         }
 
         byte[] decrypted = N64GsCrypter.Decrypt(Bytes);
-        for (int i = 0; i < Bytes.Length; i++)
+        for (u32 i = 0; i < Bytes.Length; i++)
         {
             Bytes[i] = decrypted[i];
         }
@@ -315,16 +326,18 @@ public sealed class N64GsRom : Rom
 
     protected override void PrintCustomHeader()
     {
-        var firmwareAddr = $"0x{_firmwareAddr:X8}";
-        var gameListAddr = $"0x{_gameListAddr:X8}";
-        var keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
-        var userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
+        string firmwareAddr = $"0x{_firmwareAddr:X8}";
+        string gameListAddr = $"0x{_gameListAddr:X8}";
+        string keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
+        string userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
+
         Console.WriteLine($"Firmware addr:      {firmwareAddr}");
         Console.WriteLine($"User prefs addr:    {userPrefsAddr}");
         Console.WriteLine($"Key code list addr: {keyCodeListAddr}");
         Console.WriteLine($"Game list addr:     {gameListAddr}");
         Console.WriteLine();
         Console.WriteLine($"Active key code: {_activeKeyCode}");
+
         if (_supportsKeyCodes)
         {
             Console.WriteLine("Key codes: ");

@@ -124,4 +124,9 @@ public static class ExtensionMethods
         // 1999-11-24T15:25:52Z
         return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
+
+    public static string ToN64CodeString(this byte[] code)
+    {
+        return code[..4].ToHexString() + " " + code[4..].ToHexString();
+    }
 }

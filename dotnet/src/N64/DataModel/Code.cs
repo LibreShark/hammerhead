@@ -2,16 +2,26 @@
 
 namespace LibreShark.Hammerhead.N64;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using f64 = Double;
+
 /// <summary>
 /// Represents a single GameShark code.
 /// </summary>
 public class Code
 {
-    public uint Address { get; set; }
+    public u32 Address { get; set; }
 
-    public int Value { get; set; }
+    public u16 Value { get; set; }
 
-    public Code(uint address, int value)
+    public Code(u32 address, u16 value)
     {
         Address = address;
         Value = value;

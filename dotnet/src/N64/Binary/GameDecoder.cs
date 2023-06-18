@@ -62,7 +62,7 @@ class GameDecoder
         uint address = Reader.ReadUInt32();
         int value = Reader.ReadUInt16();
 
-        cheat.AddCode(address, value);
+        cheat.AddCode(address, (UInt16)value);
     }
 
     private string ReadName()

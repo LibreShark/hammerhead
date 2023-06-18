@@ -4,6 +4,16 @@ using System.Text.RegularExpressions;
 
 namespace LibreShark.Hammerhead.N64;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using f64 = Double;
+
 /// <summary>
 /// Represents one GameShark cheat which is composed of zero or more codes.
 /// </summary>
@@ -40,7 +50,7 @@ public class Cheat
         Codes = new List<Code>(codes ?? Array.Empty<Code>());
     }
 
-    public Code AddCode(uint address, int value)
+    public Code AddCode(u32 address, u16 value)
     {
         return AddCode(new Code(address, value));
     }
