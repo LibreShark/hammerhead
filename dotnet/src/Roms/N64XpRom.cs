@@ -81,28 +81,35 @@ public sealed class N64XpRom : Rom
         Metadata.Identifiers.Add(buildDateRaw);
 
         _reader.Seek(GameListAddr);
-        while (!_reader.IsSectionPadding())
+        bool stop = false;
+        while (!stop && !_reader.IsSectionPadding())
         {
             RomString gameName = _reader.ReadCString();
-            u8 cheatCount = _reader.ReadU8();
+            u8 cheatCount = _reader.ReadUByte();
 
             Game game = new(gameName.Value);
 
-            for (u16 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
+            for (u16 cheatIdx = 0; !stop && cheatIdx < cheatCount; cheatIdx++)
             {
                 RomString cheatName = _reader.ReadCString();
-                u8 codeCount = _reader.ReadU8();
+                u8 codeCount = _reader.ReadUByte();
 
-                Cheat cheat = new()
+                if (cheatName.Value.Length == 0)
                 {
-                    Name = cheatName.Value,
+                    Console.WriteLine($"{cheatName.Addr.ToDisplayString()}: empty cheat name!");
+                    stop = true;
+                    break;
+                }
+
+                Cheat cheat = new(cheatName.Value)
+                {
                     IsActive = false,
                 };
 
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
-                    u32 address = _reader.ReadU32();
-                    u16 value = _reader.ReadU16();
+                    u32 address = _reader.ReadUInt32();
+                    u16 value = _reader.ReadUInt16();
                     cheat.AddCode(address, value);
                 }
 

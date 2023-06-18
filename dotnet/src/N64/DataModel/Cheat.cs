@@ -14,15 +14,12 @@ public class Cheat
         get => _name;
         set
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            if (value.Length is < 1 or > 30)
-            {
-                Console.Error.WriteLine(
-                    $"WARNING: Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
-            }
+            // TODO(CheatoBaggins): This only applies to N64 GameShark cheat names.
+            // if (value.Length is < 1 or > 30)
+            // {
+            //     Console.Error.WriteLine(
+            //         $"WARNING: Cheat names must be 1-30 chars in length, but '{_name}' has length {_name.Length}.");
+            // }
             _name = value;
         }
     }

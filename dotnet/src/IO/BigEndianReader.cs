@@ -29,6 +29,39 @@ internal class BigEndianReader : IBinReader
         _buffer = buffer;
     }
 
+    #region Seeking
+
+    public IBinReader Seek(uint addr)
+    {
+        Position = addr;
+        CheckBounds();
+        return this;
+    }
+
+    private TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
+    {
+        u32 oldAddr = Position;
+        TReturn value = operation();
+        Position = oldAddr;
+        return value;
+    }
+
+    private void CheckBounds()
+    {
+        if (Position == _buffer.Length)
+        {
+            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
+        }
+        if (Position > _buffer.Length)
+        {
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+        }
+    }
+
+    #endregion
+
+    #region Find / Contains
+
     public int Find(string needle)
     {
         return _buffer.Find(needle);
@@ -49,11 +82,34 @@ internal class BigEndianReader : IBinReader
         return _buffer.Contains(needle);
     }
 
-    public IBinReader Seek(uint addr)
+    #endregion
+
+    #region Padding detection
+
+    public bool IsPadding(u32 val)
     {
-        Position = addr;
-        return this;
+        return val is 0x00000000 or 0xFFFFFFFF;
     }
+
+    public bool IsSectionPaddingAt(u32 addr)
+    {
+        return MaintainPosition(() =>
+        {
+            u32 chunk1 = ReadUInt32(addr);
+            u32 chunk2 = ReadUInt32(addr + 4);
+            return IsPadding(chunk1) &&
+                   IsPadding(chunk2);
+        });
+    }
+
+    public bool IsSectionPadding()
+    {
+        return IsSectionPaddingAt(Position);
+    }
+
+    #endregion
+
+    #region Bytes
 
     public byte[] PeekBytesAt(uint addr, uint count)
     {
@@ -85,6 +141,8 @@ internal class BigEndianReader : IBinReader
         Position += count;
         return bytes;
     }
+
+    #endregion
 
     public byte ReadUByte(uint addr)
     {
