@@ -15,6 +15,8 @@ using f64 = Double;
 
 /// <summary>
 /// Helper class for writing (big-endian) integers and c-style strings to byte buffers.
+///
+/// TODO(CheatoBaggins): Add transformer lambdas for replacing GS chars (e.g., "Infinite ")
 /// </summary>
 class BigEndianWriter
 {

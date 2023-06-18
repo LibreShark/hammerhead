@@ -44,6 +44,9 @@ public sealed class N64GsRom : Rom
             Decrypt();
         }
 
+        // TODO(CheatoBaggins): Implement
+        Metadata.IsKnownVersion = false;
+
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
         _reader = new BigEndianReader(Bytes);

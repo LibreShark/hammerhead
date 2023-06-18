@@ -43,6 +43,7 @@ public abstract class Rom
         Console.WriteLine($"Locale:              {Metadata.LanguageIetfCode}");
         Console.WriteLine($"Version:             {Metadata.DisplayVersion}");
         Console.WriteLine($"Build date:          {Metadata.BuildDateIso}");
+        Console.WriteLine($"Known ROM version:   {Metadata.IsKnownVersion}");
         if (FormatSupportsFileEncryption())
         {
             Console.WriteLine($"File encrypted:      {IsFileEncrypted()}");

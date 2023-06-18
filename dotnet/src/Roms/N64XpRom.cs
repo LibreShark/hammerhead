@@ -37,10 +37,60 @@ public sealed class N64XpRom : Rom
         _reader = new BigEndianReader(Bytes);
         _writer = new BigEndianWriter(Bytes);
 
+        Metadata.Brand = RomBrand.Xplorer;
+
+        // TODO(CheatoBaggins): Implement
+        Metadata.IsKnownVersion = false;
+
+        RomString versionRaw = _reader.ReadCStringAt(0x17, 5);
+        RomString languageRaw = _reader.ReadCStringAt(0x1C, 1);
+        RomString buildRaw = _reader.ReadCStringAt(0x20);
+        RomString countryRaw = _reader.ReadCStringAt(0x28);
+
+        // E.g.:
+        // - "1.000E build 1772" -> 10_001_772
+        // - "1.000E build 1834" -> 10_001_834
+        // - "1.067G build 1930" -> 10_671_930
+        // - "1.067E build 2510" -> 10_672_510
+        // - "1.067E build 2515" -> 10_672_515
+        Metadata.SortableVersion = f64.Parse(versionRaw.Value) * 10000000 + s32.Parse(buildRaw.Value);
+        Metadata.DisplayVersion = $"v{versionRaw.Value}{languageRaw.Value} build {buildRaw.Value} ({countryRaw.Value})";
+        Metadata.LanguageIetfCode = GetIetfCode(languageRaw, countryRaw);
+
+        RomString firstLine = _reader.ReadCStringAt(0x0);
+        Metadata.Identifiers.Add(firstLine);
+        Metadata.Identifiers.Add(versionRaw);
+        Metadata.Identifiers.Add(languageRaw);
+        Metadata.Identifiers.Add(buildRaw);
+        Metadata.Identifiers.Add(countryRaw);
+        RomString fcd = _reader.ReadCStringAt(0x40);
+        RomString greetz = _reader.ReadCStringAt(0x800);
+        RomString develop = _reader.ReadCStringAt(0x8A0);
+        RomString peeps = _reader.ReadCStringAt(0x900);
+        RomString link = _reader.ReadCStringAt(0x940);
+        Metadata.Identifiers.Add(fcd);
+        Metadata.Identifiers.Add(greetz);
+        Metadata.Identifiers.Add(develop);
+        Metadata.Identifiers.Add(peeps);
+        Metadata.Identifiers.Add(link);
+
         ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
         Metadata.BuildDateIso = buildDateIso;
         Metadata.Identifiers.Add(wayneStr);
         Metadata.Identifiers.Add(buildDateRaw);
+    }
+
+    private string GetIetfCode(RomString languageRaw, RomString countryRaw)
+    {
+        switch (languageRaw.Value)
+        {
+            case "E":
+                return "en-GB";
+            case "G":
+                return "de-DE";
+        }
+        // Undetermined (unknown)
+        return "und";
     }
 
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)

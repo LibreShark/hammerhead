@@ -90,8 +90,9 @@ enum RomBrand {
   GAME_BOOSTER = 0x06;
   CODE_BREAKER = 0x07;
   XPLODER = 0x08;
-  GAME_GENIE = 0x09;
-  SHARK_MX = 0x10;
+  XPLORER = 0x09;
+  GAME_GENIE = 0x0A;
+  SHARK_MX = 0x0B;
 }
 
 message ChecksumResult {

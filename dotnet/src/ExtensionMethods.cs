@@ -79,7 +79,9 @@ public static class ExtensionMethods
             case RomBrand.GameBuster:
                 return "Game Buster";
             case RomBrand.Xploder:
-                return "Xploder/Xplorer";
+                return "Xploder";
+            case RomBrand.Xplorer:
+                return "Xplorer";
             case RomBrand.CodeBreaker:
                 return "Code Breaker";
             case RomBrand.GbHunter:

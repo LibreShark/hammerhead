@@ -14,6 +14,8 @@ using f64 = Double;
 
 /// <summary>
 /// Helper class for reading (big-endian) integers and c-style strings from byte buffers.
+///
+/// TODO(CheatoBaggins): Add transformer lambdas for replacing GS chars (e.g., "Infinite ")
 /// </summary>
 internal class BigEndianReader : IBinReader
 {
