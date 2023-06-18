@@ -54,6 +54,12 @@ public class Cheat
         return code;
     }
 
+    public Cheat AddCodes(IEnumerable<Code> codes)
+    {
+        Codes.AddRange(codes);
+        return this;
+    }
+
     public string[] GetWarnings()
     {
         List<string> warnings = new List<string>();

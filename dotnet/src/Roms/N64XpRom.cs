@@ -22,6 +22,7 @@ using f64 = Double;
 public sealed class N64XpRom : Rom
 {
     private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
+    private const u32 GameListAddr = 0x00030000;
 
     private readonly BigEndianReader _reader;
     private readonly BigEndianWriter _writer;
@@ -78,6 +79,38 @@ public sealed class N64XpRom : Rom
         Metadata.BuildDateIso = buildDateIso;
         Metadata.Identifiers.Add(wayneStr);
         Metadata.Identifiers.Add(buildDateRaw);
+
+        _reader.Seek(GameListAddr);
+        while (!_reader.IsSectionPadding())
+        {
+            RomString gameName = _reader.ReadCString();
+            u8 cheatCount = _reader.ReadU8();
+
+            Game game = new(gameName.Value);
+
+            for (u16 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
+            {
+                RomString cheatName = _reader.ReadCString();
+                u8 codeCount = _reader.ReadU8();
+
+                Cheat cheat = new()
+                {
+                    Name = cheatName.Value,
+                    IsActive = false,
+                };
+
+                for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
+                {
+                    u32 address = _reader.ReadU32();
+                    u16 value = _reader.ReadU16();
+                    cheat.AddCode(address, value);
+                }
+
+                game.AddCheat(cheat);
+            }
+
+            Games.Add(game);
+        }
     }
 
     private string GetIetfCode(RomString languageRaw, RomString countryRaw)
