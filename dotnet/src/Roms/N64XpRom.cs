@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.IO;
@@ -143,19 +144,13 @@ public sealed class N64XpRom : Rom
         }
     }
 
-    private static bool IsCodeEncrypted(byte[] code)
+    private static bool IsCodeEncrypted(IReadOnlyList<byte> code)
     {
-        byte b0 = code[0];
-        bool isDecrypted = b0 is
-                // Based on https://doc.kodewerx.org/hacking_n64.html#xp_code_types
-                0x2A or 0x2C or 0x3C or 0x3F or 0x50 or
-                0x80 or 0x81 or 0x82 or 0x83 or 0x85 or
-                0x88 or 0x89 or 0x8B or
-                0xA0 or 0xA1 or 0xA3 or
-                0xB3 or 0xB4 or
-                0xD0 or 0xD1 or 0xD2 or
-                0xF0 or 0xF1
-            ;
+        string codeStr = code.ToArray().ToHexString();
+        byte opcodeByte = code[0];
+        Xp64Opcode opcodeEnum = (Xp64Opcode)opcodeByte;
+        ImmutableArray<Xp64Opcode> knownOpcodes = Enum.GetValues<Xp64Opcode>().ToImmutableArray();
+        bool isDecrypted = knownOpcodes.Contains(opcodeEnum);
         return !isDecrypted;
     }
 
@@ -182,6 +177,8 @@ public sealed class N64XpRom : Rom
         d1 = (byte)((d1 ^ 0x85) - 0x2B);
         return new byte[] {a0, a1, a2, a3, d0, d1};
     }
+
+    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
     private byte[] DecryptCodeMethod2(byte[] code)
     {
         byte a0 = code[0];

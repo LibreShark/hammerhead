@@ -14,7 +14,7 @@ public static class ExtensionMethods
         return Ascii.GetString(bytes);
     }
 
-    public static string ToHexString(this byte[] bytes, string delimiter = "")
+    public static string ToHexString(this IEnumerable<byte> bytes, string delimiter = "")
     {
         return string.Join(delimiter, bytes.Select((b) => $"{b:X2}"));
     }

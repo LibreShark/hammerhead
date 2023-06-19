@@ -4,7 +4,34 @@ import "google/protobuf/timestamp.proto";
 import "common.proto";
 
 package libreshark.hammerhead.n64;
-option csharp_namespace = "LibreShark.Hammerhead.Proto";
+option csharp_namespace = "LibreShark.Hammerhead.N64";
+
+enum Xp64Opcode {
+  NULL_OPCODE                     = 0x00;
+  WRITE_ONCE_UNCACHED_16BIT_TYPE2 = 0x2A;
+  UNDOCUMENTED_OPCODE_2C          = 0x2C;
+  UNDOCUMENTED_ENABLER            = 0x3C;
+  UNDOCUMENTED_OPCODE_3F          = 0x3F;
+  UNDOCUMENTED_OPCODE_50          = 0x50;
+  CONSTANT_WRITE_8BIT             = 0x80;
+  CONSTANT_WRITE_16BIT            = 0x81;
+  UNDOCUMENTED_OPCODE_82          = 0x82;
+  UNDOCUMENTED_OPCODE_83          = 0x83;
+  UNDOCUMENTED_OPCODE_85          = 0x85;
+  XP_BUTTON_WRITE_8BIT            = 0x88;
+  XP_BUTTON_WRITE_16BIT           = 0x89;
+  UNDOCUMENTED_OPCODE_8B          = 0x8B;
+  UNDOCUMENTED_OPCODE_A0          = 0xA0;
+  UNDOCUMENTED_OPCODE_A1          = 0xA1;
+  UNDOCUMENTED_OPCODE_A3          = 0xA3;
+  UNDOCUMENTED_OPCODE_B3          = 0xB3;
+  UNDOCUMENTED_OPCODE_B4          = 0xB4;
+  EQUAL_TO_CONDITIONAL_8BIT       = 0xD0;
+  EQUAL_TO_CONDITIONAL_16BIT      = 0xD1;
+  UNDOCUMENTED_OPCODE_D2          = 0xD2;
+  WRITE_ONCE_UNCACHED_8BIT        = 0xF0;
+  WRITE_ONCE_UNCACHED_16BIT_TYPE1 = 0xF1;
+}
 
 message N64GsCodeProto {
   // 4 bytes long (e.g., 802C9735)
