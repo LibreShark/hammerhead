@@ -71,7 +71,7 @@ public static class ExtensionMethods
         u32 len = (u32)newRS.Value.Length;
         u32 startIndex = oldRS.Addr.StartIndex;
         byte[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
-        newRS.Addr = new RomRange()
+        newRS.Addr = new RomRange
         {
             StartIndex = startIndex,
             EndIndex = startIndex + len,
