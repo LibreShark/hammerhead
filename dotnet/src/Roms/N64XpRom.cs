@@ -60,24 +60,24 @@ public sealed class N64XpRom : Rom
         Metadata.LanguageIetfCode = GetIetfCode(languageRaw, countryRaw);
 
         RomString firstLine = _reader.ReadCStringAt(0x0);
-        Metadata.Identifiers.Add(firstLine);
-        Metadata.Identifiers.Add(versionRaw);
-        Metadata.Identifiers.Add(languageRaw);
-        Metadata.Identifiers.Add(buildRaw);
-        Metadata.Identifiers.Add(countryRaw);
         RomString fcd = _reader.ReadCStringAt(0x40);
         RomString greetz = _reader.ReadCStringAt(0x800);
         RomString develop = _reader.ReadCStringAt(0x8A0);
         RomString peeps = _reader.ReadCStringAt(0x900);
         RomString link = _reader.ReadCStringAt(0x940);
+        ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
+
+        Metadata.BuildDateIso = buildDateIso;
+        Metadata.Identifiers.Add(firstLine);
+        Metadata.Identifiers.Add(versionRaw);
+        Metadata.Identifiers.Add(languageRaw);
+        Metadata.Identifiers.Add(buildRaw);
+        Metadata.Identifiers.Add(countryRaw);
         Metadata.Identifiers.Add(fcd);
         Metadata.Identifiers.Add(greetz);
         Metadata.Identifiers.Add(develop);
         Metadata.Identifiers.Add(peeps);
         Metadata.Identifiers.Add(link);
-
-        ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
-        Metadata.BuildDateIso = buildDateIso;
         Metadata.Identifiers.Add(wayneStr);
         Metadata.Identifiers.Add(buildDateRaw);
 
@@ -115,20 +115,16 @@ public sealed class N64XpRom : Rom
                     {
                         string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToN64CodeString();
                         string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToN64CodeString();
-                        if (codeStrNew1 != codeStrNew2)
-                        {
-                            Console.WriteLine("-------------------");
-                            Console.WriteLine($"{cheatName.Value} ({cheatName.Addr})");
-                            Console.WriteLine("- encrypted: " + codeStrOld);
-                            Console.WriteLine("- method 1:  " + codeStrNew1);
-                            Console.WriteLine("- method 2:  " + codeStrNew2);
-                            Console.WriteLine("-------------------");
-                        }
-                        codeBytes = DecryptCodeMethod2(codeBytes);
-                        // if (codeStrNew1 == "A0B92EB4 AD87")
+                        // if (codeStrNew1 != codeStrNew2)
                         // {
-                        //     Console.WriteLine();
+                        //     Console.WriteLine("-------------------");
+                        //     Console.WriteLine($"{cheatName.Value} ({cheatName.Addr})");
+                        //     Console.WriteLine("- encrypted: " + codeStrOld);
+                        //     Console.WriteLine("- method 1:  " + codeStrNew1);
+                        //     Console.WriteLine("- method 2:  " + codeStrNew2);
+                        //     Console.WriteLine("-------------------");
                         // }
+                        codeBytes = DecryptCodeMethod2(codeBytes);
                     }
 
                     BigEndianReader codeReader = new BigEndianReader(codeBytes);
@@ -195,73 +191,6 @@ public sealed class N64XpRom : Rom
         d1 = (byte)((d1 + 0xAB) ^ 0x05);
         return new byte[] {a0, a1, a2, a3, d0, d1};
     }
-
-/*
-Encryption Algorithm
-A0A1A2A3 D0D1
-A0 = (a0 XOR 0x68)
-A1 = (a1 XOR 0x81) - 0x2B
-A2 = (a2 XOR 0x82) - 0x2B
-A3 = (a3 XOR 0x83) - 0x2B
-D0 = (d0 XOR 0x84) - 0x2B
-D1 = (d1 XOR 0x85) - 0x2B
-
-Alternate:
-A0 = (a0 XOR 0x68)
-A1 = (a1 XOR 0x01) - 0xAB
-A2 = (a2 XOR 0x02) - 0xAB
-A3 = (a3 XOR 0x03) - 0xAB
-D0 = (d0 XOR 0x04) - 0xAB
-D1 = (d1 XOR 0x05) - 0xAB
-
-Decryption Algorithm
-A0A1A2A3 D0D1
-A0 = (A0 XOR 0x68)
-A1 = (A1 + 0x2B) XOR 0x81
-A2 = (A2 + 0x2B) XOR 0x82
-A3 = (A3 + 0x2B) XOR 0x83
-D0 = (D0 + 0x2B) XOR 0x84
-D1 = (D1 + 0x2B) XOR 0x85
-
-Alternate Method:
-A0 = (A0 XOR 0x68)
-A1 = (A1 + 0xAB) XOR 0x01
-A2 = (A2 + 0xAB) XOR 0x02
-A3 = (A3 + 0xAB) XOR 0x03
-D0 = (D0 + 0xAB) XOR 0x04
-D1 = (D1 + 0xAB) XOR 0x05
-
-
-
-
-Xploder64 / Xplorer64 Code Types
-Type 	Description
-RAM Writes
-8-Bit
-80XXXXXX 00?? 	Writes 1 byte (??) to the specified address (XXXXXX) repeatedly.
-16-Bit
-81XXXXXX ???? 	Writes 2 bytes (????) to the specified address (XXXXXX) repeatedly.
-8-Bit XP Button
-88XXXXXX 00?? 	Writes 1 byte (??) to the specified address (XXXXXX) each time the XP Button is pressed.
-16-Bit XP Button
-89XXXXXX ???? 	Writes 2 bytes (????) to the specified address (XXXXXX) each time the XP Button is pressed.
-8-Bit Write Once
-F0XXXXXX 00?? 	Writes 1 byte (??) to the uncached address (XXXXXX) only once. These are most often used to disable certain types of protection that some games use to disable cheat devices.
-16-Bit Write Once
-F1XXXXXX ????
-Or
-2AXXXXXX ???? 	Writes 2 bytes (????) to the uncached address (XXXXXX) only once. These are most often used to disable certain types of protection that some games use to disable cheat devices.
-Conditional Codes
-8-Bit Equal To
-D0XXXXXX 00??
-YYYYYYYY ZZZZ 	If the byte at XXXXXXX is equal to ??, then the code on the next line is executed.
-16-Bit Equal To
-D1XXXXXX ????
-YYYYYYYY ZZZZ 	If the 2 bytes at XXXXXXX are equal to ????, then the code on the next line is executed.
-Special Codes
-Enabler
-3CXXXXXX ???? 	The exact effect of this code type is still a mystery.
- */
 
     private string GetIetfCode(RomString languageRaw, RomString countryRaw)
     {
