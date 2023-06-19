@@ -56,6 +56,10 @@ public abstract class Rom
         {
             Console.WriteLine($"Firmware compressed: {IsFirmwareCompressed()}");
         }
+        if (FormatSupportsUserPrefs())
+        {
+            Console.WriteLine($"Pristine user prefs: {!HasUserPrefs()}");
+        }
         Console.WriteLine();
         Console.WriteLine("Identifiers:");
         foreach (RomString id in Metadata.Identifiers)
@@ -98,10 +102,12 @@ public abstract class Rom
     public virtual bool FormatSupportsFileEncryption() { return false; }
     public virtual bool FormatSupportsFileScrambling() { return false; }
     public virtual bool FormatSupportsFirmwareCompression() { return false; }
+    public virtual bool FormatSupportsUserPrefs() { return false; }
 
     public virtual bool IsFileEncrypted() { return false; }
     public virtual bool IsFileScrambled() { return false; }
     public virtual bool IsFirmwareCompressed() { return false; }
+    public virtual bool HasUserPrefs() { return false; }
 
     public static Rom FromFile(string romFilePath)
     {

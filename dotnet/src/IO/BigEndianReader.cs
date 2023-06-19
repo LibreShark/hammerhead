@@ -1,6 +1,7 @@
 ﻿// bacteriamage.wordpress.com
 
 using System.Text;
+using Google.Protobuf;
 
 namespace LibreShark.Hammerhead.IO;
 
@@ -41,7 +42,7 @@ internal class BigEndianReader : IBinReader
         return this;
     }
 
-    private TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
+    public TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
     {
         u32 oldAddr = Position;
         TReturn value = operation();
@@ -91,11 +92,7 @@ internal class BigEndianReader : IBinReader
 
     public bool IsSectionPadding()
     {
-        return IsSectionPaddingAt(Position);
-    }
-
-    public bool IsSectionPaddingAt(u32 addr)
-    {
+        u32 addr = Position;
         return MaintainPosition(() =>
         {
             u32 chunk1 = Seek(addr).ReadU32();
@@ -204,7 +201,7 @@ internal class BigEndianReader : IBinReader
 
     private RomString ReadCString(TryReadNextChar read, u32 maxLen)
     {
-        uint startPos = Position;
+        u32 startPos = Position;
 
         StringBuilder builder = new StringBuilder();
 
@@ -213,8 +210,8 @@ internal class BigEndianReader : IBinReader
             builder.Append(ch);
         }
 
-        uint endPos = Position;
-        uint len = endPos - startPos;
+        u32 endPos = Position;
+        u32 len = endPos - startPos;
 
         return new RomString
         {
@@ -223,6 +220,7 @@ internal class BigEndianReader : IBinReader
                 StartIndex = startPos,
                 EndIndex = endPos,
                 Length = len,
+                RawBytes = ByteString.CopyFrom(_buffer[(int)startPos..(int)endPos]),
             },
             Value = builder.ToString(),
         };

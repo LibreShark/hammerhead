@@ -24,6 +24,9 @@ public sealed class N64XpRom : Rom
 {
     private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
     private const u32 GameListAddr = 0x00030000;
+    private const u32 UserPrefsAddr = 0x0003F000;
+    private const u32 LastGameNameAddr = 0x0003F420;
+    private const u32 LastGameCartIdAddr = 0x0003F43C;
 
     private readonly BigEndianReader _reader;
     private readonly BigEndianWriter _writer;
@@ -81,6 +84,49 @@ public sealed class N64XpRom : Rom
         Metadata.Identifiers.Add(wayneStr);
         Metadata.Identifiers.Add(buildDateRaw);
 
+        ReadGames();
+        ReadUserPrefs();
+    }
+
+    public override bool FormatSupportsFileScrambling()
+    {
+        return true;
+    }
+
+    public override bool FormatSupportsUserPrefs()
+    {
+        return true;
+    }
+
+    public override bool IsFileScrambled()
+    {
+        return DetectScrambled(InitialBytes.ToArray());
+    }
+
+    public override bool HasUserPrefs()
+    {
+        return _reader.MaintainPosition(() => !_reader.Seek(UserPrefsAddr).IsSectionPadding());
+    }
+
+    private void ReadUserPrefs()
+    {
+        _reader.Seek(UserPrefsAddr);
+
+        if (!HasUserPrefs())
+        {
+            return;
+        }
+
+        // TODO(CheatoBaggins): Decode user preferences
+
+        RomString lastGameName = _reader.Seek(LastGameNameAddr).ReadCString(20).Trim();
+        RomString lastGameCartId = _reader.Seek(LastGameCartIdAddr).ReadCString(2);
+        Metadata.Identifiers.Add(lastGameName);
+        Metadata.Identifiers.Add(lastGameCartId);
+    }
+
+    private void ReadGames()
+    {
         _reader.Seek(GameListAddr);
         bool stop = false;
         while (!stop && !_reader.IsSectionPadding())
@@ -258,16 +304,6 @@ public sealed class N64XpRom : Rom
             .Subtract(cetTime.Offset)
             .ToOffset(cetTime.Offset);
         buildDateIso = buildDateTimeWithTz.ToIsoString();
-    }
-
-    public override bool FormatSupportsFileScrambling()
-    {
-        return true;
-    }
-
-    public override bool IsFileScrambled()
-    {
-        return DetectScrambled(InitialBytes.ToArray());
     }
 
     private void Unscramble()

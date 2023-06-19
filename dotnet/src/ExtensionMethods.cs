@@ -1,4 +1,5 @@
 using System.Text;
+using Google.Protobuf;
 
 namespace LibreShark.Hammerhead;
 
@@ -61,6 +62,25 @@ public static class ExtensionMethods
         return -1;
     }
 
+    public static RomString Trim(this RomString oldRS)
+    {
+        RomString newRS = new RomString
+        {
+            Value = oldRS.Value.Trim(),
+        };
+        u32 len = (u32)newRS.Value.Length;
+        u32 startIndex = oldRS.Addr.StartIndex;
+        byte[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
+        newRS.Addr = new RomRange()
+        {
+            StartIndex = startIndex,
+            EndIndex = startIndex + len,
+            Length = len,
+            RawBytes = ByteString.CopyFrom(oldBytes[..(int)len]),
+        };
+        return newRS;
+    }
+
     public static string ToDisplayString(this RomFormat format)
     {
         switch (format)
@@ -107,14 +127,6 @@ public static class ExtensionMethods
                 // TODO(CheatoBaggins): Implement all
                 return "UNKNOWN";
         }
-    }
-
-    public static RomString Trim(this RomString oldRomString)
-    {
-        return new RomString(oldRomString)
-        {
-            Value = oldRomString.Value.Trim(),
-        };
     }
 
     public static string ToDisplayString(this RomRange range)

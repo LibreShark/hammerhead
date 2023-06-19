@@ -20,6 +20,8 @@ public interface IBinReader
 
     public IBinReader Seek(u32 addr);
 
+    public TReturn MaintainPosition<TReturn>(Func<TReturn> operation);
+
     #endregion
 
     #region Find / Contains
@@ -29,6 +31,8 @@ public interface IBinReader
 
     public bool Contains(string needle);
     public bool Contains(byte[] needle);
+
+    public bool IsSectionPadding();
 
     #endregion
 
