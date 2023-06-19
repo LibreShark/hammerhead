@@ -2,6 +2,17 @@ using System.Text;
 
 namespace LibreShark.Hammerhead;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 public static class ExtensionMethods
 {
     private static readonly Encoding Ascii = Encoding.GetEncoding(
@@ -29,18 +40,18 @@ public static class ExtensionMethods
         return haystackBytes.Find(needleBytes) > -1;
     }
 
-    public static int Find(this byte[] haystackBytes, string needleStr)
+    public static s32 Find(this byte[] haystackBytes, string needleStr)
     {
         return Find(haystackBytes, Encoding.UTF8.GetBytes(needleStr));
     }
 
-    public static int Find(this byte[] haystackBytes, byte[] needleBytes)
+    public static s32 Find(this byte[] haystackBytes, byte[] needleBytes)
     {
-        int needleLen = needleBytes.Length;
-        int haystackLen = haystackBytes.Length;
-        for (int i = 0; i < haystackLen - needleLen; i++)
+        s32 needleLen = needleBytes.Length;
+        s32 haystackLen = haystackBytes.Length;
+        for (s32 i = 0; i < haystackLen - needleLen; i++)
         {
-            int end = i + needleLen;
+            s32 end = i + needleLen;
             if (haystackBytes[i..end].SequenceEqual(needleBytes))
             {
                 return i;

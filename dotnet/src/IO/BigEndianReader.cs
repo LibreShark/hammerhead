@@ -65,12 +65,12 @@ internal class BigEndianReader : IBinReader
 
     #region Find / Contains
 
-    public s64 Find(string needle)
+    public s32 Find(string needle)
     {
         return _buffer.Find(needle);
     }
 
-    public s64 Find(byte[] needle)
+    public s32 Find(byte[] needle)
     {
         return _buffer.Find(needle);
     }
@@ -197,20 +197,8 @@ internal class BigEndianReader : IBinReader
         return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
     }
 
-    public RomString ReadCStringAt(u32 addr, u32 maxLen = 0)
-    {
-        Seek(addr);
-        return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
-    }
-
     public RomString ReadPrintableCString(u32 maxLen = 0)
     {
-        return ReadCString((out string ch) => NextPrintableCharacter(out ch), maxLen);
-    }
-
-    public RomString ReadPrintableCStringAt(u32 addr, u32 maxLen = 0)
-    {
-        Seek(addr);
         return ReadCString((out string ch) => NextPrintableCharacter(out ch), maxLen);
     }
 

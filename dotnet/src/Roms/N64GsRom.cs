@@ -60,8 +60,8 @@ public sealed class N64GsRom : Rom
         _reader = new BigEndianReader(Bytes);
         _writer = new BigEndianWriter(Bytes);
 
-        _headerId = _reader.ReadCStringAt(HeaderIdAddr, 0x10);
-        _rawTimestamp = _reader.ReadPrintableCStringAt(BuildTimestampAddr, 15);
+        _headerId = _reader.Seek(HeaderIdAddr).ReadCString(0x10);
+        _rawTimestamp = _reader.Seek(BuildTimestampAddr).ReadPrintableCString(15);
 
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);
@@ -151,7 +151,7 @@ public sealed class N64GsRom : Rom
         u32 pos = _reader.Position;
 
         // Firmware does not support names longer than 30 chars.
-        string name = _reader.ReadCStringAt(pos, 30).Value;
+        string name = _reader.ReadCString(30).Value;
 
         if (name.Length < 1)
         {
@@ -255,7 +255,7 @@ public sealed class N64GsRom : Rom
         // Uncomment to return ONLY the number (e.g., "2.21")
         // titleVersionPos += needle.Length;
 
-        return _reader.ReadPrintableCStringAt((u32)titleVersionPos, (u32)needle.Length + 5).Trim();
+        return _reader.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5).Trim();
     }
 
     private N64GsRom Seek(u32 address)

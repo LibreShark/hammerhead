@@ -24,8 +24,8 @@ public interface IBinReader
 
     #region Find / Contains
 
-    public s64 Find(string needle);
-    public s64 Find(byte[] needle);
+    public s32 Find(string needle);
+    public s32 Find(byte[] needle);
 
     public bool Contains(string needle);
     public bool Contains(byte[] needle);
@@ -60,10 +60,8 @@ public interface IBinReader
     #region Strings
 
     public RomString ReadCString(u32 maxLen = 0);
-    public RomString ReadCStringAt(u32 addr, u32 maxLen = 0);
 
     public RomString ReadPrintableCString(u32 maxLen = 0);
-    public RomString ReadPrintableCStringAt(u32 addr, u32 maxLen = 0);
 
     #endregion
 }

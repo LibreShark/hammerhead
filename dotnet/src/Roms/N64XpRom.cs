@@ -44,11 +44,11 @@ public sealed class N64XpRom : Rom
         // TODO(CheatoBaggins): Implement
         Metadata.IsKnownVersion = false;
 
-        RomString firstLine = _reader.ReadCStringAt(0x0);
-        RomString versionRaw = _reader.ReadCStringAt(0x17, 5);
-        RomString languageRaw = _reader.ReadCStringAt(0x1C, 1);
-        RomString buildRaw = _reader.ReadCStringAt(0x20);
-        RomString countryRaw = _reader.ReadCStringAt(0x28);
+        RomString firstLine = _reader.Seek(0x0).ReadCString();
+        RomString versionRaw = _reader.Seek(0x17).ReadCString(5);
+        RomString languageRaw = _reader.Seek(0x1C).ReadCString(1);
+        RomString buildRaw = _reader.Seek(0x20).ReadCString();
+        RomString countryRaw = _reader.Seek(0x28).ReadCString();
         Metadata.Identifiers.Add(firstLine);
         Metadata.Identifiers.Add(versionRaw);
         Metadata.Identifiers.Add(languageRaw);
@@ -65,11 +65,11 @@ public sealed class N64XpRom : Rom
         Metadata.DisplayVersion = $"v{versionRaw.Value}{languageRaw.Value} build {buildRaw.Value} ({countryRaw.Value})";
         Metadata.LanguageIetfCode = GetIetfCode(languageRaw, countryRaw);
 
-        RomString fcd = _reader.ReadCStringAt(0x40);
-        RomString greetz = _reader.ReadCStringAt(0x800);
-        RomString develop = _reader.ReadCStringAt(0x8A0);
-        RomString peeps = _reader.ReadCStringAt(0x900);
-        RomString link = _reader.ReadCStringAt(0x940);
+        RomString fcd = _reader.Seek(0x40).ReadCString();
+        RomString greetz = _reader.Seek(0x800).ReadCString();
+        RomString develop = _reader.Seek(0x8A0).ReadCString();
+        RomString peeps = _reader.Seek(0x900).ReadCString();
+        RomString link = _reader.Seek(0x940).ReadCString();
         ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
 
         Metadata.BuildDateIso = buildDateIso;
@@ -219,9 +219,9 @@ public sealed class N64XpRom : Rom
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)
     {
         u32 waynePos = (u32)Bytes.Find("Wayne Hughes Beckett!");
-        wayneStr = _reader.ReadCStringAt(waynePos);
+        wayneStr = _reader.Seek(waynePos).ReadCString();
         u32 buildDatePos = waynePos + 0x40;
-        buildDateRaw = _reader.ReadCStringAt(buildDatePos);
+        buildDateRaw = _reader.Seek(buildDatePos).ReadCString();
         Match match = Regex.Match(buildDateRaw.Value,
             @"(?<ddd>\w{3}) (?<MMM>\w{3}) (?<d>\d{1,2}) (?<H>\d{1,2}):(?<mm>\d{2}):(?<ss>\d{2}) (?<ZZZ>\w{2,3}) (?<yyyy>\d{4})");
         if (!match.Success)
@@ -290,8 +290,8 @@ public sealed class N64XpRom : Rom
 
     private static bool DetectPlain(byte[] bytes)
     {
-        var idBytes = bytes[0x40..0x55];
-        var idStr = idBytes.ToAsciiString();
+        byte[] idBytes = bytes[0x40..0x55];
+        string idStr = idBytes.ToAsciiString();
         return idStr == "FUTURE CONSOLE DESIGN";
     }
 
