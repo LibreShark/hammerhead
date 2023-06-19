@@ -93,6 +93,8 @@ enum RomBrand {
   XPLORER = 0x09;
   GAME_GENIE = 0x0A;
   SHARK_MX = 0x0B;
+  BRAINBOY = 0x0C;
+  MONSTER_BRAIN = 0x0D;
 }
 
 message ChecksumResult {

@@ -83,18 +83,18 @@ public static class ExtensionMethods
 
     public static string ToDisplayString(this RomFormat format)
     {
-        switch (format)
+        return format switch
         {
-            case RomFormat.N64Gameshark:
-                return "N64 GameShark ROM format";
-            case RomFormat.N64Gbhunter:
-                return "N64 GB Hunter ROM format";
-            case RomFormat.N64Xplorer64:
-                return "N64 Xplorer 64 ROM format";
-            default:
-                // TODO(CheatoBaggins): Implement all
-                return "UNKNOWN";
-        }
+            RomFormat.N64Gameshark => "N64 GameShark ROM format",
+            RomFormat.N64Gbhunter => "N64 GB Hunter ROM format",
+            RomFormat.N64Xplorer64 => "N64 Xplorer 64 ROM format",
+            RomFormat.GbcGameshark => "GBC GameShark ROM format",
+            RomFormat.GbcXploder => "GBC Xploder/Xplorer ROM format",
+            RomFormat.GbcCodebreaker => "GBC Code Breaker ROM format",
+            RomFormat.GbcMonsterbrain => "GBC Monster Brain ROM format",
+            RomFormat.GbcSharkMx => "GBC Shark MX ROM format",
+            _ => "MISSING FROM RomFormat.ToDisplayString()!",
+        };
     }
 
     public static string ToDisplayString(this RomBrand brand)
