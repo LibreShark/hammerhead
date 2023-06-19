@@ -26,21 +26,21 @@ public sealed class N64GsRom : Rom
     private readonly BigEndianWriter _writer;
 
     private bool _isCompressed;
-    private bool _isV3Firmware;
-    private bool _isV1GameList;
-    private bool _isV3KeyCodeListAddr;
-    private bool _supportsUserPrefs;
-    private bool _supportsKeyCodes;
+    private readonly bool _isV3Firmware;
+    private readonly bool _isV1GameList;
+    private readonly bool _isV3KeyCodeListAddr;
+    private readonly bool _supportsUserPrefs;
+    private readonly bool _supportsKeyCodes;
 
-    private u32 _firmwareAddr;
-    private u32 _gameListAddr;
-    private u32 _keyCodeListAddr;
-    private u32 _userPrefsAddr;
-    private RomString _headerId;
-    private RomString _rawTimestamp;
-    private N64GsVersion _version;
-    private KeyCode _activeKeyCode;
-    private List<KeyCode> _keyCodes;
+    private readonly u32 _firmwareAddr;
+    private readonly u32 _gameListAddr;
+    private readonly u32 _keyCodeListAddr;
+    private readonly u32 _userPrefsAddr;
+    private readonly RomString _headerId;
+    private readonly RomString _rawTimestamp;
+    private readonly N64GsVersion _version;
+    private readonly KeyCode _activeKeyCode;
+    private readonly List<KeyCode> _keyCodes;
 
     private const u32 ProgramCounterAddr = 0x00000008;
     private const u32 ActiveKeyCodeAddr  = 0x00000010;
@@ -101,6 +101,20 @@ public sealed class N64GsRom : Rom
     public override bool FormatSupportsFirmwareCompression()
     {
         return true;
+    }
+
+    public override bool FormatSupportsUserPrefs()
+    {
+        return _supportsUserPrefs;
+    }
+
+    public override bool HasUserPrefs()
+    {
+        if (!_supportsUserPrefs)
+        {
+            return false;
+        }
+        return _reader.MaintainPosition(() => !_reader.Seek(_userPrefsAddr).IsSectionPadding());
     }
 
     private List<Game> ReadGames()
