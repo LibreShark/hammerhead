@@ -92,12 +92,17 @@ public sealed class N64XpRom : Rom
 
             for (u16 cheatIdx = 0; !stop && cheatIdx < cheatCount; cheatIdx++)
             {
+                // TODO(CheatoBaggins): inflate `FA`, etc.
+                // E.g.:
+                // - "Hybrid Heaven" -> "Infinite `FA`"
+                // - "GEX 64" -> "Infinite `F8`"
+                // - "Donkey Kong 64 alternativ" -> "Infinite `FA`"
                 RomString cheatName = _reader.ReadCString();
                 u8 codeCount = _reader.ReadUByte();
 
                 if (cheatName.Value.Length == 0)
                 {
-                    Console.WriteLine($"{cheatName.Addr.ToDisplayString()}: empty cheat name!");
+                    Console.WriteLine($"{cheatName.Addr.ToDisplayString()}: Empty cheat name!");
                     stop = true;
                     break;
                 }
@@ -142,12 +147,11 @@ public sealed class N64XpRom : Rom
 
     private static bool IsCodeEncrypted(IReadOnlyList<byte> code)
     {
-        string codeStr = code.ToArray().ToHexString();
         byte opcodeByte = code[0];
-        Xp64Opcode opcodeEnum = (Xp64Opcode)opcodeByte;
+        var opcodeEnum = (Xp64Opcode)opcodeByte;
         ImmutableArray<Xp64Opcode> knownOpcodes = Enum.GetValues<Xp64Opcode>().ToImmutableArray();
-        bool isDecrypted = knownOpcodes.Contains(opcodeEnum);
-        return !isDecrypted;
+        bool isUnencrypted = knownOpcodes.Contains(opcodeEnum);
+        return !isUnencrypted;
     }
 
     // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
@@ -156,8 +160,12 @@ public sealed class N64XpRom : Rom
         return new byte[] {};
     }
 
-    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
-    private byte[] DecryptCodeMethod1(byte[] code)
+    /// <summary>
+    /// This method does NOT appear to work correctly.
+    ///
+    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
+    /// </summary>
+    private static byte[] DecryptCodeMethod1(IReadOnlyList<byte> code)
     {
         byte a0 = code[0];
         byte a1 = code[1];
@@ -174,8 +182,12 @@ public sealed class N64XpRom : Rom
         return new byte[] {a0, a1, a2, a3, d0, d1};
     }
 
-    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
-    private byte[] DecryptCodeMethod2(byte[] code)
+    /// <summary>
+    /// This method appears to work correctly.
+    ///
+    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
+    /// </summary>
+    private static byte[] DecryptCodeMethod2(IReadOnlyList<byte> code)
     {
         byte a0 = code[0];
         byte a1 = code[1];
@@ -192,17 +204,16 @@ public sealed class N64XpRom : Rom
         return new byte[] {a0, a1, a2, a3, d0, d1};
     }
 
-    private string GetIetfCode(RomString languageRaw, RomString countryRaw)
+    private static string GetIetfCode(RomString oneLetterLangCode, RomString countryNameRaw)
     {
-        switch (languageRaw.Value)
+        return countryNameRaw.Value switch
         {
-            case "E":
-                return "en-GB";
-            case "G":
-                return "de-DE";
-        }
-        // Undetermined (unknown)
-        return "und";
+            "England" => "en-GB",
+            "Germany" => "de-DE",
+            "France" => "fr-FR",
+            "Australia" => "en-AU",
+            _ => "und",
+        };
     }
 
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)

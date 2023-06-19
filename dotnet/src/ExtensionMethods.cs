@@ -129,4 +129,9 @@ public static class ExtensionMethods
     {
         return code[..4].ToHexString() + " " + code[4..].ToHexString();
     }
+
+    public static bool EqualsIgnoreCase(this string str1, string str2)
+    {
+        return String.Compare(str1, str2, StringComparison.InvariantCultureIgnoreCase) == 0;
+    }
 }
