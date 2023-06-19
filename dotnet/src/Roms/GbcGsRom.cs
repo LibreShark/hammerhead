@@ -1,4 +1,5 @@
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead.Roms;
 
@@ -29,6 +30,8 @@ public sealed class GbcGsRom : Rom
     private readonly BigEndianReader _reader;
     private readonly BigEndianWriter _writer;
 
+    private readonly List<RawGbcGsCheat> _rawCheats = new();
+
     public GbcGsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
@@ -55,6 +58,18 @@ public sealed class GbcGsRom : Rom
         ReadCheats();
         byte[] unknownBytes2 = _reader.ReadBytes(2);
         ReadCheats();
+
+        RawGbcGsCheat[] rawCheats = _rawCheats.ToArray();
+        for (int i = 0; i < rawCheats.Length; i++)
+        {
+            var cheat = rawCheats[i];
+            var code = cheat.Code;
+            var unknownBytes = cheat.UnknownBytes;
+            var cheatName = cheat.Name;
+            string codeStr = code.ToHexString();
+            string unknownStr = unknownBytes.ToHexString();
+            Console.WriteLine($"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
+        }
     }
 
     private void ReadGames()
@@ -64,7 +79,6 @@ public sealed class GbcGsRom : Rom
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            // TODO(CheatoBaggins): Little endian
             u8[] unknownBytes2 = _reader.ReadBytes(2);
             RomString gameName = _reader.ReadPrintableCString(15).Trim();
             if (gameName.Value.Length == 0)
@@ -72,7 +86,7 @@ public sealed class GbcGsRom : Rom
                 continue;
             }
 
-            Console.WriteLine($"{gameName.Addr.ToDisplayString()} game[{i:D3}] = {gameName.Value}");
+            Games.Add(new Game { Name = gameName.Value });
         }
     }
 
@@ -89,13 +103,11 @@ public sealed class GbcGsRom : Rom
             _reader.Seek(_reader.Position - 1);
 
             byte[] unknownBytes = _reader.ReadBytes(2);
-            string codeStr = code.ToHexString();
-            string unknownStr = unknownBytes.ToHexString();
             if (cheatName.Value.Length == 0)
             {
                 continue;
             }
-            Console.WriteLine($"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
+            _rawCheats.Add(new RawGbcGsCheat(code, cheatName, unknownBytes));
         }
     }
 
@@ -146,5 +158,19 @@ public sealed class GbcGsRom : Rom
 
     protected override void PrintCustomHeader()
     {
+    }
+
+    private class RawGbcGsCheat
+    {
+        public readonly byte[] Code;
+        public readonly RomString Name;
+        public readonly byte[] UnknownBytes;
+
+        public RawGbcGsCheat(byte[] code, RomString name, byte[] unknownBytes)
+        {
+            Code = code;
+            Name = name;
+            UnknownBytes = unknownBytes;
+        }
     }
 }
