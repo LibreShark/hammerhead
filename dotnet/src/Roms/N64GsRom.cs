@@ -76,12 +76,12 @@ public sealed class N64GsRom : Rom
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
 
-        _isV3Firmware        = _reader.Seek(0x00001000).ReadUInt32() == 0x00000000;
-        _isV1GameList        = _reader.Seek(0x0002DFF0).ReadUInt32() == 0x00000000;
-        _isV3KeyCodeListAddr = _reader.Seek(0x0002FBF0).ReadUInt32() == 0xFFFFFFFF;
+        _isV3Firmware        = _reader.Seek(0x00001000).ReadU32() == 0x00000000;
+        _isV1GameList        = _reader.Seek(0x0002DFF0).ReadU32() == 0x00000000;
+        _isV3KeyCodeListAddr = _reader.Seek(0x0002FBF0).ReadU32() == 0xFFFFFFFF;
         _keyCodeListAddr     = (u32)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
-        _supportsKeyCodes    = _reader.Seek(_keyCodeListAddr).ReadUInt32() != 0x00000000;
-        _supportsUserPrefs   = _reader.Seek(0x0002FAF0).ReadUInt32() == 0xFFFFFFFF;
+        _supportsKeyCodes    = _reader.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
+        _supportsUserPrefs   = _reader.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
         _firmwareAddr        = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
         _gameListAddr        = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
@@ -107,7 +107,7 @@ public sealed class N64GsRom : Rom
     {
         List<Game> games = new List<Game>();
         Seek(_gameListAddr);
-        u32 gamesCount = _reader.ReadUInt32();
+        u32 gamesCount = _reader.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
             games.Add(ReadGame());
@@ -118,7 +118,7 @@ public sealed class N64GsRom : Rom
     private Game ReadGame()
     {
         Game game = Game.NewGame(ReadName());
-        u8 cheatCount = _reader.ReadUByte();
+        u8 cheatCount = _reader.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
             ReadCheat(game);
@@ -129,7 +129,7 @@ public sealed class N64GsRom : Rom
     private void ReadCheat(Game game)
     {
         Cheat cheat = game.AddCheat(ReadName());
-        u8 codeCount = _reader.ReadUByte();
+        u8 codeCount = _reader.ReadU8();
         bool cheatOn = (codeCount & 0x80) > 0;
         codeCount &= 0x7F;
         cheat.IsActive = cheatOn;
@@ -210,7 +210,7 @@ public sealed class N64GsRom : Rom
             RomString name = _reader.ReadPrintableCString(0x1F);
             while (_reader.PeekBytes(1)[0] == 0)
             {
-                _reader.ReadUByte();
+                _reader.ReadU8();
             }
             bool isActive = bytes.Contains(activePrefix);
             KeyCode keyCode = new(name.Value, bytes, isActive);

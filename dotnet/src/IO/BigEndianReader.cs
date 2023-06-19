@@ -98,8 +98,8 @@ internal class BigEndianReader : IBinReader
     {
         return MaintainPosition(() =>
         {
-            u32 chunk1 = Seek(addr).ReadUInt32();
-            u32 chunk2 = Seek(addr + 4).ReadUInt32();
+            u32 chunk1 = Seek(addr).ReadU32();
+            u32 chunk2 = Seek(addr + 4).ReadU32();
             return IsPadding(chunk1) &&
                    IsPadding(chunk2);
         });
@@ -114,7 +114,7 @@ internal class BigEndianReader : IBinReader
 
     #region Bytes
 
-    public byte[] PeekBytesAt(u32 addr, u32 count)
+    public u8[] PeekBytesAt(u32 addr, u32 count)
     {
         if (addr == _buffer.Length)
         {
@@ -127,12 +127,12 @@ internal class BigEndianReader : IBinReader
         return _buffer.Skip((int)addr).Take((int)count).ToArray();
     }
 
-    public byte[] PeekBytes(u32 count)
+    public u8[] PeekBytes(u32 count)
     {
         return PeekBytesAt(Position, count);
     }
 
-    public byte[] ReadBytes(u32 count)
+    public u8[] ReadBytes(u32 count)
     {
         byte[] bytes = PeekBytes(count);
         Position += count;
@@ -143,7 +143,7 @@ internal class BigEndianReader : IBinReader
 
     #region Integers
 
-    public u8 ReadUByte()
+    public u8 ReadU8()
     {
         if (Position == _buffer.Length)
         {
@@ -157,35 +157,35 @@ internal class BigEndianReader : IBinReader
         return _buffer[Position++];
     }
 
-    public s8 ReadSByte()
+    public s8 ReadS8()
     {
-        return (s8)ReadUByte();
+        return (s8)ReadU8();
     }
 
-    public u16 ReadUInt16()
+    public u16 ReadU16()
     {
-        byte b1 = ReadUByte();
-        byte b2 = ReadUByte();
+        byte b1 = ReadU8();
+        byte b2 = ReadU8();
         s32 value = (b1 << 8) + b2;
         return (u16) value;
     }
 
-    public s16 ReadSInt16()
+    public s16 ReadS16()
     {
-        return (s16)ReadUInt16();
+        return (s16)ReadU16();
     }
 
-    public u32 ReadUInt32()
+    public u32 ReadU32()
     {
-        u32 high = ReadUInt16();
-        u32 low = ReadUInt16();
+        u32 high = ReadU16();
+        u32 low = ReadU16();
 
         return (high << 16) + low;
     }
 
-    public s32 ReadSInt32()
+    public s32 ReadS32()
     {
-        return (s32)ReadUInt32();
+        return (s32)ReadU32();
     }
 
     #endregion
@@ -284,7 +284,7 @@ internal class BigEndianReader : IBinReader
 
     private bool NextRawChar(out byte b)
     {
-        b = ReadUByte();
+        b = ReadU8();
         return b != 0;
     }
 

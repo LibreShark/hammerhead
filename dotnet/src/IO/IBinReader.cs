@@ -13,8 +13,16 @@ using f64 = Double;
 
 public interface IBinReader
 {
+    #region Seeking
+
     public u32 Position { get; }
     public bool EndReached { get; }
+
+    public IBinReader Seek(u32 addr);
+
+    #endregion
+
+    #region Find / Contains
 
     public s64 Find(string needle);
     public s64 Find(byte[] needle);
@@ -22,28 +30,40 @@ public interface IBinReader
     public bool Contains(string needle);
     public bool Contains(byte[] needle);
 
-    public IBinReader Seek(u32 addr);
+    #endregion
 
-    public byte[] PeekBytesAt(u32 addr, u32 count);
-    public byte[] PeekBytes(u32 count);
+    #region Bytes
 
-    public byte[] ReadBytes(u32 count);
+    public u8[] PeekBytesAt(u32 addr, u32 count);
+    public u8[] PeekBytes(u32 count);
 
-    public u8 ReadUByte();
+    public u8[] ReadBytes(u32 count);
 
-    public s8 ReadSByte();
+    #endregion
 
-    public u16 ReadUInt16();
+    #region Integers
 
-    public s16 ReadSInt16();
+    public u8 ReadU8();
 
-    public u32 ReadUInt32();
+    public s8 ReadS8();
 
-    public s32 ReadSInt32();
+    public u16 ReadU16();
+
+    public s16 ReadS16();
+
+    public u32 ReadU32();
+
+    public s32 ReadS32();
+
+    #endregion
+
+    #region Strings
 
     public RomString ReadCString(u32 maxLen = 0);
     public RomString ReadCStringAt(u32 addr, u32 maxLen = 0);
 
     public RomString ReadPrintableCString(u32 maxLen = 0);
     public RomString ReadPrintableCStringAt(u32 addr, u32 maxLen = 0);
+
+    #endregion
 }

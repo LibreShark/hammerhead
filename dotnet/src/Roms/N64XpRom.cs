@@ -86,7 +86,7 @@ public sealed class N64XpRom : Rom
         while (!stop && !_reader.IsSectionPadding())
         {
             RomString gameName = _reader.ReadCString();
-            u8 cheatCount = _reader.ReadUByte();
+            u8 cheatCount = _reader.ReadU8();
 
             Game game = new(gameName.Value);
 
@@ -98,7 +98,7 @@ public sealed class N64XpRom : Rom
                 // - "GEX 64" -> "Infinite `F8`"
                 // - "Donkey Kong 64 alternativ" -> "Infinite `FA`"
                 RomString cheatName = _reader.ReadCString();
-                u8 codeCount = _reader.ReadUByte();
+                u8 codeCount = _reader.ReadU8();
 
                 if (cheatName.Value.Length == 0)
                 {

@@ -88,7 +88,7 @@ class N64GsCrypter
 
     private uint GetNextByte()
     {
-        return _reader.ReadUByte();
+        return _reader.ReadU8();
     }
 
     private void PutNextByte(uint value)
