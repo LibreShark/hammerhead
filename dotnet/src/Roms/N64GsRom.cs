@@ -4,13 +4,14 @@ using LibreShark.Hammerhead.N64;
 namespace LibreShark.Hammerhead.Roms;
 
 // ReSharper disable BuiltInTypeReferenceStyle
-
 using u8 = Byte;
 using s8 = SByte;
 using s16 = Int16;
 using u16 = UInt16;
 using s32 = Int32;
 using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
@@ -106,9 +107,8 @@ public sealed class N64GsRom : Rom
     {
         List<Game> games = new List<Game>();
         Seek(_gameListAddr);
-        // TODO(CheatoBaggins): Should this be a u32?
-        int gamesCount = _reader.ReadSInt32();
-        for (uint gameIdx = 0; gameIdx < gamesCount; gameIdx++)
+        u32 gamesCount = _reader.ReadUInt32();
+        for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
             games.Add(ReadGame());
         }
@@ -194,7 +194,7 @@ public sealed class N64GsRom : Rom
 
         Seek(_keyCodeListAddr);
         byte[] listBytes = _reader.PeekBytes(0xA0);
-        u32 maxPos = _reader.Position + (uint)listBytes.Length;
+        u32 maxPos = _reader.Position + (u32)listBytes.Length;
         s32 keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
 
         // Valid key codes are either 9 or 13 bytes long.
@@ -206,7 +206,7 @@ public sealed class N64GsRom : Rom
         List<KeyCode> keyCodes = new();
         while (_reader.Position <= maxPos)
         {
-            byte[] bytes = _reader.ReadBytes((uint)keyCodeByteLength);
+            byte[] bytes = _reader.ReadBytes((u32)keyCodeByteLength);
             RomString name = _reader.ReadPrintableCString(0x1F);
             while (_reader.PeekBytes(1)[0] == 0)
             {
@@ -255,10 +255,10 @@ public sealed class N64GsRom : Rom
         // Uncomment to return ONLY the number (e.g., "2.21")
         // titleVersionPos += needle.Length;
 
-        return _reader.ReadPrintableCStringAt((uint)titleVersionPos, needle.Length + 5).Trim();
+        return _reader.ReadPrintableCStringAt((u32)titleVersionPos, (u32)needle.Length + 5).Trim();
     }
 
-    private N64GsRom Seek(uint address)
+    private N64GsRom Seek(u32 address)
     {
         _reader.Seek(address);
         _writer.Seek(address);

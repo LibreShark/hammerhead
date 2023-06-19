@@ -4,12 +4,15 @@ using System.Text;
 
 namespace LibreShark.Hammerhead.IO;
 
+// ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
 using s8 = SByte;
 using s16 = Int16;
 using u16 = UInt16;
 using s32 = Int32;
 using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
@@ -19,9 +22,9 @@ using f64 = Double;
 /// </summary>
 internal class BigEndianReader : IBinReader
 {
-    private readonly byte[] _buffer;
+    private readonly u8[] _buffer;
 
-    public uint Position { get; private set; }
+    public u32 Position { get; private set; }
     public bool EndReached => Position >= _buffer.Length;
 
     public BigEndianReader(byte[] buffer)
@@ -31,7 +34,7 @@ internal class BigEndianReader : IBinReader
 
     #region Seeking
 
-    public IBinReader Seek(uint addr)
+    public IBinReader Seek(u32 addr)
     {
         Position = addr;
         CheckBounds();
@@ -62,12 +65,12 @@ internal class BigEndianReader : IBinReader
 
     #region Find / Contains
 
-    public int Find(string needle)
+    public s64 Find(string needle)
     {
         return _buffer.Find(needle);
     }
 
-    public int Find(byte[] needle)
+    public s64 Find(byte[] needle)
     {
         return _buffer.Find(needle);
     }
@@ -111,7 +114,7 @@ internal class BigEndianReader : IBinReader
 
     #region Bytes
 
-    public byte[] PeekBytesAt(uint addr, uint count)
+    public byte[] PeekBytesAt(u32 addr, u32 count)
     {
         if (addr == _buffer.Length)
         {
@@ -225,29 +228,29 @@ internal class BigEndianReader : IBinReader
         return (int)ReadUInt32();
     }
 
-    public RomString ReadCString(int maxLen = 0)
+    public RomString ReadCString(u32 maxLen = 0)
     {
         return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
     }
 
-    public RomString ReadCStringAt(uint addr, int maxLen = 0)
+    public RomString ReadCStringAt(u32 addr, u32 maxLen = 0)
     {
         Seek(addr);
         return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
     }
 
-    public RomString ReadPrintableCString(int maxLen = 0)
+    public RomString ReadPrintableCString(u32 maxLen = 0)
     {
         return ReadCString((out string ch) => NextPrintableCharacter(out ch), maxLen);
     }
 
-    public RomString ReadPrintableCStringAt(uint addr, int maxLen = 0)
+    public RomString ReadPrintableCStringAt(u32 addr, u32 maxLen = 0)
     {
         Seek(addr);
         return ReadCString((out string ch) => NextPrintableCharacter(out ch), maxLen);
     }
 
-    private RomString ReadCString(TryReadNextChar read, int maxLen)
+    private RomString ReadCString(TryReadNextChar read, u32 maxLen)
     {
         uint startPos = Position;
 
