@@ -49,6 +49,11 @@ public sealed class GbcGsRom : Rom
         Metadata.Identifiers.Add(title);
 
         ReadGames();
+
+        ReadCheats();
+        byte[] unknownBytes1 = _reader.ReadBytes(2);
+        ReadCheats();
+        byte[] unknownBytes2 = _reader.ReadBytes(2);
         ReadCheats();
     }
 
@@ -56,7 +61,6 @@ public sealed class GbcGsRom : Rom
     {
         _reader.Seek(GameListAddr);
         u8[] unknownBytes1 = _reader.ReadBytes(2);
-        u16 gameCount = 0;
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
@@ -68,31 +72,30 @@ public sealed class GbcGsRom : Rom
                 continue;
             }
 
-            Console.WriteLine($"{gameName.Addr.ToDisplayString()} game[{gameCount:D3}] = {gameName.Value}");
-
-            gameCount++;
+            Console.WriteLine($"{gameName.Addr.ToDisplayString()} game[{i:D3}] = {gameName.Value}");
         }
     }
 
     private void ReadCheats()
     {
-        _reader.Seek(CheatListAddr);
         // this number is hard-coded and pre-allocated in the ROM file
-        u8[] unknownBytes1 = _reader.ReadBytes(2);
-        u16 gameCount = 0;
         for (u16 i = 0; i < 455; i++)
         {
             // TODO(CheatoBaggins): Little endian
-            u8[] unknownBytes2 = _reader.ReadBytes(2);
-            RomString gameName = _reader.ReadPrintableCString(15).Trim();
-            if (gameName.Value.Length == 0)
+            byte[] code = _reader.ReadBytes(4);
+            RomString cheatName = _reader.ReadPrintableCString(12).Trim();
+
+            // TODO(CheatoBaggins): Figure out why this hack is needed and fix it
+            _reader.Seek(_reader.Position - 1);
+
+            byte[] unknownBytes = _reader.ReadBytes(2);
+            string codeStr = code.ToHexString();
+            string unknownStr = unknownBytes.ToHexString();
+            if (cheatName.Value.Length == 0)
             {
                 continue;
             }
-
-            Console.WriteLine($"{gameName.Addr.ToDisplayString()} game[{gameCount:D3}] = {gameName.Value}");
-
-            gameCount++;
+            Console.WriteLine($"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
         }
     }
 
