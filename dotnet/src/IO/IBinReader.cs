@@ -27,25 +27,18 @@ public interface IBinReader
     public byte[] PeekBytesAt(u32 addr, u32 count);
     public byte[] PeekBytes(u32 count);
 
-    public byte[] ReadBytesAt(u32 addr, u32 count);
     public byte[] ReadBytes(u32 count);
 
-    public u8 ReadUByte(u32 addr);
     public u8 ReadUByte();
 
-    public s8 ReadSByte(u32 addr);
     public s8 ReadSByte();
 
-    public u16 ReadUInt16(u32 addr);
     public u16 ReadUInt16();
 
-    public s16 ReadSInt16(u32 addr);
     public s16 ReadSInt16();
 
-    public u32 ReadUInt32(u32 addr);
     public u32 ReadUInt32();
 
-    public s32 ReadSInt32(u32 addr);
     public s32 ReadSInt32();
 
     public RomString ReadCString(u32 maxLen = 0);

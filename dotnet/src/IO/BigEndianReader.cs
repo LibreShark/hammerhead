@@ -89,25 +89,25 @@ internal class BigEndianReader : IBinReader
 
     #region Padding detection
 
-    public bool IsPadding(u32 val)
+    public bool IsSectionPadding()
     {
-        return val is 0x00000000 or 0xFFFFFFFF;
+        return IsSectionPaddingAt(Position);
     }
 
     public bool IsSectionPaddingAt(u32 addr)
     {
         return MaintainPosition(() =>
         {
-            u32 chunk1 = ReadUInt32(addr);
-            u32 chunk2 = ReadUInt32(addr + 4);
+            u32 chunk1 = Seek(addr).ReadUInt32();
+            u32 chunk2 = Seek(addr + 4).ReadUInt32();
             return IsPadding(chunk1) &&
                    IsPadding(chunk2);
         });
     }
 
-    public bool IsSectionPadding()
+    private static bool IsPadding(u32 val)
     {
-        return IsSectionPaddingAt(Position);
+        return val is 0x00000000 or 0xFFFFFFFF;
     }
 
     #endregion
@@ -127,18 +127,12 @@ internal class BigEndianReader : IBinReader
         return _buffer.Skip((int)addr).Take((int)count).ToArray();
     }
 
-    public byte[] PeekBytes(uint count)
+    public byte[] PeekBytes(u32 count)
     {
         return PeekBytesAt(Position, count);
     }
 
-    public byte[] ReadBytesAt(uint addr, uint count)
-    {
-        Seek(addr);
-        return ReadBytes(count);
-    }
-
-    public byte[] ReadBytes(uint count)
+    public byte[] ReadBytes(u32 count)
     {
         byte[] bytes = PeekBytes(count);
         Position += count;
@@ -147,13 +141,9 @@ internal class BigEndianReader : IBinReader
 
     #endregion
 
-    public byte ReadUByte(uint addr)
-    {
-        Seek(addr);
-        return ReadUByte();
-    }
+    #region Integers
 
-    public byte ReadUByte()
+    public u8 ReadUByte()
     {
         if (Position == _buffer.Length)
         {
@@ -167,66 +157,40 @@ internal class BigEndianReader : IBinReader
         return _buffer[Position++];
     }
 
-    public sbyte ReadSByte(uint addr)
+    public s8 ReadSByte()
     {
-        Seek(addr);
-        return ReadSByte();
+        return (s8)ReadUByte();
     }
 
-    public sbyte ReadSByte()
-    {
-        return (sbyte)ReadUByte();
-    }
-
-    public UInt16 ReadUInt16(uint addr)
-    {
-        Seek(addr);
-        return ReadUInt16();
-    }
-
-    public UInt16 ReadUInt16()
+    public u16 ReadUInt16()
     {
         byte b1 = ReadUByte();
         byte b2 = ReadUByte();
-        int value = (b1 << 8) + b2;
-        return (UInt16) value;
+        s32 value = (b1 << 8) + b2;
+        return (u16) value;
     }
 
-    public Int16 ReadSInt16(uint addr)
+    public s16 ReadSInt16()
     {
-        Seek(addr);
-        return ReadSInt16();
+        return (s16)ReadUInt16();
     }
 
-    public Int16 ReadSInt16()
+    public u32 ReadUInt32()
     {
-        return (short)ReadUInt16();
-    }
-
-    public UInt32 ReadUInt32(uint addr)
-    {
-        Seek(addr);
-        return ReadUInt32();
-    }
-
-    public UInt32 ReadUInt32()
-    {
-        uint high = ReadUInt16();
-        uint low = ReadUInt16();
+        u32 high = ReadUInt16();
+        u32 low = ReadUInt16();
 
         return (high << 16) + low;
     }
 
-    public Int32 ReadSInt32(uint addr)
+    public s32 ReadSInt32()
     {
-        Seek(addr);
-        return ReadSInt32();
+        return (s32)ReadUInt32();
     }
 
-    public Int32 ReadSInt32()
-    {
-        return (int)ReadUInt32();
-    }
+    #endregion
+
+    #region Strings
 
     public RomString ReadCString(u32 maxLen = 0)
     {
@@ -323,4 +287,6 @@ internal class BigEndianReader : IBinReader
         b = ReadUByte();
         return b != 0;
     }
+
+    #endregion
 }
