@@ -14,7 +14,7 @@ public partial class N64GsVersion
     public readonly string RawTimestamp;
     public double Number { get; private set; }
     public readonly string? Disambiguator;
-    public readonly DateTime BuildTimestamp;
+    public readonly DateTimeOffset BuildTimestamp;
     public RomBrand Brand { get; private set; }
     public CultureInfo Locale { get; private set; }
 
@@ -23,7 +23,7 @@ public partial class N64GsVersion
     public bool HasDisambiguator => !string.IsNullOrEmpty(Disambiguator);
     public string DisplayBrand => Brand.ToDisplayString();
     public string DisplayNumber => HasDisambiguator ? $"v{Number:F2} ({Disambiguator})" : $"v{Number:F2}";
-    public string DisplayBuildTimestampIso => BuildTimestamp.ToString("yyyy-MM-ddTHH:mm+0100");
+    public string DisplayBuildTimestampIso => BuildTimestamp.ToIsoString();
     public string DisplayBuildTimestampRaw => RawTimestamp;
     public string DisplayLocale => Locale.ToString();
 
@@ -32,7 +32,7 @@ public partial class N64GsVersion
         RawTimestamp = raw;
         Number = number;
         Disambiguator = disambiguator;
-        BuildTimestamp = buildTimestamp;
+        BuildTimestamp = buildTimestamp.WithTimeZone("GMT");
         Brand = brand;
         Locale = locale;
         IsKnown = Brand != RomBrand.UnknownBrand;

@@ -157,4 +157,23 @@ public static class ExtensionMethods
     {
         return String.Compare(str1, str2, StringComparison.InvariantCultureIgnoreCase) == 0;
     }
+
+    public static DateTimeOffset WithTimeZone(this DateTime dt, string tzName)
+    {
+        TimeZoneInfo tzInfo = TimeZoneInfo.FindSystemTimeZoneById(tzName);
+        TimeSpan offset = tzInfo.BaseUtcOffset;
+        string isoWithOffset = $"{dt:s}+{offset.Hours:D2}:{offset.Minutes:D2}";
+        DateTimeOffset buildDateTimeWithTz = DateTimeOffset.Parse(isoWithOffset);
+        return buildDateTimeWithTz;
+    }
+
+    public static DateTimeOffset WithTimeZone(this DateTimeOffset dt, string tzName)
+    {
+        TimeZoneInfo tzInfo = TimeZoneInfo.FindSystemTimeZoneById(tzName);
+        DateTimeOffset cetTime = TimeZoneInfo.ConvertTime(dt, tzInfo);
+        DateTimeOffset buildDateTimeWithTz = dt
+            .Subtract(cetTime.Offset)
+            .ToOffset(cetTime.Offset);
+        return buildDateTimeWithTz;
+    }
 }

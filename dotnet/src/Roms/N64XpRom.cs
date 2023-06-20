@@ -29,6 +29,14 @@ public sealed class N64XpRom : Rom
     private const u32 LastGameNameAddr = 0x0003F420;
     private const u32 LastGameCartIdAddr = 0x0003F43C;
 
+    private static readonly string[] KnownIsoBuildDates = {
+        "1999-05-07T21:34:19+00:00",
+        "1999-08-16T17:10:59+00:00",
+        "1999-11-24T00:13:18+00:00",
+        "2000-05-06T04:42:59+00:00",
+        "1999-11-24T21:25:52+00:00",
+    };
+
     private readonly BigEndianScribe _scribe;
 
     public N64XpRom(string filePath, byte[] bytes)
@@ -75,6 +83,8 @@ public sealed class N64XpRom : Rom
         ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
 
         Metadata.BuildDateIso = buildDateIso;
+        Metadata.IsKnownVersion = KnownIsoBuildDates.Contains(buildDateIso);
+
         Metadata.Identifiers.Add(fcd);
         Metadata.Identifiers.Add(greetz);
         Metadata.Identifiers.Add(develop);
@@ -297,11 +307,7 @@ public sealed class N64XpRom : Rom
         DateTimeOffset buildDateTimeWithoutTz = DateTimeOffset.ParseExact(
             buildDateFixed, dateTimeFormat,
             CultureInfo.InvariantCulture, DateTimeStyles.None);
-        TimeZoneInfo tzInfo = TimeZoneInfo.FindSystemTimeZoneById(ZZZ);
-        DateTimeOffset cetTime = TimeZoneInfo.ConvertTime(buildDateTimeWithoutTz, tzInfo);
-        DateTimeOffset buildDateTimeWithTz = buildDateTimeWithoutTz
-            .Subtract(cetTime.Offset)
-            .ToOffset(cetTime.Offset);
+        DateTimeOffset buildDateTimeWithTz = buildDateTimeWithoutTz.WithTimeZone(ZZZ);
         buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
