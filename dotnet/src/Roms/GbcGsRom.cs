@@ -49,26 +49,27 @@ public sealed class GbcGsRom : Rom
         RomString title = _scribe.Seek(TitleAddr).ReadCStringUntilNull();
         Metadata.Identifiers.Add(title);
 
+        _scribe.Seek(GameListAddr);
         ReadGames();
 
-        ReadCheats();
+        _scribe.Seek(CheatListAddr);
+        ReadCheatsBlock();
         byte[] unknownBytes1 = _scribe.ReadBytes(2);
-        ReadCheats();
+        ReadCheatsBlock();
         byte[] unknownBytes2 = _scribe.ReadBytes(2);
-        ReadCheats();
+        ReadCheatsBlock();
 
         PrintRawCheats();
     }
 
     private void ReadGames()
     {
-        _scribe.Seek(GameListAddr);
         u8[] unknownBytes1 = _scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
             u8[] unknownBytes2 = _scribe.ReadBytes(2);
-            RomString gameName = _scribe.ReadPrintableCString(15).Trim();
+            RomString gameName = _scribe.ReadPrintableCString(16).Trim();
             if (gameName.Value.Length == 0)
             {
                 continue;
@@ -78,7 +79,7 @@ public sealed class GbcGsRom : Rom
         }
     }
 
-    private void ReadCheats()
+    private void ReadCheatsBlock()
     {
         // this number is hard-coded and pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
@@ -86,9 +87,6 @@ public sealed class GbcGsRom : Rom
             // TODO(CheatoBaggins): Little endian
             byte[] code = _scribe.ReadBytes(4);
             RomString cheatName = _scribe.ReadPrintableCString(12).Trim();
-
-            // TODO(CheatoBaggins): Figure out why this hack is needed and fix it
-            _scribe.Seek(_scribe.Position - 1);
 
             byte[] unknownBytes = _scribe.ReadBytes(2);
             if (cheatName.Value.Length == 0)
