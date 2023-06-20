@@ -204,6 +204,8 @@ public abstract class BinaryScribe
 
     #region Strings
 
+    private delegate bool TryReadNextChar(out string ch);
+
     public RomString ReadCStringUntilNull(u32 maxLen = 0)
     {
         return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
@@ -240,8 +242,6 @@ public abstract class BinaryScribe
             Value = builder.ToString(),
         };
     }
-
-    private delegate bool TryReadNextChar(out string ch);
 
     private bool NextCharacter(out string character)
     {
