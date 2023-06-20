@@ -27,14 +27,14 @@ public sealed class GbcGsRom : Rom
     private const u32 CheatListAddr = 0x0000A000;
 
     // TODO(CheatoBaggins): Use LittleEndianScribe
-    private readonly BigEndianScribe _scribe;
+    private readonly LittleEndianScribe _scribe;
 
     private readonly List<RawGbcGsCheat> _rawCheats = new();
 
     public GbcGsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
-        _scribe = new BigEndianScribe(Bytes);
+        _scribe = new LittleEndianScribe(Bytes);
 
         Metadata.Brand = IsGs(Bytes) ? RomBrand.Gameshark : IsAr(Bytes) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
