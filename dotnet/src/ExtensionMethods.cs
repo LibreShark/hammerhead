@@ -64,19 +64,22 @@ public static class ExtensionMethods
 
     public static RomString Trim(this RomString oldRS)
     {
+        string oldValue = oldRS.Value;
+        string newValue = oldValue.Trim();
         RomString newRS = new RomString
         {
-            Value = oldRS.Value.Trim(),
+            Value = newValue,
         };
-        u32 len = (u32)newRS.Value.Length;
         u32 startIndex = oldRS.Addr.StartIndex;
+        u32 endIndex = (u32)(oldRS.Addr.EndIndex - (oldValue.Length - newValue.Length));
         byte[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
+        u32 byteLen = endIndex - startIndex;
         newRS.Addr = new RomRange
         {
             StartIndex = startIndex,
-            EndIndex = startIndex + len,
-            Length = len,
-            RawBytes = ByteString.CopyFrom(oldBytes[..(int)len]),
+            EndIndex = endIndex,
+            Length = byteLen,
+            RawBytes = ByteString.CopyFrom(oldBytes[..(int)byteLen]),
         };
         return newRS;
     }

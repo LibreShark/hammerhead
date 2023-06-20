@@ -50,14 +50,13 @@ public sealed class GbcGsRom : Rom
         Metadata.Identifiers.Add(title);
 
         _scribe.Seek(GameListAddr);
+        u8[] unknownBytes1 = _scribe.ReadBytes(2);
         ReadGames();
 
         _scribe.Seek(CheatListAddr);
-        byte[] unknownBytes1 = _scribe.ReadBytes(4);
-        ReadCheatsBlock();
         byte[] unknownBytes2 = _scribe.ReadBytes(2);
         ReadCheatsBlock();
-        byte[] unknownBytes3 = _scribe.ReadBytes(2);
+        ReadCheatsBlock();
         ReadCheatsBlock();
 
         PrintRawCheats();
@@ -65,7 +64,6 @@ public sealed class GbcGsRom : Rom
 
     private void ReadGames()
     {
-        u8[] unknownBytes1 = _scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
@@ -90,15 +88,37 @@ public sealed class GbcGsRom : Rom
         // this number is hard-coded and pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            // TODO(CheatoBaggins): Little endian
+            byte[] gameNumberBytes = _scribe.ReadBytes(2);
             RomString cheatName = _scribe.ReadPrintableCString(12, false).Trim();
             byte[] code = _scribe.ReadBytes(4);
-            byte[] unknownBytes = _scribe.ReadBytes(2);
             if (cheatName.Value.Length == 0)
             {
                 break;
             }
-            _rawCheats.Add(new RawGbcGsCheat(code, cheatName, unknownBytes));
+
+            bool unknownBitFlag = (gameNumberBytes[1] & 0x10) > 0;
+            u8 b0 = gameNumberBytes[0];
+            u8 b1 = (u8)(gameNumberBytes[1] ^ 0x10); // remove bit flag, if set
+
+            // The raw value is 1-indexed, so we need to subtract one for array access
+            u16 gameIndex = (u16)(new LittleEndianScribe(new[] {b0, b1}).ReadU16() - 1);
+
+            _rawCheats.Add(new RawGbcGsCheat(code, cheatName, gameNumberBytes));
+
+            if (gameIndex < Games.Count)
+            {
+                Game game = Games[gameIndex];
+                Cheat cheat =
+                    // Append to existing cheat
+                    game.Cheats.Find(c => c.Name == cheatName.Value) ??
+                    // Create new cheat
+                    game.AddCheat(cheatName.Value);
+                cheat.AddCode(code, new byte[] { });
+            }
+            else
+            {
+                Console.Error.WriteLine($"WARNING: Game[{gameIndex}] not found in list!");
+            }
         }
     }
 
@@ -108,14 +128,22 @@ public sealed class GbcGsRom : Rom
         Console.WriteLine($"\n{rawCheats.Length} cheats\n");
         for (int i = 0; i < rawCheats.Length; i++)
         {
-            var cheat = rawCheats[i];
-            var code = cheat.Code;
-            var unknownBytes = cheat.UnknownBytes;
-            var cheatName = cheat.Name;
+            RawGbcGsCheat cheat = rawCheats[i];
+            byte[] code = cheat.Code;
             string codeStr = code.ToHexString();
+
+            byte[] unknownBytes = cheat.UnknownBytes;
             string unknownStr = unknownBytes.ToHexString();
+            bool unknownBitFlag = (unknownBytes[1] & 0x10) > 0;
+            u16 unknownU16 = new LittleEndianScribe(new byte[]
+            {
+                unknownBytes[0], (u8)(unknownBytes[1] & 0x10),
+            }).ReadU16();
+
+            RomString cheatName = cheat.Name;
+
             Console.WriteLine(
-                $"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
+                $"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr}, {unknownStr} ({unknownU16}) = {cheatName.Value}");
         }
         Console.WriteLine($"\n{rawCheats.Length} cheats\n");
     }
