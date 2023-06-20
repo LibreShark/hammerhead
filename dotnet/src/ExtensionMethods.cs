@@ -176,4 +176,14 @@ public static class ExtensionMethods
             .ToOffset(cetTime.Offset);
         return buildDateTimeWithTz;
     }
+
+    public static bool IsKiB(this byte[] bytes, int numKiB)
+    {
+        return bytes.Length == numKiB * 1024;
+    }
+
+    public static bool IsMiB(this byte[] bytes, int numMiB)
+    {
+        return bytes.Length == numMiB * 1024 * 1024;
+    }
 }

@@ -17,10 +17,10 @@ public sealed class GbaGsFcdRom : Rom
     {
         // gba-cblite-r1-prototype-SST39VF100-20011019.bin
         // gba-gspro-sp-madcatz-SST39VF100-20030821.bin
-        bool is128KiB = bytes.Length == 0x00020000;
+        bool is128KiB = bytes.IsKiB(128);
 
         // gba-gspro-sp-karabiner-SST39VF800ATSOP48-20060614.bin
-        bool is1024KiB = bytes.Length == 0x00100000;
+        bool is1024KiB = bytes.IsMiB(1);
 
         return (is128KiB || is1024KiB) && Detect(bytes);
     }

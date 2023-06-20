@@ -301,7 +301,7 @@ public sealed class N64GsRom : Rom
 
     public static bool Is(byte[] bytes)
     {
-        bool is256KiB = bytes.Length == 0x00040000;
+        bool is256KiB = bytes.IsKiB(256);
         return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
     }
 
