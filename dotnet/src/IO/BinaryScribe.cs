@@ -86,7 +86,7 @@ public abstract class BinaryScribe
 
     #region Padding detection
 
-    public bool IsSectionPadding()
+    public bool IsPadding()
     {
         u32 addr = Position;
         return MaintainPosition(() =>
@@ -98,7 +98,7 @@ public abstract class BinaryScribe
         });
     }
 
-    protected bool IsPadding(u32 val)
+    protected virtual bool IsPadding(u32 val)
     {
         return val is 0x00000000 or 0xFFFFFFFF;
     }
