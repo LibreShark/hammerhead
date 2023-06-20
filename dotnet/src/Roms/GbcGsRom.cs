@@ -26,17 +26,15 @@ public sealed class GbcGsRom : Rom
     private const u32 GameListAddr = 0x00008000;
     private const u32 CheatListAddr = 0x0000A000;
 
-    // TODO(CheatoBaggins): Create LittleEndianReader/Writer
-    private readonly BigEndianReader _reader;
-    private readonly BigEndianWriter _writer;
+    // TODO(CheatoBaggins): Use LittleEndianScribe
+    private readonly BigEndianScribe _scribe;
 
     private readonly List<RawGbcGsCheat> _rawCheats = new();
 
     public GbcGsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
-        _reader = new BigEndianReader(Bytes);
-        _writer = new BigEndianWriter(Bytes);
+        _scribe = new BigEndianScribe(Bytes);
 
         Metadata.Brand = IsGs(Bytes) ? RomBrand.Gameshark : IsAr(Bytes) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
@@ -48,15 +46,15 @@ public sealed class GbcGsRom : Rom
             _ => "und",
         };
 
-        RomString title = _reader.Seek(TitleAddr).ReadCString();
+        RomString title = _scribe.Seek(TitleAddr).ReadCString();
         Metadata.Identifiers.Add(title);
 
         ReadGames();
 
         ReadCheats();
-        byte[] unknownBytes1 = _reader.ReadBytes(2);
+        byte[] unknownBytes1 = _scribe.ReadBytes(2);
         ReadCheats();
-        byte[] unknownBytes2 = _reader.ReadBytes(2);
+        byte[] unknownBytes2 = _scribe.ReadBytes(2);
         ReadCheats();
 
         PrintRawCheats();
@@ -64,13 +62,13 @@ public sealed class GbcGsRom : Rom
 
     private void ReadGames()
     {
-        _reader.Seek(GameListAddr);
-        u8[] unknownBytes1 = _reader.ReadBytes(2);
+        _scribe.Seek(GameListAddr);
+        u8[] unknownBytes1 = _scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            u8[] unknownBytes2 = _reader.ReadBytes(2);
-            RomString gameName = _reader.ReadPrintableCString(15).Trim();
+            u8[] unknownBytes2 = _scribe.ReadBytes(2);
+            RomString gameName = _scribe.ReadPrintableCString(15).Trim();
             if (gameName.Value.Length == 0)
             {
                 continue;
@@ -86,13 +84,13 @@ public sealed class GbcGsRom : Rom
         for (u16 i = 0; i < 455; i++)
         {
             // TODO(CheatoBaggins): Little endian
-            byte[] code = _reader.ReadBytes(4);
-            RomString cheatName = _reader.ReadPrintableCString(12).Trim();
+            byte[] code = _scribe.ReadBytes(4);
+            RomString cheatName = _scribe.ReadPrintableCString(12).Trim();
 
             // TODO(CheatoBaggins): Figure out why this hack is needed and fix it
-            _reader.Seek(_reader.Position - 1);
+            _scribe.Seek(_scribe.Position - 1);
 
-            byte[] unknownBytes = _reader.ReadBytes(2);
+            byte[] unknownBytes = _scribe.ReadBytes(2);
             if (cheatName.Value.Length == 0)
             {
                 continue;
@@ -144,7 +142,7 @@ public sealed class GbcGsRom : Rom
 
     private double ReadVersionNumber()
     {
-        RomString verNumRaw = _reader.Seek(VerNumAddr).ReadPrintableCString();
+        RomString verNumRaw = _scribe.Seek(VerNumAddr).ReadPrintableCString();
         if (Double.TryParse(verNumRaw.Value, out double verNumParsed))
         {
             return verNumParsed;

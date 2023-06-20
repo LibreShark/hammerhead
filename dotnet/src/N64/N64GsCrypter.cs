@@ -8,8 +8,19 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.N64;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 /// <summary>
-/// Encrypt or decrypt a GameShark ROM image used with the offical N64Utils program.
+/// Encrypt or decrypt a GameShark ROM image used with the official N64Utils program.
 /// </summary>
 class N64GsCrypter
 {
@@ -31,17 +42,17 @@ class N64GsCrypter
     }
 
     private readonly byte[] _output;
-    private readonly BigEndianReader _reader;
-    private readonly BigEndianWriter _writer;
+    private readonly BigEndianScribe _reader;
+    private readonly BigEndianScribe _writer;
 
     private N64GsCrypter(byte[] input)
     {
+        _reader = new BigEndianScribe(input.ToArray());
         _output = input.ToArray();
-        _reader = new BigEndianReader(_output);
-        _writer = new BigEndianWriter(_output);
+        _writer = new BigEndianScribe(_output);
     }
 
-    private static IReadOnlyList<uint> Seeds { get; } = new uint[]
+    private static IReadOnlyList<u32> Seeds { get; } = new u32[]
     {
         0x1471332e, 0x8149432e, 0x75697b21, 0x15597883,
         0x1c2ad435, 0x13ade834, 0xe2de18b1, 0x51bc7835,
@@ -51,34 +62,34 @@ class N64GsCrypter
 
     private void Encode()
     {
-        ForEachUInt((value, seed) => (value + (seed & 0xff00)) ^ seed);
+        ForEachU32((value, seed) => (value + (seed & 0xff00)) ^ seed);
     }
 
     private void Decode()
     {
-        ForEachUInt((value, seed) => (value ^ seed) - (seed & 0xff00));
+        ForEachU32((value, seed) => (value ^ seed) - (seed & 0xff00));
     }
 
-    private void ForEachUInt(Func<uint, uint, uint> formula)
+    private void ForEachU32(Func<u32, u32, u32> formula)
     {
         _reader.Seek(0);
 
         while (!_reader.EndReached)
         {
-            int addr = (int)((_reader.Position >> 2) & 0x0F);
-            uint seed = Seeds[addr];
-            uint value = GetNextUInt();
+            s32 addr = (s32)((_reader.Position >> 2) & 0x0F);
+            u32 seed = Seeds[addr];
+            u32 value = GetNextU32();
 
-            PutNextUInt(formula(value, seed));
+            PutNextU32(formula(value, seed));
         }
     }
 
-    private uint GetNextUInt()
+    private uint GetNextU32()
     {
         return GetNextByte() + (GetNextByte() << 8) + (GetNextByte() << 16) + (GetNextByte() << 24);
     }
 
-    private void PutNextUInt(uint value)
+    private void PutNextU32(u32 value)
     {
         PutNextByte(value);
         PutNextByte(value >> 8);
@@ -91,8 +102,11 @@ class N64GsCrypter
         return _reader.ReadU8();
     }
 
-    private void PutNextByte(uint value)
+    /// <param name="singleByteValue">
+    /// A u8 value, typed as a u32 to make the callsite more readable.
+    /// </param>
+    private void PutNextByte(u32 singleByteValue)
     {
-        _writer.WriteByte(value);
+        _writer.WriteU8((u8)(singleByteValue & 0xFF));
     }
 }

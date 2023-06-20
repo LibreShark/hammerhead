@@ -1,5 +1,3 @@
-﻿// bacteriamage.wordpress.com
-
 using System.Text;
 using Google.Protobuf;
 
@@ -16,26 +14,24 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-/// <summary>
-/// Helper class for reading (big-endian) integers and c-style strings from byte buffers.
-///
-/// TODO(CheatoBaggins): Add transformer lambdas for replacing GS chars (e.g., "Infinite ")
-/// </summary>
-internal class BigEndianReader : IBinReader
+public abstract class BinaryScribe
 {
-    private readonly u8[] _buffer;
+    protected delegate u16 U16Reader();
+    protected delegate u16 U32Reader();
 
-    public u32 Position { get; private set; }
-    public bool EndReached => Position >= _buffer.Length;
+    protected readonly u8[] Buffer;
 
-    public BigEndianReader(byte[] buffer)
+    protected BinaryScribe(byte[] buffer)
     {
-        _buffer = buffer;
+        Buffer = buffer;
     }
 
     #region Seeking
 
-    public IBinReader Seek(u32 addr)
+    public u32 Position { get; protected set; }
+    public bool EndReached => Position >= Buffer.Length;
+
+    public BinaryScribe Seek(u32 addr)
     {
         Position = addr;
         CheckBounds();
@@ -50,15 +46,15 @@ internal class BigEndianReader : IBinReader
         return value;
     }
 
-    private void CheckBounds()
+    protected void CheckBounds()
     {
-        if (Position == _buffer.Length)
+        if (Position == Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
         }
-        if (Position > _buffer.Length)
+        if (Position > Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
         }
     }
 
@@ -68,22 +64,22 @@ internal class BigEndianReader : IBinReader
 
     public s32 Find(string needle)
     {
-        return _buffer.Find(needle);
+        return Buffer.Find(needle);
     }
 
     public s32 Find(byte[] needle)
     {
-        return _buffer.Find(needle);
+        return Buffer.Find(needle);
     }
 
     public bool Contains(string needle)
     {
-        return _buffer.Contains(needle);
+        return Buffer.Contains(needle);
     }
 
     public bool Contains(byte[] needle)
     {
-        return _buffer.Contains(needle);
+        return Buffer.Contains(needle);
     }
 
     #endregion
@@ -102,7 +98,7 @@ internal class BigEndianReader : IBinReader
         });
     }
 
-    private static bool IsPadding(u32 val)
+    protected bool IsPadding(u32 val)
     {
         return val is 0x00000000 or 0xFFFFFFFF;
     }
@@ -113,15 +109,15 @@ internal class BigEndianReader : IBinReader
 
     public u8[] PeekBytesAt(u32 addr, u32 count)
     {
-        if (addr == _buffer.Length)
+        if (addr == Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
         }
-        if (addr + count > _buffer.Length)
+        if (addr + count > Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
         }
-        return _buffer.Skip((int)addr).Take((int)count).ToArray();
+        return Buffer.Skip((int)addr).Take((int)count).ToArray();
     }
 
     public u8[] PeekBytes(u32 count)
@@ -138,20 +134,20 @@ internal class BigEndianReader : IBinReader
 
     #endregion
 
-    #region Integers
+    #region Integers: 8-bit
 
     public u8 ReadU8()
     {
-        if (Position == _buffer.Length)
+        if (Position == Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {_buffer.Length} (0x{_buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
         }
-        if (Position > _buffer.Length)
+        if (Position > Buffer.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {_buffer.Length} (0x{_buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
         }
 
-        return _buffer[Position++];
+        return Buffer[Position++];
     }
 
     public s8 ReadS8()
@@ -159,30 +155,49 @@ internal class BigEndianReader : IBinReader
         return (s8)ReadU8();
     }
 
-    public u16 ReadU16()
+    public BinaryScribe WriteU8(u8 value)
     {
-        byte b1 = ReadU8();
-        byte b2 = ReadU8();
-        s32 value = (b1 << 8) + b2;
-        return (u16) value;
+        Buffer[Position++] = value;
+        return this;
     }
+
+    public BinaryScribe WriteS8(s8 value)
+    {
+        return WriteU8((u8)value);
+    }
+
+    #endregion
+
+    #region Integers: 16-bit
+
+    public abstract u16 ReadU16();
+    public abstract BinaryScribe WriteU16(u16 value);
 
     public s16 ReadS16()
     {
         return (s16)ReadU16();
     }
 
-    public u32 ReadU32()
+    public BinaryScribe WriteS16(s16 value)
     {
-        u32 high = ReadU16();
-        u32 low = ReadU16();
-
-        return (high << 16) + low;
+        return WriteU16((u16)value);
     }
+
+    #endregion
+
+    #region Integers: 32-bit
+
+    public abstract u32 ReadU32();
+    public abstract BinaryScribe WriteU32(u32 value);
 
     public s32 ReadS32()
     {
         return (s32)ReadU32();
+    }
+
+    public BinaryScribe WriteS32(s32 value)
+    {
+        return WriteU32((u32)value);
     }
 
     #endregion
@@ -220,7 +235,7 @@ internal class BigEndianReader : IBinReader
                 StartIndex = startPos,
                 EndIndex = endPos,
                 Length = len,
-                RawBytes = ByteString.CopyFrom(_buffer[(int)startPos..(int)endPos]),
+                RawBytes = ByteString.CopyFrom(Buffer[(int)startPos..(int)endPos]),
             },
             Value = builder.ToString(),
         };
