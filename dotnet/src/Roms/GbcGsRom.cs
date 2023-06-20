@@ -46,7 +46,7 @@ public sealed class GbcGsRom : Rom
             _ => "und",
         };
 
-        RomString title = _scribe.Seek(TitleAddr).ReadCString();
+        RomString title = _scribe.Seek(TitleAddr).ReadCStringUntilNull();
         Metadata.Identifiers.Add(title);
 
         ReadGames();

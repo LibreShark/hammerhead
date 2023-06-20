@@ -46,11 +46,11 @@ public sealed class N64XpRom : Rom
         // TODO(CheatoBaggins): Implement
         Metadata.IsKnownVersion = false;
 
-        RomString firstLine = _scribe.Seek(0x0).ReadCString();
-        RomString versionRaw = _scribe.Seek(0x17).ReadCString(5);
-        RomString languageRaw = _scribe.Seek(0x1C).ReadCString(1);
-        RomString buildRaw = _scribe.Seek(0x20).ReadCString();
-        RomString countryRaw = _scribe.Seek(0x28).ReadCString();
+        RomString firstLine = _scribe.Seek(0x0).ReadCStringUntilNull();
+        RomString versionRaw = _scribe.Seek(0x17).ReadCStringUntilNull(5);
+        RomString languageRaw = _scribe.Seek(0x1C).ReadCStringUntilNull(1);
+        RomString buildRaw = _scribe.Seek(0x20).ReadCStringUntilNull();
+        RomString countryRaw = _scribe.Seek(0x28).ReadCStringUntilNull();
         Metadata.Identifiers.Add(firstLine);
         Metadata.Identifiers.Add(versionRaw);
         Metadata.Identifiers.Add(languageRaw);
@@ -67,11 +67,11 @@ public sealed class N64XpRom : Rom
         Metadata.DisplayVersion = $"v{versionRaw.Value}{languageRaw.Value} build {buildRaw.Value} ({countryRaw.Value})";
         Metadata.LanguageIetfCode = GetIetfCode(languageRaw, countryRaw);
 
-        RomString fcd = _scribe.Seek(0x40).ReadCString();
-        RomString greetz = _scribe.Seek(0x800).ReadCString();
-        RomString develop = _scribe.Seek(0x8A0).ReadCString();
-        RomString peeps = _scribe.Seek(0x900).ReadCString();
-        RomString link = _scribe.Seek(0x940).ReadCString();
+        RomString fcd = _scribe.Seek(0x40).ReadCStringUntilNull();
+        RomString greetz = _scribe.Seek(0x800).ReadCStringUntilNull();
+        RomString develop = _scribe.Seek(0x8A0).ReadCStringUntilNull();
+        RomString peeps = _scribe.Seek(0x900).ReadCStringUntilNull();
+        RomString link = _scribe.Seek(0x940).ReadCStringUntilNull();
         ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
 
         Metadata.BuildDateIso = buildDateIso;
@@ -104,7 +104,7 @@ public sealed class N64XpRom : Rom
 
     public override bool HasUserPrefs()
     {
-        return _scribe.MaintainPosition(() => !_scribe.Seek(UserPrefsAddr).IsSectionPadding());
+        return _scribe.MaintainPosition(() => !_scribe.Seek(UserPrefsAddr).IsPadding());
     }
 
     private void ReadUserPrefs()
@@ -118,8 +118,8 @@ public sealed class N64XpRom : Rom
 
         // TODO(CheatoBaggins): Decode user preferences
 
-        RomString lastGameName = _scribe.Seek(LastGameNameAddr).ReadCString(20).Trim();
-        RomString lastGameCartId = _scribe.Seek(LastGameCartIdAddr).ReadCString(2);
+        RomString lastGameName = _scribe.Seek(LastGameNameAddr).ReadCStringUntilNull(20).Trim();
+        RomString lastGameCartId = _scribe.Seek(LastGameCartIdAddr).ReadCStringUntilNull(2);
         Metadata.Identifiers.Add(lastGameName);
         Metadata.Identifiers.Add(lastGameCartId);
     }
@@ -128,9 +128,9 @@ public sealed class N64XpRom : Rom
     {
         _scribe.Seek(GameListAddr);
         bool stop = false;
-        while (!stop && !_scribe.IsSectionPadding())
+        while (!stop && !_scribe.IsPadding())
         {
-            RomString gameName = _scribe.ReadCString();
+            RomString gameName = _scribe.ReadCStringUntilNull();
             u8 cheatCount = _scribe.ReadU8();
 
             Game game = new(gameName.Value);
@@ -142,7 +142,7 @@ public sealed class N64XpRom : Rom
                 // - "Hybrid Heaven" -> "Infinite `FA`"
                 // - "GEX 64" -> "Infinite `F8`"
                 // - "Donkey Kong 64 alternativ" -> "Infinite `FA`"
-                RomString cheatName = _scribe.ReadCString();
+                RomString cheatName = _scribe.ReadCStringUntilNull();
                 u8 codeCount = _scribe.ReadU8();
 
                 if (cheatName.Value.Length == 0)
@@ -264,9 +264,9 @@ public sealed class N64XpRom : Rom
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)
     {
         u32 waynePos = (u32)Bytes.Find("Wayne Hughes Beckett!");
-        wayneStr = _scribe.Seek(waynePos).ReadCString();
+        wayneStr = _scribe.Seek(waynePos).ReadCStringUntilNull();
         u32 buildDatePos = waynePos + 0x40;
-        buildDateRaw = _scribe.Seek(buildDatePos).ReadCString();
+        buildDateRaw = _scribe.Seek(buildDatePos).ReadCStringUntilNull();
         Match match = Regex.Match(buildDateRaw.Value,
             @"(?<ddd>\w{3}) (?<MMM>\w{3}) (?<d>\d{1,2}) (?<H>\d{1,2}):(?<mm>\d{2}):(?<ss>\d{2}) (?<ZZZ>\w{2,3}) (?<yyyy>\d{4})");
         if (!match.Success)

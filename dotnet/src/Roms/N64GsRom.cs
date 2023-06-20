@@ -58,7 +58,7 @@ public sealed class N64GsRom : Rom
 
         _scribe = new BigEndianScribe(Bytes);
 
-        _headerId = _scribe.Seek(HeaderIdAddr).ReadCString(0x10);
+        _headerId = _scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10);
         _rawTimestamp = _scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15);
 
         Metadata.Identifiers.Add(_headerId);
@@ -112,7 +112,7 @@ public sealed class N64GsRom : Rom
         {
             return false;
         }
-        return _scribe.MaintainPosition(() => !_scribe.Seek(_userPrefsAddr).IsSectionPadding());
+        return _scribe.MaintainPosition(() => !_scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
     private List<Game> ReadGames()
@@ -163,7 +163,7 @@ public sealed class N64GsRom : Rom
         u32 pos = _scribe.Position;
 
         // Firmware does not support names longer than 30 chars.
-        string name = _scribe.ReadCString(30).Value;
+        string name = _scribe.ReadCStringUntilNull(30).Value;
 
         if (name.Length < 1)
         {
