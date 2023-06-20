@@ -204,7 +204,7 @@ public abstract class BinaryScribe
 
     #region Strings
 
-    public RomString ReadCString(u32 maxLen = 0)
+    public RomString ReadCStringUntilNull(u32 maxLen = 0)
     {
         return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
     }
