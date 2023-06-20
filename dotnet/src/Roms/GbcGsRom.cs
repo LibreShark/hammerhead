@@ -69,15 +69,18 @@ public sealed class GbcGsRom : Rom
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            u8[] unknownBytes2 = _scribe.ReadBytes(2);
-            u16 unknownInt = new LittleEndianScribe(unknownBytes2).ReadU16();
+            u8[] gameNumberWithBitMaskBytes = _scribe.ReadBytes(2);
+            bool isGameSelected = (gameNumberWithBitMaskBytes[1] & 0x20) > 0;
+            gameNumberWithBitMaskBytes[1] = (u8)(gameNumberWithBitMaskBytes[1] & (0xFF ^ 0x20));
+            u16 gameNumber = new LittleEndianScribe(gameNumberWithBitMaskBytes).ReadU16();
             RomString gameName = _scribe.ReadPrintableCString(16, false).Trim();
             if (gameName.Value.Length == 0)
             {
                 break;
             }
 
-            Console.WriteLine($"games[{i:D3}]: {unknownBytes2.ToHexString()} = 0x{unknownInt:X4} = {unknownInt:D0} ('{gameName.Value}')");
+            string selectedStr = isGameSelected ? " <!------------ CURRENTLY SELECTED GAME?" : "";
+            Console.WriteLine($"games[{i:D3}]: 0x{gameNumberWithBitMaskBytes.ToHexString()} (LE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
             Games.Add(new Game { Name = gameName.Value });
         }
     }
