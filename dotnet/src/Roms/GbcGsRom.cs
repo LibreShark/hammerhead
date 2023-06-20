@@ -62,18 +62,20 @@ public sealed class GbcGsRom : Rom
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            u8[] gameNumberWithBitMaskBytes = _scribe.ReadBytes(2);
-            bool isGameSelected = (gameNumberWithBitMaskBytes[1] & 0x20) > 0;
-            gameNumberWithBitMaskBytes[1] = (u8)(gameNumberWithBitMaskBytes[1] & (0xFF ^ 0x20));
-            u16 gameNumber = new LittleEndianScribe(gameNumberWithBitMaskBytes).ReadU16();
+            u16 gameNumberAndBitMask = _scribe.ReadU16();
+            u16 gameNumber = (u16)(gameNumberAndBitMask & 0x01FFu);
+            u16 bitMask = (u16)(gameNumberAndBitMask & ~0x01FFu);
+            // TODO(CheatoBaggins): What is this flag, and why do only some ROMs have it set?
+            bool isMSBSet       = (bitMask & 0x8000) > 0;
+            bool isGameSelected = (bitMask & 0x2000) > 0;
             RomString gameName = _scribe.ReadPrintableCString(16, false).Trim();
             if (gameName.Value.Length == 0)
             {
                 break;
             }
 
-            string selectedStr = isGameSelected ? " <!------------ CURRENTLY SELECTED GAME?" : "";
-            // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberWithBitMaskBytes.ToHexString()} (LE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
+            string selectedStr = isGameSelected ? $" <!------------ CURRENTLY SELECTED GAME? bitmask (BE) = 0x{bitMask:X4}" : "";
+            Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
             Games.Add(new Game { Name = gameName.Value });
         }
     }
@@ -87,7 +89,7 @@ public sealed class GbcGsRom : Rom
         {
             u32 cheatStartPos = _scribe.Position;
 
-            byte[] gameNumberBytes = _scribe.ReadBytes(2);
+            u16 gameNumberAndBitMask = _scribe.ReadU16();
             RomString cheatName = _scribe.ReadPrintableCString(12, false).Trim();
             byte[] code = _scribe.ReadBytes(4);
             if (cheatName.Value.Length == 0)
@@ -95,14 +97,9 @@ public sealed class GbcGsRom : Rom
                 break;
             }
 
-            string gameNumberHexStrBefore = gameNumberBytes.ToHexString();
-            bool unknownBitFlag = (gameNumberBytes[1] & 0x10) > 0;
-            u8 b0 = gameNumberBytes[0];
-            u8 b1 = (u8)(gameNumberBytes[1] & (0xFF ^ 0x10)); // remove bit flag, if set
-            string gameNumberHexStrAfter = gameNumberBytes.ToHexString();
-
+            u16 gameNumber = (u16)(gameNumberAndBitMask & 0x01FFu);
+            u16 bitMask = (u16)(gameNumberAndBitMask & ~0x01FFu);
             // The raw value is 1-indexed, so we need to subtract one for array access
-            u16 gameNumber = new LittleEndianScribe(new[] {b0, b1}).ReadU16();
             s32 gameIndex = gameNumber - 1;
 
             if (gameIndex < Games.Count)
@@ -114,11 +111,13 @@ public sealed class GbcGsRom : Rom
                     // Create new cheat
                     game.AddCheat(cheatName.Value);
                 cheat.AddCode(code, new byte[] { });
-                cheat.IsActive = cheat.IsActive || unknownBitFlag;
+                cheat.IsActive = cheat.IsActive || bitMask > 0;
             }
             else
             {
-                Console.Error.WriteLine($"WARNING: Game #{gameNumber} [{gameIndex}] not found in list! Cheat '{cheatName.Value}' at 0x{cheatStartPos:X8} ({gameNumberHexStrBefore} vs. {gameNumberHexStrAfter})");
+                Console.Error.WriteLine($"WARNING: Game #{gameNumber} [{gameIndex}] not found in list! " +
+                                        $"Cheat '{cheatName.Value}' at 0x{cheatStartPos:X8}. " +
+                                        $"Bitmask (BE) = 0x{bitMask:X4}.");
             }
         }
     }
