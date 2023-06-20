@@ -50,20 +50,19 @@ public sealed class GbcGsRom : Rom
         Metadata.Identifiers.Add(title);
 
         _scribe.Seek(GameListAddr);
-        u8[] unknownBytes1 = _scribe.ReadBytes(2);
         ReadGames();
 
         _scribe.Seek(CheatListAddr);
-        byte[] unknownBytes2 = _scribe.ReadBytes(2);
         ReadCheatsBlock();
         ReadCheatsBlock();
         ReadCheatsBlock();
 
-        PrintRawCheats();
+        // PrintRawCheats();
     }
 
     private void ReadGames()
     {
+        u8[] unknownBytes1 = _scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
@@ -78,16 +77,20 @@ public sealed class GbcGsRom : Rom
             }
 
             string selectedStr = isGameSelected ? " <!------------ CURRENTLY SELECTED GAME?" : "";
-            Console.WriteLine($"games[{i:D3}]: 0x{gameNumberWithBitMaskBytes.ToHexString()} (LE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
+            // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberWithBitMaskBytes.ToHexString()} (LE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
             Games.Add(new Game { Name = gameName.Value });
         }
     }
 
     private void ReadCheatsBlock()
     {
+        u8[] unknownBytes1 = _scribe.ReadBytes(2);
+
         // this number is hard-coded and pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
+            u32 cheatStartPos = _scribe.Position;
+
             byte[] gameNumberBytes = _scribe.ReadBytes(2);
             RomString cheatName = _scribe.ReadPrintableCString(12, false).Trim();
             byte[] code = _scribe.ReadBytes(4);
@@ -96,12 +99,15 @@ public sealed class GbcGsRom : Rom
                 break;
             }
 
+            string gameNumberHexStrBefore = gameNumberBytes.ToHexString();
             bool unknownBitFlag = (gameNumberBytes[1] & 0x10) > 0;
             u8 b0 = gameNumberBytes[0];
-            u8 b1 = (u8)(gameNumberBytes[1] ^ 0x10); // remove bit flag, if set
+            u8 b1 = (u8)(gameNumberBytes[1] & (0xFF ^ 0x10)); // remove bit flag, if set
+            string gameNumberHexStrAfter = gameNumberBytes.ToHexString();
 
             // The raw value is 1-indexed, so we need to subtract one for array access
-            u16 gameIndex = (u16)(new LittleEndianScribe(new[] {b0, b1}).ReadU16() - 1);
+            u16 gameNumber = new LittleEndianScribe(new[] {b0, b1}).ReadU16();
+            s32 gameIndex = gameNumber - 1;
 
             _rawCheats.Add(new RawGbcGsCheat(code, cheatName, gameNumberBytes));
 
@@ -117,7 +123,7 @@ public sealed class GbcGsRom : Rom
             }
             else
             {
-                Console.Error.WriteLine($"WARNING: Game[{gameIndex}] not found in list!");
+                Console.Error.WriteLine($"WARNING: Game #{gameNumber} [{gameIndex}] not found in list! Cheat '{cheatName.Value}' at 0x{cheatStartPos:X8} ({gameNumberHexStrBefore} vs. {gameNumberHexStrAfter})");
             }
         }
     }
