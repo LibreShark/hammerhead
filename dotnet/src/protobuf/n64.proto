@@ -8,6 +8,7 @@ option csharp_namespace = "LibreShark.Hammerhead.N64";
 
 enum Xp64Opcode {
   NULL_OPCODE                     = 0x00;
+  UNDOCUMENTED_OPCODE_03          = 0x03;
   WRITE_ONCE_UNCACHED_16BIT_TYPE2 = 0x2A;
   UNDOCUMENTED_OPCODE_2C          = 0x2C;
   UNDOCUMENTED_ENABLER            = 0x3C;
