@@ -58,8 +58,8 @@ public sealed class N64GsRom : Rom
 
         _scribe = new BigEndianScribe(Bytes);
 
-        _headerId = _scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10);
-        _rawTimestamp = _scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15);
+        _headerId = _scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
+        _rawTimestamp = _scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);
 
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);
@@ -163,7 +163,7 @@ public sealed class N64GsRom : Rom
         u32 pos = _scribe.Position;
 
         // Firmware does not support names longer than 30 chars.
-        string name = _scribe.ReadCStringUntilNull(30).Value;
+        string name = _scribe.ReadCStringUntilNull(30, true).Value;
 
         if (name.Length < 1)
         {
@@ -219,7 +219,7 @@ public sealed class N64GsRom : Rom
         while (_scribe.Position <= maxPos)
         {
             byte[] bytes = _scribe.ReadBytes((u32)keyCodeByteLength);
-            RomString name = _scribe.ReadPrintableCString(0x1F);
+            RomString name = _scribe.ReadPrintableCString(0x1F, true);
             while (_scribe.PeekBytes(1)[0] == 0)
             {
                 _scribe.ReadU8();
@@ -267,7 +267,7 @@ public sealed class N64GsRom : Rom
         // Uncomment to return ONLY the number (e.g., "2.21")
         // titleVersionPos += needle.Length;
 
-        return _scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5).Trim();
+        return _scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
     }
 
     public override bool IsFileEncrypted()

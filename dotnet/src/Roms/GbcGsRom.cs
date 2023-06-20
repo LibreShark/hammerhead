@@ -53,10 +53,11 @@ public sealed class GbcGsRom : Rom
         ReadGames();
 
         _scribe.Seek(CheatListAddr);
-        ReadCheatsBlock();
-        byte[] unknownBytes1 = _scribe.ReadBytes(2);
+        byte[] unknownBytes1 = _scribe.ReadBytes(4);
         ReadCheatsBlock();
         byte[] unknownBytes2 = _scribe.ReadBytes(2);
+        ReadCheatsBlock();
+        byte[] unknownBytes3 = _scribe.ReadBytes(2);
         ReadCheatsBlock();
 
         PrintRawCheats();
@@ -69,12 +70,14 @@ public sealed class GbcGsRom : Rom
         for (u16 i = 0; i < 455; i++)
         {
             u8[] unknownBytes2 = _scribe.ReadBytes(2);
-            RomString gameName = _scribe.ReadPrintableCString(16).Trim();
+            u16 unknownInt = new LittleEndianScribe(unknownBytes2).ReadU16();
+            RomString gameName = _scribe.ReadPrintableCString(16, false).Trim();
             if (gameName.Value.Length == 0)
             {
-                continue;
+                break;
             }
 
+            Console.WriteLine($"games[{i:D3}]: {unknownBytes2.ToHexString()} = 0x{unknownInt:X4} = {unknownInt:D0} ('{gameName.Value}')");
             Games.Add(new Game { Name = gameName.Value });
         }
     }
@@ -85,13 +88,12 @@ public sealed class GbcGsRom : Rom
         for (u16 i = 0; i < 455; i++)
         {
             // TODO(CheatoBaggins): Little endian
+            RomString cheatName = _scribe.ReadPrintableCString(12, false).Trim();
             byte[] code = _scribe.ReadBytes(4);
-            RomString cheatName = _scribe.ReadPrintableCString(12).Trim();
-
             byte[] unknownBytes = _scribe.ReadBytes(2);
             if (cheatName.Value.Length == 0)
             {
-                continue;
+                break;
             }
             _rawCheats.Add(new RawGbcGsCheat(code, cheatName, unknownBytes));
         }
@@ -100,6 +102,7 @@ public sealed class GbcGsRom : Rom
     private void PrintRawCheats()
     {
         RawGbcGsCheat[] rawCheats = _rawCheats.ToArray();
+        Console.WriteLine($"\n{rawCheats.Length} cheats\n");
         for (int i = 0; i < rawCheats.Length; i++)
         {
             var cheat = rawCheats[i];
@@ -111,6 +114,7 @@ public sealed class GbcGsRom : Rom
             Console.WriteLine(
                 $"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
         }
+        Console.WriteLine($"\n{rawCheats.Length} cheats\n");
     }
 
     public static bool Is(byte[] bytes)
@@ -140,7 +144,7 @@ public sealed class GbcGsRom : Rom
 
     private double ReadVersionNumber()
     {
-        RomString verNumRaw = _scribe.Seek(VerNumAddr).ReadPrintableCString();
+        RomString verNumRaw = _scribe.Seek(VerNumAddr).ReadPrintableCString(0, true);
         if (Double.TryParse(verNumRaw.Value, out double verNumParsed))
         {
             return verNumParsed;

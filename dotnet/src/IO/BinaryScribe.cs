@@ -206,7 +206,7 @@ public abstract class BinaryScribe
 
     private delegate bool ByteToStrTranslator(byte b, out string ch);
 
-    public RomString ReadCStringUntilNull(u32 maxLen = 0)
+    public RomString ReadCStringUntilNull(u32 maxLen = 0, bool isNullTerminated = true)
     {
         return ReadCString(maxLen, (byte b, out string ch) =>
         {
@@ -217,10 +217,10 @@ public abstract class BinaryScribe
             }
             ch = "";
             return false;
-        });
+        }, isNullTerminated);
     }
 
-    public RomString ReadPrintableCString(u32 maxLen = 0)
+    public RomString ReadPrintableCString(u32 maxLen = 0, bool isNullTerminated = true)
     {
         return ReadCString(maxLen, (byte b, out string ch) =>
         {
@@ -232,21 +232,23 @@ public abstract class BinaryScribe
             }
             ch = "";
             return false;
-        });
+        }, isNullTerminated);
     }
 
-    private RomString ReadCString(u32 maxLen, ByteToStrTranslator byteToStr)
+    private RomString ReadCString(u32 maxLen, ByteToStrTranslator byteToStr, bool isNullTerminated)
     {
         var sb = new StringBuilder();
 
         u32 startPos = Position;
         while (true)
         {
+            byte b = Buffer[Position];
+            bool isNull = b == 0;
             u32 bytesRead = Position - startPos;
+
             if (maxLen > 0 && bytesRead >= maxLen)
             {
-                bool curIsNull = Buffer[Position] == 0;
-                if (bytesRead == maxLen && curIsNull)
+                if (isNullTerminated && bytesRead == maxLen && isNull)
                 {
                     // Account for null terminator in C-style strings
                     Position++;
@@ -254,8 +256,7 @@ public abstract class BinaryScribe
                 break;
             }
 
-            byte b = Buffer[Position];
-            if (b == 0)
+            if (isNull)
             {
                 // Account for null terminator in C-style strings
                 Position++;
