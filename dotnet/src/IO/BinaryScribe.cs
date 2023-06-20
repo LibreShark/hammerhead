@@ -204,27 +204,73 @@ public abstract class BinaryScribe
 
     #region Strings
 
-    private delegate bool TryReadNextChar(out string ch);
+    private delegate bool ByteToStrTranslator(byte b, out string ch);
 
     public RomString ReadCStringUntilNull(u32 maxLen = 0)
     {
-        return ReadCString((out string ch) => NextCharacter(out ch), maxLen);
+        return ReadCString(maxLen, (byte b, out string ch) =>
+        {
+            if (b != 0)
+            {
+                ch = ByteToStr(b);
+                return true;
+            }
+            ch = "";
+            return false;
+        });
     }
 
     public RomString ReadPrintableCString(u32 maxLen = 0)
     {
-        return ReadCString((out string ch) => NextPrintableCharacter(out ch), maxLen);
+        return ReadCString(maxLen, (byte b, out string ch) =>
+        {
+            bool isPrintable = b >= ' ' && b <= '~';
+            if (isPrintable || b > 127)
+            {
+                ch = ByteToStr(b);
+                return true;
+            }
+            ch = "";
+            return false;
+        });
     }
 
-    private RomString ReadCString(TryReadNextChar read, u32 maxLen)
+    private RomString ReadCString(u32 maxLen, ByteToStrTranslator byteToStr)
     {
+        var sb = new StringBuilder();
+
         u32 startPos = Position;
-
-        StringBuilder builder = new StringBuilder();
-
-        while (read(out string ch) && (maxLen < 1 || builder.Length < maxLen))
+        while (true)
         {
-            builder.Append(ch);
+            u32 bytesRead = Position - startPos;
+            if (maxLen > 0 && bytesRead >= maxLen)
+            {
+                bool curIsNull = Buffer[Position] == 0;
+                if (bytesRead == maxLen && curIsNull)
+                {
+                    // Account for null terminator in C-style strings
+                    Position++;
+                }
+                break;
+            }
+
+            byte b = Buffer[Position];
+            if (b == 0)
+            {
+                // Account for null terminator in C-style strings
+                Position++;
+                break;
+            }
+
+            if (byteToStr(b, out string s))
+            {
+                sb.Append(s);
+                Position++;
+            }
+            else
+            {
+                break;
+            }
         }
 
         u32 endPos = Position;
@@ -239,39 +285,11 @@ public abstract class BinaryScribe
                 Length = len,
                 RawBytes = ByteString.CopyFrom(Buffer[(int)startPos..(int)endPos]),
             },
-            Value = builder.ToString(),
+            Value = sb.ToString(),
         };
     }
 
-    private bool NextCharacter(out string character)
-    {
-        if (NextRawChar(out byte b))
-        {
-            character = ByteToCharacter(b);
-            return true;
-        }
-        else
-        {
-            character = "";
-            return false;
-        }
-    }
-
-    private bool NextPrintableCharacter(out string character)
-    {
-        if (NextRawChar(out byte b) && b >= ' ' && b <= '~')
-        {
-            character = ByteToCharacter(b);
-            return true;
-        }
-        else
-        {
-            character = "";
-            return false;
-        }
-    }
-
-    private string ByteToCharacter(byte b)
+    private static string ByteToStr(byte b)
     {
         if (b > 127)
         {
@@ -281,12 +299,6 @@ public abstract class BinaryScribe
         {
             return new byte[] { b }.ToAsciiString();
         }
-    }
-
-    private bool NextRawChar(out byte b)
-    {
-        b = ReadU8();
-        return b != 0;
     }
 
     #endregion
