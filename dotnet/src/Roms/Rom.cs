@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using LibreShark.Hammerhead.N64;
+using NeoSmart.PrettySize;
 
 namespace LibreShark.Hammerhead.Roms;
 
@@ -36,7 +37,8 @@ public abstract class Rom
     public void PrintSummary()
     {
         Console.WriteLine();
-        Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} ({Bytes.Length} bytes): '{Metadata.FilePath}'");
+        Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} " +
+                          $"({Bytes.Length} bytes = {PrettySize.Format(Bytes.Length)}): '{Metadata.FilePath}'");
         Console.WriteLine();
         Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
         Console.WriteLine($"Brand:               {Metadata.Brand.ToDisplayString()}");
@@ -81,14 +83,14 @@ public abstract class Rom
             foreach (Game game in Games)
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
-                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
+                // Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
                 foreach (Cheat cheat in game.Cheats)
                 {
                     string codes = cheat.Codes.Count == 1 ? "code" : "codes";
-                    Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes})");
+                    // Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes})");
                     foreach (Code code in cheat.Codes)
                     {
-                        Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
+                        // Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
                     }
                 }
             }
