@@ -72,7 +72,12 @@ public abstract class Rom
         if (Games.Count > 0)
         {
             string games = Games.Count == 1 ? "game" : "games";
-            Console.WriteLine($"{Games.Count} {games}:");
+            Cheat[] allCheats = Games.SelectMany(game => game.Cheats).ToArray();
+            Code[] allCodes = Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
+
+            string totalCheats = allCheats.Length == 1 ? "cheat" : "cheats";
+            string totalCodes = allCodes.Length == 1 ? "code" : "codes";
+            Console.WriteLine($"{Games.Count} {games}, {allCheats.Length:N0} {totalCheats}, {allCodes.Length:N0} {totalCodes}");
             foreach (Game game in Games)
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
