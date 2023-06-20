@@ -13,6 +13,8 @@ public class Game
 
     public List<Cheat> Cheats { get; set; }
 
+    public bool IsActive { get; set; }
+
     public Game(string name = "", IEnumerable<Cheat>? cheats = null)
     {
         Name = name;

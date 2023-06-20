@@ -83,7 +83,8 @@ public abstract class Rom
             foreach (Game game in Games)
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
-                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
+                string gameIsActive = game.IsActive ? " <!------------ CURRENTLY SELECTED GAME" : "";
+                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats}){gameIsActive}");
                 foreach (Cheat cheat in game.Cheats)
                 {
                     string codes = cheat.Codes.Count == 1 ? "code" : "codes";

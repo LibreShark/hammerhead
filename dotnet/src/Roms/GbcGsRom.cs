@@ -75,8 +75,8 @@ public sealed class GbcGsRom : Rom
             }
 
             string selectedStr = isGameSelected ? $" <!------------ CURRENTLY SELECTED GAME? bitmask (BE) = 0x{bitMask:X4}" : "";
-            Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
-            Games.Add(new Game { Name = gameName.Value });
+            // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
+            Games.Add(new Game { Name = gameName.Value, IsActive = isGameSelected });
         }
     }
 
