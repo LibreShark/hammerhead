@@ -59,17 +59,7 @@ public sealed class GbcGsRom : Rom
         byte[] unknownBytes2 = _reader.ReadBytes(2);
         ReadCheats();
 
-        RawGbcGsCheat[] rawCheats = _rawCheats.ToArray();
-        for (int i = 0; i < rawCheats.Length; i++)
-        {
-            var cheat = rawCheats[i];
-            var code = cheat.Code;
-            var unknownBytes = cheat.UnknownBytes;
-            var cheatName = cheat.Name;
-            string codeStr = code.ToHexString();
-            string unknownStr = unknownBytes.ToHexString();
-            Console.WriteLine($"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
-        }
+        PrintRawCheats();
     }
 
     private void ReadGames()
@@ -108,6 +98,22 @@ public sealed class GbcGsRom : Rom
                 continue;
             }
             _rawCheats.Add(new RawGbcGsCheat(code, cheatName, unknownBytes));
+        }
+    }
+
+    private void PrintRawCheats()
+    {
+        RawGbcGsCheat[] rawCheats = _rawCheats.ToArray();
+        for (int i = 0; i < rawCheats.Length; i++)
+        {
+            var cheat = rawCheats[i];
+            var code = cheat.Code;
+            var unknownBytes = cheat.UnknownBytes;
+            var cheatName = cheat.Name;
+            string codeStr = code.ToHexString();
+            string unknownStr = unknownBytes.ToHexString();
+            Console.WriteLine(
+                $"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr} / {unknownStr} = {cheatName.Value}");
         }
     }
 
