@@ -29,8 +29,6 @@ public sealed class GbcGsRom : Rom
     // TODO(CheatoBaggins): Use LittleEndianScribe
     private readonly LittleEndianScribe _scribe;
 
-    private readonly List<RawGbcGsCheat> _rawCheats = new();
-
     public GbcGsRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisRomFormat)
     {
@@ -56,8 +54,6 @@ public sealed class GbcGsRom : Rom
         ReadCheatsBlock();
         ReadCheatsBlock();
         ReadCheatsBlock();
-
-        // PrintRawCheats();
     }
 
     private void ReadGames()
@@ -109,8 +105,6 @@ public sealed class GbcGsRom : Rom
             u16 gameNumber = new LittleEndianScribe(new[] {b0, b1}).ReadU16();
             s32 gameIndex = gameNumber - 1;
 
-            _rawCheats.Add(new RawGbcGsCheat(code, cheatName, gameNumberBytes));
-
             if (gameIndex < Games.Count)
             {
                 Game game = Games[gameIndex];
@@ -120,38 +114,13 @@ public sealed class GbcGsRom : Rom
                     // Create new cheat
                     game.AddCheat(cheatName.Value);
                 cheat.AddCode(code, new byte[] { });
+                cheat.IsActive = cheat.IsActive || unknownBitFlag;
             }
             else
             {
                 Console.Error.WriteLine($"WARNING: Game #{gameNumber} [{gameIndex}] not found in list! Cheat '{cheatName.Value}' at 0x{cheatStartPos:X8} ({gameNumberHexStrBefore} vs. {gameNumberHexStrAfter})");
             }
         }
-    }
-
-    private void PrintRawCheats()
-    {
-        RawGbcGsCheat[] rawCheats = _rawCheats.ToArray();
-        Console.WriteLine($"\n{rawCheats.Length} cheats\n");
-        for (int i = 0; i < rawCheats.Length; i++)
-        {
-            RawGbcGsCheat cheat = rawCheats[i];
-            byte[] code = cheat.Code;
-            string codeStr = code.ToHexString();
-
-            byte[] unknownBytes = cheat.UnknownBytes;
-            string unknownStr = unknownBytes.ToHexString();
-            bool unknownBitFlag = (unknownBytes[1] & 0x10) > 0;
-            u16 unknownU16 = new LittleEndianScribe(new byte[]
-            {
-                unknownBytes[0], (u8)(unknownBytes[1] & 0x10),
-            }).ReadU16();
-
-            RomString cheatName = cheat.Name;
-
-            Console.WriteLine(
-                $"{cheatName.Addr.ToDisplayString()} cheat[{i:D4}] = {codeStr}, {unknownStr} ({unknownU16}) = {cheatName.Value}");
-        }
-        Console.WriteLine($"\n{rawCheats.Length} cheats\n");
     }
 
     public static bool Is(byte[] bytes)
@@ -201,19 +170,5 @@ public sealed class GbcGsRom : Rom
 
     protected override void PrintCustomHeader()
     {
-    }
-
-    private class RawGbcGsCheat
-    {
-        public readonly byte[] Code;
-        public readonly RomString Name;
-        public readonly byte[] UnknownBytes;
-
-        public RawGbcGsCheat(byte[] code, RomString name, byte[] unknownBytes)
-        {
-            Code = code;
-            Name = name;
-            UnknownBytes = unknownBytes;
-        }
     }
 }

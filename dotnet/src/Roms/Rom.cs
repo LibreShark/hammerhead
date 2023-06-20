@@ -83,14 +83,15 @@ public abstract class Rom
             foreach (Game game in Games)
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
-                // Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
+                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats})");
                 foreach (Cheat cheat in game.Cheats)
                 {
                     string codes = cheat.Codes.Count == 1 ? "code" : "codes";
-                    // Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes})");
+                    string isActive = cheat.IsActive ? " [ON]" : "";
+                    Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes}){isActive}");
                     foreach (Code code in cheat.Codes)
                     {
-                        // Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
+                        Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
                     }
                 }
             }
