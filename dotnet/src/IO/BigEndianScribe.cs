@@ -54,8 +54,10 @@ internal class BigEndianScribe : BinaryScribe
 
     public override BinaryScribe WriteU32(u32 value)
     {
-        WriteU16((u16)(value >> 16));
-        WriteU16((u16)(value & 0xFFFF));
+        u16 hi = (u16)(value >> 16);
+        u16 lo = (u16)(value & 0xFFFF);
+        WriteU16(hi);
+        WriteU16(lo);
         return this;
     }
 }
