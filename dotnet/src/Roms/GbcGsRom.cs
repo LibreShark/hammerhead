@@ -117,7 +117,7 @@ public sealed class GbcGsRom : Rom
 
     public static bool Is(byte[] bytes)
     {
-        bool is128KiB = bytes.Length == 0x00020000;
+        bool is128KiB = bytes.IsKiB(128);
         return is128KiB && Detect(bytes);
     }
 

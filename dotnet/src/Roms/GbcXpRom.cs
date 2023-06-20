@@ -15,7 +15,7 @@ public sealed class GbcXpRom : Rom
 
     public static bool Is(byte[] bytes)
     {
-        bool is256KiB = bytes.Length == 0x00040000;
+        bool is256KiB = bytes.IsKiB(256);
         return is256KiB && Detect(bytes);
     }
 

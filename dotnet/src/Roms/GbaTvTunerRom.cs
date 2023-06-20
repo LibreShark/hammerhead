@@ -15,8 +15,8 @@ public sealed class GbaTvTunerRom : Rom
 
     public static bool Is(byte[] bytes)
     {
-        bool is512KiB = bytes.Length == 0x00080000;
-        bool is16MiB = bytes.Length == 0x01000000;
+        bool is512KiB = bytes.IsKiB(512);
+        bool is16MiB = bytes.IsMiB(16);
         return (is512KiB || is16MiB) && Detect(bytes);
     }
 

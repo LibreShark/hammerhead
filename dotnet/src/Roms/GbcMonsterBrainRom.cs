@@ -15,8 +15,8 @@ public sealed class GbcMonsterBrainRom : Rom
 
     public static bool Is(byte[] bytes)
     {
-        bool is256KiB = bytes.Length == 0x00040000;
-        bool is512KiB = bytes.Length == 0x00080000;
+        bool is256KiB = bytes.IsKiB(256);
+        bool is512KiB = bytes.IsKiB(512);
         return (is256KiB || is512KiB) && Detect(bytes);
     }
 
