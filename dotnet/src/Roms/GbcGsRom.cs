@@ -68,7 +68,7 @@ public sealed class GbcGsRom : Rom
     {
         u8[] unknownBytes1 = Scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
-        for (u16 i = 0; i < 455; i++)
+        for (u16 gameIdx = 0; gameIdx < 455; gameIdx++)
         {
             u16 gameNumberAndBitMask = Scribe.ReadU16();
             u16 gameNumber = (u16)(gameNumberAndBitMask & 0x01FFu);
@@ -84,7 +84,12 @@ public sealed class GbcGsRom : Rom
 
             string selectedStr = isGameSelected ? $" <!------------ CURRENTLY SELECTED GAME? bitmask (BE) = 0x{bitMask:X4}" : "";
             // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
-            Games.Add(new Game { GameName = gameName, IsGameActive = isGameSelected });
+            Games.Add(new Game()
+            {
+                GameIndex = gameIdx,
+                GameName = gameName,
+                IsGameActive = isGameSelected,
+            });
         }
     }
 
@@ -116,10 +121,18 @@ public sealed class GbcGsRom : Rom
                 Cheat? cheat = game.Cheats.ToList().Find(c => c.CheatName.Value == cheatName.Value);
                 if (cheat == null)
                 {
-                    cheat = new Cheat() { CheatName = cheatName };
+                    cheat = new Cheat()
+                    {
+                        CheatIndex = (u32)game.Cheats.Count,
+                        CheatName = cheatName,
+                    };
                     game.Cheats.Add(cheat);
                 }
-                cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(code) });
+                cheat.Codes.Add(new Code()
+                {
+                    CodeIndex = (u32)cheat.Codes.Count,
+                    Bytes = ByteString.CopyFrom(code),
+                });
                 cheat.IsCheatActive = cheat.IsCheatActive || bitMask > 0;
             }
             else

@@ -120,25 +120,33 @@ public sealed class N64GsRom : Rom
         u32 gamesCount = Scribe.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
-            games.Add(ReadGame());
+            games.Add(ReadGame(gameIdx));
         }
         return games;
     }
 
-    private Game ReadGame()
+    private Game ReadGame(u32 gameIdx)
     {
-        Game game = new Game() { GameName = ReadName() };
+        var game = new Game()
+        {
+            GameIndex = gameIdx,
+            GameName = ReadName(),
+        };
         u8 cheatCount = Scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
-            ReadCheat(game);
+            ReadCheat(game, cheatIdx);
         }
         return game;
     }
 
-    private void ReadCheat(Game game)
+    private void ReadCheat(Game game, u8 cheatIdx)
     {
-        Cheat cheat = new Cheat() { CheatName = ReadName() };
+        var cheat = new Cheat()
+        {
+            CheatIndex = cheatIdx,
+            CheatName = ReadName(),
+        };
         game.Cheats.Add(cheat);
         u8 codeCount = Scribe.ReadU8();
         bool cheatOn = (codeCount & 0x80) > 0;
@@ -146,14 +154,18 @@ public sealed class N64GsRom : Rom
         cheat.IsCheatActive = cheatOn;
         for (u8 codeIdx = 0; codeIdx < codeCount; codeIdx++)
         {
-            ReadCode(cheat);
+            ReadCode(cheat, codeIdx);
         }
     }
 
-    private void ReadCode(Cheat cheat)
+    private void ReadCode(Cheat cheat, u8 codeIdx)
     {
         byte[] bytes = Scribe.ReadBytes(6);
-        cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(bytes) });
+        cheat.Codes.Add(new Code()
+        {
+            CodeIndex = codeIdx,
+            Bytes = ByteString.CopyFrom(bytes),
+        });
     }
 
     private RomString ReadName()

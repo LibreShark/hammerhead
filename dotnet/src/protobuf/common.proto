@@ -176,19 +176,22 @@ message Warning {
 }
 
 message Code {
-  bytes bytes = 1;
-  string comment = 2;
+  uint32 code_index = 1;
+  bytes bytes = 2;
+  string comment = 3;
 }
 
 message Cheat {
-  RomString cheat_name = 1;
-  repeated Code codes = 2;
-  bool is_cheat_active = 3;
+  uint32 cheat_index = 1;
+  RomString cheat_name = 2;
+  repeated Code codes = 3;
+  bool is_cheat_active = 4;
 }
 
 message Game {
-  RomString game_name = 1;
-  repeated Cheat cheats = 2;
-  bool is_game_active = 3;
-  repeated Warning warnings = 4;
+  uint32 game_index = 1;
+  RomString game_name = 2;
+  repeated Cheat cheats = 3;
+  bool is_game_active = 4;
+  repeated Warning warnings = 5;
 }

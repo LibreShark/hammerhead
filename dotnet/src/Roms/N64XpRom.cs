@@ -136,13 +136,18 @@ public sealed class N64XpRom : Rom
     private void ReadGames()
     {
         Scribe.Seek(GameListAddr);
+        u32 gameIdx = 0;
         bool stop = false;
         while (!stop && !Scribe.IsPadding())
         {
             RomString gameName = Scribe.ReadCStringUntilNull();
             u8 cheatCount = Scribe.ReadU8();
 
-            Game game = new Game() { GameName = gameName };
+            var game = new Game()
+            {
+                GameIndex = gameIdx,
+                GameName = gameName,
+            };
 
             for (u16 cheatIdx = 0; !stop && cheatIdx < cheatCount; cheatIdx++)
             {
@@ -161,8 +166,9 @@ public sealed class N64XpRom : Rom
                     break;
                 }
 
-                Cheat cheat = new Cheat()
+                var cheat = new Cheat()
                 {
+                    CheatIndex = cheatIdx,
                     CheatName = cheatName,
                     IsCheatActive = false,
                 };
@@ -187,15 +193,20 @@ public sealed class N64XpRom : Rom
                         codeBytes = DecryptCodeMethod2(codeBytes);
                     }
 
-                    BigEndianScribe codeScribe = new BigEndianScribe(codeBytes);
+                    var codeScribe = new BigEndianScribe(codeBytes);
                     byte[] bytes = codeScribe.ReadBytes(6);
-                    cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(bytes) });
+                    cheat.Codes.Add(new Code()
+                    {
+                        CodeIndex = codeIdx,
+                        Bytes = ByteString.CopyFrom(bytes),
+                    });
                 }
 
                 game.Cheats.Add(cheat);
             }
 
             Games.Add(game);
+            gameIdx++;
         }
     }
 

@@ -71,7 +71,11 @@ public sealed class GbcCbRom : Rom
 
             Scribe.Seek(gameStartPos + 0x10);
 
-            var game = new Game() { GameName = gameName };
+            var game = new Game()
+            {
+                GameIndex = gameIdx,
+                GameName = gameName,
+            };
 
             for (u8 cheatIdx = 0; cheatIdx < 16; cheatIdx++)
             {
@@ -84,6 +88,7 @@ public sealed class GbcCbRom : Rom
 
                 var cheat = new Cheat()
                 {
+                    CheatIndex = cheatIdx,
                     CheatName = nameIdx == 0
                         // Custom, user-entered cheat
                         // TODO(CheatoBaggins): Are custom names stored in the ROM?
@@ -91,7 +96,11 @@ public sealed class GbcCbRom : Rom
                         // Build-in cheat with standard name
                         : _cheatNames[nameIdx],
                 };
-                cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(code) });
+                cheat.Codes.Add(new Code()
+                {
+                    CodeIndex = 0,
+                    Bytes = ByteString.CopyFrom(code),
+                });
                 game.Cheats.Add(cheat);
             }
 
