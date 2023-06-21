@@ -38,13 +38,9 @@ public sealed class GbcGsRom : Rom
         "Gameshark     V4.2",
     };
 
-    private readonly LittleEndianScribe _scribe;
-
     public GbcGsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
-        _scribe = new LittleEndianScribe(Bytes);
-
         Metadata.Brand = IsGs(Bytes) ? RomBrand.Gameshark : IsAr(Bytes) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2}";
@@ -55,14 +51,14 @@ public sealed class GbcGsRom : Rom
             _ => "und",
         };
 
-        RomString title = _scribe.Seek(TitleAddr).ReadCStringUntilNull();
+        RomString title = Scribe.Seek(TitleAddr).ReadCStringUntilNull();
         Metadata.Identifiers.Add(title);
         Metadata.IsKnownVersion = KnownTitles.Contains(title.Value);
 
-        _scribe.Seek(GameListAddr);
+        Scribe.Seek(GameListAddr);
         ReadGames();
 
-        _scribe.Seek(CheatListAddr);
+        Scribe.Seek(CheatListAddr);
         ReadCheatsBlock();
         ReadCheatsBlock();
         ReadCheatsBlock();
@@ -70,17 +66,17 @@ public sealed class GbcGsRom : Rom
 
     private void ReadGames()
     {
-        u8[] unknownBytes1 = _scribe.ReadBytes(2);
+        u8[] unknownBytes1 = Scribe.ReadBytes(2);
         // The number 455 is hard-coded, and space is always pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            u16 gameNumberAndBitMask = _scribe.ReadU16();
+            u16 gameNumberAndBitMask = Scribe.ReadU16();
             u16 gameNumber = (u16)(gameNumberAndBitMask & 0x01FFu);
             u16 bitMask = (u16)(gameNumberAndBitMask & ~0x01FFu);
             // TODO(CheatoBaggins): What is this flag, and why do only some ROMs have it set?
             bool isMSBSet       = (bitMask & 0x8000) > 0;
             bool isGameSelected = (bitMask & 0x2000) > 0;
-            RomString gameName = _scribe.ReadPrintableCString(16, false).Trim();
+            RomString gameName = Scribe.ReadPrintableCString(16, false).Trim();
             if (gameName.Value.Length == 0)
             {
                 break;
@@ -94,16 +90,16 @@ public sealed class GbcGsRom : Rom
 
     private void ReadCheatsBlock()
     {
-        u8[] unknownBytes1 = _scribe.ReadBytes(2);
+        u8[] unknownBytes1 = Scribe.ReadBytes(2);
 
         // this number is hard-coded and pre-allocated in the ROM file
         for (u16 i = 0; i < 455; i++)
         {
-            u32 cheatStartPos = _scribe.Position;
+            u32 cheatStartPos = Scribe.Position;
 
-            u16 gameNumberAndBitMask = _scribe.ReadU16();
-            RomString cheatName = _scribe.ReadPrintableCString(12, false).Trim();
-            byte[] code = _scribe.ReadBytes(4);
+            u16 gameNumberAndBitMask = Scribe.ReadU16();
+            RomString cheatName = Scribe.ReadPrintableCString(12, false).Trim();
+            byte[] code = Scribe.ReadBytes(4);
             if (cheatName.Value.Length == 0)
             {
                 break;
@@ -162,7 +158,7 @@ public sealed class GbcGsRom : Rom
 
     private double ReadVersionNumber()
     {
-        RomString verNumRaw = _scribe.Seek(VerNumAddr).ReadPrintableCString(0, true);
+        RomString verNumRaw = Scribe.Seek(VerNumAddr).ReadPrintableCString(0, true);
         if (Double.TryParse(verNumRaw.Value, out double verNumParsed))
         {
             return verNumParsed;

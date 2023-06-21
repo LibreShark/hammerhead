@@ -1,6 +1,18 @@
 using System.Text.RegularExpressions;
+using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
+
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
 
 /// <summary>
 /// Code Breaker for Game Boy Color and Game Boy Pocket,
@@ -16,13 +28,20 @@ public sealed class GbcCbRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcCodebreaker;
 
+    private const u32 SelectedGameNameAddr = 0x0003C680;
+
     public GbcCbRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = DetectBrand(bytes);
 
-        string id = bytes[..0x20].ToAsciiString();
-        Match match = Regex.Match(id, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
+        RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();
+        RomString selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
+
+        Metadata.Identifiers.Add(romId);
+        Metadata.Identifiers.Add(selectedGameName);
+
+        Match match = Regex.Match(romId.Value, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
         if (match.Success)
         {
             string numberStr = match.Groups["number"].Value.Trim();
@@ -31,12 +50,15 @@ public sealed class GbcCbRom : Rom
             {
                 decoratorStr = " " + decoratorStr;
             }
+
             Metadata.DisplayVersion = $"v{numberStr}{decoratorStr}".Trim();
             Metadata.SortableVersion = Double.Parse(numberStr);
+
             if (decoratorStr.Length == 1)
             {
                 char c = decoratorStr.ToLower()[0];
                 int d = c - 0x60;
+
                 // E.g., "v1.0c" -> "v1.03"
                 Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
             }

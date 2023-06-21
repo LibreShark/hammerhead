@@ -24,8 +24,6 @@ public sealed class N64GsRom : Rom
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
-    private readonly BigEndianScribe _scribe;
-
     private bool _isCompressed;
     private readonly bool _isV3Firmware;
     private readonly bool _isV1GameList;
@@ -49,7 +47,7 @@ public sealed class N64GsRom : Rom
     private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new BigEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
         if (IsFileEncrypted())
         {
@@ -58,10 +56,8 @@ public sealed class N64GsRom : Rom
 
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
-        _scribe = new BigEndianScribe(Bytes);
-
-        _headerId = _scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
-        _rawTimestamp = _scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);
+        _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
+        _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);
 
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);
@@ -76,12 +72,12 @@ public sealed class N64GsRom : Rom
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
 
-        _isV3Firmware        = _scribe.Seek(0x00001000).ReadU32() == 0x00000000;
-        _isV1GameList        = _scribe.Seek(0x0002DFF0).ReadU32() == 0x00000000;
-        _isV3KeyCodeListAddr = _scribe.Seek(0x0002FBF0).ReadU32() == 0xFFFFFFFF;
+        _isV3Firmware        = Scribe.Seek(0x00001000).ReadU32() == 0x00000000;
+        _isV1GameList        = Scribe.Seek(0x0002DFF0).ReadU32() == 0x00000000;
+        _isV3KeyCodeListAddr = Scribe.Seek(0x0002FBF0).ReadU32() == 0xFFFFFFFF;
         _keyCodeListAddr     = (u32)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
-        _supportsKeyCodes    = _scribe.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
-        _supportsUserPrefs   = _scribe.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
+        _supportsKeyCodes    = Scribe.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
+        _supportsUserPrefs   = Scribe.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
         _firmwareAddr        = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
         _gameListAddr        = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
@@ -90,7 +86,7 @@ public sealed class N64GsRom : Rom
         _activeKeyCode = ReadActiveKeyCode(keyCodes);
         _keyCodes = keyCodes;
 
-        Games = ReadGames();
+        Games.AddRange(ReadGames());
     }
 
     public override bool FormatSupportsFileEncryption()
@@ -114,14 +110,14 @@ public sealed class N64GsRom : Rom
         {
             return false;
         }
-        return _scribe.MaintainPosition(() => !_scribe.Seek(_userPrefsAddr).IsPadding());
+        return Scribe.MaintainPosition(() => !Scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
     private List<Game> ReadGames()
     {
         List<Game> games = new List<Game>();
-        _scribe.Seek(_gameListAddr);
-        u32 gamesCount = _scribe.ReadU32();
+        Scribe.Seek(_gameListAddr);
+        u32 gamesCount = Scribe.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
             games.Add(ReadGame());
@@ -132,7 +128,7 @@ public sealed class N64GsRom : Rom
     private Game ReadGame()
     {
         Game game = new Game() { GameName = ReadName() };
-        u8 cheatCount = _scribe.ReadU8();
+        u8 cheatCount = Scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
             ReadCheat(game);
@@ -144,7 +140,7 @@ public sealed class N64GsRom : Rom
     {
         Cheat cheat = new Cheat() { CheatName = ReadName() };
         game.Cheats.Add(cheat);
-        u8 codeCount = _scribe.ReadU8();
+        u8 codeCount = Scribe.ReadU8();
         bool cheatOn = (codeCount & 0x80) > 0;
         codeCount &= 0x7F;
         cheat.IsCheatActive = cheatOn;
@@ -156,21 +152,21 @@ public sealed class N64GsRom : Rom
 
     private void ReadCode(Cheat cheat)
     {
-        byte[] bytes = _scribe.ReadBytes(6);
+        byte[] bytes = Scribe.ReadBytes(6);
         cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(bytes) });
     }
 
     private RomString ReadName()
     {
-        u32 startPos = _scribe.Position;
+        u32 startPos = Scribe.Position;
 
         // Firmware does not support names longer than 30 chars.
-        RomString name = _scribe.ReadCStringUntilNull(30, true);
+        RomString name = Scribe.ReadCStringUntilNull(30, true);
 
         if (name.Value.Length < 1)
         {
             Console.Error.WriteLine($"WARNING at offset 0x{startPos:X8}: Game and Cheat names should contain at least 1 character.");
-            u32 endPos = _scribe.Position;
+            u32 endPos = Scribe.Position;
             return name;
         }
 
@@ -190,8 +186,8 @@ public sealed class N64GsRom : Rom
 
     private N64KeyCode ReadActiveKeyCode(List<N64KeyCode> keyCodes)
     {
-        byte[] activeCrcBytes = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
-        byte[] activePcBytes = _scribe.PeekBytesAt(ProgramCounterAddr, 4);
+        byte[] activeCrcBytes = Scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
+        byte[] activePcBytes = Scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
         RomString? name = null;
         if (keyCodes.Count > 0)
@@ -214,11 +210,11 @@ public sealed class N64GsRom : Rom
 
     private List<N64KeyCode> ReadKeyCodes()
     {
-        byte[] activePrefix = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
+        byte[] activePrefix = Scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
 
-        _scribe.Seek(_keyCodeListAddr);
-        byte[] listBytes = _scribe.PeekBytes(0xA0);
-        u32 maxPos = _scribe.Position + (u32)listBytes.Length;
+        Scribe.Seek(_keyCodeListAddr);
+        byte[] listBytes = Scribe.PeekBytes(0xA0);
+        u32 maxPos = Scribe.Position + (u32)listBytes.Length;
         s32 keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
 
         // Valid key codes are either 9 or 13 bytes long.
@@ -228,13 +224,13 @@ public sealed class N64GsRom : Rom
         }
 
         List<N64KeyCode> keyCodes = new();
-        while (_scribe.Position <= maxPos)
+        while (Scribe.Position <= maxPos)
         {
-            byte[] bytes = _scribe.ReadBytes((u32)keyCodeByteLength);
-            RomString name = _scribe.ReadPrintableCString(0x1F, true);
-            while (_scribe.PeekBytes(1)[0] == 0)
+            byte[] bytes = Scribe.ReadBytes((u32)keyCodeByteLength);
+            RomString name = Scribe.ReadPrintableCString(0x1F, true);
+            while (Scribe.PeekBytes(1)[0] == 0)
             {
-                _scribe.ReadU8();
+                Scribe.ReadU8();
             }
             bool isActive = bytes.Contains(activePrefix);
             var keyCode = new N64KeyCode() {
@@ -283,7 +279,7 @@ public sealed class N64GsRom : Rom
         // Uncomment to return ONLY the number (e.g., "2.21")
         // titleVersionPos += needle.Length;
 
-        return _scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
+        return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
     }
 
     public override bool IsFileEncrypted()

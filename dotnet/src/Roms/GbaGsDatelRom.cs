@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
@@ -10,7 +12,7 @@ public sealed class GbaGsDatelRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkDatel;
 
     public GbaGsDatelRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
         var minorVersionNumber = Bytes[0x21004];
         var majorVersionNumber = Bytes[0x21005];

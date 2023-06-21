@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.Roms;
 
 public sealed class UnknownRom : Rom
@@ -6,7 +8,7 @@ public sealed class UnknownRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.UnknownRomFormat;
 
     public UnknownRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new BigEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
     }
 

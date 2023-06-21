@@ -19,16 +19,12 @@ public sealed class GbcMonsterBrainRom : Rom
         "Monster Brain v3.6 Platinum",
     };
 
-    private readonly LittleEndianScribe _scribe;
-
     public GbcMonsterBrainRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
-        _scribe = new LittleEndianScribe(Bytes);
-
         Metadata.Brand = DetectBrand(bytes);
 
-        RomString id = _scribe.Seek(0).ReadPrintableCString(0x20).Trim();
+        RomString id = Scribe.Seek(0).ReadPrintableCString(0x20).Trim();
         Metadata.Identifiers.Add(id);
         Metadata.IsKnownVersion = KnownTitles.Contains(id.Value);
 

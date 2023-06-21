@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
@@ -10,7 +12,7 @@ public sealed class GbaTvTunerRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaTvTuner;
 
     public GbaTvTunerRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
     }
 

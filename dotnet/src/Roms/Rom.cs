@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 using NeoSmart.PrettySize;
 
@@ -21,12 +22,19 @@ public abstract class Rom
 
     public readonly RomMetadata Metadata;
 
-    protected List<Game> Games = new();
+    protected readonly List<Game> Games = new();
+    protected readonly BinaryScribe Scribe;
 
-    protected Rom(string filePath, byte[] bytes, GameConsole console, RomFormat format)
+    protected Rom(
+        string filePath,
+        byte[] bytes,
+        BinaryScribe scribe,
+        GameConsole console,
+        RomFormat format)
     {
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
+        Scribe = scribe;
         Metadata = new RomMetadata
         {
             FilePath = filePath,

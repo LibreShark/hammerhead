@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.Roms;
 
 /// <summary>
@@ -10,7 +12,7 @@ public sealed class GbaGsFcdRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkFcd;
 
     public GbaGsFcdRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
     }
 

@@ -40,28 +40,24 @@ public sealed class N64XpRom : Rom
         "2000-05-06T04:42:59+00:00",
     };
 
-    private readonly BigEndianScribe _scribe;
-
     public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisConsole, ThisRomFormat)
+        : base(filePath, bytes, new BigEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
         if (IsFileScrambled())
         {
             Unscramble();
         }
 
-        _scribe = new BigEndianScribe(Bytes);
-
         Metadata.Brand = RomBrand.Xplorer;
 
         // TODO(CheatoBaggins): Implement
         Metadata.IsKnownVersion = false;
 
-        RomString firstLine = _scribe.Seek(0x0).ReadCStringUntilNull();
-        RomString versionRaw = _scribe.Seek(0x17).ReadCStringUntilNull(5);
-        RomString languageRaw = _scribe.Seek(0x1C).ReadCStringUntilNull(1);
-        RomString buildRaw = _scribe.Seek(0x20).ReadCStringUntilNull();
-        RomString countryRaw = _scribe.Seek(0x28).ReadCStringUntilNull();
+        RomString firstLine = Scribe.Seek(0x0).ReadCStringUntilNull();
+        RomString versionRaw = Scribe.Seek(0x17).ReadCStringUntilNull(5);
+        RomString languageRaw = Scribe.Seek(0x1C).ReadCStringUntilNull(1);
+        RomString buildRaw = Scribe.Seek(0x20).ReadCStringUntilNull();
+        RomString countryRaw = Scribe.Seek(0x28).ReadCStringUntilNull();
         Metadata.Identifiers.Add(firstLine);
         Metadata.Identifiers.Add(versionRaw);
         Metadata.Identifiers.Add(languageRaw);
@@ -78,11 +74,11 @@ public sealed class N64XpRom : Rom
         Metadata.DisplayVersion = $"v{versionRaw.Value}{languageRaw.Value} build {buildRaw.Value} ({countryRaw.Value})";
         Metadata.LanguageIetfCode = GetIetfCode(languageRaw, countryRaw);
 
-        RomString fcd = _scribe.Seek(0x40).ReadCStringUntilNull();
-        RomString greetz = _scribe.Seek(0x800).ReadCStringUntilNull();
-        RomString develop = _scribe.Seek(0x8A0).ReadCStringUntilNull();
-        RomString peeps = _scribe.Seek(0x900).ReadCStringUntilNull();
-        RomString link = _scribe.Seek(0x940).ReadCStringUntilNull();
+        RomString fcd = Scribe.Seek(0x40).ReadCStringUntilNull();
+        RomString greetz = Scribe.Seek(0x800).ReadCStringUntilNull();
+        RomString develop = Scribe.Seek(0x8A0).ReadCStringUntilNull();
+        RomString peeps = Scribe.Seek(0x900).ReadCStringUntilNull();
+        RomString link = Scribe.Seek(0x940).ReadCStringUntilNull();
         ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr);
 
         Metadata.BuildDateIso = buildDateIso;
@@ -117,12 +113,12 @@ public sealed class N64XpRom : Rom
 
     public override bool HasUserPrefs()
     {
-        return _scribe.MaintainPosition(() => !_scribe.Seek(UserPrefsAddr).IsPadding());
+        return Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
     }
 
     private void ReadUserPrefs()
     {
-        _scribe.Seek(UserPrefsAddr);
+        Scribe.Seek(UserPrefsAddr);
 
         if (!HasUserPrefs())
         {
@@ -131,20 +127,20 @@ public sealed class N64XpRom : Rom
 
         // TODO(CheatoBaggins): Decode user preferences
 
-        RomString lastGameName = _scribe.Seek(LastGameNameAddr).ReadCStringUntilNull(20).Trim();
-        RomString lastGameCartId = _scribe.Seek(LastGameCartIdAddr).ReadCStringUntilNull(2);
+        RomString lastGameName = Scribe.Seek(LastGameNameAddr).ReadCStringUntilNull(20).Trim();
+        RomString lastGameCartId = Scribe.Seek(LastGameCartIdAddr).ReadCStringUntilNull(2);
         Metadata.Identifiers.Add(lastGameName);
         Metadata.Identifiers.Add(lastGameCartId);
     }
 
     private void ReadGames()
     {
-        _scribe.Seek(GameListAddr);
+        Scribe.Seek(GameListAddr);
         bool stop = false;
-        while (!stop && !_scribe.IsPadding())
+        while (!stop && !Scribe.IsPadding())
         {
-            RomString gameName = _scribe.ReadCStringUntilNull();
-            u8 cheatCount = _scribe.ReadU8();
+            RomString gameName = Scribe.ReadCStringUntilNull();
+            u8 cheatCount = Scribe.ReadU8();
 
             Game game = new Game() { GameName = gameName };
 
@@ -155,8 +151,8 @@ public sealed class N64XpRom : Rom
                 // - "Hybrid Heaven" -> "Infinite `FA`"
                 // - "GEX 64" -> "Infinite `F8`"
                 // - "Donkey Kong 64 alternativ" -> "Infinite `FA`"
-                RomString cheatName = _scribe.ReadCStringUntilNull();
-                u8 codeCount = _scribe.ReadU8();
+                RomString cheatName = Scribe.ReadCStringUntilNull();
+                u8 codeCount = Scribe.ReadU8();
 
                 if (cheatName.Value.Length == 0)
                 {
@@ -173,7 +169,7 @@ public sealed class N64XpRom : Rom
 
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
-                    byte[] codeBytes = _scribe.ReadBytes(6);
+                    byte[] codeBytes = Scribe.ReadBytes(6);
                     string codeStrOld = codeBytes.ToCodeString(GameConsole.Nintendo64);
                     if (IsCodeEncrypted(codeBytes))
                     {
@@ -277,9 +273,9 @@ public sealed class N64XpRom : Rom
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)
     {
         u32 waynePos = (u32)Bytes.Find("Wayne Hughes Beckett!");
-        wayneStr = _scribe.Seek(waynePos).ReadCStringUntilNull();
+        wayneStr = Scribe.Seek(waynePos).ReadCStringUntilNull();
         u32 buildDatePos = waynePos + 0x40;
-        buildDateRaw = _scribe.Seek(buildDatePos).ReadCStringUntilNull();
+        buildDateRaw = Scribe.Seek(buildDatePos).ReadCStringUntilNull();
         Match match = Regex.Match(buildDateRaw.Value,
             @"(?<ddd>\w{3}) (?<MMM>\w{3}) (?<d>\d{1,2}) (?<H>\d{1,2}):(?<mm>\d{2}):(?<ss>\d{2}) (?<ZZZ>\w{2,3}) (?<yyyy>\d{4})");
         if (!match.Success)
