@@ -1,8 +1,5 @@
 ﻿// bacteriamage.wordpress.com
 
-using System.Text;
-using Google.Protobuf;
-
 namespace LibreShark.Hammerhead.IO;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -23,24 +20,24 @@ using f64 = Double;
 /// </summary>
 internal class BigEndianScribe : BinaryScribe
 {
-    public BigEndianScribe(byte[] buffer) : base(buffer)
+    public BigEndianScribe(u8[] bufferRef) : base(bufferRef)
     {
     }
 
     public override u16 ReadU16()
     {
-        byte hi = ReadU8();
-        byte lo = ReadU8();
+        u8 hi = ReadU8();
+        u8 lo = ReadU8();
         s32 value = (hi << 8) + lo;
-        return (u16) value;
+        return (u16)value;
     }
 
     public override BinaryScribe WriteU16(u16 value)
     {
-        byte hi = (byte)((value >> 8) & 0xFF);
-        byte lo = (byte)(value & 0xFF);
-        Buffer[Position++] = hi;
-        Buffer[Position++] = lo;
+        s32 hi = (value >> 8) & 0xFF;
+        s32 lo = value & 0xFF;
+        BufferRef[Position++] = (u8)hi;
+        BufferRef[Position++] = (u8)lo;
         return this;
     }
 
@@ -48,16 +45,15 @@ internal class BigEndianScribe : BinaryScribe
     {
         u32 hi = ReadU16();
         u32 lo = ReadU16();
-
         return (hi << 16) + lo;
     }
 
     public override BinaryScribe WriteU32(u32 value)
     {
-        u16 hi = (u16)(value >> 16);
-        u16 lo = (u16)(value & 0xFFFF);
-        WriteU16(hi);
-        WriteU16(lo);
+        u32 hi = (value >> 16);
+        u32 lo = (value & 0xFFFF);
+        WriteU16((u16)hi);
+        WriteU16((u16)lo);
         return this;
     }
 }

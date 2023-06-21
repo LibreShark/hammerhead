@@ -20,7 +20,7 @@ using f64 = Double;
 /// </summary>
 internal class LittleEndianScribe : BinaryScribe
 {
-    public LittleEndianScribe(u8[] buffer) : base(buffer)
+    public LittleEndianScribe(u8[] bufferRef) : base(bufferRef)
     {
     }
 
@@ -36,8 +36,8 @@ internal class LittleEndianScribe : BinaryScribe
     {
         u8 hi = (u8)((value >> 8) & 0xFF);
         u8 lo = (u8)(value & 0xFF);
-        Buffer[Position++] = lo;
-        Buffer[Position++] = hi;
+        BufferRef[Position++] = lo;
+        BufferRef[Position++] = hi;
         return this;
     }
 

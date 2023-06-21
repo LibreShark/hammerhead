@@ -24,32 +24,30 @@ using f64 = Double;
 /// </summary>
 class N64GsCrypter
 {
-    public static byte[] Encrypt(byte[] input)
+    public static byte[] Encrypt(IReadOnlyList<byte> input)
     {
         return ProcessRom(input, encoder => encoder.Encode());
     }
 
-    public static byte[] Decrypt(byte[] input)
+    public static byte[] Decrypt(IReadOnlyList<byte> input)
     {
         return ProcessRom(input, decoder => decoder.Decode());
     }
 
-    private static byte[] ProcessRom(byte[] input, Action<N64GsCrypter> action)
+    private static byte[] ProcessRom(IReadOnlyList<byte> input, Action<N64GsCrypter> action)
     {
-        N64GsCrypter crypter = new N64GsCrypter(input);
+        var crypter = new N64GsCrypter(input);
         action(crypter);
-        return crypter._output;
+        return crypter._writer.GetBufferCopy();
     }
 
-    private readonly byte[] _output;
     private readonly BigEndianScribe _reader;
     private readonly BigEndianScribe _writer;
 
-    private N64GsCrypter(byte[] input)
+    private N64GsCrypter(IReadOnlyList<byte> input)
     {
         _reader = new BigEndianScribe(input.ToArray());
-        _output = input.ToArray();
-        _writer = new BigEndianScribe(_output);
+        _writer = new BigEndianScribe(input.ToArray());
     }
 
     private static IReadOnlyList<u32> Seeds { get; } = new u32[]

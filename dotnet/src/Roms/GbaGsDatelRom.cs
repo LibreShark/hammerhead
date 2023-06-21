@@ -14,8 +14,8 @@ public sealed class GbaGsDatelRom : Rom
     public GbaGsDatelRom(string filePath, byte[] bytes)
         : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
     {
-        var minorVersionNumber = Bytes[0x21004];
-        var majorVersionNumber = Bytes[0x21005];
+        var minorVersionNumber = Buffer[0x21004];
+        var majorVersionNumber = Buffer[0x21005];
     }
 
     public static bool Is(byte[] bytes)

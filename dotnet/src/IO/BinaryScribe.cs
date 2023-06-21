@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text;
 using Google.Protobuf;
 
@@ -16,20 +17,22 @@ using f64 = Double;
 
 public abstract class BinaryScribe
 {
-    protected delegate u16 U16Reader();
-    protected delegate u16 U32Reader();
+    protected readonly u8[] BufferRef;
 
-    protected readonly u8[] Buffer;
-
-    protected BinaryScribe(byte[] buffer)
+    protected BinaryScribe(byte[] bufferRef)
     {
-        Buffer = buffer;
+        BufferRef = bufferRef;
+    }
+
+    public u8[] GetBufferCopy()
+    {
+        return BufferRef.ToArray();
     }
 
     #region Seeking
 
     public u32 Position { get; protected set; }
-    public bool EndReached => Position >= Buffer.Length;
+    public bool EndReached => Position >= BufferRef.Length;
 
     public BinaryScribe Seek(u32 addr)
     {
@@ -48,13 +51,13 @@ public abstract class BinaryScribe
 
     protected void CheckBounds()
     {
-        if (Position == Buffer.Length)
+        if (Position == BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {BufferRef.Length} (0x{BufferRef.Length:X8})");
         }
-        if (Position > Buffer.Length)
+        if (Position > BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {BufferRef.Length} (0x{BufferRef.Length:X8}).");
         }
     }
 
@@ -64,22 +67,22 @@ public abstract class BinaryScribe
 
     public s32 Find(string needle)
     {
-        return Buffer.Find(needle);
+        return BufferRef.Find(needle);
     }
 
     public s32 Find(byte[] needle)
     {
-        return Buffer.Find(needle);
+        return BufferRef.Find(needle);
     }
 
     public bool Contains(string needle)
     {
-        return Buffer.Contains(needle);
+        return BufferRef.Contains(needle);
     }
 
     public bool Contains(byte[] needle)
     {
-        return Buffer.Contains(needle);
+        return BufferRef.Contains(needle);
     }
 
     #endregion
@@ -109,15 +112,15 @@ public abstract class BinaryScribe
 
     public u8[] PeekBytesAt(u32 addr, u32 count)
     {
-        if (addr == Buffer.Length)
+        if (addr == BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {BufferRef.Length} (0x{BufferRef.Length:X8})");
         }
-        if (addr + count > Buffer.Length)
+        if (addr + count > BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {BufferRef.Length} (0x{BufferRef.Length:X8}).");
         }
-        return Buffer.Skip((int)addr).Take((int)count).ToArray();
+        return BufferRef.Skip((int)addr).Take((int)count).ToArray();
     }
 
     public u8[] PeekBytes(u32 count)
@@ -138,16 +141,16 @@ public abstract class BinaryScribe
 
     public u8 ReadU8()
     {
-        if (Position == Buffer.Length)
+        if (Position == BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"End of buffer reached: {Buffer.Length} (0x{Buffer.Length:X8})");
+            throw new IndexOutOfRangeException($"End of buffer reached: {BufferRef.Length} (0x{BufferRef.Length:X8})");
         }
-        if (Position > Buffer.Length)
+        if (Position > BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {Buffer.Length} (0x{Buffer.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {Position} (0x{Position:X8}). Must be between 0 and {BufferRef.Length} (0x{BufferRef.Length:X8}).");
         }
 
-        return Buffer[Position++];
+        return BufferRef[Position++];
     }
 
     public s8 ReadS8()
@@ -157,7 +160,7 @@ public abstract class BinaryScribe
 
     public BinaryScribe WriteU8(u8 value)
     {
-        Buffer[Position++] = value;
+        BufferRef[Position++] = value;
         return this;
     }
 
@@ -242,7 +245,7 @@ public abstract class BinaryScribe
         u32 startPos = Position;
         while (true)
         {
-            byte b = Buffer[Position];
+            byte b = BufferRef[Position];
             bool isNull = b == 0;
             u32 bytesRead = Position - startPos;
 
@@ -284,7 +287,7 @@ public abstract class BinaryScribe
                 StartIndex = startPos,
                 EndIndex = endPos,
                 Length = len,
-                RawBytes = ByteString.CopyFrom(Buffer[(int)startPos..(int)endPos]),
+                RawBytes = ByteString.CopyFrom(BufferRef[(int)startPos..(int)endPos]),
             },
             Value = sb.ToString(),
         };

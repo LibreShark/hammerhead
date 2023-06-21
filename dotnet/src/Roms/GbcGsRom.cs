@@ -38,10 +38,10 @@ public sealed class GbcGsRom : Rom
         "Gameshark     V4.2",
     };
 
-    public GbcGsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
+    public GbcGsRom(string filePath, byte[] rawInput)
+        : base(filePath, rawInput, new LittleEndianScribe(rawInput), ThisConsole, ThisRomFormat)
     {
-        Metadata.Brand = IsGs(Bytes) ? RomBrand.Gameshark : IsAr(Bytes) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
+        Metadata.Brand = IsGs(Buffer) ? RomBrand.Gameshark : IsAr(Buffer) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2}";
         Metadata.LanguageIetfCode = Metadata.Brand switch

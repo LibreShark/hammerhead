@@ -5,20 +5,25 @@ using NeoSmart.PrettySize;
 
 namespace LibreShark.Hammerhead.Roms;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 public abstract class Rom
 {
-    /// <summary>
-    /// Raw, unaltered bytes that were read in from the ROM file.
-    /// May be encrypted or scrambled, depending on the device.
-    /// </summary>
-    protected readonly ImmutableArray<byte> InitialBytes;
-
     /// <summary>
     /// Plain, unencrypted, unobfuscated bytes.
     /// If the input file is encrypted/scrambled, it must be
     /// decrypted/unscrambled immediately in the subclass constructor.
     /// </summary>
-    protected readonly byte[] Bytes;
+    protected byte[] Buffer => Scribe.GetBufferCopy();
 
     public readonly RomMetadata Metadata;
 
@@ -27,13 +32,11 @@ public abstract class Rom
 
     protected Rom(
         string filePath,
-        byte[] bytes,
+        byte[] rawInput,
         BinaryScribe scribe,
         GameConsole console,
         RomFormat format)
     {
-        InitialBytes = bytes.ToImmutableArray();
-        Bytes = bytes.ToArray();
         Scribe = scribe;
         Metadata = new RomMetadata
         {
@@ -106,8 +109,8 @@ public abstract class Rom
     public void PrintSummary()
     {
         Console.WriteLine();
-        Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} " +
-                          $"({Bytes.Length} bytes = {PrettySize.Format(Bytes.Length)}): '{Metadata.FilePath}'");
+        Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Buffer.Length:X8} " +
+                          $"({Buffer.Length} bytes = {PrettySize.Format(Buffer.Length)}): '{Metadata.FilePath}'");
         Console.WriteLine();
         Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
         Console.WriteLine($"Console:             {Metadata.Console.ToDisplayString()}");

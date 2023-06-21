@@ -40,13 +40,14 @@ public sealed class N64XpRom : Rom
         "2000-05-06T04:42:59+00:00",
     };
 
-    public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, new BigEndianScribe(bytes), ThisConsole, ThisRomFormat)
+    private readonly bool _isScrambled;
+    private readonly bool _hasUserPrefs;
+
+    public N64XpRom(string filePath, u8[] rawInput)
+        : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsole, ThisRomFormat)
     {
-        if (IsFileScrambled())
-        {
-            Unscramble();
-        }
+        _isScrambled = DetectScrambled(rawInput);
+        _hasUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
 
         Metadata.Brand = RomBrand.Xplorer;
 
@@ -96,6 +97,15 @@ public sealed class N64XpRom : Rom
         ReadUserPrefs();
     }
 
+    private static BinaryScribe Unobfuscate(u8[] rawInput)
+    {
+        u8[] output =
+            DetectScrambled(rawInput)
+                ? N64XpScrambler.UnscrambleXpRom(rawInput)
+                : rawInput.ToArray();
+        return new BigEndianScribe(output);
+    }
+
     public override bool FormatSupportsFileScrambling()
     {
         return true;
@@ -108,12 +118,12 @@ public sealed class N64XpRom : Rom
 
     public override bool IsFileScrambled()
     {
-        return DetectScrambled(InitialBytes.ToArray());
+        return _isScrambled;
     }
 
     public override bool HasUserPrefs()
     {
-        return Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
+        return _hasUserPrefs;
     }
 
     private void ReadUserPrefs()
@@ -175,7 +185,7 @@ public sealed class N64XpRom : Rom
 
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
-                    byte[] codeBytes = Scribe.ReadBytes(6);
+                    u8[] codeBytes = Scribe.ReadBytes(6);
                     string codeStrOld = codeBytes.ToCodeString(GameConsole.Nintendo64);
                     if (IsCodeEncrypted(codeBytes))
                     {
@@ -194,7 +204,7 @@ public sealed class N64XpRom : Rom
                     }
 
                     var codeScribe = new BigEndianScribe(codeBytes);
-                    byte[] bytes = codeScribe.ReadBytes(6);
+                    u8[] bytes = codeScribe.ReadBytes(6);
                     cheat.Codes.Add(new Code()
                     {
                         CodeIndex = codeIdx,
@@ -220,9 +230,9 @@ public sealed class N64XpRom : Rom
     }
 
     // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
-    private byte[] EncryptCode(byte[] code)
+    private u8[] EncryptCode(u8[] code)
     {
-        return new byte[] {};
+        return new u8[] {};
     }
 
     /// <summary>
@@ -230,7 +240,7 @@ public sealed class N64XpRom : Rom
     ///
     /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
     /// </summary>
-    private static byte[] DecryptCodeMethod1(IReadOnlyList<byte> code)
+    private static u8[] DecryptCodeMethod1(IReadOnlyList<byte> code)
     {
         byte a0 = code[0];
         byte a1 = code[1];
@@ -244,7 +254,7 @@ public sealed class N64XpRom : Rom
         a3 = (byte)((a3 ^ 0x83) - 0x2B);
         d0 = (byte)((d0 ^ 0x84) - 0x2B);
         d1 = (byte)((d1 ^ 0x85) - 0x2B);
-        return new byte[] {a0, a1, a2, a3, d0, d1};
+        return new u8[] {a0, a1, a2, a3, d0, d1};
     }
 
     /// <summary>
@@ -252,7 +262,7 @@ public sealed class N64XpRom : Rom
     ///
     /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
     /// </summary>
-    private static byte[] DecryptCodeMethod2(IReadOnlyList<byte> code)
+    private static u8[] DecryptCodeMethod2(IReadOnlyList<byte> code)
     {
         byte a0 = code[0];
         byte a1 = code[1];
@@ -266,7 +276,7 @@ public sealed class N64XpRom : Rom
         a3 = (byte)((a3 + 0xAB) ^ 0x03);
         d0 = (byte)((d0 + 0xAB) ^ 0x04);
         d1 = (byte)((d1 + 0xAB) ^ 0x05);
-        return new byte[] {a0, a1, a2, a3, d0, d1};
+        return new u8[] {a0, a1, a2, a3, d0, d1};
     }
 
     private static string GetIetfCode(RomString oneLetterLangCode, RomString countryNameRaw)
@@ -283,7 +293,7 @@ public sealed class N64XpRom : Rom
 
     private void ReadBuildDate(out RomString buildDateRaw, out string buildDateIso, out RomString wayneStr)
     {
-        u32 waynePos = (u32)Bytes.Find("Wayne Hughes Beckett!");
+        u32 waynePos = (u32)Buffer.Find("Wayne Hughes Beckett!");
         wayneStr = Scribe.Seek(waynePos).ReadCStringUntilNull();
         u32 buildDatePos = waynePos + 0x40;
         buildDateRaw = Scribe.Seek(buildDatePos).ReadCStringUntilNull();
@@ -321,39 +331,33 @@ public sealed class N64XpRom : Rom
         buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
-    private void Unscramble()
-    {
-        byte[] unscrambled = N64XpScrambler.UnscrambleXpRom(Bytes);
-        Array.Copy(unscrambled, Bytes, unscrambled.Length);
-    }
-
-    public byte[] GetPlain()
+    public u8[] GetPlain()
     {
         // Return a copy of the array to prevent the caller from mutating
         // internal state.
-        return Bytes.ToArray();
+        return Buffer.ToArray();
     }
 
-    public byte[] GetScrambled()
+    public u8[] GetScrambled()
     {
-        return N64XpScrambler.ScrambleXpRom(Bytes);
+        return N64XpScrambler.ScrambleXpRom(Buffer);
     }
 
-    private static bool DetectPlain(byte[] bytes)
+    private static bool DetectPlain(u8[] bytes)
     {
-        byte[] idBytes = bytes[0x40..0x55];
+        u8[] idBytes = bytes[0x40..0x55];
         string idStr = idBytes.ToAsciiString();
         return idStr is
             "Future Console Design" or
             "FUTURE CONSOLE DESIGN";
     }
 
-    private static string SS(byte[] bytes, u32 addr)
+    private static string SS(u8[] bytes, u32 addr)
     {
         return bytes[(int)(addr)..(int)(addr + 2)].ToAsciiString();
     }
 
-    private static bool DetectScrambled(byte[] bytes)
+    private static bool DetectScrambled(u8[] bytes)
     {
         string strle = SS(bytes, 0x0016);
         string strFC = SS(bytes, 0x0436);
@@ -372,7 +376,7 @@ public sealed class N64XpRom : Rom
                true;
     }
 
-    public static bool Is(byte[] bytes)
+    public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
         return is256KiB && (DetectPlain(bytes) || DetectScrambled(bytes));
