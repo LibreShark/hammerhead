@@ -118,6 +118,20 @@ public static class ExtensionMethods
         return newRS;
     }
 
+    public static RomString Readable(this RomString oldRS)
+    {
+        var newRS = new RomString(oldRS).Trim();
+        newRS.Value = String.Join(
+            "",
+            oldRS.Value.Select(c =>
+            {
+                bool isPrintable = c is >= ' ' and <= '~';
+                return isPrintable ? c : ' ';
+            })
+        );
+        return newRS;
+    }
+
     public static string ToDisplayString(this RomRange range)
     {
         return $"[0x{range.StartIndex:X8}, 0x{range.EndIndex - 1:X8}]";

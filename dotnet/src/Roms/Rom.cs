@@ -30,11 +30,13 @@ public abstract class Rom
     protected readonly List<Game> Games = new();
     protected readonly BinaryScribe Scribe;
 
+    // TODO(CheatoBaggins): Compute file checksums
     protected Rom(
         string filePath,
         BinaryScribe scribe,
         GameConsole console,
-        RomFormat format)
+        RomFormat format
+        )
     {
         Scribe = scribe;
         Metadata = new RomMetadata

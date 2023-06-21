@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -25,6 +26,41 @@ public sealed class GbcSharkMxRom : Rom
     public GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
+        u32 welcomeAddr = (u32)Scribe.Find("Welcome to");
+        u32 manufacturerAddr = (u32)Scribe.Find("Shark MX");
+
+        RomString welcomeStr = Scribe.Seek(welcomeAddr).ReadCStringUntilNull().Readable();
+        RomString manufacturerStr = Scribe.Seek(manufacturerAddr).ReadCStringUntilNull().Readable();
+
+        Metadata.Identifiers.Add(welcomeStr);
+        Metadata.Identifiers.Add(manufacturerStr);
+
+        Match versionMatch = Regex.Match(welcomeStr.Value, @"(?<country>\w+) V(?<version>[\d.]+)");
+        if (!versionMatch.Success)
+        {
+            throw new NotSupportedException("Unable to find version number in Shark MX ROM file!");
+        }
+
+        string countryStr = versionMatch.Groups["country"].Value;
+        string versionStr = versionMatch.Groups["version"].Value;
+        if (countryStr == "US")
+        {
+            Metadata.LanguageIetfCode = "en-US";
+        }
+        else
+        {
+            Console.Error.WriteLine($"UNKNOWN LANGUAGE FOR COUNTRY '{countryStr}'");
+        }
+
+        Metadata.SortableVersion = Double.Parse(versionStr);
+        Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2} ({countryStr})";
+
+        s32 tzListPos = Scribe.Seek(0).Find("Anchorage") - 4;
+        if (tzListPos < 0)
+        {
+            Console.Error.WriteLine("Unable to find time zones!");
+        }
+        u32 tzListAddr = (u32)tzListPos;
     }
 
     public static bool Is(u8[] bytes)
