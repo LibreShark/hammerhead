@@ -122,16 +122,17 @@ public static class ExtensionMethods
     {
         return format switch
         {
-            RomFormat.GbaGamesharkDatel => "GBA Datel GameShark format",
-            RomFormat.GbaGamesharkFcd => "GBA FCD GameShark format",
-            RomFormat.GbaTvTuner => "GBA TV Tuner format",
-            RomFormat.GbcCodebreaker => "GBC Code Breaker ROM format",
-            RomFormat.GbcGameshark => "GBC GameShark ROM format",
-            RomFormat.GbcSharkMx => "GBC Shark MX ROM format",
-            RomFormat.GbcXploder => "GBC Xploder/Xplorer ROM format",
-            RomFormat.N64Gameshark => "N64 GameShark ROM format",
-            RomFormat.N64Gbhunter => "N64 GB Hunter ROM format",
-            RomFormat.N64Xplorer64 => "N64 Xplorer 64 ROM format",
+            RomFormat.GbaGamesharkDatel => "GBA - Datel GameShark",
+            RomFormat.GbaGamesharkFcd => "GBA - FCD GameShark",
+            RomFormat.GbaTvTuner => "GBA - TV Tuner",
+            RomFormat.GbcCodebreaker => "GBC - Code Breaker",
+            RomFormat.GbcGameshark => "GBC - GameShark",
+            RomFormat.GbcMonsterbrain => "GBC - Monster Brain",
+            RomFormat.GbcSharkMx => "GBC - Shark MX",
+            RomFormat.GbcXploder => "GBC - Xploder/Xplorer",
+            RomFormat.N64Gameshark => "N64 - GameShark",
+            RomFormat.N64Gbhunter => "N64 - GB Hunter",
+            RomFormat.N64Xplorer64 => "N64 - Xplorer 64",
             RomFormat.UnknownRomFormat => "UNKNOWN ROM format",
             _ => throw new NotSupportedException($"RomFormat {format} is missing from ToDisplayString()!"),
         };
@@ -154,6 +155,7 @@ public static class ExtensionMethods
             RomBrand.SharkMx => "Shark MX",
             RomBrand.Xploder => "Xploder",
             RomBrand.Xplorer => "Xplorer",
+            RomBrand.UnknownBrand => "UNKNOWN brand",
             _ => throw new NotSupportedException($"RomBrand {brand} is missing from ToDisplayString()!"),
         };
     }

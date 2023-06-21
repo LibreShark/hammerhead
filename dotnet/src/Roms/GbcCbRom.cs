@@ -5,6 +5,11 @@ namespace LibreShark.Hammerhead.Roms;
 /// <summary>
 /// Code Breaker for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
+///
+/// This device was also repackaged and rebranded as
+/// "BrainBoy" and "Monster Brain", which were cheat devices tailored
+/// specifically for Pokemon games. They had hard-coded cheats that were not
+/// user-editable.
 /// </summary>
 public sealed class GbcCbRom : Rom
 {
@@ -14,9 +19,7 @@ public sealed class GbcCbRom : Rom
     public GbcCbRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
-        // CodeBreaker v1.0c
-
-        Metadata.Brand = DetectBrand(Bytes);
+        Metadata.Brand = DetectBrand(bytes);
 
         string id = bytes[..0x20].ToAsciiString();
         Match match = Regex.Match(id, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
@@ -24,6 +27,10 @@ public sealed class GbcCbRom : Rom
         {
             string numberStr = match.Groups["number"].Value.Trim();
             string decoratorStr = match.Groups["decorators"].Value.Trim();
+            if (decoratorStr.Length > 1)
+            {
+                decoratorStr = " " + decoratorStr;
+            }
             Metadata.DisplayVersion = $"v{numberStr}{decoratorStr}".Trim();
             Metadata.SortableVersion = Double.Parse(numberStr);
             if (decoratorStr.Length == 1)
@@ -54,14 +61,6 @@ public sealed class GbcCbRom : Rom
         if (id.Contains("CodeBreaker / GB"))
         {
             return RomBrand.CodeBreaker;
-        }
-        if (id.Contains("BrainBoy"))
-        {
-            return RomBrand.Brainboy;
-        }
-        if (id.Contains("Monster Brain"))
-        {
-            return RomBrand.MonsterBrain;
         }
         return RomBrand.UnknownBrand;
     }

@@ -61,7 +61,8 @@ enum GameConsole {
 enum RomFormat {
   UNKNOWN_ROM_FORMAT = 0x00;
 
-  // GameShark, Action Replay, Equalizer, and Game Buster all use the same ROM format.
+  // GameShark, Action Replay, Equalizer, and Game Buster all use the same
+  // ROM format.
   N64_GAMESHARK = 0x01;
 
   // AKA "Xploder 64"
@@ -70,8 +71,14 @@ enum RomFormat {
   // GB Hunter and Game Booster use the same ROM format.
   N64_GBHUNTER = 0x03;
 
-  // Code Breaker, BrainBoy, and Monster Brain use the same ROM format.
   GBC_CODEBREAKER = 0x41;
+
+  // BrainBoy is a fork of Code Breaker that was specifically designed for
+  // cheating in Pokemon games. It does not allow the user to edit or even see
+  // any cheat codes, and it only supports specific Pokemon games.
+  // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
+  // the same.
+  GBC_MONSTERBRAIN = 0x42;
 
   // Action Replay too
   GBC_GAMESHARK = 0x51;

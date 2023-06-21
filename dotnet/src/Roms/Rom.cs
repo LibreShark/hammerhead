@@ -101,9 +101,9 @@ public abstract class Rom
         Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} " +
                           $"({Bytes.Length} bytes = {PrettySize.Format(Bytes.Length)}): '{Metadata.FilePath}'");
         Console.WriteLine();
-        Console.WriteLine($"Brand:               {Metadata.Brand.ToDisplayString()}");
-        Console.WriteLine($"Console:             {Metadata.Console.ToDisplayString()}");
         Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
+        Console.WriteLine($"Console:             {Metadata.Console.ToDisplayString()}");
+        Console.WriteLine($"Brand:               {Metadata.Brand.ToDisplayString()}");
         Console.WriteLine($"Locale:              {Metadata.LanguageIetfCode}");
         Console.WriteLine($"Version:             {Metadata.DisplayVersion}");
         Console.WriteLine($"Build date:          {Metadata.BuildDateIso}");
