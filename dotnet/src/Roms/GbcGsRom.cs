@@ -29,7 +29,15 @@ public sealed class GbcGsRom : Rom
     private const u32 GameListAddr = 0x00008000;
     private const u32 CheatListAddr = 0x0000A000;
 
-    // TODO(CheatoBaggins): Use LittleEndianScribe
+    private static readonly string[] KnownTitles =
+    {
+        "Action Replay V4.01",
+        "Action Replay V4.2",
+        "Gameshark     V4.2",
+        "Gameshark     V4.0",
+        "Gameshark     V4.2",
+    };
+
     private readonly LittleEndianScribe _scribe;
 
     public GbcGsRom(string filePath, byte[] bytes)
@@ -49,6 +57,7 @@ public sealed class GbcGsRom : Rom
 
         RomString title = _scribe.Seek(TitleAddr).ReadCStringUntilNull();
         Metadata.Identifiers.Add(title);
+        Metadata.IsKnownVersion = KnownTitles.Contains(title.Value);
 
         _scribe.Seek(GameListAddr);
         ReadGames();

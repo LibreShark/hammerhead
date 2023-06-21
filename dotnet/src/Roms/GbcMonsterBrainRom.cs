@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
 
@@ -11,13 +12,27 @@ public sealed class GbcMonsterBrainRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcMonsterbrain;
 
+    private static readonly string[] KnownTitles =
+    {
+        "BrainBoy version 1.1",
+        "Monster Brain v2.0 Platinum",
+        "Monster Brain v3.6 Platinum",
+    };
+
+    private readonly LittleEndianScribe _scribe;
+
     public GbcMonsterBrainRom(string filePath, byte[] bytes)
         : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
+        _scribe = new LittleEndianScribe(Bytes);
+
         Metadata.Brand = DetectBrand(bytes);
 
-        string id = bytes[..0x20].ToAsciiString();
-        Match match = Regex.Match(id, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
+        RomString id = _scribe.Seek(0).ReadPrintableCString(0x20).Trim();
+        Metadata.Identifiers.Add(id);
+        Metadata.IsKnownVersion = KnownTitles.Contains(id.Value);
+
+        Match match = Regex.Match(id.Value, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
         if (match.Success)
         {
             string numberStr = match.Groups["number"].Value.Trim();
