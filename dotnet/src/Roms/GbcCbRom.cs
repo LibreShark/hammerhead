@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -28,7 +29,11 @@ public sealed class GbcCbRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcCodebreaker;
 
+    private const u32 CheatNameListAddr    = 0x000067F0;
+    private const u32 GameListAddr         = 0x00022000;
     private const u32 SelectedGameNameAddr = 0x0003C680;
+
+    private readonly RomString[] _cheatNames = new RomString[16];
 
     public GbcCbRom(string filePath, byte[] bytes)
         : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
@@ -41,27 +46,84 @@ public sealed class GbcCbRom : Rom
         Metadata.Identifiers.Add(romId);
         Metadata.Identifiers.Add(selectedGameName);
 
-        Match match = Regex.Match(romId.Value, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
-        if (match.Success)
+        ParseVersion(romId);
+        ParseGames();
+    }
+
+    private void ParseGames()
+    {
+        Scribe.Seek(CheatNameListAddr);
+        for (u8 nameIdx = 0; nameIdx < _cheatNames.Length; nameIdx++)
         {
-            string numberStr = match.Groups["number"].Value.Trim();
-            string decoratorStr = match.Groups["decorators"].Value.Trim();
-            if (decoratorStr.Length > 1)
+            _cheatNames[nameIdx] = Scribe.ReadCStringUntilNull(8, false).Trim();
+        }
+
+        Scribe.Seek(GameListAddr);
+        for (u8 gameIdx = 0; gameIdx < 255; gameIdx++)
+        {
+            u32 gameStartPos = Scribe.Position;
+            RomString gameName = Scribe.ReadCStringUntilNull(15, true).Trim();
+            if (gameName.Value.Length == 0)
             {
-                decoratorStr = " " + decoratorStr;
+                Scribe.Seek(gameStartPos + 0x60);
+                continue;
             }
 
-            Metadata.DisplayVersion = $"v{numberStr}{decoratorStr}".Trim();
-            Metadata.SortableVersion = Double.Parse(numberStr);
+            Scribe.Seek(gameStartPos + 0x10);
 
-            if (decoratorStr.Length == 1)
+            var game = new Game() { GameName = gameName };
+
+            for (u8 cheatIdx = 0; cheatIdx < 16; cheatIdx++)
             {
-                char c = decoratorStr.ToLower()[0];
-                int d = c - 0x60;
+                u8[] code = Scribe.ReadBytes(4);
+                u8 nameIdx = Scribe.ReadU8();
+                if (code.IsPadding())
+                {
+                    continue;
+                }
 
-                // E.g., "v1.0c" -> "v1.03"
-                Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
+                var cheat = new Cheat()
+                {
+                    CheatName = nameIdx == 0
+                        // Custom, user-entered cheat
+                        // TODO(CheatoBaggins): Are custom names stored in the ROM?
+                        ? new RomString() { Value = "USR CSTM" }
+                        // Build-in cheat with standard name
+                        : _cheatNames[nameIdx],
+                };
+                cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(code) });
+                game.Cheats.Add(cheat);
             }
+
+            Games.Add(game);
+        }
+    }
+
+    private void ParseVersion(RomString romId)
+    {
+        Match match = Regex.Match(romId.Value, @"(?:v|version )(?<number>\d+\.\d+)(?<decorators>.*)");
+        if (!match.Success)
+        {
+            return;
+        }
+
+        string numberStr = match.Groups["number"].Value.Trim();
+        string decoratorStr = match.Groups["decorators"].Value.Trim();
+        if (decoratorStr.Length > 1)
+        {
+            decoratorStr = " " + decoratorStr;
+        }
+
+        Metadata.DisplayVersion = $"v{numberStr}{decoratorStr}".Trim();
+        Metadata.SortableVersion = Double.Parse(numberStr);
+
+        if (decoratorStr.Length == 1)
+        {
+            char c = decoratorStr.ToLower()[0];
+            int d = c - 0x60;
+
+            // E.g., "v1.0c" -> "v1.03"
+            Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
         }
     }
 

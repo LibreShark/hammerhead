@@ -87,6 +87,11 @@ public static class ExtensionMethods
         return bytes.Length == numMiB * 1024 * 1024;
     }
 
+    public static bool IsPadding(this IEnumerable<byte> eBytes)
+    {
+        return eBytes.All((b) => b is 0x00 or 0xFF or 0xAA);
+    }
+
     #endregion
 
     #region Protobuf
