@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Force.Crc32;
 
-namespace LibreShark.Hammerhead.N64;
+namespace LibreShark.Hammerhead.IO;
 
 public class Checksum
 {

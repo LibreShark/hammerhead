@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
@@ -78,7 +79,7 @@ public sealed class GbcGsRom : Rom
 
             string selectedStr = isGameSelected ? $" <!------------ CURRENTLY SELECTED GAME? bitmask (BE) = 0x{bitMask:X4}" : "";
             // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
-            Games.Add(new N64Game { Name = gameName.Value, IsActive = isGameSelected });
+            Games.Add(new Game { GameName = gameName, IsGameActive = isGameSelected });
         }
     }
 
@@ -106,14 +107,15 @@ public sealed class GbcGsRom : Rom
 
             if (gameIndex < Games.Count)
             {
-                N64Game game = Games[gameIndex];
-                N64Cheat cheat =
-                    // Append to existing cheat
-                    game.Cheats.Find(c => c.Name == cheatName.Value) ??
-                    // Create new cheat
-                    game.AddCheat(cheatName.Value);
-                cheat.AddCode(code, new byte[] { });
-                cheat.IsActive = cheat.IsActive || bitMask > 0;
+                Game game = Games[gameIndex];
+                Cheat? cheat = game.Cheats.ToList().Find(c => c.CheatName.Value == cheatName.Value);
+                if (cheat == null)
+                {
+                    cheat = new Cheat() { CheatName = cheatName };
+                    game.Cheats.Add(cheat);
+                }
+                cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(code) });
+                cheat.IsCheatActive = cheat.IsCheatActive || bitMask > 0;
             }
             else
             {

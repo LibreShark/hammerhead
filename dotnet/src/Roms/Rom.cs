@@ -21,7 +21,7 @@ public abstract class Rom
 
     public readonly RomMetadata Metadata;
 
-    protected List<N64Game> Games = new();
+    protected List<Game> Games = new();
 
     protected Rom(string filePath, byte[] bytes, GameConsole console, RomFormat format)
     {
@@ -136,25 +136,26 @@ public abstract class Rom
         if (Games.Count > 0)
         {
             string games = Games.Count == 1 ? "game" : "games";
-            N64Cheat[] allCheats = Games.SelectMany(game => game.Cheats).ToArray();
-            N64Code[] allCodes = Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
+            Cheat[] allCheats = Games.SelectMany(game => game.Cheats).ToArray();
+            Code[] allCodes = Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
 
             string totalCheats = allCheats.Length == 1 ? "cheat" : "cheats";
             string totalCodes = allCodes.Length == 1 ? "code" : "codes";
             Console.WriteLine($"{Games.Count} {games}, {allCheats.Length:N0} {totalCheats}, {allCodes.Length:N0} {totalCodes}");
-            foreach (N64Game game in Games)
+            foreach (Game game in Games)
             {
                 string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
-                string gameIsActive = game.IsActive ? " <!------------ CURRENTLY SELECTED GAME" : "";
-                Console.WriteLine($"- {game.Name} ({game.Cheats.Count} {cheats}){gameIsActive}");
-                foreach (N64Cheat cheat in game.Cheats)
+                string gameIsActive = game.IsGameActive ? " <!------------ CURRENTLY SELECTED GAME" : "";
+                Console.WriteLine($"- {game.GameName.Value} ({game.Cheats.Count} {cheats}){gameIsActive}");
+                foreach (Cheat cheat in game.Cheats)
                 {
                     string codes = cheat.Codes.Count == 1 ? "code" : "codes";
-                    string isActive = cheat.IsActive ? " [ON]" : "";
-                    Console.WriteLine($"    - {cheat.Name} ({cheat.Codes.Count} {codes}){isActive}");
-                    foreach (N64Code code in cheat.Codes)
+                    string isActive = cheat.IsCheatActive ? " [ON]" : "";
+                    Console.WriteLine($"    - {cheat.CheatName.Value} ({cheat.Codes.Count} {codes}){isActive}");
+                    foreach (Code code in cheat.Codes)
                     {
-                        Console.WriteLine($"        {code.Address.ToHexString()} {code.Value.ToHexString()}");
+                        string codeStr = code.Bytes.ToCodeString(Metadata.Console);
+                        Console.WriteLine($"        {codeStr}");
                     }
                 }
             }

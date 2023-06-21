@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
@@ -116,9 +117,9 @@ public sealed class N64GsRom : Rom
         return _scribe.MaintainPosition(() => !_scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
-    private List<N64Game> ReadGames()
+    private List<Game> ReadGames()
     {
-        List<N64Game> games = new List<N64Game>();
+        List<Game> games = new List<Game>();
         _scribe.Seek(_gameListAddr);
         u32 gamesCount = _scribe.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
@@ -128,9 +129,9 @@ public sealed class N64GsRom : Rom
         return games;
     }
 
-    private N64Game ReadGame()
+    private Game ReadGame()
     {
-        N64Game game = N64Game.NewGame(ReadName());
+        Game game = new Game() { GameName = ReadName() };
         u8 cheatCount = _scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
@@ -139,66 +140,76 @@ public sealed class N64GsRom : Rom
         return game;
     }
 
-    private void ReadCheat(N64Game game)
+    private void ReadCheat(Game game)
     {
-        N64Cheat cheat = game.AddCheat(ReadName());
+        Cheat cheat = new Cheat() { CheatName = ReadName() };
+        game.Cheats.Add(cheat);
         u8 codeCount = _scribe.ReadU8();
         bool cheatOn = (codeCount & 0x80) > 0;
         codeCount &= 0x7F;
-        cheat.IsActive = cheatOn;
+        cheat.IsCheatActive = cheatOn;
         for (u8 codeIdx = 0; codeIdx < codeCount; codeIdx++)
         {
             ReadCode(cheat);
         }
     }
 
-    private void ReadCode(N64Cheat cheat)
+    private void ReadCode(Cheat cheat)
     {
-        byte[] address = _scribe.ReadBytes(4);
-        byte[] value = _scribe.ReadBytes(2);
-        cheat.AddCode(address, value);
+        byte[] bytes = _scribe.ReadBytes(6);
+        cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(bytes) });
     }
 
-    private string ReadName()
+    private RomString ReadName()
     {
-        u32 pos = _scribe.Position;
+        u32 startPos = _scribe.Position;
 
         // Firmware does not support names longer than 30 chars.
-        string name = _scribe.ReadCStringUntilNull(30, true).Value;
+        RomString name = _scribe.ReadCStringUntilNull(30, true);
 
-        if (name.Length < 1)
+        if (name.Value.Length < 1)
         {
-            Console.Error.WriteLine($"WARNING at offset 0x{pos:X8}: Game and Cheat names should contain at least 1 character.");
+            Console.Error.WriteLine($"WARNING at offset 0x{startPos:X8}: Game and Cheat names should contain at least 1 character.");
+            u32 endPos = _scribe.Position;
             return name;
         }
 
-        name = name.Replace("`F6`", "Key");
-        name = name.Replace("`F7`", "Have ");
-        name = name.Replace("`F8`", "Lives");
-        name = name.Replace("`F9`", "Energy");
-        name = name.Replace("`FA`", "Health");
-        name = name.Replace("`FB`", "Activate ");
-        name = name.Replace("`FC`", "Unlimited ");
-        name = name.Replace("`FD`", "Player ");
-        name = name.Replace("`FE`", "Always ");
-        name = name.Replace("`FF`", "Infinite ");
+        name.Value = name.Value.Replace("`F6`", "Key");
+        name.Value = name.Value.Replace("`F7`", "Have ");
+        name.Value = name.Value.Replace("`F8`", "Lives");
+        name.Value = name.Value.Replace("`F9`", "Energy");
+        name.Value = name.Value.Replace("`FA`", "Health");
+        name.Value = name.Value.Replace("`FB`", "Activate ");
+        name.Value = name.Value.Replace("`FC`", "Unlimited ");
+        name.Value = name.Value.Replace("`FD`", "Player ");
+        name.Value = name.Value.Replace("`FE`", "Always ");
+        name.Value = name.Value.Replace("`FF`", "Infinite ");
 
         return name;
     }
 
     private N64KeyCode ReadActiveKeyCode(List<N64KeyCode> keyCodes)
     {
-        byte[] crcBytes = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
-        byte[] pcBytes = _scribe.PeekBytesAt(ProgramCounterAddr, 4);
+        byte[] activeCrcBytes = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
+        byte[] activePcBytes = _scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
-        string? name = null;
+        RomString? name = null;
         if (keyCodes.Count > 0)
         {
-            N64KeyCode? activeKeyCode = keyCodes.Find(kc => kc.ChecksumBytes.SequenceEqual(crcBytes));
+            N64KeyCode? activeKeyCode = keyCodes.Find(kc =>
+            {
+                byte[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
+                return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
+            });
             name = activeKeyCode?.Name;
         }
 
-        return new N64KeyCode(name ?? "probably CIC-NUS-6102", crcBytes.Concat(pcBytes).ToArray(), true);
+        return new N64KeyCode()
+        {
+            Name = name ?? new RomString() { Value = "probably CIC-NUS-6102" },
+            Bytes = ByteString.CopyFrom(activeCrcBytes.Concat(activePcBytes).ToArray()),
+            IsKeyCodeActive = true,
+        };
     }
 
     private List<N64KeyCode> ReadKeyCodes()
@@ -226,7 +237,11 @@ public sealed class N64GsRom : Rom
                 _scribe.ReadU8();
             }
             bool isActive = bytes.Contains(activePrefix);
-            N64KeyCode keyCode = new(name.Value, bytes, isActive);
+            var keyCode = new N64KeyCode() {
+                Name = name,
+                Bytes = ByteString.CopyFrom(bytes),
+                IsKeyCodeActive = isActive,
+            };
             keyCodes.Add(keyCode);
         }
         return keyCodes;
@@ -343,14 +358,14 @@ public sealed class N64GsRom : Rom
         Console.WriteLine($"Key code list addr: {keyCodeListAddr}");
         Console.WriteLine($"Game list addr:     {gameListAddr}");
         Console.WriteLine();
-        Console.WriteLine($"Active key code: {_activeKeyCode}");
+        Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
 
         if (_supportsKeyCodes)
         {
             Console.WriteLine("Key codes: ");
             foreach (N64KeyCode keyCode in _keyCodes)
             {
-                Console.WriteLine($"- {keyCode}");
+                Console.WriteLine($"- {keyCode.ToDisplayString()}");
             }
         }
         else

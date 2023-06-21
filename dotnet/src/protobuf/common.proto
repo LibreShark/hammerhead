@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package libreshark.hammerhead;
 option csharp_namespace = "LibreShark.Hammerhead";
 
@@ -147,6 +149,7 @@ message RomMetadata {
   // ISO 8601 date/time stamp of when the ROM was built.
   // E.g., "1997-08-01T12:50:00+0100".
   string build_date_iso = 8;
+  .google.protobuf.Timestamp build_date_proto = 14;
 
   // Case-insensitive IETF BCP 47 language and region tag.
   // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
@@ -161,4 +164,26 @@ message RomMetadata {
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
   bool is_known_version = 13;
+}
+
+message Warning {
+  string message = 1;
+}
+
+message Code {
+  bytes bytes = 1;
+  string comment = 2;
+}
+
+message Cheat {
+  RomString cheat_name = 1;
+  repeated Code codes = 2;
+  bool is_cheat_active = 3;
+}
+
+message Game {
+  RomString game_name = 1;
+  repeated Cheat cheats = 2;
+  bool is_game_active = 3;
+  repeated Warning warnings = 4;
 }

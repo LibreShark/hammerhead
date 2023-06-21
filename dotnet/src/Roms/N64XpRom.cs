@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
@@ -145,7 +146,7 @@ public sealed class N64XpRom : Rom
             RomString gameName = _scribe.ReadCStringUntilNull();
             u8 cheatCount = _scribe.ReadU8();
 
-            N64Game game = new(gameName.Value);
+            Game game = new Game() { GameName = gameName };
 
             for (u16 cheatIdx = 0; !stop && cheatIdx < cheatCount; cheatIdx++)
             {
@@ -164,9 +165,10 @@ public sealed class N64XpRom : Rom
                     break;
                 }
 
-                N64Cheat cheat = new(cheatName.Value)
+                Cheat cheat = new Cheat()
                 {
-                    IsActive = false,
+                    CheatName = cheatName,
+                    IsCheatActive = false,
                 };
 
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
@@ -190,12 +192,11 @@ public sealed class N64XpRom : Rom
                     }
 
                     BigEndianScribe codeScribe = new BigEndianScribe(codeBytes);
-                    byte[] address = codeScribe.ReadBytes(4);
-                    byte[] value = codeScribe.ReadBytes(2);
-                    cheat.AddCode(address, value);
+                    byte[] bytes = codeScribe.ReadBytes(6);
+                    cheat.Codes.Add(new Code() { Bytes = ByteString.CopyFrom(bytes) });
                 }
 
-                game.AddCheat(cheat);
+                game.Cheats.Add(cheat);
             }
 
             Games.Add(game);

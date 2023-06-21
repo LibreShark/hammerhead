@@ -34,37 +34,10 @@ enum Xp64Opcode {
   WRITE_ONCE_UNCACHED_16BIT_TYPE1 = 0xF1;
 }
 
-message N64GsCodeProto {
-  // 4 bytes long (e.g., 802C9735)
-  bytes address = 1;
-
-  // 2 bytes long (e.g., 00E0)
-  bytes value = 2;
-}
-
-message N64GsCheatProto {
-  // 1-30 plain printable ASCII chars.
-  // TODO(CheatoBaggins): Figure out how stars and other special symbols are encoded.
-  string name = 1;
-
-  // Indicates whether this cheat is enabled by default when the user boots up the GameShark and selects this game.
-  bool is_on = 2;
-
-  // List of codes to execute every interrupt cycle.
-  repeated N64GsCodeProto codes = 3;
-}
-
-message N64GsGameProto {
-  // 1-30 plain printable ASCII chars.
-  string name = 1;
-  repeated N64GsCheatProto cheats = 2;
-}
-
-message N64GsKeyCodeProto {
-  string name = 1;
-
-  // 9-13 bytes long
+message N64KeyCode {
+  RomString name = 1;
   bytes bytes = 2;
+  bool is_key_code_active = 3;
 }
 
 message N64GsVersionProto {
@@ -74,27 +47,4 @@ message N64GsVersionProto {
   double number = 4;
   string disambiguator = 5;
   .google.protobuf.Timestamp build_timestamp = 6;
-}
-
-message N64GsRomProto {
-  bytes file_contents = 1;
-
-  RomRange header_slice = 2;
-  RomRange firmware_slice = 3;
-  RomRange cheat_list_slice = 4;
-  RomRange keycode_list_slice = 5;
-  RomRange user_settings_slice = 6;
-
-  ChecksumResult file_checksums = 7;
-  ChecksumResult header_checksums = 8;
-  ChecksumResult firmware_checksums = 9;
-  ChecksumResult cheat_list_checksums = 10;
-  ChecksumResult keycode_list_checksums = 11;
-  ChecksumResult user_settings_checksums = 12;
-
-  N64GsVersionProto version = 13;
-  repeated N64GsGameProto games = 14;
-  repeated N64GsKeyCodeProto key_codes = 15;
-
-  // TODO(CheatoBaggins): User preferences (wallpaper, scrolling, sound, etc.)
 }

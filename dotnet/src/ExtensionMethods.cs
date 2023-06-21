@@ -1,5 +1,6 @@
 using System.Text;
 using Google.Protobuf;
+using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead;
 
@@ -172,8 +173,27 @@ public static class ExtensionMethods
         return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
 
-    public static string ToN64CodeString(this byte[] code)
+    public static string ToCodeString(this IEnumerable<byte> bytes, GameConsole console)
     {
+        byte[] code = bytes.ToArray();
+
+        if (console == GameConsole.Nintendo64)
+        {
+            return $"{code[..4].ToHexString()} {code[4..].ToHexString()}";
+        }
+
+        return code.ToHexString();
+    }
+
+    public static string ToDisplayString(this N64KeyCode kc)
+    {
+        return $"{kc.Bytes.ToHexString(" ")}: {kc.Name.Value}" +
+               (kc.IsKeyCodeActive ? " [ACTIVE]" : "");
+    }
+
+    public static string ToN64CodeString(this IEnumerable<byte> bytes)
+    {
+        byte[] code = bytes.ToArray();
         return code[..4].ToHexString() + " " + code[4..].ToHexString();
     }
 
