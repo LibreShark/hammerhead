@@ -88,15 +88,36 @@ public static class ExtensionMethods
     {
         return format switch
         {
+            RomFormat.GbaGamesharkDatel => "GBA Datel GameShark format",
+            RomFormat.GbaGamesharkFcd => "GBA FCD GameShark format",
+            RomFormat.GbaTvTuner => "GBA TV Tuner format",
+            RomFormat.GbcCodebreaker => "GBC Code Breaker ROM format",
+            RomFormat.GbcGameshark => "GBC GameShark ROM format",
+            RomFormat.GbcMonsterbrain => "GBC Monster Brain ROM format",
+            RomFormat.GbcSharkMx => "GBC Shark MX ROM format",
+            RomFormat.GbcXploder => "GBC Xploder/Xplorer ROM format",
             RomFormat.N64Gameshark => "N64 GameShark ROM format",
             RomFormat.N64Gbhunter => "N64 GB Hunter ROM format",
             RomFormat.N64Xplorer64 => "N64 Xplorer 64 ROM format",
-            RomFormat.GbcGameshark => "GBC GameShark ROM format",
-            RomFormat.GbcXploder => "GBC Xploder/Xplorer ROM format",
-            RomFormat.GbcCodebreaker => "GBC Code Breaker ROM format",
-            RomFormat.GbcMonsterbrain => "GBC Monster Brain ROM format",
-            RomFormat.GbcSharkMx => "GBC Shark MX ROM format",
-            _ => "MISSING FROM RomFormat.ToDisplayString()!",
+            RomFormat.UnknownRomFormat => "UNKNOWN ROM format",
+            _ => throw new NotSupportedException($"RomFormat {format} is missing from ToDisplayString()!"),
+        };
+    }
+
+    public static string ToDisplayString(this GameConsole console)
+    {
+        return console switch
+        {
+            GameConsole.GameBoy => "Game Boy (GB)",
+            GameConsole.GameBoyColor => "Game Boy Color (GBC)",
+            GameConsole.GameBoyAdvance => "Game Boy Advance (GBA)",
+            GameConsole.GameGear => "Game Gear (GG)",
+            GameConsole.Nintendo64 => "Nintendo 64 (N64)",
+            GameConsole.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
+            GameConsole.Dreamcast => "Dreamcast",
+            GameConsole.Gamecube => "GameCube",
+            GameConsole.UnknownGameConsole => "UNKNOWN game console",
+            _ => throw new NotSupportedException($"GameConsole {console} is missing from ToDisplayString()!"),
         };
     }
 

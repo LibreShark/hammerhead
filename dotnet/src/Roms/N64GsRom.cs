@@ -20,6 +20,7 @@ using f64 = Double;
 /// </summary>
 public sealed class N64GsRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
     private readonly BigEndianScribe _scribe;
@@ -47,7 +48,7 @@ public sealed class N64GsRom : Rom
     private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
         if (IsFileEncrypted())
         {

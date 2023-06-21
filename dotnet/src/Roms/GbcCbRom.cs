@@ -6,10 +6,11 @@ namespace LibreShark.Hammerhead.Roms;
 /// </summary>
 public sealed class GbcCbRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcCodebreaker;
 
     public GbcCbRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
     }
 

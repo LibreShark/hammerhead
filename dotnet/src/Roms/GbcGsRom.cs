@@ -20,7 +20,9 @@ using f64 = Double;
 /// </summary>
 public sealed class GbcGsRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcGameshark;
+
     private const u32 TitleAddr = 0x00000134;
     private const u32 VerNumAddr = 0x00000143;
     private const u32 GameListAddr = 0x00008000;
@@ -30,7 +32,7 @@ public sealed class GbcGsRom : Rom
     private readonly LittleEndianScribe _scribe;
 
     public GbcGsRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
         _scribe = new LittleEndianScribe(Bytes);
 

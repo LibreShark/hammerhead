@@ -6,10 +6,11 @@ namespace LibreShark.Hammerhead.Roms;
 /// </summary>
 public sealed class GbaTvTunerRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
     private const RomFormat ThisRomFormat = RomFormat.GbaTvTuner;
 
     public GbaTvTunerRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
     }
 

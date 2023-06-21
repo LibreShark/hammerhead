@@ -6,10 +6,11 @@ namespace LibreShark.Hammerhead.Roms;
 /// </summary>
 public sealed class GbcMonsterBrainRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcMonsterbrain;
 
     public GbcMonsterBrainRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
     }
 

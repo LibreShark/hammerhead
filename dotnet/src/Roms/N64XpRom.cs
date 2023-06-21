@@ -23,7 +23,9 @@ using f64 = Double;
 /// </summary>
 public sealed class N64XpRom : Rom
 {
+    private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
+
     private const u32 GameListAddr = 0x00030000;
     private const u32 UserPrefsAddr = 0x0003F000;
     private const u32 LastGameNameAddr = 0x0003F420;
@@ -33,14 +35,14 @@ public sealed class N64XpRom : Rom
         "1999-05-07T21:34:19+00:00",
         "1999-08-16T17:10:59+00:00",
         "1999-11-24T00:13:18+00:00",
-        "2000-05-06T04:42:59+00:00",
         "1999-11-24T21:25:52+00:00",
+        "2000-05-06T04:42:59+00:00",
     };
 
     private readonly BigEndianScribe _scribe;
 
     public N64XpRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, ThisRomFormat)
+        : base(filePath, bytes, ThisConsole, ThisRomFormat)
     {
         if (IsFileScrambled())
         {

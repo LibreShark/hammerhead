@@ -40,6 +40,22 @@ message RomF64 {
   uint64 value = 2;
 }
 
+enum GameConsole {
+  UNKNOWN_GAME_CONSOLE = 0x00;
+
+  GAME_BOY = 0x01;
+  GAME_BOY_COLOR = 0x02;
+  GAME_BOY_ADVANCE = 0x04;
+
+  GAME_GEAR = 0x20;
+
+  PLAYSTATION_1 = 0x30;
+  NINTENDO_64 = 0x40;
+
+  DREAMCAST = 0x41;
+  GAMECUBE = 0x42;
+}
+
 enum RomFormat {
   UNKNOWN_ROM_FORMAT = 0x00;
 
@@ -113,35 +129,36 @@ message ChecksumResult {
 
 message RomMetadata {
   string file_path = 1;
-  RomFormat format = 2;
-  RomBrand brand = 3;
+  GameConsole console = 2;
+  RomFormat format = 3;
+  RomBrand brand = 4;
 
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
   // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype".
-  string display_version = 4;
+  string display_version = 5;
 
   // Machine-readable version number for sorting purposes.
-  double sortable_version = 5;
+  double sortable_version = 6;
 
   // Raw, unprocessed build date found in the ROM file.
-  RomString build_date_raw = 6;
+  RomString build_date_raw = 7;
 
   // ISO 8601 date/time stamp of when the ROM was built.
   // E.g., "1997-08-01T12:50:00+0100".
-  string build_date_iso = 7;
+  string build_date_iso = 8;
 
   // Case-insensitive IETF BCP 47 language and region tag.
   // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
   // See RFC 5646 (obsoletes RFC 4646).
-  string language_ietf_code = 8;
+  string language_ietf_code = 9;
 
-  ChecksumResult file_checksum = 9;
-  ChecksumResult firmware_checksum = 10;
+  ChecksumResult file_checksum = 10;
+  ChecksumResult firmware_checksum = 11;
 
-  repeated RomString identifiers = 11;
+  repeated RomString identifiers = 12;
 
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
-  bool is_known_version = 12;
+  bool is_known_version = 13;
 }

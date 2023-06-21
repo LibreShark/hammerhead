@@ -23,15 +23,76 @@ public abstract class Rom
 
     protected List<Game> Games = new();
 
-    protected Rom(string filePath, byte[] bytes, RomFormat format)
+    protected Rom(string filePath, byte[] bytes, GameConsole console, RomFormat format)
     {
         InitialBytes = bytes.ToImmutableArray();
         Bytes = bytes.ToArray();
         Metadata = new RomMetadata
         {
             FilePath = filePath,
+            Console = console,
             Format = format,
         };
+    }
+
+    protected abstract void PrintCustomHeader();
+
+    public virtual bool FormatSupportsFileEncryption() { return false; }
+    public virtual bool FormatSupportsFileScrambling() { return false; }
+    public virtual bool FormatSupportsFirmwareCompression() { return false; }
+    public virtual bool FormatSupportsUserPrefs() { return false; }
+
+    public virtual bool IsFileEncrypted() { return false; }
+    public virtual bool IsFileScrambled() { return false; }
+    public virtual bool IsFirmwareCompressed() { return false; }
+    public virtual bool HasUserPrefs() { return false; }
+
+    public static Rom FromFile(string romFilePath)
+    {
+        byte[] bytes = File.ReadAllBytes(romFilePath);
+
+        if (N64GsRom.Is(bytes))
+        {
+            return new N64GsRom(romFilePath, bytes);
+        }
+        if (N64XpRom.Is(bytes))
+        {
+            return new N64XpRom(romFilePath, bytes);
+        }
+        if (GbcCbRom.Is(bytes))
+        {
+            return new GbcCbRom(romFilePath, bytes);
+        }
+        if (GbcXpRom.Is(bytes))
+        {
+            return new GbcXpRom(romFilePath, bytes);
+        }
+        if (GbcGsRom.Is(bytes))
+        {
+            return new GbcGsRom(romFilePath, bytes);
+        }
+        if (GbcSharkMxRom.Is(bytes))
+        {
+            return new GbcSharkMxRom(romFilePath, bytes);
+        }
+        if (GbaGsDatelRom.Is(bytes))
+        {
+            return new GbaGsDatelRom(romFilePath, bytes);
+        }
+        if (GbaGsFcdRom.Is(bytes))
+        {
+            return new GbaGsFcdRom(romFilePath, bytes);
+        }
+        if (GbaTvTunerRom.Is(bytes))
+        {
+            return new GbaTvTunerRom(romFilePath, bytes);
+        }
+        if (GbcMonsterBrainRom.Is(bytes))
+        {
+            return new GbcMonsterBrainRom(romFilePath, bytes);
+        }
+
+        return new UnknownRom(romFilePath, bytes);
     }
 
     public void PrintSummary()
@@ -40,8 +101,9 @@ public abstract class Rom
         Console.WriteLine($"{Metadata.Format.ToDisplayString()} file with length = 0x{Bytes.Length:X8} " +
                           $"({Bytes.Length} bytes = {PrettySize.Format(Bytes.Length)}): '{Metadata.FilePath}'");
         Console.WriteLine();
-        Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
         Console.WriteLine($"Brand:               {Metadata.Brand.ToDisplayString()}");
+        Console.WriteLine($"Console:             {Metadata.Console.ToDisplayString()}");
+        Console.WriteLine($"Format:              {Metadata.Format.ToDisplayString()}");
         Console.WriteLine($"Locale:              {Metadata.LanguageIetfCode}");
         Console.WriteLine($"Version:             {Metadata.DisplayVersion}");
         Console.WriteLine($"Build date:          {Metadata.BuildDateIso}");
@@ -104,65 +166,5 @@ public abstract class Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
-    }
-
-    protected abstract void PrintCustomHeader();
-
-    public virtual bool FormatSupportsFileEncryption() { return false; }
-    public virtual bool FormatSupportsFileScrambling() { return false; }
-    public virtual bool FormatSupportsFirmwareCompression() { return false; }
-    public virtual bool FormatSupportsUserPrefs() { return false; }
-
-    public virtual bool IsFileEncrypted() { return false; }
-    public virtual bool IsFileScrambled() { return false; }
-    public virtual bool IsFirmwareCompressed() { return false; }
-    public virtual bool HasUserPrefs() { return false; }
-
-    public static Rom FromFile(string romFilePath)
-    {
-        byte[] bytes = File.ReadAllBytes(romFilePath);
-
-        if (N64GsRom.Is(bytes))
-        {
-            return new N64GsRom(romFilePath, bytes);
-        }
-        if (N64XpRom.Is(bytes))
-        {
-            return new N64XpRom(romFilePath, bytes);
-        }
-        if (GbcCbRom.Is(bytes))
-        {
-            return new GbcCbRom(romFilePath, bytes);
-        }
-        if (GbcXpRom.Is(bytes))
-        {
-            return new GbcXpRom(romFilePath, bytes);
-        }
-        if (GbcGsRom.Is(bytes))
-        {
-            return new GbcGsRom(romFilePath, bytes);
-        }
-        if (GbcSharkMxRom.Is(bytes))
-        {
-            return new GbcSharkMxRom(romFilePath, bytes);
-        }
-        if (GbaGsDatelRom.Is(bytes))
-        {
-            return new GbaGsDatelRom(romFilePath, bytes);
-        }
-        if (GbaGsFcdRom.Is(bytes))
-        {
-            return new GbaGsFcdRom(romFilePath, bytes);
-        }
-        if (GbaTvTunerRom.Is(bytes))
-        {
-            return new GbaTvTunerRom(romFilePath, bytes);
-        }
-        if (GbcMonsterBrainRom.Is(bytes))
-        {
-            return new GbcMonsterBrainRom(romFilePath, bytes);
-        }
-
-        return new UnknownRom(romFilePath, bytes);
     }
 }
