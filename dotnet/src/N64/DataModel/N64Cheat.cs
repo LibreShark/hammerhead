@@ -17,7 +17,7 @@ using f64 = Double;
 /// <summary>
 /// Represents one GameShark cheat which is composed of zero or more codes.
 /// </summary>
-public class Cheat
+public class N64Cheat
 {
     public string Name
     {
@@ -41,27 +41,27 @@ public class Cheat
     /// </summary>
     public bool IsActive { get; set; }
 
-    public List<Code> Codes { get; private set; }
+    public List<N64Code> Codes { get; private set; }
 
-    public Cheat(string name = "", IEnumerable<Code>? codes = null)
+    public N64Cheat(string name = "", IEnumerable<N64Code>? codes = null)
     {
         IsActive = false;
         Name = name;
-        Codes = new List<Code>(codes ?? Array.Empty<Code>());
+        Codes = new List<N64Code>(codes ?? Array.Empty<N64Code>());
     }
 
-    public Code AddCode(byte[] address, byte[] value)
+    public N64Code AddCode(byte[] address, byte[] value)
     {
-        return AddCode(new Code(address, value));
+        return AddCode(new N64Code(address, value));
     }
 
-    public Code AddCode(Code code)
+    public N64Code AddCode(N64Code code)
     {
         Codes.Add(code);
         return code;
     }
 
-    public Cheat AddCodes(IEnumerable<Code> codes)
+    public N64Cheat AddCodes(IEnumerable<N64Code> codes)
     {
         Codes.AddRange(codes);
         return this;
@@ -120,10 +120,10 @@ public class Cheat
 
     public override bool Equals(object? obj)
     {
-        return obj is Cheat cheat && Equals(cheat);
+        return obj is N64Cheat cheat && Equals(cheat);
     }
 
-    public bool Equals(Cheat? cheat)
+    public bool Equals(N64Cheat? cheat)
     {
         return string.Equals(Name, cheat?.Name);
     }

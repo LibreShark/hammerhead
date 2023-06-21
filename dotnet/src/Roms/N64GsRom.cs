@@ -39,8 +39,8 @@ public sealed class N64GsRom : Rom
     private readonly RomString _headerId;
     private readonly RomString _rawTimestamp;
     private readonly N64GsVersion _version;
-    private readonly KeyCode _activeKeyCode;
-    private readonly List<KeyCode> _keyCodes;
+    private readonly N64KeyCode _activeKeyCode;
+    private readonly List<N64KeyCode> _keyCodes;
 
     private const u32 ProgramCounterAddr = 0x00000008;
     private const u32 ActiveKeyCodeAddr  = 0x00000010;
@@ -85,7 +85,7 @@ public sealed class N64GsRom : Rom
         _gameListAddr        = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        List<KeyCode> keyCodes = ReadKeyCodes();
+        List<N64KeyCode> keyCodes = ReadKeyCodes();
         _activeKeyCode = ReadActiveKeyCode(keyCodes);
         _keyCodes = keyCodes;
 
@@ -116,9 +116,9 @@ public sealed class N64GsRom : Rom
         return _scribe.MaintainPosition(() => !_scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
-    private List<Game> ReadGames()
+    private List<N64Game> ReadGames()
     {
-        List<Game> games = new List<Game>();
+        List<N64Game> games = new List<N64Game>();
         _scribe.Seek(_gameListAddr);
         u32 gamesCount = _scribe.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
@@ -128,9 +128,9 @@ public sealed class N64GsRom : Rom
         return games;
     }
 
-    private Game ReadGame()
+    private N64Game ReadGame()
     {
-        Game game = Game.NewGame(ReadName());
+        N64Game game = N64Game.NewGame(ReadName());
         u8 cheatCount = _scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
         {
@@ -139,9 +139,9 @@ public sealed class N64GsRom : Rom
         return game;
     }
 
-    private void ReadCheat(Game game)
+    private void ReadCheat(N64Game game)
     {
-        Cheat cheat = game.AddCheat(ReadName());
+        N64Cheat cheat = game.AddCheat(ReadName());
         u8 codeCount = _scribe.ReadU8();
         bool cheatOn = (codeCount & 0x80) > 0;
         codeCount &= 0x7F;
@@ -152,7 +152,7 @@ public sealed class N64GsRom : Rom
         }
     }
 
-    private void ReadCode(Cheat cheat)
+    private void ReadCode(N64Cheat cheat)
     {
         byte[] address = _scribe.ReadBytes(4);
         byte[] value = _scribe.ReadBytes(2);
@@ -186,7 +186,7 @@ public sealed class N64GsRom : Rom
         return name;
     }
 
-    private KeyCode ReadActiveKeyCode(List<KeyCode> keyCodes)
+    private N64KeyCode ReadActiveKeyCode(List<N64KeyCode> keyCodes)
     {
         byte[] crcBytes = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
         byte[] pcBytes = _scribe.PeekBytesAt(ProgramCounterAddr, 4);
@@ -194,14 +194,14 @@ public sealed class N64GsRom : Rom
         string? name = null;
         if (keyCodes.Count > 0)
         {
-            KeyCode? activeKeyCode = keyCodes.Find(kc => kc.ChecksumBytes.SequenceEqual(crcBytes));
+            N64KeyCode? activeKeyCode = keyCodes.Find(kc => kc.ChecksumBytes.SequenceEqual(crcBytes));
             name = activeKeyCode?.Name;
         }
 
-        return new KeyCode(name ?? "probably CIC-NUS-6102", crcBytes.Concat(pcBytes).ToArray(), true);
+        return new N64KeyCode(name ?? "probably CIC-NUS-6102", crcBytes.Concat(pcBytes).ToArray(), true);
     }
 
-    private List<KeyCode> ReadKeyCodes()
+    private List<N64KeyCode> ReadKeyCodes()
     {
         byte[] activePrefix = _scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
 
@@ -213,10 +213,10 @@ public sealed class N64GsRom : Rom
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
         {
-            return new List<KeyCode>();
+            return new List<N64KeyCode>();
         }
 
-        List<KeyCode> keyCodes = new();
+        List<N64KeyCode> keyCodes = new();
         while (_scribe.Position <= maxPos)
         {
             byte[] bytes = _scribe.ReadBytes((u32)keyCodeByteLength);
@@ -226,7 +226,7 @@ public sealed class N64GsRom : Rom
                 _scribe.ReadU8();
             }
             bool isActive = bytes.Contains(activePrefix);
-            KeyCode keyCode = new(name.Value, bytes, isActive);
+            N64KeyCode keyCode = new(name.Value, bytes, isActive);
             keyCodes.Add(keyCode);
         }
         return keyCodes;
@@ -348,7 +348,7 @@ public sealed class N64GsRom : Rom
         if (_supportsKeyCodes)
         {
             Console.WriteLine("Key codes: ");
-            foreach (KeyCode keyCode in _keyCodes)
+            foreach (N64KeyCode keyCode in _keyCodes)
             {
                 Console.WriteLine($"- {keyCode}");
             }

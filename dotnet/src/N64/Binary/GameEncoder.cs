@@ -21,7 +21,7 @@ class GameEncoder
         Version = version;
     }
 
-    public void EncodeGame(Game game, int gameIndex)
+    public void EncodeGame(N64Game game, int gameIndex)
     {
         var gameName = game.Name;
         SanitizeName(ref gameName);
@@ -41,19 +41,19 @@ class GameEncoder
         WriteCString(name);
     }
 
-    private void WriteCheats(List<Cheat> cheats, int gameIndex)
+    private void WriteCheats(List<N64Cheat> cheats, int gameIndex)
     {
         Writer.WriteByte(cheats.Count);
 
         var i = 0;
-        foreach (Cheat cheat in cheats)
+        foreach (N64Cheat cheat in cheats)
         {
             WriteCheat(cheat, i, gameIndex);
             i++;
         }
     }
 
-    private void WriteCheat(Cheat cheat, int cheatIndex, int gameIndex)
+    private void WriteCheat(N64Cheat cheat, int cheatIndex, int gameIndex)
     {
         var cheatName = cheat.Name;
         SanitizeName(ref cheatName);
@@ -68,13 +68,13 @@ class GameEncoder
         int activeBit = cheat.IsActive ? 0x80 : 0x00;
         Writer.WriteByte(cheat.Codes.Count | activeBit);
 
-        foreach (Code code in cheat.Codes)
+        foreach (N64Code code in cheat.Codes)
         {
             WriteCode(code);
         }
     }
 
-    private void WriteCode(Code code)
+    private void WriteCode(N64Code code)
     {
         Writer.WriteBytes(code.Address);
         Writer.WriteBytes(code.Value);

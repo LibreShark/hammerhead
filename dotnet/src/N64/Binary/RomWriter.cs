@@ -9,12 +9,12 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class RomWriter : RomBase
 {
-    public static void ToFile(ICollection<Game> games, string path)
+    public static void ToFile(ICollection<N64Game> games, string path)
     {
         ToFile(games, path, path);
     }
 
-    public static void ToFile(ICollection<Game> games, string source, string target)
+    public static void ToFile(ICollection<N64Game> games, string source, string target)
     {
         RomWriter writer = new RomWriter();
 
@@ -23,7 +23,7 @@ class RomWriter : RomBase
         writer.WriteRomToFile(target);
     }
 
-    public static void ToFileAndReset(ICollection<Game> games, string source, string target)
+    public static void ToFileAndReset(ICollection<N64Game> games, string source, string target)
     {
         RomWriter writer = new RomWriter();
 
@@ -45,7 +45,7 @@ class RomWriter : RomBase
     {
     }
 
-    private void WriteGames(ICollection<Game> games)
+    private void WriteGames(ICollection<N64Game> games)
     {
         var version = ReadVersion();
 
@@ -54,7 +54,7 @@ class RomWriter : RomBase
         Writer.WriteSInt32(games.Count);
 
         var i = 0;
-        foreach (Game game in games)
+        foreach (N64Game game in games)
         {
             WriteGame(game, version, i);
             i++;
@@ -67,7 +67,7 @@ class RomWriter : RomBase
         ResetActiveGameIndex();
     }
 
-    private void WriteGame(Game game, N64GsVersion? version, int gameIndex)
+    private void WriteGame(N64Game game, N64GsVersion? version, int gameIndex)
     {
         new GameEncoder(Writer, version).EncodeGame(game, gameIndex);
     }

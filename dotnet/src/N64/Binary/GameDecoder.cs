@@ -9,7 +9,7 @@ class GameDecoder
 {
     public BinaryReader Reader { get; private set; }
 
-    public static Game FromReader(BinaryReader reader)
+    public static N64Game FromReader(BinaryReader reader)
     {
         GameDecoder encoder = new GameDecoder(reader);
         return encoder.ReadGame();
@@ -20,11 +20,11 @@ class GameDecoder
         Reader = reader;
     }
 
-    public Game ReadGame()
+    public N64Game ReadGame()
     {
         // Console.WriteLine("----------------------------------------");
         // Console.WriteLine($"Reading game at 0x{Reader.Position:X08}");
-        Game game = Game.NewGame(ReadName());
+        N64Game game = N64Game.NewGame(ReadName());
         // Console.WriteLine($"Found game \"{game.Name}\"");
 
         int cheats = Reader.ReadUByte();
@@ -38,10 +38,10 @@ class GameDecoder
         return game;
     }
 
-    private void ReadCheat(Game game)
+    private void ReadCheat(N64Game game)
     {
         // Console.WriteLine($"Reading cheat name at 0x{Reader.Position:X08}");
-        Cheat cheat = game.AddCheat(ReadName());
+        N64Cheat cheat = game.AddCheat(ReadName());
 
         int codes = Reader.ReadUByte();
 
@@ -57,7 +57,7 @@ class GameDecoder
         }
     }
 
-    private void ReadCode(Cheat cheat)
+    private void ReadCode(N64Cheat cheat)
     {
         byte[] address = Reader.ReadBytes(4);
         byte[] value = Reader.ReadBytes(2);

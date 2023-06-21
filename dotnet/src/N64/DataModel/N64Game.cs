@@ -7,31 +7,31 @@ namespace LibreShark.Hammerhead.N64;
 /// <summary>
 /// Represents one game and it's cheats in the GameShark's games list.
 /// </summary>
-public class Game
+public class N64Game
 {
     public string Name { get; set; }
 
-    public List<Cheat> Cheats { get; set; }
+    public List<N64Cheat> Cheats { get; set; }
 
     public bool IsActive { get; set; }
 
-    public Game(string name = "", IEnumerable<Cheat>? cheats = null)
+    public N64Game(string name = "", IEnumerable<N64Cheat>? cheats = null)
     {
         Name = name;
-        Cheats = new List<Cheat>(cheats ?? Array.Empty<Cheat>());
+        Cheats = new List<N64Cheat>(cheats ?? Array.Empty<N64Cheat>());
     }
 
-    public static Game NewGame(string name)
+    public static N64Game NewGame(string name)
     {
-        return new Game(name);
+        return new N64Game(name);
     }
 
-    public Cheat AddCheat(string name)
+    public N64Cheat AddCheat(string name)
     {
-        return AddCheat(new Cheat(name));
+        return AddCheat(new N64Cheat(name));
     }
 
-    public Cheat AddCheat(Cheat cheat)
+    public N64Cheat AddCheat(N64Cheat cheat)
     {
         Cheats.Add(cheat);
         return cheat;
@@ -87,10 +87,10 @@ public class Game
 
     public override bool Equals(object? obj)
     {
-        return obj is Game game && Equals(game);
+        return obj is N64Game game && Equals(game);
     }
 
-    public bool Equals(Game? game)
+    public bool Equals(N64Game? game)
     {
         return string.Equals(Name, game?.Name);
     }

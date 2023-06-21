@@ -15,13 +15,13 @@ using f64 = Double;
 /// <summary>
 /// Represents a single GameShark code.
 /// </summary>
-public class Code
+public class N64Code
 {
     public byte[] Address { get; set; }
 
     public byte[] Value { get; set; }
 
-    public Code(byte[] address, byte[] value)
+    public N64Code(byte[] address, byte[] value)
     {
         Address = address;
         Value = value;
@@ -29,10 +29,10 @@ public class Code
 
     public override bool Equals(object? obj)
     {
-        return Equals(obj as Code);
+        return Equals(obj as N64Code);
     }
 
-    public bool Equals(Code? code)
+    public bool Equals(N64Code? code)
     {
         return (code != null) && (Address == code.Address) && (Value == code.Value);
     }

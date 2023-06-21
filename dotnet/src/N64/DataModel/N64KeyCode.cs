@@ -3,7 +3,7 @@ namespace LibreShark.Hammerhead.N64;
 using u8 = Byte;
 using u32 = UInt32;
 
-public class KeyCode
+public class N64KeyCode
 {
     public readonly string Name;
     public readonly byte[] Bytes;
@@ -44,7 +44,7 @@ public class KeyCode
 
     public u8 CheckDigit => Bytes.Last();
 
-    public KeyCode(string name, byte[] bytes, bool isActive)
+    public N64KeyCode(string name, byte[] bytes, bool isActive)
     {
         Name = name;
         Bytes = bytes;

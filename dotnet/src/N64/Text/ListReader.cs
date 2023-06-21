@@ -12,17 +12,17 @@ class ListReader
 {
     private IEnumerable<string> Lines;
 
-    private readonly List<Game> Games = new List<Game>();
-    private Game? Game;
-    private Cheat? Cheat;
+    private readonly List<N64Game> Games = new List<N64Game>();
+    private N64Game? Game;
+    private N64Cheat? Cheat;
     private int LineNumber;
 
-    public static List<Game> ReadLines(string path)
+    public static List<N64Game> ReadLines(string path)
     {
         return ReadLines(File.ReadAllLines(path));
     }
 
-    public static List<Game> ReadLines(IEnumerable<string> lines)
+    public static List<N64Game> ReadLines(IEnumerable<string> lines)
     {
         return new ListReader(lines).ReadLines();
     }
@@ -41,7 +41,7 @@ class ListReader
         LineNumber = 1;
     }
 
-    private List<Game> ReadLines()
+    private List<N64Game> ReadLines()
     {
         foreach (string line in Lines)
         {
@@ -112,7 +112,7 @@ class ListReader
 
         if (Game == null)
         {
-            Games.Add(Game = new Game(name));
+            Games.Add(Game = new N64Game(name));
         }
         else
         {

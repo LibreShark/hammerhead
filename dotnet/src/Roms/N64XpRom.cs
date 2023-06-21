@@ -145,7 +145,7 @@ public sealed class N64XpRom : Rom
             RomString gameName = _scribe.ReadCStringUntilNull();
             u8 cheatCount = _scribe.ReadU8();
 
-            Game game = new(gameName.Value);
+            N64Game game = new(gameName.Value);
 
             for (u16 cheatIdx = 0; !stop && cheatIdx < cheatCount; cheatIdx++)
             {
@@ -164,7 +164,7 @@ public sealed class N64XpRom : Rom
                     break;
                 }
 
-                Cheat cheat = new(cheatName.Value)
+                N64Cheat cheat = new(cheatName.Value)
                 {
                     IsActive = false,
                 };

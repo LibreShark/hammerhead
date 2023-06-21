@@ -9,7 +9,7 @@ class NoteReader
 {
     public BinaryReader Reader { get; set; }
 
-    public static Game FromFile(string path)
+    public static N64Game FromFile(string path)
     {
         return new NoteReader(BinaryReader.FromFile(path)).ReadGame();
     }
@@ -19,7 +19,7 @@ class NoteReader
         Reader = reader;
     }
 
-    public Game ReadGame()
+    public N64Game ReadGame()
     {
         SkipMpkHeader();
         ValidateMagicNumber();
@@ -50,9 +50,9 @@ class NoteReader
         }
     }
 
-    private Game DecodeGame()
+    private N64Game DecodeGame()
     {
-        Game game;
+        N64Game game;
 
         Reader.BytesRead = Reader.ReadSInt32() * -1;
 

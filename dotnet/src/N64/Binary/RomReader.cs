@@ -7,7 +7,7 @@ namespace LibreShark.Hammerhead.N64;
 /// </summary>
 class RomReader : RomBase
 {
-    public static RomInfo? FromFile(string path)
+    public static N64RomInfo? FromFile(string path)
     {
         RomReader reader = new RomReader();
         reader.ReadRomFromFile(path);
@@ -15,10 +15,10 @@ class RomReader : RomBase
         if (version == null) {
             return null;
         }
-        return new RomInfo(version, reader.ReadGames(), reader.ReadKeyCodes());
+        return new N64RomInfo(version, reader.ReadGames(), reader.ReadKeyCodes());
     }
 
-    public static RomInfo? FromBytes(byte[] bytes)
+    public static N64RomInfo? FromBytes(byte[] bytes)
     {
         RomReader reader = new RomReader();
         reader.ReadRomFromBytes(bytes);
@@ -28,7 +28,7 @@ class RomReader : RomBase
         }
 
         ;
-        return new RomInfo(
+        return new N64RomInfo(
             version,
             reader.ReadGames(),
             reader.ReadKeyCodes(),
@@ -41,9 +41,9 @@ class RomReader : RomBase
     {
     }
 
-    private List<Game> ReadGames()
+    private List<N64Game> ReadGames()
     {
-        List<Game> games = new List<Game>();
+        List<N64Game> games = new List<N64Game>();
 
         SeekGamesList();
 
@@ -57,7 +57,7 @@ class RomReader : RomBase
         return games;
     }
 
-    private Game ReadGame()
+    private N64Game ReadGame()
     {
         return GameDecoder.FromReader(Reader);
     }

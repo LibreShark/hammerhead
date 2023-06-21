@@ -11,7 +11,7 @@ class NoteWriter
 {
     public BinaryWriter Writer { get; set; }
 
-    public static void ToFile(Game game, string path)
+    public static void ToFile(N64Game game, string path)
     {
         // Controller Paks can only store cheats for ONE game.
         const int gameIndex = 0;
@@ -25,7 +25,7 @@ class NoteWriter
         Writer = new BinaryWriter(16);
     }
 
-    public void WriteGameNote(Game game, int gameIndex)
+    public void WriteGameNote(N64Game game, int gameIndex)
     {
         WriteMpkEditHeader();
         WriteMpkComment(game.Name);
@@ -87,7 +87,7 @@ class NoteWriter
         });
     }
 
-    private void WriteGame(Game game, int gameIndex)
+    private void WriteGame(N64Game game, int gameIndex)
     {
         Writer.SeekEnd();
         Writer.AutoExtendSize = 256;
@@ -104,7 +104,7 @@ class NoteWriter
         Writer.SeekEnd();
     }
 
-    private void EncodeGame(Game game, int gameIndex)
+    private void EncodeGame(N64Game game, int gameIndex)
     {
         GameEncoder encoder = new GameEncoder(Writer);
         encoder.EncodeGame(game, gameIndex);

@@ -9,7 +9,7 @@ namespace LibreShark.Hammerhead.N64
     {
         private TextWriter writer;
 
-        public static void ToFile(string path, ICollection<Game> games)
+        public static void ToFile(string path, ICollection<N64Game> games)
         {
             using (TextWriter writer = new StreamWriter(path))
             {
@@ -17,7 +17,7 @@ namespace LibreShark.Hammerhead.N64
             }
         }
 
-        public static void ToStdOut(ICollection<Game> games, TextWriter? writer = null)
+        public static void ToStdOut(ICollection<N64Game> games, TextWriter? writer = null)
         {
             new ListWriter(writer ?? Console.Out).WriteGames(games);
         }
@@ -27,20 +27,20 @@ namespace LibreShark.Hammerhead.N64
             this.writer = writer;
         }
 
-        public void WriteGames(ICollection<Game> games)
+        public void WriteGames(ICollection<N64Game> games)
         {
             WriteSeparator();
             WriteLine($";{games.Count} Games in list");
             WriteSeparator();
             WriteLine();
 
-            foreach (Game game in games)
+            foreach (N64Game game in games)
             {
                 WriteGame(game);
             }
         }
 
-        public void WriteGame(Game game)
+        public void WriteGame(N64Game game)
         {
             WriteLine();
             WriteSeparator();
@@ -48,7 +48,7 @@ namespace LibreShark.Hammerhead.N64
             WriteSeparator();
             WriteLine();
 
-            foreach(Cheat cheat in game.Cheats)
+            foreach(N64Cheat cheat in game.Cheats)
             {
                 WriteCheat(cheat);
             }
@@ -56,7 +56,7 @@ namespace LibreShark.Hammerhead.N64
             WriteLine(".end");
         }
 
-        public void WriteCheat(Cheat cheat)
+        public void WriteCheat(N64Cheat cheat)
         {
             if (cheat.IsActive)
             {
@@ -67,7 +67,7 @@ namespace LibreShark.Hammerhead.N64
                 WriteLine($"{Quote(cheat.Name)} .off");
             }
 
-            foreach (Code code in cheat.Codes)
+            foreach (N64Code code in cheat.Codes)
             {
                 WriteLine(code.ToString());
             }

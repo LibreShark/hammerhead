@@ -15,7 +15,7 @@ public static class Examples
     /// <returns>True if the game was found and exported; else false</returns>
     public static bool ExportNote(string inputPath, string outputNotePath, string nameOfGame)
     {
-        List<Game> games;
+        List<N64Game> games;
 
         string fileExtension = Path.GetExtension(inputPath);
 
@@ -32,7 +32,7 @@ public static class Examples
             return false;
         }
 
-        foreach (Game game in games)
+        foreach (N64Game game in games)
         {
             if(Equal(game.Name, nameOfGame))
             {
@@ -51,7 +51,7 @@ public static class Examples
     /// <param name="writer">Writer to write to; defaults to stdout if not specified</param>
     public static void DisplayNote(string inputNotePath, TextWriter? writer = null)
     {
-        Game game = NoteReader.FromFile(inputNotePath);
+        N64Game game = NoteReader.FromFile(inputNotePath);
 
         new ListWriter(writer ?? Console.Out).WriteGame(game);
     }
@@ -63,7 +63,7 @@ public static class Examples
     /// <param name="outputListFilePath">Path to the text file to write to</param>
     public static void ExportGameListFromRom(string gameSharkRomPath, string outputListFilePath)
     {
-        List<Game> games = RomReader.FromFile(gameSharkRomPath)?.Games!;
+        List<N64Game> games = RomReader.FromFile(gameSharkRomPath)?.Games!;
 
         ListWriter.ToFile(outputListFilePath, games);
     }
@@ -75,7 +75,7 @@ public static class Examples
     /// <param name="gameSharkRomPath">Path to the GameShark ROM file to update</param>
     public static void ImportGameListFromFile(string inputListFilePath, string gameSharkRomPath)
     {
-        List<Game> games = ListReader.ReadLines(inputListFilePath);
+        List<N64Game> games = ListReader.ReadLines(inputListFilePath);
 
         RomWriter.ToFile(games, gameSharkRomPath);
     }

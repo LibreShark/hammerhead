@@ -78,7 +78,7 @@ public sealed class GbcGsRom : Rom
 
             string selectedStr = isGameSelected ? $" <!------------ CURRENTLY SELECTED GAME? bitmask (BE) = 0x{bitMask:X4}" : "";
             // Console.WriteLine($"games[{i:D3}]: 0x{gameNumberAndBitMask:X4} (BE) = {gameNumber:D0} ('{gameName.Value}'){selectedStr}");
-            Games.Add(new Game { Name = gameName.Value, IsActive = isGameSelected });
+            Games.Add(new N64Game { Name = gameName.Value, IsActive = isGameSelected });
         }
     }
 
@@ -106,8 +106,8 @@ public sealed class GbcGsRom : Rom
 
             if (gameIndex < Games.Count)
             {
-                Game game = Games[gameIndex];
-                Cheat cheat =
+                N64Game game = Games[gameIndex];
+                N64Cheat cheat =
                     // Append to existing cheat
                     game.Cheats.Find(c => c.Name == cheatName.Value) ??
                     // Create new cheat

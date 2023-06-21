@@ -72,7 +72,7 @@ abstract class RomBase
         return null;
     }
 
-    protected KeyCode ReadActiveKeyCode()
+    protected N64KeyCode ReadActiveKeyCode()
     {
         SeekActiveKeyCode();
         var crcBytes = Reader.PeekBytes(8);
@@ -89,10 +89,10 @@ abstract class RomBase
             isActive = activeKeyCode?.IsActive;
         }
 
-        return new KeyCode(name ?? "UNKNOWN", crcBytes.Concat(pcBytes).ToArray(), isActive ?? false);
+        return new N64KeyCode(name ?? "UNKNOWN", crcBytes.Concat(pcBytes).ToArray(), isActive ?? false);
     }
 
-    protected List<KeyCode> ReadKeyCodes()
+    protected List<N64KeyCode> ReadKeyCodes()
     {
         SeekActiveKeyCode();
         byte[] activePrefix = Reader.ReadBytes(8);
@@ -103,9 +103,9 @@ abstract class RomBase
         int keyCodeLength = IndexOf(listBytes, "Mario World 64 & Others");
         if (keyCodeLength < 9)
         {
-            return new List<KeyCode>();
+            return new List<N64KeyCode>();
         }
-        var keyCodes = new List<KeyCode>();
+        var keyCodes = new List<N64KeyCode>();
         while (Reader.Position <= maxPos)
         {
             byte[] bytes = Reader.ReadBytes(keyCodeLength);
@@ -115,7 +115,7 @@ abstract class RomBase
                 Reader.ReadUByte();
             }
             var isActive = IndexOf(bytes, activePrefix) > -1;
-            var keyCode = new KeyCode(name, bytes, isActive);
+            var keyCode = new N64KeyCode(name, bytes, isActive);
             keyCodes.Add(keyCode);
         }
         return keyCodes;
