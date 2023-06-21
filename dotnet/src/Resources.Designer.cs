@@ -45,9 +45,9 @@ namespace LibreShark.Hammerhead {
             }
         }
         
-        internal static string N64_GS_LOGO_ASCII_ART_ANSI_TXT {
+        internal static string GAMESHARK_LOGO_ASCII_ART_ANSI_TXT {
             get {
-                return ResourceManager.GetString("N64_GS_LOGO_ASCII_ART_ANSI_TXT", resourceCulture);
+                return ResourceManager.GetString("GAMESHARK_LOGO_ASCII_ART_ANSI_TXT", resourceCulture);
             }
         }
         

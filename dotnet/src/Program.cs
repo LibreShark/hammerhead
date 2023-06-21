@@ -35,7 +35,7 @@ Commands:
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
-        Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
+        Console.WriteLine(Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.Trim());
         Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
 
         if (cliArgs.Length < 1)
