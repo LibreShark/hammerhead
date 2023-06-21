@@ -174,11 +174,11 @@ public sealed class N64XpRom : Rom
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
                     byte[] codeBytes = _scribe.ReadBytes(6);
-                    string codeStrOld = codeBytes.ToN64CodeString();
+                    string codeStrOld = codeBytes.ToCodeString(GameConsole.Nintendo64);
                     if (IsCodeEncrypted(codeBytes))
                     {
-                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToN64CodeString();
-                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToN64CodeString();
+                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToCodeString(GameConsole.Nintendo64);
+                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToCodeString(GameConsole.Nintendo64);
                         // if (codeStrNew1 != codeStrNew2)
                         // {
                         //     Console.WriteLine("-------------------");

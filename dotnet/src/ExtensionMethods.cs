@@ -17,6 +17,8 @@ using f64 = Double;
 
 public static class ExtensionMethods
 {
+    #region Bytes
+
     private static readonly Encoding Ascii = Encoding.GetEncoding(
         "ascii",
         new EncoderReplacementFallback("?"),
@@ -27,9 +29,21 @@ public static class ExtensionMethods
         return Ascii.GetString(bytes);
     }
 
-    public static string ToHexString(this IEnumerable<byte> bytes, string delimiter = "")
+    public static string ToHexString(this IEnumerable<byte> eBytes, string delimiter = "")
     {
-        return string.Join(delimiter, bytes.Select((b) => $"{b:X2}"));
+        return string.Join(delimiter, eBytes.Select((b) => $"{b:X2}"));
+    }
+
+    public static string ToCodeString(this IEnumerable<byte> eBytes, GameConsole console)
+    {
+        byte[] bytes = eBytes.ToArray();
+
+        if (console == GameConsole.Nintendo64)
+        {
+            return $"{bytes[..4].ToHexString()} {bytes[4..].ToHexString()}";
+        }
+
+        return bytes.ToHexString();
     }
 
     public static bool Contains(this byte[] haystackBytes, string needleStr)
@@ -63,6 +77,20 @@ public static class ExtensionMethods
         return -1;
     }
 
+    public static bool IsKiB(this byte[] bytes, int numKiB)
+    {
+        return bytes.Length == numKiB * 1024;
+    }
+
+    public static bool IsMiB(this byte[] bytes, int numMiB)
+    {
+        return bytes.Length == numMiB * 1024 * 1024;
+    }
+
+    #endregion
+
+    #region Protobuf
+
     public static RomString Trim(this RomString oldRS)
     {
         string oldValue = oldRS.Value;
@@ -85,6 +113,11 @@ public static class ExtensionMethods
         return newRS;
     }
 
+    public static string ToDisplayString(this RomRange range)
+    {
+        return $"[0x{range.StartIndex:X8}, 0x{range.EndIndex - 1:X8}]";
+    }
+
     public static string ToDisplayString(this RomFormat format)
     {
         return format switch
@@ -102,23 +135,6 @@ public static class ExtensionMethods
             RomFormat.N64Xplorer64 => "N64 Xplorer 64 ROM format",
             RomFormat.UnknownRomFormat => "UNKNOWN ROM format",
             _ => throw new NotSupportedException($"RomFormat {format} is missing from ToDisplayString()!"),
-        };
-    }
-
-    public static string ToDisplayString(this GameConsole console)
-    {
-        return console switch
-        {
-            GameConsole.GameBoy => "Game Boy (GB)",
-            GameConsole.GameBoyColor => "Game Boy Color (GBC)",
-            GameConsole.GameBoyAdvance => "Game Boy Advance (GBA)",
-            GameConsole.GameGear => "Game Gear (GG)",
-            GameConsole.Nintendo64 => "Nintendo 64 (N64)",
-            GameConsole.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
-            GameConsole.Dreamcast => "Dreamcast",
-            GameConsole.Gamecube => "GameCube",
-            GameConsole.UnknownGameConsole => "UNKNOWN game console",
-            _ => throw new NotSupportedException($"GameConsole {console} is missing from ToDisplayString()!"),
         };
     }
 
@@ -154,35 +170,21 @@ public static class ExtensionMethods
         }
     }
 
-    public static string ToDisplayString(this RomRange range)
+    public static string ToDisplayString(this GameConsole console)
     {
-        return $"[0x{range.StartIndex:X8}, 0x{range.EndIndex - 1:X8}]";
-    }
-
-    public static string ToIsoString(this DateTime dt)
-    {
-        // Wed Nov 24 15:25:52 GMT 1999
-        // 1999-11-24T15:25:52Z
-        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
-    }
-
-    public static string ToIsoString(this DateTimeOffset dt)
-    {
-        // Wed Nov 24 15:25:52 GMT 1999
-        // 1999-11-24T15:25:52Z
-        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
-    }
-
-    public static string ToCodeString(this IEnumerable<byte> bytes, GameConsole console)
-    {
-        byte[] code = bytes.ToArray();
-
-        if (console == GameConsole.Nintendo64)
+        return console switch
         {
-            return $"{code[..4].ToHexString()} {code[4..].ToHexString()}";
-        }
-
-        return code.ToHexString();
+            GameConsole.GameBoy => "Game Boy (GB)",
+            GameConsole.GameBoyColor => "Game Boy Color (GBC)",
+            GameConsole.GameBoyAdvance => "Game Boy Advance (GBA)",
+            GameConsole.GameGear => "Game Gear (GG)",
+            GameConsole.Nintendo64 => "Nintendo 64 (N64)",
+            GameConsole.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
+            GameConsole.Dreamcast => "Dreamcast",
+            GameConsole.Gamecube => "GameCube",
+            GameConsole.UnknownGameConsole => "UNKNOWN game console",
+            _ => throw new NotSupportedException($"GameConsole {console} is missing from ToDisplayString()!"),
+        };
     }
 
     public static string ToDisplayString(this N64KeyCode kc)
@@ -191,16 +193,9 @@ public static class ExtensionMethods
                (kc.IsKeyCodeActive ? " [ACTIVE]" : "");
     }
 
-    public static string ToN64CodeString(this IEnumerable<byte> bytes)
-    {
-        byte[] code = bytes.ToArray();
-        return code[..4].ToHexString() + " " + code[4..].ToHexString();
-    }
+    #endregion
 
-    public static bool EqualsIgnoreCase(this string str1, string str2)
-    {
-        return String.Compare(str1, str2, StringComparison.InvariantCultureIgnoreCase) == 0;
-    }
+    #region Date/Time
 
     public static DateTimeOffset WithTimeZone(this DateTime dt, string tzName)
     {
@@ -221,13 +216,19 @@ public static class ExtensionMethods
         return buildDateTimeWithTz;
     }
 
-    public static bool IsKiB(this byte[] bytes, int numKiB)
+    public static string ToIsoString(this DateTime dt)
     {
-        return bytes.Length == numKiB * 1024;
+        // Wed Nov 24 15:25:52 GMT 1999
+        // 1999-11-24T15:25:52Z
+        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
 
-    public static bool IsMiB(this byte[] bytes, int numMiB)
+    public static string ToIsoString(this DateTimeOffset dt)
     {
-        return bytes.Length == numMiB * 1024 * 1024;
+        // Wed Nov 24 15:25:52 GMT 1999
+        // 1999-11-24T15:25:52Z
+        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
+
+    #endregion
 }
