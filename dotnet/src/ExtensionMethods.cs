@@ -127,7 +127,6 @@ public static class ExtensionMethods
             RomFormat.GbaTvTuner => "GBA TV Tuner format",
             RomFormat.GbcCodebreaker => "GBC Code Breaker ROM format",
             RomFormat.GbcGameshark => "GBC GameShark ROM format",
-            RomFormat.GbcMonsterbrain => "GBC Monster Brain ROM format",
             RomFormat.GbcSharkMx => "GBC Shark MX ROM format",
             RomFormat.GbcXploder => "GBC Xploder/Xplorer ROM format",
             RomFormat.N64Gameshark => "N64 GameShark ROM format",
@@ -140,34 +139,23 @@ public static class ExtensionMethods
 
     public static string ToDisplayString(this RomBrand brand)
     {
-        switch (brand)
+        return brand switch
         {
-            case RomBrand.Gameshark:
-                return "GameShark";
-            case RomBrand.ActionReplay:
-                return "Action Replay";
-            case RomBrand.Equalizer:
-                return "Equalizer";
-            case RomBrand.GameBuster:
-                return "Game Buster";
-            case RomBrand.Xploder:
-                return "Xploder";
-            case RomBrand.Xplorer:
-                return "Xplorer";
-            case RomBrand.CodeBreaker:
-                return "Code Breaker";
-            case RomBrand.GbHunter:
-                return "GB Hunter";
-            case RomBrand.GameBooster:
-                return "Game Booster";
-            case RomBrand.GameGenie:
-                return "Game Genie";
-            case RomBrand.SharkMx:
-                return "Shark MX";
-            default:
-                // TODO(CheatoBaggins): Implement all
-                return "UNKNOWN";
-        }
+            RomBrand.ActionReplay => "Action Replay",
+            RomBrand.Brainboy => "BrainBoy",
+            RomBrand.CodeBreaker => "Code Breaker",
+            RomBrand.Equalizer => "Equalizer",
+            RomBrand.GameBooster => "Game Booster",
+            RomBrand.GameBuster => "Game Buster",
+            RomBrand.GameGenie => "Game Genie",
+            RomBrand.Gameshark => "GameShark",
+            RomBrand.GbHunter => "GB Hunter",
+            RomBrand.MonsterBrain => "Monster Brain",
+            RomBrand.SharkMx => "Shark MX",
+            RomBrand.Xploder => "Xploder",
+            RomBrand.Xplorer => "Xplorer",
+            _ => throw new NotSupportedException($"RomBrand {brand} is missing from ToDisplayString()!"),
+        };
     }
 
     public static string ToDisplayString(this GameConsole console)

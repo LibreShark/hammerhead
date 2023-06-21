@@ -70,10 +70,8 @@ enum RomFormat {
   // GB Hunter and Game Booster use the same ROM format.
   N64_GBHUNTER = 0x03;
 
+  // Code Breaker, BrainBoy, and Monster Brain use the same ROM format.
   GBC_CODEBREAKER = 0x41;
-
-  // Monster Brain and Brain Boy use the same ROM format.
-  GBC_MONSTERBRAIN = 0x42;
 
   // Action Replay too
   GBC_GAMESHARK = 0x51;
@@ -100,19 +98,19 @@ enum RomFormat {
 
 enum RomBrand {
   UNKNOWN_BRAND = 0x00;
-  GAMESHARK = 0x01;
+  GAMESHARK     = 0x01;
   ACTION_REPLAY = 0x02;
-  EQUALIZER = 0x03;
-  GAME_BUSTER = 0x04;
-  GB_HUNTER = 0x05;
-  GAME_BOOSTER = 0x06;
-  CODE_BREAKER = 0x07;
-  XPLODER = 0x08;
-  XPLORER = 0x09;
-  GAME_GENIE = 0x0A;
-  SHARK_MX = 0x0B;
-  BRAINBOY = 0x0C;
-  MONSTER_BRAIN = 0x0D;
+  EQUALIZER     = 0x03;
+  GAME_BUSTER   = 0x04;
+  GB_HUNTER     = 0x05;
+  GAME_BOOSTER  = 0x06;
+  CODE_BREAKER  = 0x07;
+  BRAINBOY      = 0x08;
+  MONSTER_BRAIN = 0x09;
+  XPLODER       = 0x0A;
+  XPLORER       = 0x0B;
+  GAME_GENIE    = 0x0C;
+  SHARK_MX      = 0x0D;
 }
 
 message ChecksumResult {
@@ -137,7 +135,7 @@ message RomMetadata {
 
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
-  // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype".
+  // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype", "v2.0 Platinum".
   string display_version = 5;
 
   // Machine-readable version number for sorting purposes.
