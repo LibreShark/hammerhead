@@ -35,10 +35,10 @@ public sealed class GbcCbRom : Rom
 
     private readonly RomString[] _cheatNames = new RomString[16];
 
-    public GbcCbRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
+    public GbcCbRom(string filePath, u8[] rawInput)
+        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
-        Metadata.Brand = DetectBrand(bytes);
+        Metadata.Brand = DetectBrand(rawInput);
 
         RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();
         RomString selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
@@ -136,19 +136,19 @@ public sealed class GbcCbRom : Rom
         }
     }
 
-    public static bool Is(byte[] bytes)
+    public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
         bool is512KiB = bytes.IsKiB(512);
         return (is256KiB || is512KiB) && Detect(bytes);
     }
 
-    private static bool Detect(byte[] bytes)
+    private static bool Detect(u8[] bytes)
     {
         return DetectBrand(bytes) != RomBrand.UnknownBrand;
     }
 
-    private static RomBrand DetectBrand(byte[] bytes)
+    private static RomBrand DetectBrand(u8[] bytes)
     {
         string id = bytes[..0x20].ToAsciiString();
         if (id.Contains("CodeBreaker / GB"))
@@ -166,6 +166,11 @@ public sealed class GbcCbRom : Rom
     public static bool Is(RomFormat type)
     {
         return type == ThisRomFormat;
+    }
+
+    private static BinaryScribe MakeScribe(u8[] bytes)
+    {
+        return new LittleEndianScribe(bytes);
     }
 
     protected override void PrintCustomHeader()

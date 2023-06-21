@@ -3,6 +3,17 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 /// <summary>
 /// Monster Brain and Brain Boy for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
@@ -19,10 +30,10 @@ public sealed class GbcMonsterBrainRom : Rom
         "Monster Brain v3.6 Platinum",
     };
 
-    public GbcMonsterBrainRom(string filePath, byte[] bytes)
-        : base(filePath, bytes, new LittleEndianScribe(bytes), ThisConsole, ThisRomFormat)
+    public GbcMonsterBrainRom(string filePath, u8[] rawInput)
+        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
-        Metadata.Brand = DetectBrand(bytes);
+        Metadata.Brand = DetectBrand(rawInput);
 
         RomString id = Scribe.Seek(0).ReadPrintableCString(0x20).Trim();
         Metadata.Identifiers.Add(id);
@@ -49,19 +60,19 @@ public sealed class GbcMonsterBrainRom : Rom
         }
     }
 
-    public static bool Is(byte[] bytes)
+    public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
         bool is512KiB = bytes.IsKiB(512);
         return (is256KiB || is512KiB) && Detect(bytes);
     }
 
-    private static bool Detect(byte[] bytes)
+    private static bool Detect(u8[] bytes)
     {
         return DetectBrand(bytes) != RomBrand.UnknownBrand;
     }
 
-    private static RomBrand DetectBrand(byte[] bytes)
+    private static RomBrand DetectBrand(u8[] bytes)
     {
         string id = bytes[..0x20].ToAsciiString();
         if (id.Contains("BrainBoy"))
@@ -83,6 +94,11 @@ public sealed class GbcMonsterBrainRom : Rom
     public static bool Is(RomFormat type)
     {
         return type == ThisRomFormat;
+    }
+
+    private static BinaryScribe MakeScribe(u8[] rawInput)
+    {
+        return new LittleEndianScribe(rawInput.ToArray());
     }
 
     protected override void PrintCustomHeader()

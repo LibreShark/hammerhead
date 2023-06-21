@@ -24,7 +24,7 @@ public static class ExtensionMethods
         new EncoderReplacementFallback("?"),
         new DecoderReplacementFallback("?"));
 
-    public static string ToAsciiString(this byte[] bytes)
+    public static string ToAsciiString(this u8[] bytes)
     {
         return Ascii.GetString(bytes);
     }
@@ -36,7 +36,7 @@ public static class ExtensionMethods
 
     public static string ToCodeString(this IEnumerable<byte> eBytes, GameConsole console)
     {
-        byte[] bytes = eBytes.ToArray();
+        u8[] bytes = eBytes.ToArray();
 
         if (console == GameConsole.Nintendo64)
         {
@@ -46,22 +46,22 @@ public static class ExtensionMethods
         return bytes.ToHexString();
     }
 
-    public static bool Contains(this byte[] haystackBytes, string needleStr)
+    public static bool Contains(this u8[] haystackBytes, string needleStr)
     {
         return haystackBytes.Find(needleStr) > -1;
     }
 
-    public static bool Contains(this byte[] haystackBytes, byte[] needleBytes)
+    public static bool Contains(this u8[] haystackBytes, u8[] needleBytes)
     {
         return haystackBytes.Find(needleBytes) > -1;
     }
 
-    public static s32 Find(this byte[] haystackBytes, string needleStr)
+    public static s32 Find(this u8[] haystackBytes, string needleStr)
     {
         return Find(haystackBytes, Encoding.UTF8.GetBytes(needleStr));
     }
 
-    public static s32 Find(this byte[] haystackBytes, byte[] needleBytes)
+    public static s32 Find(this u8[] haystackBytes, u8[] needleBytes)
     {
         s32 needleLen = needleBytes.Length;
         s32 haystackLen = haystackBytes.Length;
@@ -77,12 +77,12 @@ public static class ExtensionMethods
         return -1;
     }
 
-    public static bool IsKiB(this byte[] bytes, int numKiB)
+    public static bool IsKiB(this u8[] bytes, int numKiB)
     {
         return bytes.Length == numKiB * 1024;
     }
 
-    public static bool IsMiB(this byte[] bytes, int numMiB)
+    public static bool IsMiB(this u8[] bytes, int numMiB)
     {
         return bytes.Length == numMiB * 1024 * 1024;
     }
@@ -106,7 +106,7 @@ public static class ExtensionMethods
         };
         u32 startIndex = oldRS.Addr.StartIndex;
         u32 endIndex = (u32)(oldRS.Addr.EndIndex - (oldValue.Length - newValue.Length));
-        byte[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
+        u8[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
         u32 byteLen = endIndex - startIndex;
         newRS.Addr = new RomRange
         {

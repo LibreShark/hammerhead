@@ -32,7 +32,6 @@ public abstract class Rom
 
     protected Rom(
         string filePath,
-        byte[] rawInput,
         BinaryScribe scribe,
         GameConsole console,
         RomFormat format)

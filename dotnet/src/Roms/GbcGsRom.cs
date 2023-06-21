@@ -38,8 +38,8 @@ public sealed class GbcGsRom : Rom
         "Gameshark     V4.2",
     };
 
-    public GbcGsRom(string filePath, byte[] rawInput)
-        : base(filePath, rawInput, new LittleEndianScribe(rawInput), ThisConsole, ThisRomFormat)
+    public GbcGsRom(string filePath, u8[] rawInput)
+        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = IsGs(Buffer) ? RomBrand.Gameshark : IsAr(Buffer) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
@@ -104,7 +104,7 @@ public sealed class GbcGsRom : Rom
 
             u16 gameNumberAndBitMask = Scribe.ReadU16();
             RomString cheatName = Scribe.ReadPrintableCString(12, false).Trim();
-            byte[] code = Scribe.ReadBytes(4);
+            u8[] code = Scribe.ReadBytes(4);
             if (cheatName.Value.Length == 0)
             {
                 break;
@@ -144,26 +144,26 @@ public sealed class GbcGsRom : Rom
         }
     }
 
-    public static bool Is(byte[] bytes)
+    public static bool Is(u8[] bytes)
     {
         bool is128KiB = bytes.IsKiB(128);
         return is128KiB && Detect(bytes);
     }
 
-    private static bool Detect(byte[] bytes)
+    private static bool Detect(u8[] bytes)
     {
-        bool hasMagicNumber = bytes[..4].SequenceEqual(new byte[] { 0xC3, 0x50, 0x01, 0x78 });
+        bool hasMagicNumber = bytes[..4].SequenceEqual(new u8[] { 0xC3, 0x50, 0x01, 0x78 });
         bool hasIdentifier = IsGs(bytes) || IsAr(bytes);
         return hasMagicNumber && hasIdentifier;
     }
 
-    private static bool IsGs(byte[] bytes)
+    private static bool IsGs(u8[] bytes)
     {
         string identifier = bytes[(int)TitleAddr..(int)(TitleAddr + 18)].ToAsciiString();
         return identifier.StartsWith("Gameshark     V");
     }
 
-    private static bool IsAr(byte[] bytes)
+    private static bool IsAr(u8[] bytes)
     {
         string identifier = bytes[(int)TitleAddr..(int)(TitleAddr + 18)].ToAsciiString();
         return identifier.StartsWith("Action Replay V");
@@ -187,6 +187,11 @@ public sealed class GbcGsRom : Rom
     public static bool Is(RomFormat type)
     {
         return type == ThisRomFormat;
+    }
+
+    private static BinaryScribe MakeScribe(u8[] rawInput)
+    {
+        return new LittleEndianScribe(rawInput.ToArray());
     }
 
     protected override void PrintCustomHeader()

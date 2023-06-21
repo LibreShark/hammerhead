@@ -24,8 +24,8 @@ public sealed class N64GsRom : Rom
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
-    private bool _isEncrypted;
-    private bool _isCompressed;
+    private readonly bool _isEncrypted;
+    private readonly bool _isCompressed;
     private readonly bool _isV3Firmware;
     private readonly bool _isV1GameList;
     private readonly bool _isV3KeyCodeListAddr;
@@ -48,7 +48,7 @@ public sealed class N64GsRom : Rom
     private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, Decrypt(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, Decrypt(rawInput), ThisConsole, ThisRomFormat)
     {
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
@@ -69,6 +69,7 @@ public sealed class N64GsRom : Rom
         Metadata.LanguageIetfCode = _version.Locale.Name;
 
         _isEncrypted         = DetectEncrypted(rawInput);
+        _isCompressed        = DetectCompressed(rawInput);
         _isV3Firmware        = Scribe.Seek(0x00001000).ReadU32() == 0x00000000;
         _isV1GameList        = Scribe.Seek(0x0002DFF0).ReadU32() == 0x00000000;
         _isV3KeyCodeListAddr = Scribe.Seek(0x0002FBF0).ReadU32() == 0xFFFFFFFF;
@@ -96,12 +97,6 @@ public sealed class N64GsRom : Rom
         return _isCompressed;
     }
 
-    public static bool Is(u8[] bytes)
-    {
-        bool is256KiB = bytes.IsKiB(256);
-        return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
-    }
-
     public override bool FormatSupportsFileEncryption()
     {
         return true;
@@ -119,11 +114,7 @@ public sealed class N64GsRom : Rom
 
     public override bool HasUserPrefs()
     {
-        if (!_supportsUserPrefs)
-        {
-            return false;
-        }
-        return Scribe.MaintainPosition(() => !Scribe.Seek(_userPrefsAddr).IsPadding());
+        return _supportsUserPrefs && Scribe.MaintainPosition(() => !Scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
     private List<Game> ReadGames()
@@ -191,7 +182,6 @@ public sealed class N64GsRom : Rom
         if (name.Value.Length < 1)
         {
             Console.Error.WriteLine($"WARNING at offset 0x{startPos:X8}: Game and Cheat names should contain at least 1 character.");
-            u32 endPos = Scribe.Position;
             return name;
         }
 
@@ -272,7 +262,9 @@ public sealed class N64GsRom : Rom
     {
         // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
         RomString? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
+                                           ReadTitleVersion("GameShark Pro Version ") ??
                                            ReadTitleVersion("N64 Action Replay Version ") ??
+                                           ReadTitleVersion("Action Replay Pro Version ") ??
                                            ReadTitleVersion("N64 Equalizer Version ") ??
                                            ReadTitleVersion("N64 Game Buster Version ");
 
@@ -295,8 +287,8 @@ public sealed class N64GsRom : Rom
     {
         u8[] haystack = Buffer[..0x30000];
         s32 titleVersionPos = haystack.Find(needle);
-        _isCompressed = titleVersionPos == -1;
-        if (_isCompressed)
+        bool isCompressed = titleVersionPos == -1;
+        if (isCompressed)
         {
             return null;
         }
@@ -307,6 +299,12 @@ public sealed class N64GsRom : Rom
         return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
     }
 
+    public static bool Is(u8[] bytes)
+    {
+        bool is256KiB = bytes.IsKiB(256);
+        return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
+    }
+
     public static bool Is(Rom rom)
     {
         return rom.Metadata.Format == ThisRomFormat;
@@ -315,14 +313,6 @@ public sealed class N64GsRom : Rom
     public static bool Is(RomFormat type)
     {
         return type == ThisRomFormat;
-    }
-
-    private static BinaryScribe Decrypt(u8[] input)
-    {
-        u8[] output = DetectEncrypted(input)
-            ? N64GsCrypter.Decrypt(input)
-            : input.ToArray();
-        return new BigEndianScribe(output);
     }
 
     private static bool DetectPlain(u8[] bytes)
@@ -338,6 +328,21 @@ public sealed class N64GsRom : Rom
     private static bool DetectEncrypted(u8[] bytes)
     {
         return bytes[..7].Contains(new u8[] { 0xAE, 0x59, 0x63, 0x54 });
+    }
+
+    private static bool DetectCompressed(u8[] bytes)
+    {
+        // The main menu title is stored in the firmware section of the ROM,
+        // so the title will not be found in plain text in compressed files.
+        return !bytes.Contains(" Version ");
+    }
+
+    private static BinaryScribe Decrypt(u8[] input)
+    {
+        u8[] output = DetectEncrypted(input)
+            ? N64GsCrypter.Decrypt(input)
+            : input.ToArray();
+        return new BigEndianScribe(output);
     }
 
     protected override void PrintCustomHeader()
