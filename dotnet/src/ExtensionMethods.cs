@@ -1,4 +1,7 @@
+using System.Drawing;
 using System.Text;
+using BetterConsoles.Colors.Extensions;
+using BetterConsoles.Core;
 using Google.Protobuf;
 using LibreShark.Hammerhead.N64;
 
@@ -17,6 +20,8 @@ using f64 = Double;
 
 public static class ExtensionMethods
 {
+    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+
     #region Bytes
 
     private static readonly Encoding Ascii = Encoding.GetEncoding(
@@ -247,6 +252,17 @@ public static class ExtensionMethods
             > 0 => $"+{ts.Hours:D2}:{ts.Minutes:D2}",
             _ => $"{ts.Hours:D2}:{ts.Minutes:D2}",
         };
+    }
+
+    #endregion
+
+    #region ANSI color codes for terminals
+
+    public static string OrUnknown(this string str)
+    {
+        return string.IsNullOrWhiteSpace(str)
+            ? "UNKNOWN".ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
+            : str;
     }
 
     #endregion

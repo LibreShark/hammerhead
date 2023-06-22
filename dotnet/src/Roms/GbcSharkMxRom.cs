@@ -39,6 +39,8 @@ public sealed class GbcSharkMxRom : Rom
     public GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
+        Metadata.Brand = RomBrand.SharkMx;
+
         ParseVersion();
         ParseTimeZones();
     }
@@ -143,7 +145,7 @@ public sealed class GbcSharkMxRom : Rom
 
     private string BuildTimeZoneTable()
     {
-        CellFormat headerFormat = new CellFormat()
+        var headerFormat = new CellFormat()
         {
             Alignment = Alignment.Left,
             FontStyle = FontStyleExt.Bold,
@@ -190,16 +192,6 @@ public sealed class GbcSharkMxRom : Rom
         table.Config = TableConfig.Unicode();
 
         return $"{table}";
-    }
-
-    private static string Join(byte[]? bytes)
-    {
-        if (bytes == null)
-        {
-            return "";
-        }
-
-        return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
     }
 
     private class Tz
