@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 package libreshark.hammerhead;
@@ -187,4 +188,27 @@ message Game {
   repeated Cheat cheats = 3;
   bool is_game_active = 4;
   repeated Warning warnings = 5;
+}
+
+
+
+// TODO(CheatoBaggins): Move this to gbc.proto
+
+message GbcSmxContact {
+  RomString entryNumber = 1;
+  RomString personName = 2;
+  RomString emailAddress = 3;
+  RomString unknownField1 = 4;
+  RomString unknownField2 = 5;
+  RomString phoneNumber = 6;
+  RomString streetAddress = 7;
+}
+
+message GbcSmxTimeZone {
+  uint32 list_index = 1;
+  RomString original_offset_str = 2;
+  RomString original_tz_id = 3;
+  string modern_tz_id = 4;
+  .google.protobuf.Duration original_utc_offset = 5;
+  .google.protobuf.Duration today_utc_offset = 6;
 }

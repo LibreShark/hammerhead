@@ -72,6 +72,7 @@ public abstract class Rom
     }
 
     protected abstract void PrintCustomHeader();
+    protected virtual void PrintCustomBody() {}
 
     public virtual bool FormatSupportsFileEncryption()
     {
@@ -187,6 +188,8 @@ public abstract class Rom
         PrintCustomHeader();
         Console.WriteLine();
         PrintGames();
+        Console.WriteLine();
+        PrintCustomBody();
         Console.WriteLine();
         Console.WriteLine();
         Console.WriteLine("================================================================================");

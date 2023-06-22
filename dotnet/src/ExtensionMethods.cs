@@ -3,6 +3,7 @@ using System.Text;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead;
@@ -286,6 +287,11 @@ public static class ExtensionMethods
             > 0 => $"+{ts.Hours:D2}:{ts.Minutes:D2}",
             _ => $"{ts.Hours:D2}:{ts.Minutes:D2}",
         };
+    }
+
+    public static string ToUtcString(this Duration duration)
+    {
+        return duration.ToTimeSpan().ToUtcString();
     }
 
     #endregion

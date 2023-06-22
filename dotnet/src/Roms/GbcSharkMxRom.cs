@@ -6,6 +6,7 @@ using BetterConsoles.Tables;
 using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
+using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -30,6 +31,11 @@ public sealed class GbcSharkMxRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcSharkMx;
 
+    private const u32 ContactsAddr  = 0x0000C060;
+    private const u32 RegCodeAddr   = 0x00020000;
+    private const u32 SecretPinAddr = 0x0002007C;
+    private const u32 MessagesAddr  = 0x00021000;
+
     private readonly List<Tz> _tzs = new();
 
     public GbcSharkMxRom(string filePath, u8[] rawInput)
@@ -39,6 +45,30 @@ public sealed class GbcSharkMxRom : Rom
 
         ParseVersion();
         ParseTimeZones();
+        ParseContacts();
+        ParseRegistrationCode();
+        ParseSecretPin();
+        ParseMessages();
+    }
+
+    private void ParseContacts()
+    {
+        Scribe.Seek(ContactsAddr);
+    }
+
+    private void ParseRegistrationCode()
+    {
+        Scribe.Seek(RegCodeAddr);
+    }
+
+    private void ParseSecretPin()
+    {
+        Scribe.Seek(SecretPinAddr);
+    }
+
+    private void ParseMessages()
+    {
+        Scribe.Seek(MessagesAddr);
     }
 
     private void ParseVersion()
@@ -133,11 +163,15 @@ public sealed class GbcSharkMxRom : Rom
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    protected override void PrintCustomHeader()
+    protected override void PrintCustomBody()
     {
         Console.WriteLine();
-        Console.WriteLine($"Time zones ({_tzs.Count}):");
+        PrintHeading($"Time zones ({_tzs.Count})");
         Console.WriteLine(BuildTimeZoneTable());
+    }
+
+    protected override void PrintCustomHeader()
+    {
     }
 
     private string BuildTimeZoneTable()
@@ -162,13 +196,13 @@ public sealed class GbcSharkMxRom : Rom
                     alignment: Alignment.Left
                 )
             )
-            .AddColumn("Modern offset",
+            .AddColumn("Today's offset",
                 rowsFormat: new CellFormat(
                     foregroundColor: TableValueColor,
                     alignment: Alignment.Left
                 )
             )
-            .AddColumn("Modern name",
+            .AddColumn("Modern ID",
                 rowsFormat: new CellFormat(
                     foregroundColor: TableValueColor,
                     alignment: Alignment.Left
@@ -180,10 +214,10 @@ public sealed class GbcSharkMxRom : Rom
         {
             TimeSpan modernUtcOffset = tz.ModernTimeZone.GetUtcOffset(DateTimeOffset.UtcNow);
 
-            string originalOffsetStr = tz.OriginalUtcOffset.ToUtcString();
+            string originalOffsetStr = tz.TimeZoneProto.OriginalUtcOffset.ToUtcString();
             string modernOffsetStr = modernUtcOffset.ToUtcString();
 
-            table.AddRow(tz.OriginalId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernId);
+            table.AddRow(tz.TimeZoneProto.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.TimeZoneProto.ModernTzId);
         }
 
         table.Config = TableConfig.Unicode();
@@ -191,78 +225,79 @@ public sealed class GbcSharkMxRom : Rom
         return $"{table}";
     }
 
+    private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)
+    {
+        s8 relativeOffset = s8.Parse(offsetStr.Value);
+        s8 utcOffset = (s8)(relativeOffset - 5);
+        return TimeSpan.FromHours(utcOffset);
+    }
+
+    private static string GetModernTzId(RomString originalId)
+    {
+        return originalId.Value.Trim() switch
+        {
+            "Anchorage" => "America/Anchorage",
+            "Atlantic" => "America/Puerto_Rico",
+            "Baghdad" => "Asia/Baghdad",
+            "Bangui" => "Africa/Bangui",
+            "Barnaul" => "Asia/Barnaul",
+            "Beijing" => "Asia/Shanghai",
+            "Berlin" => "Europe/Berlin",
+            "Cairo" => "Africa/Cairo",
+            "Chicago" => "America/Chicago",
+            "Chita" => "Asia/Chita",
+            "Darwin" => "Australia/Darwin",
+            "Denver" => "America/Denver",
+            "Godthab" => "America/Scoresbysund",
+            "Helsinki" => "Europe/Helsinki",
+            "HongKong" => "Asia/Hong_Kong",
+            "Honolulu" => "Pacific/Honolulu",
+            "Istanbul" => "Europe/Istanbul",
+            "Izhevsk" => "Asia/Yekaterinburg",
+            "LasVegas" => "America/Los_Angeles",
+            "Lima" => "America/Lima",
+            "London" => "Europe/London",
+            "LosAngeles" => "America/Los_Angeles",
+            "Madrid" => "Europe/Madrid",
+            "Miami" => "America/New_York",
+            "Moscow" => "Europe/Moscow",
+            "NewYork" => "America/New_York",
+            "Orenberg" => "Asia/Yekaterinburg",
+            "Oslo" => "Europe/Oslo",
+            "Paris" => "Europe/Paris",
+            "Perth" => "Australia/Perth",
+            "Reykjavik" => "Atlantic/Reykjavik",
+            "Rio" => "America/Rio_Branco",
+            "Rome" => "Europe/Rome",
+            "Santiago" => "America/Santiago",
+            "Stockholm" => "Europe/Stockholm",
+            "Sydney" => "Australia/Sydney",
+            "Tokyo" => "Asia/Tokyo",
+            "Vancouver" => "America/Vancouver",
+            "Vienna" => "Europe/Vienna",
+            "Washington" => "America/New_York",
+            "Wellington" => "Pacific/Auckland",
+            _ => "UTC",
+        };
+    }
+
     private class Tz
     {
-        public readonly u8 TzIndex;
-        public readonly RomString OffsetStr;
-        public readonly RomString OriginalId;
-        public readonly string ModernId;
-        public readonly TimeSpan OriginalUtcOffset;
+        public readonly GbcSmxTimeZone TimeZoneProto;
         public readonly TimeZoneInfo ModernTimeZone;
 
         public Tz(byte tzIndex, RomString offsetStr, RomString originalId)
         {
-            TzIndex = tzIndex;
-            OffsetStr = offsetStr;
-            OriginalId = originalId;
-            ModernId = GetModernTzId(OriginalId);
-            OriginalUtcOffset = ParseOriginalUtcOffset(OffsetStr);
-            ModernTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ModernId);
-        }
-
-        private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)
-        {
-            s8 relativeOffset = s8.Parse(offsetStr.Value);
-            s8 utcOffset = (s8)(relativeOffset - 5);
-            return TimeSpan.FromHours(utcOffset);
-        }
-
-        private static string GetModernTzId(RomString originalId)
-        {
-            return originalId.Value.Trim() switch
+            string modernTzId = GetModernTzId(originalId);
+            ModernTimeZone = TimeZoneInfo.FindSystemTimeZoneById(modernTzId);
+            TimeZoneProto = new GbcSmxTimeZone()
             {
-                "Anchorage" => "America/Anchorage",
-                "Atlantic" => "America/Puerto_Rico",
-                "Baghdad" => "Asia/Baghdad",
-                "Bangui" => "Africa/Bangui",
-                "Barnaul" => "Asia/Barnaul",
-                "Beijing" => "Asia/Shanghai",
-                "Berlin" => "Europe/Berlin",
-                "Cairo" => "Africa/Cairo",
-                "Chicago" => "America/Chicago",
-                "Chita" => "Asia/Chita",
-                "Darwin" => "Australia/Darwin",
-                "Denver" => "America/Denver",
-                "Godthab" => "America/Scoresbysund",
-                "Helsinki" => "Europe/Helsinki",
-                "HongKong" => "Asia/Hong_Kong",
-                "Honolulu" => "Pacific/Honolulu",
-                "Istanbul" => "Europe/Istanbul",
-                "Izhevsk" => "Asia/Yekaterinburg",
-                "LasVegas" => "America/Los_Angeles",
-                "Lima" => "America/Lima",
-                "London" => "Europe/London",
-                "LosAngeles" => "America/Los_Angeles",
-                "Madrid" => "Europe/Madrid",
-                "Miami" => "America/New_York",
-                "Moscow" => "Europe/Moscow",
-                "NewYork" => "America/New_York",
-                "Orenberg" => "Asia/Yekaterinburg",
-                "Oslo" => "Europe/Oslo",
-                "Paris" => "Europe/Paris",
-                "Perth" => "Australia/Perth",
-                "Reykjavik" => "Atlantic/Reykjavik",
-                "Rio" => "America/Rio_Branco",
-                "Rome" => "Europe/Rome",
-                "Santiago" => "America/Santiago",
-                "Stockholm" => "Europe/Stockholm",
-                "Sydney" => "Australia/Sydney",
-                "Tokyo" => "Asia/Tokyo",
-                "Vancouver" => "America/Vancouver",
-                "Vienna" => "Europe/Vienna",
-                "Washington" => "America/New_York",
-                "Wellington" => "Pacific/Auckland",
-                _ => "UTC",
+                ListIndex = tzIndex,
+                OriginalOffsetStr = offsetStr,
+                OriginalTzId = originalId,
+                ModernTzId = modernTzId,
+                OriginalUtcOffset = Duration.FromTimeSpan(ParseOriginalUtcOffset(offsetStr)),
+                TodayUtcOffset = Duration.FromTimeSpan(ModernTimeZone.BaseUtcOffset),
             };
         }
     }
