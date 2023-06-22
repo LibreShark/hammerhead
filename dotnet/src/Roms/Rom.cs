@@ -334,9 +334,11 @@ public abstract class Rom
         filePropTable.AddRow("Platform", Metadata.Console.ToDisplayString());
         filePropTable.AddRow("Brand", Metadata.Brand.ToDisplayString());
         filePropTable.AddRow("Locale", Metadata.LanguageIetfCode.OrUnknown());
+        filePropTable.AddRow("", "");
         filePropTable.AddRow("Version", Metadata.DisplayVersion.OrUnknown());
         filePropTable.AddRow("Build date", Metadata.BuildDateIso.OrUnknown());
         filePropTable.AddRow("Known ROM version", Metadata.IsKnownVersion);
+        filePropTable.AddRow("", "");
         filePropTable.AddRow("File size", fileSize);
 
         if (FormatSupportsFileEncryption())
