@@ -55,12 +55,50 @@ public sealed class GbcSharkMxRom : Rom
         Metadata.SortableVersion = Double.Parse(versionStr);
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2} ({countryStr})";
 
-        s32 tzListPos = Scribe.Seek(0).Find("Anchorage") - 4;
+        s32 tzListPos = Scribe.Seek(0).Find("Anchorage");
         if (tzListPos < 0)
         {
             Console.Error.WriteLine("Unable to find time zones!");
         }
-        u32 tzListAddr = (u32)tzListPos;
+
+        u32 tzListAddr = (u32)tzListPos - 5;
+        Scribe.Seek(tzListAddr);
+        u8 tzIdx = 0;
+        while (true)
+        {
+            RomString utcOffset = Scribe.ReadCStringUntilNull(3, false).Readable();
+            if (!utcOffset.Value.All(IsTzChar))
+            {
+                break;
+            }
+            u8[] unknownBytes = Scribe.ReadBytes(2);
+            RomString tzName = Scribe.ReadCStringUntilNull(10, true).Readable();
+            var tz = new Tz(tzIdx, utcOffset, tzName);
+            _tzs.Add(tz);
+            tzIdx++;
+        }
+    }
+
+    private static bool IsTzChar(char c)
+    {
+        return (c is ' ' or '+' or '-') ||
+               (c is >= '0' and <= '9');
+    }
+
+    private List<Tz> _tzs = new();
+
+    private class Tz
+    {
+        public readonly u8 TzIndex;
+        public readonly RomString UtcOffsetStr;
+        public readonly RomString TzName;
+
+        public Tz(byte tzIndex, RomString utcOffsetStr, RomString tzName)
+        {
+            TzIndex = tzIndex;
+            UtcOffsetStr = utcOffsetStr;
+            TzName = tzName;
+        }
     }
 
     public static bool Is(u8[] bytes)
@@ -92,5 +130,26 @@ public sealed class GbcSharkMxRom : Rom
 
     protected override void PrintCustomHeader()
     {
+        Console.WriteLine($"Time zones ({_tzs.Count}):");
+        foreach (Tz tz in _tzs)
+        {
+            string offsetStr;
+            s8 offsetNum = s8.Parse(tz.UtcOffsetStr.Value);
+            if (offsetNum == 0)
+            {
+                offsetStr = "+0";
+            }
+            else if(offsetNum > 0)
+            {
+                offsetStr = $"+{offsetNum}";
+            }
+            else
+            {
+                offsetStr = offsetNum.ToString();
+            }
+
+            offsetStr = offsetStr.PadRight(3);
+            Console.WriteLine($"- UTC{offsetStr}: {tz.TzName.Value}");
+        }
     }
 }
