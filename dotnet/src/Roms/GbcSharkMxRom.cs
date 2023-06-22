@@ -37,7 +37,7 @@ public sealed class GbcSharkMxRom : Rom
     private const u32 SecretPinAddr = 0x0002007C;
     private const u32 MessagesAddr  = 0x00021000;
 
-    private readonly List<Tz> _tzs = new();
+    private readonly List<GbcSmxTimeZone> _tzs = new();
     private readonly List<GbcSmxContact> _contacts = new();
     private readonly List<GbcSmxMessage> _messages = new();
 
@@ -197,7 +197,7 @@ public sealed class GbcSharkMxRom : Rom
 
             u8[] unknownBytes = Scribe.ReadBytes(2);
             RomString tzName = Scribe.ReadCStringUntilNull(10, true).Readable();
-            var tz = new Tz(tzIdx, utcOffset, tzName);
+            GbcSmxTimeZone tz = ParseTimeZone(tzIdx, utcOffset, tzName);
             _tzs.Add(tz);
             tzIdx++;
         }
@@ -318,14 +318,14 @@ public sealed class GbcSharkMxRom : Rom
             )
             .Build();
 
-        foreach (Tz tz in _tzs)
+        foreach (GbcSmxTimeZone tz in _tzs)
         {
-            TimeSpan modernUtcOffset = tz.ModernTimeZone.GetUtcOffset(DateTimeOffset.UtcNow);
+            TimeSpan modernUtcOffset = GetModernTz(tz).GetUtcOffset(DateTimeOffset.UtcNow);
 
-            string originalOffsetStr = tz.TimeZoneProto.OriginalUtcOffset.ToUtcString();
+            string originalOffsetStr = tz.OriginalUtcOffset.ToUtcString();
             string modernOffsetStr = modernUtcOffset.ToUtcString();
 
-            table.AddRow(tz.TimeZoneProto.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.TimeZoneProto.ModernTzId);
+            table.AddRow(tz.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernTzId);
         }
 
         table.Config = TableConfig.Unicode();
@@ -568,24 +568,23 @@ public sealed class GbcSharkMxRom : Rom
         };
     }
 
-    private class Tz
+    private static GbcSmxTimeZone ParseTimeZone(byte tzIndex, RomString offsetStr, RomString originalId)
     {
-        public readonly GbcSmxTimeZone TimeZoneProto;
-        public readonly TimeZoneInfo ModernTimeZone;
-
-        public Tz(byte tzIndex, RomString offsetStr, RomString originalId)
+        string modernTzId = GetModernTzId(originalId);
+        TimeZoneInfo modernTimeZone = TimeZoneInfo.FindSystemTimeZoneById(modernTzId);
+        return new GbcSmxTimeZone()
         {
-            string modernTzId = GetModernTzId(originalId);
-            ModernTimeZone = TimeZoneInfo.FindSystemTimeZoneById(modernTzId);
-            TimeZoneProto = new GbcSmxTimeZone()
-            {
-                ListIndex = tzIndex,
-                OriginalOffsetStr = offsetStr,
-                OriginalTzId = originalId,
-                ModernTzId = modernTzId,
-                OriginalUtcOffset = Duration.FromTimeSpan(ParseOriginalUtcOffset(offsetStr)),
-                TodayUtcOffset = Duration.FromTimeSpan(ModernTimeZone.BaseUtcOffset),
-            };
-        }
+            ListIndex = tzIndex,
+            OriginalOffsetStr = offsetStr,
+            OriginalTzId = originalId,
+            ModernTzId = modernTzId,
+            OriginalUtcOffset = Duration.FromTimeSpan(ParseOriginalUtcOffset(offsetStr)),
+            TodayUtcOffset = Duration.FromTimeSpan(modernTimeZone.BaseUtcOffset),
+        };
+    }
+
+    private static TimeZoneInfo GetModernTz(GbcSmxTimeZone tz)
+    {
+        return TimeZoneInfo.FindSystemTimeZoneById(tz.ModernTzId);
     }
 }
