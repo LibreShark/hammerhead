@@ -44,6 +44,11 @@ public sealed class N64GBHunterRom : Rom
         Metadata.Brand = RomBrand.GbHunter;
     }
 
+    public override bool FormatSupportsCustomCheatCodes()
+    {
+        return false;
+    }
+
     private static BinaryScribe MakeScribe(u8[] rawInput)
     {
         u8[] output = rawInput.ToArray();

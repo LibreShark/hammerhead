@@ -6,6 +6,7 @@ using BetterConsoles.Tables;
 using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 using NeoSmart.PrettySize;
@@ -73,6 +74,11 @@ public abstract class Rom
 
     protected abstract void PrintCustomHeader();
     protected virtual void PrintCustomBody() {}
+
+    public virtual bool FormatSupportsCustomCheatCodes()
+    {
+        return true;
+    }
 
     public virtual bool FormatSupportsFileEncryption()
     {
@@ -176,6 +182,26 @@ public abstract class Rom
         return new UnknownRom(romFilePath, bytes);
     }
 
+    protected static RomString EmptyRomStr()
+    {
+        return new RomString()
+        {
+            Value = "",
+            Addr = new RomRange()
+            {
+                Length = 0,
+                StartIndex = 0,
+                EndIndex = 0,
+                RawBytes = ByteString.Empty,
+            },
+        };
+    }
+
+    private static string Bold(string str)
+    {
+        return str.SetStyle(FontStyleExt.Bold);
+    }
+
     public void PrintSummary()
     {
         PrintHeading("File properties");
@@ -187,12 +213,16 @@ public abstract class Rom
         Console.WriteLine();
         PrintCustomHeader();
         Console.WriteLine();
-        PrintGames();
-        Console.WriteLine();
+        if (FormatSupportsCustomCheatCodes())
+        {
+            PrintGames();
+            Console.WriteLine();
+        }
         PrintCustomBody();
         Console.WriteLine();
         Console.WriteLine();
-        Console.WriteLine("================================================================================");
+        // --------------------------------------------------------------------------------
+        Console.WriteLine(Bold("".PadRight(160, '-')));
         Console.WriteLine();
         Console.WriteLine();
     }
@@ -234,8 +264,12 @@ public abstract class Rom
 
     protected static void PrintHeading(string heading)
     {
+        string horizontalLine = "".PadRight(80, '=');
         Console.WriteLine();
-        Console.WriteLine($"{heading}:");
+        Console.WriteLine(Bold(horizontalLine));
+        Console.WriteLine(Bold($"= {heading,-76} ="));
+        Console.WriteLine(Bold(horizontalLine));
+        Console.WriteLine();
     }
 
     private void PrintIdentifiers()
@@ -253,9 +287,11 @@ public abstract class Rom
 
     private void PrintGames()
     {
+        PrintHeading("Games and cheat codes");
+
         if (Games.Count == 0)
         {
-            Console.WriteLine("No games/cheats found.".SetStyle(FontStyleExt.Bold));
+            Console.WriteLine("No games/cheats found.".ForegroundColor(Color.Red));
             return;
         }
 

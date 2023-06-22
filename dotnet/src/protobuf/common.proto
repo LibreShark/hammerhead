@@ -212,3 +212,13 @@ message GbcSmxTimeZone {
   .google.protobuf.Duration original_utc_offset = 5;
   .google.protobuf.Duration today_utc_offset = 6;
 }
+
+message GbcSmxMessage {
+  string subject = 1;
+  string recipient_email = 2;
+  string unknown_field_1 = 3;
+  string raw_date = 4;
+  string iso_date = 5;
+  string message = 6;
+  string unknown_field_2 = 7;
+}

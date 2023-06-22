@@ -60,6 +60,11 @@ public sealed class GbcMonsterBrainRom : Rom
         }
     }
 
+    public override bool FormatSupportsCustomCheatCodes()
+    {
+        return false;
+    }
+
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);

@@ -27,6 +27,11 @@ public sealed class GbaTvTunerRom : Rom
     {
     }
 
+    public override bool FormatSupportsCustomCheatCodes()
+    {
+        return false;
+    }
+
     public static bool Is(u8[] bytes)
     {
         bool is512KiB = bytes.IsKiB(512);

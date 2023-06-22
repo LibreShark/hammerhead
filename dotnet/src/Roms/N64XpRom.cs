@@ -203,6 +203,7 @@ public sealed class N64XpRom : Rom
                         codeBytes = DecryptCodeMethod2(codeBytes);
                     }
 
+                    // TODO(CheatoBaggins): Is this redundant?
                     var codeScribe = new BigEndianScribe(codeBytes);
                     u8[] bytes = codeScribe.ReadBytes(6);
                     cheat.Codes.Add(new Code()

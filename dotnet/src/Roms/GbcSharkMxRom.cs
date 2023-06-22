@@ -6,6 +6,7 @@ using BetterConsoles.Tables;
 using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.IO;
 
@@ -37,6 +38,11 @@ public sealed class GbcSharkMxRom : Rom
     private const u32 MessagesAddr  = 0x00021000;
 
     private readonly List<Tz> _tzs = new();
+    private readonly List<GbcSmxContact> _contacts = new();
+
+    private RomString _regCodeCopy1 = EmptyRomStr();
+    private RomString _regCodeCopy2 = EmptyRomStr();
+    private RomString _secretPin = EmptyRomStr();
 
     public GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
@@ -44,31 +50,21 @@ public sealed class GbcSharkMxRom : Rom
         Metadata.Brand = RomBrand.SharkMx;
 
         ParseVersion();
-        ParseTimeZones();
-        ParseContacts();
         ParseRegistrationCode();
         ParseSecretPin();
+        ParseTimeZones();
+        ParseContacts();
         ParseMessages();
     }
 
-    private void ParseContacts()
+    public override bool FormatSupportsCustomCheatCodes()
     {
-        Scribe.Seek(ContactsAddr);
+        return false;
     }
 
-    private void ParseRegistrationCode()
+    public override bool FormatSupportsUserPrefs()
     {
-        Scribe.Seek(RegCodeAddr);
-    }
-
-    private void ParseSecretPin()
-    {
-        Scribe.Seek(SecretPinAddr);
-    }
-
-    private void ParseMessages()
-    {
-        Scribe.Seek(MessagesAddr);
+        return true;
     }
 
     private void ParseVersion()
@@ -101,6 +97,82 @@ public sealed class GbcSharkMxRom : Rom
 
         Metadata.SortableVersion = Double.Parse(versionStr);
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2} ({countryStr})";
+    }
+
+    private void ParseRegistrationCode()
+    {
+        Scribe.Seek(RegCodeAddr);
+        _regCodeCopy1 = Scribe.ReadCStringUntilNull(16, false);
+        Scribe.Seek(RegCodeAddr + 16);
+        _regCodeCopy2 = Scribe.ReadCStringUntilNull(16, false);
+
+        Metadata.Identifiers.Add(_regCodeCopy1);
+        Metadata.Identifiers.Add(_regCodeCopy2);
+    }
+
+    private void ParseSecretPin()
+    {
+        Scribe.Seek(SecretPinAddr);
+        _secretPin = Scribe.ReadPrintableCString();
+        Metadata.Identifiers.Add(_secretPin);
+    }
+
+    private void ParseContacts()
+    {
+        Scribe.Seek(ContactsAddr);
+        while (!Scribe.IsPadding())
+        {
+            RomString entryNumStr = ReadNextContactEntryNum();
+            if (entryNumStr.Value.Length == 0)
+            {
+                break;
+            }
+            _contacts.Add(ReadNextContact(entryNumStr));
+        }
+
+        // There are 50 numbered message contact entries, followed by a single
+        // unnumbered contact entry.
+        _contacts.Add(ReadNextContact(EmptyRomStr()));
+    }
+
+    private RomString ReadNextContactEntryNum()
+    {
+        RomString entryNumStr;
+        byte[] peekBytes = Scribe.PeekBytes(2);
+
+        // There are 50 numbered message contact entries, followed by a single
+        // unnumbered contact entry.
+        if (peekBytes[0] == 'M' && peekBytes[1] == 'e')
+        {
+            return EmptyRomStr();
+        }
+        else
+        {
+            entryNumStr = Scribe.ReadCStringUntilNull(2, false);
+        }
+
+        // For some reason, the first entry has a non-'0' first byte.
+        if (peekBytes[0] == 0xB0)
+        {
+            entryNumStr.Value = "0" + (char)peekBytes[1];
+        }
+
+        return entryNumStr;
+    }
+
+    private GbcSmxContact ReadNextContact(RomString entryNumStr)
+    {
+        return new GbcSmxContact()
+        {
+            // 1-indexed
+            EntryNumber = entryNumStr,
+            PersonName = Scribe.ReadCStringUntilNull().Trim(),
+            EmailAddress = Scribe.ReadCStringUntilNull().Trim(),
+            UnknownField1 = Scribe.ReadCStringUntilNull().Trim(),
+            UnknownField2 = Scribe.ReadCStringUntilNull().Trim(),
+            PhoneNumber = Scribe.ReadCStringUntilNull().Trim(),
+            StreetAddress = Scribe.ReadCStringUntilNull().Trim(),
+        };
     }
 
     private void ParseTimeZones()
@@ -136,6 +208,11 @@ public sealed class GbcSharkMxRom : Rom
                (c is >= '0' and <= '9');
     }
 
+    private void ParseMessages()
+    {
+        Scribe.Seek(MessagesAddr);
+    }
+
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
@@ -163,15 +240,18 @@ public sealed class GbcSharkMxRom : Rom
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    protected override void PrintCustomBody()
-    {
-        Console.WriteLine();
-        PrintHeading($"Time zones ({_tzs.Count})");
-        Console.WriteLine(BuildTimeZoneTable());
-    }
-
     protected override void PrintCustomHeader()
     {
+        PrintHeading($"Registration");
+        Console.WriteLine(BuildRegistrationTable());
+    }
+
+    protected override void PrintCustomBody()
+    {
+        PrintHeading($"Time zones ({_tzs.Count})");
+        Console.WriteLine(BuildTimeZoneTable());
+        PrintHeading($"Contacts ({_contacts.Count})");
+        Console.WriteLine(BuildContactsTable());
     }
 
     private string BuildTimeZoneTable()
@@ -218,6 +298,113 @@ public sealed class GbcSharkMxRom : Rom
             string modernOffsetStr = modernUtcOffset.ToUtcString();
 
             table.AddRow(tz.TimeZoneProto.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.TimeZoneProto.ModernTzId);
+        }
+
+        table.Config = TableConfig.Unicode();
+
+        return $"{table}";
+    }
+
+    private string BuildRegistrationTable()
+    {
+        var headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Key",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Value",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .Build();
+
+        table.AddRow("Reg code copy #1", _regCodeCopy1.Value);
+        table.AddRow("Reg code copy #2", _regCodeCopy2.Value);
+        table.AddRow("Secret PIN", _secretPin.Value);
+
+        table.Config = TableConfig.Unicode();
+
+        return $"{table}";
+    }
+
+    private string BuildContactsTable()
+    {
+        var headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("#",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Name",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .AddColumn("Email address",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .AddColumn("Unknown field #1",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Unknown field #2",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Phone number",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Street address",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .Build();
+
+        foreach (GbcSmxContact contact in _contacts)
+        {
+            table.AddRow(
+                contact.EntryNumber.Value,
+                contact.PersonName.Value,
+                contact.EmailAddress.Value,
+                contact.UnknownField1.Value,
+                contact.UnknownField2.Value,
+                contact.PhoneNumber.Value,
+                contact.StreetAddress.Value
+            );
         }
 
         table.Config = TableConfig.Unicode();

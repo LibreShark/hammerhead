@@ -23,6 +23,11 @@ public sealed class UnknownRom : Rom
     {
     }
 
+    public override bool FormatSupportsCustomCheatCodes()
+    {
+        return false;
+    }
+
     private static BinaryScribe MakeScribe(u8[] rawInput)
     {
         return new BigEndianScribe(rawInput);
