@@ -28,6 +28,7 @@ public abstract class Rom
     private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
     private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
     private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
+    private static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
     private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
 
     public readonly ImmutableArray<u8> RawInput;
@@ -253,23 +254,52 @@ public abstract class Rom
                           $"{allCodes.Length:N0} {codeCountPlural}:");
         Console.WriteLine();
 
-        foreach (Game game in Games)
+        var headerFormat = new CellFormat()
         {
-            string cheats = game.Cheats.Count == 1 ? "cheat" : "cheats";
-            string gameIsActive = game.IsGameActive ? " <!------------ CURRENTLY SELECTED GAME" : "";
-            Console.WriteLine($"- {game.GameName.Value} ({game.Cheats.Count} {cheats}){gameIsActive}");
-            foreach (Cheat cheat in game.Cheats)
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table gameTable = new TableBuilder(headerFormat)
+            .AddColumn("Name",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .AddColumn("Cheats",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Right
+                )
+            )
+            .AddColumn("Warnings",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .Build();
+
+        gameTable.Config = TableConfig.Unicode();
+
+        List<Game> sortedGames = Games.ToList();
+        sortedGames.Sort((g1, g2) =>
+            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.InvariantCulture));
+
+        foreach (Game game in sortedGames)
+        {
+            string gameName = game.GameName.Value;
+            if (game.IsGameActive)
             {
-                string codes = cheat.Codes.Count == 1 ? "code" : "codes";
-                string isActive = cheat.IsCheatActive ? " [ON]" : "";
-                Console.WriteLine($"    - {cheat.CheatName.Value} ({cheat.Codes.Count} {codes}){isActive}");
-                foreach (Code code in cheat.Codes)
-                {
-                    string codeStr = code.Bytes.ToCodeString(Metadata.Console);
-                    Console.WriteLine($"        {codeStr}");
-                }
+                gameName = $"{gameName}".ForegroundColor(SelectedColor).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline);
             }
+            gameTable.AddRow(gameName, game.Cheats.Count, game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
         }
+
+        Console.WriteLine(gameTable);
     }
 
     private void PrintFilePropTable()
