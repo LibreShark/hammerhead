@@ -1,3 +1,10 @@
+using System.Drawing;
+using BetterConsoles.Colors.Extensions;
+using BetterConsoles.Core;
+using BetterConsoles.Tables;
+using BetterConsoles.Tables.Builders;
+using BetterConsoles.Tables.Configuration;
+using BetterConsoles.Tables.Models;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
@@ -347,29 +354,112 @@ public sealed class N64GsRom : Rom
 
     protected override void PrintCustomHeader()
     {
+        PrintHeading("Addresses");
+        Console.WriteLine(BuildAddressTable());
+
+        PrintHeading("Key codes");
+        Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
+        Console.WriteLine();
+
+        if (_supportsKeyCodes)
+        {
+            Console.WriteLine(BuildKeyCodesTable());
+        }
+        else
+        {
+            Console.WriteLine("This firmware version does not support additional key codes.".SetStyle(FontStyleExt.Italic));
+        }
+    }
+
+    private Table BuildAddressTable()
+    {
+        var headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Section",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Address",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .Build();
+
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
         string gameListAddr = $"0x{_gameListAddr:X8}";
         string keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
         string userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
+        table.AddRow("Firmware addr", firmwareAddr);
+        table.AddRow("User prefs addr", userPrefsAddr);
+        table.AddRow("Key code list addr", keyCodeListAddr);
+        table.AddRow("Game list addr", gameListAddr);
 
-        Console.WriteLine($"Firmware addr:      {firmwareAddr}");
-        Console.WriteLine($"User prefs addr:    {userPrefsAddr}");
-        Console.WriteLine($"Key code list addr: {keyCodeListAddr}");
-        Console.WriteLine($"Game list addr:     {gameListAddr}");
-        Console.WriteLine();
-        Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
+        table.Config = TableConfig.Unicode();
 
-        if (_supportsKeyCodes)
+        return table;
+    }
+
+    private Table BuildKeyCodesTable()
+    {
+        var headerFormat = new CellFormat()
         {
-            Console.WriteLine("Key codes: ");
-            foreach (N64KeyCode keyCode in _keyCodes)
-            {
-                Console.WriteLine($"- {keyCode.ToDisplayString()}");
-            }
-        }
-        else
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Games (CIC chip)",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .AddColumn("Key code",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .AddColumn("Active?",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .Build();
+
+        foreach (N64KeyCode keyCode in _keyCodes)
         {
-            Console.WriteLine("This firmware version does not support additional key codes.");
+            string hexString = keyCode.Bytes.ToHexString(" ");
+            table.AddRow(
+                keyCode.IsKeyCodeActive
+                    ? $"> {keyCode.Name.Value.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline)}"
+                    : $"  {keyCode.Name.Value}",
+                keyCode.IsKeyCodeActive
+                    ? $"{hexString.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline)}"
+                    : $"{hexString}",
+                keyCode.IsKeyCodeActive
+                    ? "Active".ForegroundColor(Color.Green).SetStyle(FontStyleExt.Bold)
+                    : ""
+            );
         }
+
+        table.Config = TableConfig.Unicode();
+
+        return table;
     }
 }
