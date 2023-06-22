@@ -27,10 +27,6 @@ using f64 = Double;
 /// </summary>
 public sealed class GbcSharkMxRom : Rom
 {
-    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-
     private const GameConsole ThisConsole = GameConsole.GameBoyColor;
     private const RomFormat ThisRomFormat = RomFormat.GbcSharkMx;
 
