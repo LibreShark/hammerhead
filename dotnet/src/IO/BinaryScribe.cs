@@ -209,6 +209,25 @@ public abstract class BinaryScribe
 
     private delegate bool ByteToStrTranslator(byte b, out string ch);
 
+    public RomString ReadCStringUntil(u32 maxLen = 0, char terminator = '\n')
+    {
+        return ReadCString(maxLen, (byte b, out string ch) =>
+        {
+            bool equalsTerminator = b == 0 || b == terminator;
+            bool isNewlineTerminator =
+                (terminator is '\n' or '\r' or '\f') &&
+                ((char)b is '\n' or '\r' or '\f');
+            if (equalsTerminator || isNewlineTerminator)
+            {
+                ch = "";
+                return false;
+            }
+
+            ch = ByteToStr(b);
+            return true;
+        }, false);
+    }
+
     public RomString ReadCStringUntilNull(u32 maxLen = 0, bool isNullTerminated = true)
     {
         return ReadCString(maxLen, (byte b, out string ch) =>

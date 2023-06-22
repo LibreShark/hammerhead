@@ -39,6 +39,7 @@ public sealed class GbcSharkMxRom : Rom
 
     private readonly List<Tz> _tzs = new();
     private readonly List<GbcSmxContact> _contacts = new();
+    private readonly List<GbcSmxMessage> _messages = new();
 
     private RomString _regCodeCopy1 = EmptyRomStr();
     private RomString _regCodeCopy2 = EmptyRomStr();
@@ -211,6 +212,31 @@ public sealed class GbcSharkMxRom : Rom
     private void ParseMessages()
     {
         Scribe.Seek(MessagesAddr);
+        while (!Scribe.IsPadding())
+        {
+            RomString subject = Scribe.ReadCStringUntil(0, '\f');
+            Scribe.ReadU8();
+            RomString recipientEmail = Scribe.ReadCStringUntil(0, '\f');
+            Scribe.ReadU8();
+            RomString unknownField1 = Scribe.ReadCStringUntil(0, '\f');
+            Scribe.ReadU8();
+            RomString rawDate = Scribe.ReadCStringUntil(0, '\f');
+            Scribe.ReadU8();
+            RomString message = Scribe.ReadCStringUntil(0, '\f');
+            Scribe.ReadU8();
+            RomString unknownField2 = Scribe.ReadCStringUntilNull();
+
+            _messages.Add(new GbcSmxMessage()
+            {
+                Subject = subject,
+                RecipientEmail = recipientEmail,
+                UnknownField1 = unknownField1,
+                RawDate = rawDate,
+                IsoDate = DateTime.Parse(rawDate.Value).ToIsoString(),
+                Message = message,
+                UnknownField2 = unknownField2,
+            });
+        }
     }
 
     public static bool Is(u8[] bytes)
@@ -252,6 +278,8 @@ public sealed class GbcSharkMxRom : Rom
         Console.WriteLine(BuildTimeZoneTable());
         PrintHeading($"Contacts ({_contacts.Count})");
         Console.WriteLine(BuildContactsTable());
+        PrintHeading($"Messages ({_messages.Count})");
+        Console.WriteLine(BuildMessagesTable());
     }
 
     private string BuildTimeZoneTable()
@@ -404,6 +432,78 @@ public sealed class GbcSharkMxRom : Rom
                 contact.UnknownField2.Value,
                 contact.PhoneNumber.Value,
                 contact.StreetAddress.Value
+            );
+        }
+
+        table.Config = TableConfig.Unicode();
+
+        return $"{table}";
+    }
+
+    private string BuildMessagesTable()
+    {
+        var headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table table = new TableBuilder(headerFormat)
+            .AddColumn("Subject",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Recipient",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Unknown field #1",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Raw date",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("ISO date",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Message",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Unknown field #2",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .Build();
+
+        foreach (GbcSmxMessage message in _messages)
+        {
+            table.AddRow(
+                message.Subject.Value,
+                message.RecipientEmail.Value,
+                message.UnknownField1.Value,
+                message.RawDate.Value,
+                message.IsoDate,
+                message.Message.Value,
+                message.UnknownField2.Value
             );
         }
 

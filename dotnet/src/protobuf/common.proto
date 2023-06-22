@@ -214,11 +214,11 @@ message GbcSmxTimeZone {
 }
 
 message GbcSmxMessage {
-  string subject = 1;
-  string recipient_email = 2;
-  string unknown_field_1 = 3;
-  string raw_date = 4;
+  RomString subject = 1;
+  RomString recipient_email = 2;
+  RomString unknown_field_1 = 3;
+  RomString raw_date = 4;
   string iso_date = 5;
-  string message = 6;
-  string unknown_field_2 = 7;
+  RomString message = 6;
+  RomString unknown_field_2 = 7;
 }
