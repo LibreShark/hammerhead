@@ -188,7 +188,9 @@ public abstract class Rom
         Console.WriteLine();
         PrintGames();
         Console.WriteLine();
-        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine();
+        Console.WriteLine("================================================================================");
+        Console.WriteLine();
         Console.WriteLine();
     }
 
