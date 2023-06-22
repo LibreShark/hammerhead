@@ -239,5 +239,15 @@ public static class ExtensionMethods
         return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
 
+    public static string ToUtcString(this TimeSpan ts)
+    {
+        return "UTC" + ts.Hours switch
+        {
+            0 => "+00:00",
+            > 0 => $"+{ts.Hours:D2}:{ts.Minutes:D2}",
+            _ => $"{ts.Hours:D2}:{ts.Minutes:D2}",
+        };
+    }
+
     #endregion
 }
