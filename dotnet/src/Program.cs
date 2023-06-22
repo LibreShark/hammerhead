@@ -63,9 +63,12 @@ Commands:
 
     private static int PrintRomInfo(IEnumerable<string> args)
     {
-        foreach (var romFilePath in args)
+        string homeDir = Environment.GetEnvironmentVariable("userdir") ?? // Windows
+                         Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
+                         "~";
+        foreach (string romFilePath in args)
         {
-            Console.WriteLine(romFilePath);
+            Console.WriteLine(romFilePath.Replace(homeDir, "~"));
             Console.WriteLine();
             Rom rom = Rom.FromFile(romFilePath);
             rom.PrintSummary();
