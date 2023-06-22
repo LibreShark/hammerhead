@@ -82,6 +82,40 @@ public static class ExtensionMethods
         return -1;
     }
 
+    public static s32[] FindAll(this u8[] haystack, string needleStr)
+    {
+        List<s32> indexes = new();
+        s32 idx = 0;
+        while (idx < haystack.Length)
+        {
+            s32 needlePos = haystack[idx..].Find(needleStr);
+            if (needlePos == -1)
+            {
+                break;
+            }
+            indexes.Add(idx + needlePos);
+            idx += needlePos + needleStr.Length;
+        }
+        return indexes.ToArray();
+    }
+
+    public static s32[] FindAll(this u8[] haystack, u8[] needleBytes)
+    {
+        List<s32> indexes = new();
+        s32 idx = 0;
+        while (idx < haystack.Length)
+        {
+            s32 needlePos = haystack[idx..].Find(needleBytes);
+            if (needlePos == -1)
+            {
+                break;
+            }
+            indexes.Add(idx + needlePos);
+            idx += needlePos + needleBytes.Length;
+        }
+        return indexes.ToArray();
+    }
+
     public static bool IsKiB(this u8[] bytes, int numKiB)
     {
         return bytes.Length == numKiB * 1024;

@@ -25,11 +25,11 @@ using f64 = Double;
 
 public abstract class Rom
 {
-    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-    private static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
-    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+    protected static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
+    protected static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
+    protected static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
+    protected static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
+    protected static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
 
     public readonly ImmutableArray<u8> RawInput;
 
@@ -127,6 +127,11 @@ public abstract class Rom
             return new N64XpRom(romFilePath, bytes);
         }
 
+        if (N64GBHunterRom.Is(bytes))
+        {
+            return new N64GBHunterRom(romFilePath, bytes);
+        }
+
         if (GbcCbRom.Is(bytes))
         {
             return new GbcCbRom(romFilePath, bytes);
@@ -222,7 +227,7 @@ public abstract class Rom
         Console.WriteLine(filePropTable);
     }
 
-    private static void PrintHeading(string heading)
+    protected static void PrintHeading(string heading)
     {
         Console.WriteLine();
         Console.WriteLine($"{heading}:");
@@ -230,6 +235,11 @@ public abstract class Rom
 
     private void PrintIdentifiers()
     {
+        if (Metadata.Identifiers.Count == 0)
+        {
+            Console.WriteLine("No identifiers found".SetStyle(FontStyleExt.Italic));
+            return;
+        }
         foreach (RomString id in Metadata.Identifiers)
         {
             Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
