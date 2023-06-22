@@ -23,7 +23,7 @@ public sealed class GbaGsFcdRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkFcd;
 
     public GbaGsFcdRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
     }
 

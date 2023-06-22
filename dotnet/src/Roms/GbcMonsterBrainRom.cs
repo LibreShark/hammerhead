@@ -31,7 +31,7 @@ public sealed class GbcMonsterBrainRom : Rom
     };
 
     public GbcMonsterBrainRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = DetectBrand(rawInput);
 

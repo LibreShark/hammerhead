@@ -5,22 +5,24 @@ namespace LibreShark.Hammerhead.IO;
 
 public class Checksum
 {
-    public string CRC32 { get; private set; }
-    public string CRC32C { get; private set; }
-    public string MD5 { get; private set; }
-    public string SHA1 { get; private set; }
+    // These fields MUST be getters/setters in order to be serialized by
+    // JsonSerializer.Serialize(this).
+    public string Crc32Hex { get; private set; }
+    public string Crc32CHex { get; private set; }
+    public string Md5Hex { get; private set; }
+    public string Sha1Hex { get; private set; }
 
-    public static Checksum From(byte[] bytes)
+    public static Checksum From(IEnumerable<byte> bytes)
     {
-        return new Checksum(bytes);
+        return new Checksum(bytes.ToArray());
     }
 
     private Checksum(byte[] bytes)
     {
-        CRC32 = U32ToString(Crc32Algorithm.Compute(bytes));
-        CRC32C = U32ToString(Crc32CAlgorithm.Compute(bytes));
-        MD5 = BytesToString(System.Security.Cryptography.MD5.HashData(bytes));
-        SHA1 = BytesToString(System.Security.Cryptography.SHA1.HashData(bytes));
+        Crc32Hex = U32ToString(Crc32Algorithm.Compute(bytes));
+        Crc32CHex = U32ToString(Crc32CAlgorithm.Compute(bytes));
+        Md5Hex = BytesToString(System.Security.Cryptography.MD5.HashData(bytes));
+        Sha1Hex = BytesToString(System.Security.Cryptography.SHA1.HashData(bytes));
     }
 
     public override string ToString()

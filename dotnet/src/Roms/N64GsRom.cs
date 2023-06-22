@@ -48,7 +48,7 @@ public sealed class N64GsRom : Rom
     private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, u8[] rawInput)
-        : base(filePath, Decrypt(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, Decrypt(rawInput), ThisConsole, ThisRomFormat)
     {
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 

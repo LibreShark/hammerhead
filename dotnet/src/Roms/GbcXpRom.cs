@@ -28,7 +28,7 @@ public sealed class GbcXpRom : Rom
     private const u32 GameListAddr     = 0x00020000;
 
     public GbcXpRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         u32 productNameAddr = (u32)Scribe.Find("Xploder GB");
         Metadata.Brand = RomBrand.Xploder;

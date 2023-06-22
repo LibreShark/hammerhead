@@ -23,7 +23,7 @@ public sealed class GbaTvTunerRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaTvTuner;
 
     public GbaTvTunerRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
     }
 

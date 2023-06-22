@@ -19,7 +19,7 @@ public sealed class UnknownRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.UnknownRomFormat;
 
     public UnknownRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
     }
 

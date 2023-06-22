@@ -121,17 +121,10 @@ enum RomBrand {
 }
 
 message ChecksumResult {
-  bytes crc32_bytes = 1;
-  bytes crc32_string = 2;
-
-  bytes crc32c_bytes = 3;
-  bytes crc32c_string = 4;
-
-  bytes md5_bytes = 5;
-  bytes md5_string = 6;
-
-  bytes sha1_bytes = 7;
-  bytes sha1_string = 8;
+  string crc32_hex = 1;
+  string crc32c_hex = 2;
+  string md5_hex = 3;
+  string sha1_hex = 4;
 }
 
 message RomMetadata {

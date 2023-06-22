@@ -36,7 +36,7 @@ public sealed class GbcCbRom : Rom
     private readonly RomString[] _cheatNames = new RomString[16];
 
     public GbcCbRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = DetectBrand(rawInput);
 

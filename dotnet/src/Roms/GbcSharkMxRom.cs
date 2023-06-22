@@ -37,7 +37,7 @@ public sealed class GbcSharkMxRom : Rom
     private readonly List<Tz> _tzs = new();
 
     public GbcSharkMxRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = RomBrand.SharkMx;
 
@@ -139,6 +139,7 @@ public sealed class GbcSharkMxRom : Rom
 
     protected override void PrintCustomHeader()
     {
+        Console.WriteLine();
         Console.WriteLine($"Time zones ({_tzs.Count}):");
         Console.WriteLine(BuildTimeZoneTable());
     }

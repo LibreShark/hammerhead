@@ -30,6 +30,8 @@ public abstract class Rom
     private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
     private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
 
+    public readonly ImmutableArray<u8> RawInput;
+
     /// <summary>
     /// Plain, unencrypted, unobfuscated bytes.
     /// If the input file is encrypted/scrambled, it must be
@@ -42,20 +44,29 @@ public abstract class Rom
     protected readonly List<Game> Games = new();
     protected readonly BinaryScribe Scribe;
 
-    // TODO(CheatoBaggins): Compute file checksums
     protected Rom(
         string filePath,
+        IEnumerable<byte> rawInput,
         BinaryScribe scribe,
         GameConsole console,
         RomFormat format
     )
     {
+        RawInput = rawInput.ToImmutableArray();
+        Checksum checksum = Checksum.From(RawInput);
         Scribe = scribe;
         Metadata = new RomMetadata
         {
             FilePath = filePath,
             Console = console,
             Format = format,
+            FileChecksum = new ChecksumResult()
+            {
+                Crc32Hex = checksum.Crc32Hex,
+                Crc32CHex = checksum.Crc32CHex,
+                Md5Hex = checksum.Md5Hex,
+                Sha1Hex = checksum.Sha1Hex,
+            },
         };
     }
 
@@ -160,11 +171,11 @@ public abstract class Rom
 
     public void PrintSummary()
     {
-        Console.WriteLine();
-        Console.WriteLine("File properties:");
+        PrintHeading("File properties");
         PrintFilePropTable();
-        Console.WriteLine();
-        Console.WriteLine("Identifiers:");
+        PrintHeading("File checksums");
+        PrintChecksums();
+        PrintHeading("Identifiers");
         PrintIdentifiers();
         Console.WriteLine();
         PrintCustomHeader();
@@ -173,6 +184,47 @@ public abstract class Rom
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine();
+    }
+
+    private void PrintChecksums()
+    {
+        var headerFormat = new CellFormat()
+        {
+            Alignment = Alignment.Left,
+            FontStyle = FontStyleExt.Bold,
+            ForegroundColor = TableHeaderColor,
+        };
+
+        Table filePropTable = new TableBuilder(headerFormat)
+            .AddColumn("Algorithm",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableKeyColor,
+                    alignment: Alignment.Left
+                )
+            )
+            .AddColumn("Checksum",
+                rowsFormat: new CellFormat(
+                    foregroundColor: TableValueColor,
+                    alignment: Alignment.Left,
+                    innerFormatting: true
+                )
+            )
+            .Build();
+
+        filePropTable.AddRow("CRC-32 (standard)", Metadata.FileChecksum.Crc32Hex);
+        filePropTable.AddRow("CRC-32C (Castagnoli)", Metadata.FileChecksum.Crc32CHex);
+        filePropTable.AddRow("MD5", Metadata.FileChecksum.Md5Hex);
+        filePropTable.AddRow("SHA-1", Metadata.FileChecksum.Sha1Hex);
+
+        filePropTable.Config = TableConfig.Unicode();
+
+        Console.WriteLine(filePropTable);
+    }
+
+    private static void PrintHeading(string heading)
+    {
+        Console.WriteLine();
+        Console.WriteLine($"{heading}:");
     }
 
     private void PrintIdentifiers()

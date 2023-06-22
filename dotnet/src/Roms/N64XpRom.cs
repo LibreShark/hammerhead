@@ -44,7 +44,7 @@ public sealed class N64XpRom : Rom
     private readonly bool _hasUserPrefs;
 
     public N64XpRom(string filePath, u8[] rawInput)
-        : base(filePath, Unobfuscate(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsole, ThisRomFormat)
     {
         _isScrambled = DetectScrambled(rawInput);
         _hasUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());

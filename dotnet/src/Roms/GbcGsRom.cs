@@ -39,7 +39,7 @@ public sealed class GbcGsRom : Rom
     };
 
     public GbcGsRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         Metadata.Brand = IsGs(Buffer) ? RomBrand.Gameshark : IsAr(Buffer) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();

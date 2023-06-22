@@ -23,7 +23,7 @@ public sealed class GbaGsDatelRom : Rom
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkDatel;
 
     public GbaGsDatelRom(string filePath, u8[] rawInput)
-        : base(filePath, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         var minorVersionNumber = Buffer[0x21004];
         var majorVersionNumber = Buffer[0x21005];
