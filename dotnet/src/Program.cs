@@ -68,9 +68,9 @@ Commands:
                          "~";
         foreach (string romFilePath in args)
         {
-            Console.WriteLine(romFilePath.Replace(homeDir, "~"));
+            Console.WriteLine(romFilePath.Replace(homeDir, "~").ForegroundColor(Color.LimeGreen).SetStyle(FontStyleExt.Bold));
             Console.WriteLine();
-            Rom rom = Rom.FromFile(romFilePath);
+            var rom = Rom.FromFile(romFilePath);
             rom.PrintSummary();
         }
         return 0;

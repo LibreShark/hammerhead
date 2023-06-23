@@ -298,10 +298,11 @@ public static class ExtensionMethods
 
     #region ANSI color codes for terminals
 
-    public static string OrUnknown(this string str)
+    public static string OrUnknown(this string str, string noun = "")
     {
+        noun = string.IsNullOrWhiteSpace(noun) ? "" : $" {noun}";
         return string.IsNullOrWhiteSpace(str)
-            ? "UNKNOWN".ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
+            ? $"UNKNOWN{noun}".ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
             : str;
     }
 

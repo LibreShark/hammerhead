@@ -22,17 +22,38 @@ public sealed class GbaGsDatelRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkDatel;
 
+    private const u32 GbaMagicStrAddr = 0x21000;
+    private const u32 MinorVersionNumberAddr = 0x21004;
+    private const u32 MajorVersionNumberAddr = 0x21005;
+
+    private static readonly string[] KnownVersions =
+    {
+        "v1.0",
+        "v3.3",
+        "v5.8",
+    };
+
     public GbaGsDatelRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
-        var minorVersionNumber = Buffer[0x21004];
-        var majorVersionNumber = Buffer[0x21005];
+        u8 minorVersionNumber = Buffer[MinorVersionNumberAddr];
+        u8 majorVersionNumber = Buffer[MajorVersionNumberAddr];
+        Metadata.DisplayVersion = $"v{majorVersionNumber}.{minorVersionNumber}";
+        Metadata.SortableVersion = Double.Parse($"{majorVersionNumber}.{minorVersionNumber}");
+        Metadata.IsKnownVersion = KnownVersions.Contains(Metadata.DisplayVersion);
+
+        RomString versionIdStr =
+            Scribe
+                .Seek(GbaMagicStrAddr)
+                .ReadCStringUntilNull(6, false);
+        versionIdStr.Value = string.Join("", versionIdStr.Value.Select((ch) => ch < ' ' ? ch + 0x30 : ch));
     }
 
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
-        return is256KiB && Detect(bytes);
+        bool is512KiB = bytes.IsKiB(512);
+        return (is256KiB || is512KiB) && Detect(bytes);
     }
 
     private static bool Detect(u8[] bytes)

@@ -266,9 +266,9 @@ public abstract class Rom
     {
         string horizontalLine = "".PadRight(80, '=');
         Console.WriteLine();
-        Console.WriteLine(Bold(horizontalLine));
-        Console.WriteLine(Bold($"= {heading,-76} ="));
-        Console.WriteLine(Bold(horizontalLine));
+        Console.WriteLine(horizontalLine);
+        Console.WriteLine($"= {heading,-76} =");
+        Console.WriteLine(horizontalLine);
         Console.WriteLine();
     }
 
@@ -383,7 +383,9 @@ public abstract class Rom
 
         filePropTable.AddRow("Binary format", Metadata.Format.ToDisplayString());
         filePropTable.AddRow("Platform", Metadata.Console.ToDisplayString());
-        filePropTable.AddRow("Brand", Metadata.Brand.ToDisplayString());
+        filePropTable.AddRow("Brand", Metadata.Brand == RomBrand.UnknownBrand
+            ? Metadata.Brand.ToDisplayString().ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
+            : Metadata.Brand.ToDisplayString());
         filePropTable.AddRow("Locale", Metadata.LanguageIetfCode.OrUnknown());
         filePropTable.AddRow("", "");
         filePropTable.AddRow("Version", Metadata.DisplayVersion.OrUnknown());
