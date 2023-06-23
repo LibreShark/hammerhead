@@ -12,7 +12,7 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// EXPERIMENTAL (UNTESTED) RLE01 decoder for N64 GB Hunter and Game Booster ROMs.
+/// EXPERIMENTAL (UNTESTED) RLE01 decoder for N64 GB Hunter and Game Booster ROM asset compression.
 /// Adapted from https://segaxtreme.net/threads/action-replay-save-format.24708/post-180339
 /// </summary>
 public class Rle01Decoder
