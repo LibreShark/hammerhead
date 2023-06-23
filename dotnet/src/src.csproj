@@ -65,4 +65,8 @@
     <ItemGroup>
       <Protobuf Include="protobuf\**\*.proto" ProtoRoot="protobuf" GrpcServices="None" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\RomFiles\" />
+    </ItemGroup>
 </Project>
