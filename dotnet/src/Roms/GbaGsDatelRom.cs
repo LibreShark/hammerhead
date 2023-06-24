@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -34,29 +35,13 @@ public sealed class GbaGsDatelRom : Rom
         "v5.8",
     };
 
+    private readonly BinaryScribe _beScribe = new BigEndianScribe(new byte[8]);
+
     public GbaGsDatelRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         ParseVersion();
-
-        Scribe.Seek(GameListAddr);
-        u16 gameCount = Scribe.ReadU16();
-        Scribe.Skip(2); // null byte padding
-
-        for (u16 gameIdx = 0; gameIdx < gameCount; gameIdx++)
-        {
-            RomString gameName = Scribe.ReadPrintableCString(20, false).Trim();
-            u8 cheatCount = Scribe.ReadU8();
-            Scribe.Skip(3); // null byte padding
-            u8 unknownByte1 = Scribe.ReadU8();
-            Scribe.Skip(2); // null byte padding
-            u8 unknownByte2 = Scribe.ReadU8();
-
-            for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
-            {
-                RomString cheatName = Scribe.ReadPrintableCString(20, false).Trim();
-            }
-        }
+        ParseGames();
     }
 
     private void ParseVersion()
@@ -70,8 +55,64 @@ public sealed class GbaGsDatelRom : Rom
         RomString versionIdStr =
             Scribe
                 .Seek(GbaMagicStrAddr)
-                .ReadCStringUntilNull(6, false);
-        versionIdStr.Value = string.Join("", versionIdStr.Value.Select((ch) => ch < ' ' ? ch + 0x30 : ch));
+                .ReadCStringUntilNull(4, false);
+        versionIdStr.Value += $"{majorVersionNumber}{minorVersionNumber}";
+        versionIdStr.Addr.EndIndex += 2;
+        versionIdStr.Addr.Length += 2;
+        Metadata.Identifiers.Add(versionIdStr);
+    }
+
+    private void ParseGames()
+    {
+        Scribe.Seek(GameListAddr);
+
+        u16 gameCount = Scribe.ReadU16();
+        Scribe.Skip(2); // null byte padding
+
+        for (u16 gameIdx = 0; gameIdx < gameCount; gameIdx++)
+        {
+            RomString gameName = Scribe.ReadPrintableCString(20, false).Trim();
+            var game = new Game()
+            {
+                GameIndex = gameIdx,
+                GameName = gameName,
+            };
+            Games.Add(game);
+
+            u8 cheatCount = Scribe.ReadU8();
+            Scribe.Skip(3); // null byte padding
+
+            for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
+            {
+                u8 codeCount = (u8)(Scribe.ReadU8() / 2);
+                Scribe.Skip(2); // null byte padding
+                u8 unknownByte2 = Scribe.ReadU8();
+
+                RomString cheatName = Scribe.ReadPrintableCString(20, false).Trim();
+                var cheat = new Cheat()
+                {
+                    CheatIndex = cheatIdx,
+                    CheatName = cheatName,
+                };
+                game.Cheats.Add(cheat);
+
+                for (u8 codeIdx = 0; codeIdx < codeCount; codeIdx++)
+                {
+                    // Codes are stored in the ROM in little-endian order,
+                    // but displayed in the UI (and entered by the user) in
+                    // big-endian order.
+                    u32 addr = Scribe.ReadU32();
+                    u32 value = Scribe.ReadU32();
+                    _beScribe.Seek(0).WriteU32(addr).WriteU32(value);
+                    var code = new Code()
+                    {
+                        CodeIndex = codeIdx,
+                        Bytes = ByteString.CopyFrom(_beScribe.GetBufferCopy()),
+                    };
+                    cheat.Codes.Add(code);
+                }
+            }
+        }
     }
 
     public static bool Is(u8[] bytes)
