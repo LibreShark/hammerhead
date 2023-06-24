@@ -37,6 +37,7 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="NeoSmart.PrettySize" Version="3.1.1" />
+      <PackageReference Include="NUnit" Version="3.13.3" />
       <PackageReference Include="Protobuf.Text" Version="0.7.0" />
     </ItemGroup>
 

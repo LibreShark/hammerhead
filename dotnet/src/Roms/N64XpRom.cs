@@ -353,28 +353,28 @@ public sealed class N64XpRom : Rom
             "FUTURE CONSOLE DESIGN";
     }
 
-    private static string SS(u8[] bytes, u32 addr)
-    {
-        return bytes[(int)(addr)..(int)(addr + 2)].ToAsciiString();
-    }
-
     private static bool DetectScrambled(u8[] bytes)
     {
-        string strle = SS(bytes, 0x0016);
-        string strFC = SS(bytes, 0x0436);
-        string strDS = SS(bytes, 0x1096);
-        string strXp = SS(bytes, 0x121C);
-        string strlo = SS(bytes, 0x123C);
-        string strFU = SS(bytes, 0x131E);
-        string strTU = SS(bytes, 0x133E);
+        string strle = Get2Chars(bytes, 0x0016);
+        string strFC = Get2Chars(bytes, 0x0436);
+        string strDS = Get2Chars(bytes, 0x1096);
+        string strXp = Get2Chars(bytes, 0x121C);
+        string strlo = Get2Chars(bytes, 0x123C);
+        string strFU = Get2Chars(bytes, 0x131E);
+        string strTU = Get2Chars(bytes, 0x133E);
         return strle == "le" &&
                strFC == "FC" &&
                strDS == "D " &&
                strXp == "Xp" &&
                strlo == "lo" &&
-               strFU is "Fu" or "FU" &&
-               strTU is "tu" or "TU" &&
+              (strFU is "Fu" or "FU") &&
+              (strTU is "tu" or "TU") &&
                true;
+    }
+
+    private static string Get2Chars(u8[] bytes, u32 addr)
+    {
+        return bytes[(int)(addr)..(int)(addr + 2)].ToAsciiString();
     }
 
     public static bool Is(u8[] bytes)
