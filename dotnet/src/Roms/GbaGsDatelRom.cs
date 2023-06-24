@@ -25,7 +25,7 @@ public sealed class GbaGsDatelRom : Rom
     private const u32 GbaMagicStrAddr = 0x21000;
     private const u32 MinorVersionNumberAddr = 0x21004;
     private const u32 MajorVersionNumberAddr = 0x21005;
-    private const u32 GameListAddr = 0x21044;
+    private const u32 GameListAddr = 0x21040;
 
     private static readonly string[] KnownVersions =
     {
@@ -39,7 +39,24 @@ public sealed class GbaGsDatelRom : Rom
     {
         ParseVersion();
 
-        RomString firstGameName = Scribe.Seek(GameListAddr).ReadPrintableCString(20, false);
+        Scribe.Seek(GameListAddr);
+        u16 gameCount = Scribe.ReadU16();
+        Scribe.Skip(2); // null byte padding
+
+        for (u16 gameIdx = 0; gameIdx < gameCount; gameIdx++)
+        {
+            RomString gameName = Scribe.ReadPrintableCString(20, false).Trim();
+            u8 cheatCount = Scribe.ReadU8();
+            Scribe.Skip(3); // null byte padding
+            u8 unknownByte1 = Scribe.ReadU8();
+            Scribe.Skip(2); // null byte padding
+            u8 unknownByte2 = Scribe.ReadU8();
+
+            for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
+            {
+                RomString cheatName = Scribe.ReadPrintableCString(20, false).Trim();
+            }
+        }
     }
 
     private void ParseVersion()

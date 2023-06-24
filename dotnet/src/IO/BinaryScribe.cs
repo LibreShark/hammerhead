@@ -41,6 +41,13 @@ public abstract class BinaryScribe
         return this;
     }
 
+    public BinaryScribe Skip(u32 count)
+    {
+        Position += count;
+        CheckBounds();
+        return this;
+    }
+
     public TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
     {
         u32 oldAddr = Position;
