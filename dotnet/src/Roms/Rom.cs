@@ -135,9 +135,9 @@ public abstract class Rom
             return new N64XpRom(romFilePath, bytes);
         }
 
-        if (N64GBHunterRom.Is(bytes))
+        if (N64GbHunterRom.Is(bytes))
         {
-            return new N64GBHunterRom(romFilePath, bytes);
+            return new N64GbHunterRom(romFilePath, bytes);
         }
 
         if (GbcCbRom.Is(bytes))

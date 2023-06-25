@@ -28,14 +28,14 @@ using f64 = Double;
 /// made by Datel.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public sealed class N64GBHunterRom : Rom
+public sealed class N64GbHunterRom : Rom
 {
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const RomFormat ThisRomFormat = RomFormat.N64Gbhunter;
 
     private readonly s32[] _rle01Addresses;
 
-    public N64GBHunterRom(string filePath, u8[] rawInput)
+    public N64GbHunterRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
         _rle01Addresses = rawInput.FindAll("RLE01");
