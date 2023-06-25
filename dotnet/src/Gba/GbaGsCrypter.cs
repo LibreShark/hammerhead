@@ -113,7 +113,7 @@ public class GbaGsCrypter
         0xFC, 0x31, 0x09, 0x48, 0xA3, 0xFF, 0x92, 0x12, 0x58, 0xE9, 0xFA, 0xAE, 0x4F, 0xE2, 0xB4, 0xCC,
     };
 
-    private readonly u8[] _seeds = new u8[4];
+    private readonly u32[] _seeds = new u32[4];
     private readonly bool _isV3;
     private u32 _newSeed;
 
@@ -131,10 +131,10 @@ public class GbaGsCrypter
 
         for (u8 i = 0; i < 32; i++)
         {
-            u8 s0 = _seeds[0];
-            u8 s1 = _seeds[1];
-            u8 s2 = _seeds[2];
-            u8 s3 = _seeds[3];
+            u32 s0 = _seeds[0];
+            u32 s1 = _seeds[1];
+            u32 s2 = _seeds[2];
+            u32 s3 = _seeds[3];
 
             u32 v1 = address << 4;
             u32 v2 = v1 + s2;
@@ -207,7 +207,7 @@ public class GbaGsCrypter
             u8 df2 = (u8)(df1 >> 8);
             u8 df3 = (u8)(value & 0xFF);
             u8 df4 = (u8)(df3 + i);
-            _seeds[i] = (u8)SeedGen(df2, df4, deadTable1, deadTable2);
+            _seeds[i] = SeedGen(df2, df4, deadTable1, deadTable2);
         }
     }
 
