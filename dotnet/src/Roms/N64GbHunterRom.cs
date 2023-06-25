@@ -41,7 +41,7 @@ public sealed class N64GbHunterRom : Rom
         _rle01Addresses = rawInput.FindAll("RLE01");
 
         // TODO(CheatoBaggins): Detect Game Booster
-        Metadata.Brand = RomBrand.GbHunter;
+        // Metadata.Brand = RomBrand.GbHunter;
     }
 
     public override bool FormatSupportsCustomCheatCodes()

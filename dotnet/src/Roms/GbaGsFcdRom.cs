@@ -23,6 +23,14 @@ public sealed class GbaGsFcdRom : Rom
     private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
     private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkFcd;
 
+    private static readonly string[] KnownRawBuildDates =
+    {
+        "Fri Oct 19 15:38:32 2001", // CodeBreaker R1 LITE (USA)
+        "Fri Nov 15 13:55:45 2002", // XploderAdv R1 LITE (UK)
+        "Thu Aug 21 17:39:27 2003", // GameShark PRO SP (USA)
+        "Wed Jun 14 11:49:42 2006", // GameShark PRO SP karabiner (USA)
+    };
+
     public GbaGsFcdRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
@@ -92,8 +100,7 @@ public sealed class GbaGsFcdRom : Rom
         // TODO(CheatoBaggins): Determine original time zone
         // Metadata.BuildDateProto = Timestamp.FromDateTime(dateTime);
 
-        // TODO(CheatoBaggins): Implement
-        Metadata.IsKnownVersion = false;
+        Metadata.IsKnownVersion = KnownRawBuildDates.Contains(Metadata.BuildDateRaw.Value);
     }
 
     public static bool Is(u8[] bytes)
