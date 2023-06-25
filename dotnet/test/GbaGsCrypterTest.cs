@@ -16,7 +16,7 @@ using f64 = Double;
 [TestFixture]
 public class GbaGsCrypterTest
 {
-    private static readonly u32[][] EncryptedCodes = {
+    private static readonly u32[][] EncryptedCodesV3 = {
         new u32[] { 0xD925CBB3, 0x457D65D3 },
         new u32[] { 0xB6FA891B, 0xDC4362A9 },
         new u32[] { 0x5C057862, 0x28B943D9 },
@@ -33,7 +33,7 @@ public class GbaGsCrypterTest
         new u32[] { 0xC233B769, 0x2A883C9B },
     };
 
-    private static readonly u32[][] DecryptedCodes = {
+    private static readonly u32[][] DecryptedCodesV3 = {
         new u32[] { 0xC4000970, 0x00008401 },
         new u32[] { 0x45584D42, 0x001DC0DE },
         new u32[] { 0x00000000, 0x183EC7FD },
@@ -55,10 +55,10 @@ public class GbaGsCrypterTest
     {
         var crypter = new GbaGsCrypter(true);
 
-        for (int i = 0; i < EncryptedCodes.Length; i++)
+        for (int i = 0; i < EncryptedCodesV3.Length; i++)
         {
-            u32 addrEnc = EncryptedCodes[i][0];
-            u32 valueEnc = EncryptedCodes[i][1];
+            u32 addrEnc = EncryptedCodesV3[i][0];
+            u32 valueEnc = EncryptedCodesV3[i][1];
 
             u32 addrDec = addrEnc;
             u32 valueDec = valueEnc;
@@ -66,7 +66,7 @@ public class GbaGsCrypterTest
             crypter.DecryptCode(ref addrDec, ref valueDec);
 
             string actualCode = $"{addrDec:X8} {valueDec:X8}";
-            string expectedCode = $"{DecryptedCodes[i][0]:X8} {DecryptedCodes[i][1]:X8}";
+            string expectedCode = $"{DecryptedCodesV3[i][0]:X8} {DecryptedCodesV3[i][1]:X8}";
 
             Assert.That(actualCode, Is.EqualTo(expectedCode));
         }
@@ -77,10 +77,10 @@ public class GbaGsCrypterTest
     {
         var crypter = new GbaGsCrypter(true);
 
-        for (int i = 0; i < DecryptedCodes.Length; i++)
+        for (int i = 0; i < DecryptedCodesV3.Length; i++)
         {
-            u32 addrDec = DecryptedCodes[i][0];
-            u32 valueDec = DecryptedCodes[i][1];
+            u32 addrDec = DecryptedCodesV3[i][0];
+            u32 valueDec = DecryptedCodesV3[i][1];
 
             u32 addrEnc = addrDec;
             u32 valueEnc = valueDec;
@@ -88,7 +88,7 @@ public class GbaGsCrypterTest
             crypter.EncryptCode(ref addrEnc, ref valueEnc);
 
             string actualCode = $"{addrEnc:X8} {valueEnc:X8}";
-            string expectedCode = $"{EncryptedCodes[i][0]:X8} {EncryptedCodes[i][1]:X8}";
+            string expectedCode = $"{EncryptedCodesV3[i][0]:X8} {EncryptedCodesV3[i][1]:X8}";
 
             Assert.That(actualCode, Is.EqualTo(expectedCode));
         }
