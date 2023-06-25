@@ -16,36 +16,81 @@ using f64 = Double;
 [TestFixture]
 public class GbaGsCrypterTest
 {
+    private static readonly u32[][] EncryptedCodes = {
+        new u32[] { 0xD925CBB3, 0x457D65D3 },
+        new u32[] { 0xB6FA891B, 0xDC4362A9 },
+        new u32[] { 0x5C057862, 0x28B943D9 },
+        new u32[] { 0xACF82924, 0x05A5BBE6 },
+        new u32[] { 0x6E173550, 0x7785EF49 },
+        new u32[] { 0xE01CBE71, 0x6A981455 },
+        new u32[] { 0x26E57C50, 0x09E57C3B },
+        new u32[] { 0x57EED658, 0x3820A9E8 },
+        new u32[] { 0x5ECBD26F, 0xCB3A0DE2 },
+        new u32[] { 0x7579F559, 0x2763862F },
+        new u32[] { 0x65EB699D, 0xCA505B93 },
+        new u32[] { 0x6E776811, 0x33AAEC31 },
+        new u32[] { 0x3F01E5D8, 0xAF93AE9D },
+        new u32[] { 0xC233B769, 0x2A883C9B },
+    };
+
+    private static readonly u32[][] DecryptedCodes = {
+        new u32[] { 0xC4000970, 0x00008401 },
+        new u32[] { 0x45584D42, 0x001DC0DE },
+        new u32[] { 0x00000000, 0x183EC7FD },
+        new u32[] { 0x00000668, 0x00000000 },
+        new u32[] { 0x043061EC, 0x2067B507 },
+        new u32[] { 0x043061F0, 0x80084906 },
+        new u32[] { 0x043061F4, 0x30094678 },
+        new u32[] { 0x043061F8, 0x46C04686 },
+        new u32[] { 0x043061FC, 0x47004804 },
+        new u32[] { 0x04306200, 0x80082007 },
+        new u32[] { 0x04306204, 0xF7FBBC07 },
+        new u32[] { 0x04306208, 0xBD00FFF1 },
+        new u32[] { 0x0430620C, 0x0800009C },
+        new u32[] { 0x04306210, 0x09FE0401 },
+    };
+
     [Test]
     public void TestDecrypt()
     {
-        u32 addr1Enc = 0xD925CBB3;
-        u32 value1Enc = 0x457D65D3;
-
-        u32 addr2Enc = 0xB6FA891B;
-        u32 value2Enc = 0xDC4362A9;
-
-        u32 addr1Dec = addr1Enc;
-        u32 value1Dec = value1Enc;
-
-        u32 addr2Dec = addr2Enc;
-        u32 value2Dec = value2Enc;
-
         var crypter = new GbaGsCrypter(true);
 
-        crypter.DecryptCode(ref addr1Dec, ref value1Dec);
-        crypter.DecryptCode(ref addr2Dec, ref value2Dec);
-
-        Assert.Multiple(() =>
+        for (int i = 0; i < EncryptedCodes.Length; i++)
         {
-            const string expectedCode1 = "C4000970 00008401";
-            const string expectedCode2 = "45584D42 001DC0DE";
+            u32 addrEnc = EncryptedCodes[i][0];
+            u32 valueEnc = EncryptedCodes[i][1];
 
-            string actualCode1 = $"{addr1Dec:X8} {value1Dec:X8}";
-            string actualCode2 = $"{addr2Dec:X8} {value2Dec:X8}";
+            u32 addrDec = addrEnc;
+            u32 valueDec = valueEnc;
 
-            Assert.That(actualCode1, Is.EqualTo(expectedCode1));
-            Assert.That(actualCode2, Is.EqualTo(expectedCode2));
-        });
+            crypter.DecryptCode(ref addrDec, ref valueDec);
+
+            string actualCode = $"{addrDec:X8} {valueDec:X8}";
+            string expectedCode = $"{DecryptedCodes[i][0]:X8} {DecryptedCodes[i][1]:X8}";
+
+            Assert.That(actualCode, Is.EqualTo(expectedCode));
+        }
+    }
+
+    [Test]
+    public void TestEncrypt()
+    {
+        var crypter = new GbaGsCrypter(true);
+
+        for (int i = 0; i < DecryptedCodes.Length; i++)
+        {
+            u32 addrDec = DecryptedCodes[i][0];
+            u32 valueDec = DecryptedCodes[i][1];
+
+            u32 addrEnc = addrDec;
+            u32 valueEnc = valueDec;
+
+            crypter.EncryptCode(ref addrEnc, ref valueEnc);
+
+            string actualCode = $"{addrEnc:X8} {valueEnc:X8}";
+            string expectedCode = $"{EncryptedCodes[i][0]:X8} {EncryptedCodes[i][1]:X8}";
+
+            Assert.That(actualCode, Is.EqualTo(expectedCode));
+        }
     }
 }
