@@ -1,3 +1,4 @@
+using System.Globalization;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -25,6 +26,70 @@ public sealed class GbaGsFcdRom : Rom
     public GbaGsFcdRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
     {
+        ParseVersion();
+    }
+
+    private void ParseVersion()
+    {
+        s32 gsAddr = Buffer.Find("GameShark");
+        s32 cbAddr = Buffer.Find("CodeBreaker");
+        s32 xpAddr = Buffer.Find("XploderAdv");
+        u32 brandAddr;
+        if (gsAddr > -1)
+        {
+            brandAddr = (u32)gsAddr;
+            Metadata.Brand = RomBrand.Gameshark;
+        }
+        else if (cbAddr > -1)
+        {
+            brandAddr = (u32)cbAddr;
+            Metadata.Brand = RomBrand.CodeBreaker;
+        }
+        else if (xpAddr > -1)
+        {
+            brandAddr = (u32)xpAddr;
+            Metadata.Brand = RomBrand.Xploder;
+        }
+        else
+        {
+            return;
+        }
+
+        u32 countryAddr = brandAddr - 0x10;
+        u32 variantAddr = brandAddr + 0x10;
+
+        RomString countryStr = Scribe.Seek(countryAddr).ReadPrintableCString();
+        RomString brandStr = Scribe.Seek(brandAddr).ReadPrintableCString();
+        RomString variantStr = Scribe.Seek(variantAddr).ReadPrintableCString();
+
+        u32 dateTimeAddr = variantStr.Addr.EndIndex + 0xF;
+        Scribe.Seek(dateTimeAddr);
+        while (Scribe.PeekBytes(1)[0] == 0)
+        {
+            Scribe.Skip(1);
+        }
+        RomString dateTimeStr = Scribe.ReadPrintableCString();
+
+        Metadata.Identifiers.Add(countryStr);
+        Metadata.Identifiers.Add(brandStr);
+        Metadata.Identifiers.Add(variantStr);
+        Metadata.Identifiers.Add(dateTimeStr);
+
+        if (countryStr.Value is "USA" or "US of A")
+        {
+            Metadata.LanguageIetfCode = "en-US";
+        }
+        else if (countryStr.Value is "UK")
+        {
+            Metadata.LanguageIetfCode = "en-GB";
+        }
+
+        // E.g.: "Fri Nov 15 13:55:45 2002"
+        DateTime dateTime = DateTime.ParseExact(dateTimeStr.Value, "ddd MMM d H:mm:ss yyyy", DateTimeFormatInfo.InvariantInfo);
+        Metadata.BuildDateRaw = dateTimeStr;
+        Metadata.BuildDateIso = dateTime.ToIsoString();
+        // TODO(CheatoBaggins): Figure out time zone
+        // Metadata.BuildDateProto = Timestamp.FromDateTime(dateTime);
     }
 
     public static bool Is(u8[] bytes)
