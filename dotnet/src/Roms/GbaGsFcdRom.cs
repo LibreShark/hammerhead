@@ -88,8 +88,12 @@ public sealed class GbaGsFcdRom : Rom
         DateTime dateTime = DateTime.ParseExact(dateTimeStr.Value, "ddd MMM d H:mm:ss yyyy", DateTimeFormatInfo.InvariantInfo);
         Metadata.BuildDateRaw = dateTimeStr;
         Metadata.BuildDateIso = dateTime.ToIsoString();
-        // TODO(CheatoBaggins): Figure out time zone
+
+        // TODO(CheatoBaggins): Determine original time zone
         // Metadata.BuildDateProto = Timestamp.FromDateTime(dateTime);
+
+        // TODO(CheatoBaggins): Implement
+        Metadata.IsKnownVersion = false;
     }
 
     public static bool Is(u8[] bytes)

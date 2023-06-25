@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Drawing;
+using System.Globalization;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using BetterConsoles.Tables;
@@ -383,10 +384,8 @@ public abstract class Rom
 
         filePropTable.AddRow("Binary format", Metadata.Format.ToDisplayString());
         filePropTable.AddRow("Platform", Metadata.Console.ToDisplayString());
-        filePropTable.AddRow("Brand", Metadata.Brand == RomBrand.UnknownBrand
-            ? Metadata.Brand.ToDisplayString().ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
-            : Metadata.Brand.ToDisplayString());
-        filePropTable.AddRow("Locale", Metadata.LanguageIetfCode.OrUnknown());
+        filePropTable.AddRow("Brand", GetDisplayBrand());
+        filePropTable.AddRow("Locale", GetDisplayLocale());
         filePropTable.AddRow("", "");
         filePropTable.AddRow("Version", Metadata.DisplayVersion.OrUnknown());
         filePropTable.AddRow("Build date", Metadata.BuildDateIso.OrUnknown());
@@ -417,5 +416,28 @@ public abstract class Rom
         filePropTable.Config = TableConfig.Unicode();
 
         Console.WriteLine(filePropTable);
+    }
+
+    private string GetDisplayBrand()
+    {
+        return Metadata.Brand == RomBrand.UnknownBrand
+            ? Metadata.Brand.ToDisplayString().ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
+            : Metadata.Brand.ToDisplayString();
+    }
+
+    private string GetDisplayLocale()
+    {
+        string ietf = Metadata.LanguageIetfCode;
+        string locale;
+        if (String.IsNullOrWhiteSpace(ietf))
+        {
+            locale = ietf.OrUnknown();
+        }
+        else
+        {
+            var culture = CultureInfo.GetCultureInfo(ietf);
+            locale = $"{ietf} - {culture.DisplayName}";
+        }
+        return locale;
     }
 }
