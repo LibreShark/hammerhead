@@ -41,11 +41,21 @@ public abstract class BinaryScribe
         return this;
     }
 
+    public BinaryScribe Seek(s32 addr)
+    {
+        return Seek((u32)addr);
+    }
+
     public BinaryScribe Skip(u32 count)
     {
         Position += count;
         CheckBounds();
         return this;
+    }
+
+    public BinaryScribe Skip(s32 count)
+    {
+        return Skip((u32)count);
     }
 
     public TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
