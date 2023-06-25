@@ -296,6 +296,13 @@ public abstract class Rom
             return;
         }
 
+        Game? activeGame = Games.FirstOrDefault(game => game.IsGameActive);
+        if (activeGame != null)
+        {
+            Console.WriteLine($"Active game: '{activeGame.GameName.Value}'");
+            Console.WriteLine();
+        }
+
         Cheat[] allCheats = Games.SelectMany(game => game.Cheats).ToArray();
         Code[] allCodes = Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
         string gamePlural = Games.Count == 1 ? "game" : "games";
