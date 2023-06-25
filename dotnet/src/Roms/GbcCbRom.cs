@@ -34,6 +34,7 @@ public sealed class GbcCbRom : Rom
     private const u32 SelectedGameNameAddr = 0x0003C680;
 
     private readonly RomString[] _cheatNames = new RomString[16];
+    private readonly RomString _selectedGameName;
 
     public GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
@@ -41,10 +42,10 @@ public sealed class GbcCbRom : Rom
         Metadata.Brand = DetectBrand(rawInput);
 
         RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();
-        RomString selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
+        _selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
 
         Metadata.Identifiers.Add(romId);
-        Metadata.Identifiers.Add(selectedGameName);
+        Metadata.Identifiers.Add(_selectedGameName);
 
         ParseVersion(romId);
         ParseGames();
@@ -75,6 +76,7 @@ public sealed class GbcCbRom : Rom
             {
                 GameIndex = gameIdx,
                 GameName = gameName,
+                IsGameActive = gameName.Value == _selectedGameName.Value,
             };
 
             for (u8 cheatIdx = 0; cheatIdx < 16; cheatIdx++)
