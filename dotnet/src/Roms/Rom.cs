@@ -375,7 +375,7 @@ public abstract class Rom
                 gameTable.AddRow($"  - {cheat.CheatName.Value.ForegroundColor(Color.White)}", codeCount, "");
                 foreach (Code code in cheat.Codes)
                 {
-                    gameTable.AddRow($"    {code.Bytes.ToHexString().SetStyle(FontStyleExt.None)}", "", "");
+                    gameTable.AddRow($"    {code.Bytes.ToCodeString(Metadata.Console).SetStyle(FontStyleExt.None)}", "", "");
                 }
             }
         }
