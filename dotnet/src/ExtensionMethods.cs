@@ -134,6 +134,132 @@ public static class ExtensionMethods
 
     #endregion
 
+    #region Integers
+
+    public static u8[] ToBigEndianBytes(this u16 n)
+    {
+        return new u8[]
+        {
+            (u8)((n >> 8) & 0xFF),
+            (u8)(n & 0xFF),
+        };
+    }
+
+    public static u8[] ToLittleEndianBytes(this u16 n)
+    {
+        return new u8[]
+        {
+            (u8)(n & 0xFF),
+            (u8)((n >> 8) & 0xFF),
+        };
+    }
+
+    public static u8[] ToBigEndianBytes(this u32 n)
+    {
+        return new u8[]
+        {
+            (u8)((n >> 24) & 0xFF),
+            (u8)((n >> 16) & 0xFF),
+            (u8)((n >> 8) & 0xFF),
+            (u8)(n & 0xFF),
+        };
+    }
+
+    public static u8[] ToLittleEndianBytes(this u32 n)
+    {
+        return new u8[]
+        {
+            (u8)(n & 0xFF),
+            (u8)((n >> 8) & 0xFF),
+            (u8)((n >> 16) & 0xFF),
+            (u8)((n >> 24) & 0xFF),
+        };
+    }
+
+    public static u8[] ToBigEndianBytes(this u64 n)
+    {
+        return new u8[]
+        {
+            (u8)((n >> 56) & 0xFF),
+            (u8)((n >> 48) & 0xFF),
+            (u8)((n >> 40) & 0xFF),
+            (u8)((n >> 32) & 0xFF),
+            (u8)((n >> 24) & 0xFF),
+            (u8)((n >> 16) & 0xFF),
+            (u8)((n >> 8) & 0xFF),
+            (u8)(n & 0xFF),
+        };
+    }
+
+    public static u8[] ToLittleEndianBytes(this u64 n)
+    {
+        return new u8[]
+        {
+            (u8)(n & 0xFF),
+            (u8)((n >> 8) & 0xFF),
+            (u8)((n >> 16) & 0xFF),
+            (u8)((n >> 24) & 0xFF),
+            (u8)((n >> 32) & 0xFF),
+            (u8)((n >> 40) & 0xFF),
+            (u8)((n >> 48) & 0xFF),
+            (u8)((n >> 56) & 0xFF),
+        };
+    }
+
+    public static u16 BigEndianToU16(this u8[] bytes)
+    {
+        return (u16)(bytes[0] << 8 |
+                     bytes[1] << 0);
+    }
+
+    public static u16 LittleEndianToU16(this u8[] bytes)
+    {
+        return (u16)(bytes[0] << 0 |
+                     bytes[1] << 8);
+    }
+
+    public static u32 BigEndianToU32(this u8[] bytes)
+    {
+        return (u32)(bytes[0]) << 24 |
+               (u32)(bytes[1]) << 16 |
+               (u32)(bytes[2]) << 8 |
+               (u32)(bytes[3]) << 0;
+    }
+
+    public static u32 LittleEndianToU32(this u8[] bytes)
+    {
+        return (u32)(bytes[0]) << 0 |
+               (u32)(bytes[1]) << 8 |
+               (u32)(bytes[2]) << 16 |
+               (u32)(bytes[3]) << 24;
+    }
+
+    public static u64 BigEndianToU64(this u8[] bytes)
+    {
+        return (u64)(bytes[0]) << 56 |
+               (u64)(bytes[1]) << 48 |
+               (u64)(bytes[2]) << 40 |
+               (u64)(bytes[3]) << 32 |
+               (u64)(bytes[4]) << 24 |
+               (u64)(bytes[5]) << 16 |
+               (u64)(bytes[6]) << 8 |
+               (u64)(bytes[7]) << 0;
+    }
+
+    public static u64 LittleEndianToU64(this u8[] bytes)
+    {
+        return (u64)(bytes[0]) << 0 |
+               (u64)(bytes[1]) << 8 |
+               (u64)(bytes[2]) << 16 |
+               (u64)(bytes[3]) << 24 |
+               (u64)(bytes[4]) << 32 |
+               (u64)(bytes[5]) << 40 |
+               (u64)(bytes[6]) << 48 |
+               (u64)(bytes[7]) << 56;
+    }
+
+    #endregion
+
     #region Protobuf
 
     public static RomString Trim(this RomString oldRS)
