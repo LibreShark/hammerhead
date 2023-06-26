@@ -15,7 +15,7 @@ using u64 = UInt64;
 using f64 = Double;
 
 // ReSharper disable InconsistentNaming
-internal enum ReportFormat
+public enum ReportFormat
 {
     unspecified = 0,
     auto,
@@ -25,7 +25,7 @@ internal enum ReportFormat
 // ReSharper enable InconsistentNaming
 
 // ReSharper disable InconsistentNaming
-internal enum FileFormat
+public enum FileFormat
 {
     unspecified = 0,
     auto,
@@ -43,14 +43,14 @@ internal enum FileFormat
 
 internal abstract class Options
 {
-    [Option('B', "hide-banner",
-        HelpText = "Hide the decorative ASCII art banner.")]
-    public bool HideBanner { get; set; }
-
     [Option('C', "clean",
         HelpText = "Try to reset user preferences and active game index, delete invalid cheats, sort game list, " +
                    "etc. By default, no cleaning is performed.")]
     public bool Clean { get; set; }
+
+    [Option('B', "hide-banner",
+        HelpText = "Hide the decorative ASCII art banner.")]
+    public bool HideBanner { get; set; }
 }
 
 [Verb("info",
@@ -87,14 +87,9 @@ internal class InfoOptions : Options
 }
 
 [Verb("write-rom",
-    HelpText = "Reads a ROM file, processes it, and writes the transformed output to disk..")]
+    HelpText = "Reads a ROM file, processes it, and writes the transformed output to disk.")]
 internal class WriteRomOptions : Options
 {
-    [Option('y', "overwrite",
-        HelpText = "Batch mode. Overwrite existing files. " +
-                   "Bypass all prompts and assume the answer is always 'yes'.")]
-    public bool Overwrite { get; set; }
-
     [Option('i', "input-files", Required = true,
         HelpText = "One or more paths to ROM files to read.")]
     public IEnumerable<string>? InputFiles { get; set; }
@@ -102,19 +97,19 @@ internal class WriteRomOptions : Options
     [Option('o', "output-files", Required = true,
         HelpText = "One or more paths to ROM files to write.")]
     public IEnumerable<string>? OutputFiles { get; set; }
+
+    [Option('y', "overwrite",
+        HelpText = "Batch mode. Overwrite existing files. " +
+                   "Bypass all prompts and assume the answer is always 'yes'.")]
+    public bool Overwrite { get; set; }
 }
 
 [Verb("copy-cheats",
     HelpText = "Copy cheats _from_ any compatible file (cheat list or ROM dump) _to_ any compatible file.")]
 internal class CopyCheatsOptions : Options
 {
-    [Option('y', "overwrite",
-        HelpText = "Batch mode. Overwrite existing files. " +
-                   "Bypass all prompts and assume the answer is always 'yes'.")]
-    public bool Overwrite { get; set; }
-
     [Option('i', "input-files", Required = true,
-        HelpText = "One or more paths to ROM dumps or cheat lists to read.")]
+        HelpText = "One or more paths to input files to read (ROM dumps or cheat lists).")]
     public IEnumerable<string>? InputFiles { get; set; }
 
     [Option('o', "output-files", Required = true,
@@ -122,12 +117,17 @@ internal class CopyCheatsOptions : Options
     public IEnumerable<string>? OutputFiles { get; set; }
 
     [Option("input-format",
-        HelpText = "Skip input file auto-detection and force Hammerhead to use the specified file format " +
-                   "when reading input files.")]
-    public IEnumerable<string>? ForceInputFormats { get; set; }
+        HelpText = "Force Hammerhead to use the specified file format when reading input files" +
+                   "instead of trying to auto-detect the format.")]
+    public IEnumerable<FileFormat>? ForceInputFormats { get; set; }
 
     [Option("output-format",
-        HelpText = "Skip output file auto-detection and force Hammerhead to use the specified file format " +
-                   "when writing output files.")]
-    public IEnumerable<string>? ForceOutputFormats { get; set; }
+        HelpText = "Force Hammerhead to use the specified file format when writing output files" +
+                   "instead of trying to auto-detect the format.")]
+    public IEnumerable<FileFormat>? ForceOutputFormats { get; set; }
+
+    [Option('y', "overwrite",
+        HelpText = "Batch mode. Overwrite existing files. " +
+                   "Bypass all prompts and assume the answer is always 'yes'.")]
+    public bool Overwrite { get; set; }
 }
