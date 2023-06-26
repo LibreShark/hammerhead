@@ -73,7 +73,8 @@ public abstract class Rom
         };
     }
 
-    protected abstract void PrintCustomHeader();
+    protected virtual void PrintCustomHeader() {}
+
     protected virtual void PrintCustomBody() {}
 
     public virtual bool FormatSupportsCustomCheatCodes()

@@ -181,8 +181,4 @@ public sealed class GbGsRom : Rom
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

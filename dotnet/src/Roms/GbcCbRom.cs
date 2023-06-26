@@ -174,8 +174,4 @@ public sealed class GbcCbRom : Rom
     {
         return new LittleEndianScribe(bytes);
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

@@ -32,8 +32,4 @@ public sealed class UnknownRom : Rom
     {
         return new BigEndianScribe(rawInput);
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

@@ -137,8 +137,4 @@ public sealed class GbaGsFcdRom : Rom
     {
         return new LittleEndianScribe(bytes);
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

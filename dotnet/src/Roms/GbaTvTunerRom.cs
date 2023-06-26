@@ -60,8 +60,4 @@ public sealed class GbaTvTunerRom : Rom
     {
         return new LittleEndianScribe(bytes);
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

@@ -392,8 +392,4 @@ public sealed class N64XpRom : Rom
     {
         return type == ThisRomFormat;
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

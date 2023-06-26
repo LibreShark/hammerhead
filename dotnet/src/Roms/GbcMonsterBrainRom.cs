@@ -105,8 +105,4 @@ public sealed class GbcMonsterBrainRom : Rom
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

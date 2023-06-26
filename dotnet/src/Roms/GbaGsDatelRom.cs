@@ -143,8 +143,4 @@ public sealed class GbaGsDatelRom : Rom
     {
         return new LittleEndianScribe(rawInput);
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }

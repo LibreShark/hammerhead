@@ -120,8 +120,4 @@ public sealed class GbcXpRom : Rom
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }
-
-    protected override void PrintCustomHeader()
-    {
-    }
 }
