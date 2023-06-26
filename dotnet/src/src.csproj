@@ -12,7 +12,7 @@
         <Title>Hammerhead</Title>
         <Authors>LibreShark project contributors</Authors>
         <Description>A Swiss Army Knife for reading, writing, encrypting, and decrypting ROM/firmware dumps from 1990s-2000s era video game enhancers (GameShark, Action Replay, Code Breaker, Xplorer/Xploder, etc.).</Description>
-        <Copyright>2023</Copyright>
+        <Copyright>MIT license</Copyright>
         <PackageProjectUrl>https://github.com/LibreShark/hammerhead</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/LibreShark/hammerhead/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/LibreShark/hammerhead</RepositoryUrl>
@@ -32,6 +32,10 @@
       <PackageReference Include="BetterConsoleTables" Version="2.0.4-rc1" />
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="Crc32.NET" Version="1.2.0" />
+      <PackageReference Include="GitVersion.MsBuild" Version="6.0.0-beta.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Google.Protobuf" Version="3.23.2" />
       <PackageReference Include="Grpc.Tools" Version="2.54.0">
         <PrivateAssets>all</PrivateAssets>

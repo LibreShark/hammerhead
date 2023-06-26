@@ -44,7 +44,7 @@ public static class ExtensionMethods
     {
         u8[] bytes = eBytes.ToArray();
 
-        if (console == GameConsole.Nintendo64)
+        if (console is GameConsole.Nintendo64 or GameConsole.GameBoyAdvance)
         {
             return $"{bytes[..4].ToHexString()} {bytes[4..].ToHexString()}";
         }
