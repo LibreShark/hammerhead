@@ -181,4 +181,14 @@ public sealed class GbGsRom : Rom
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }
+
+    protected override void PrintCustomHeader()
+    {
+        PrintHeading("Cheat names");
+        for (int i = 0; i < _cheatNames.Count; i++)
+        {
+            RomString cheatName = _cheatNames[i];
+            Console.WriteLine($"[{i:D2}]: {cheatName.Value}");
+        }
+    }
 }
