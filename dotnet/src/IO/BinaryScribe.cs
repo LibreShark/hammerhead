@@ -58,6 +58,11 @@ public abstract class BinaryScribe
         return Skip((u32)count);
     }
 
+    public BinaryScribe Next()
+    {
+        return Skip(1);
+    }
+
     public TReturn MaintainPosition<TReturn>(Func<TReturn> operation)
     {
         u32 oldAddr = Position;
@@ -104,7 +109,7 @@ public abstract class BinaryScribe
 
     #endregion
 
-    #region Padding detection
+    #region Data type detection
 
     public bool IsPadding()
     {
@@ -121,6 +126,18 @@ public abstract class BinaryScribe
     protected virtual bool IsPadding(u32 val)
     {
         return val is 0x00000000 or 0xFFFFFFFF;
+    }
+
+    public bool IsIntegerDigit()
+    {
+        char c = (char)BufferRef[Position];
+        return c is >= '0' and <= '9';
+    }
+
+    public bool IsFloatDigit()
+    {
+        char c = (char)BufferRef[Position];
+        return c is >= '0' and <= '9' or '.';
     }
 
     #endregion

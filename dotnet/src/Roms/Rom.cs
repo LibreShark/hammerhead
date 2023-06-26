@@ -140,6 +140,11 @@ public abstract class Rom
             return new N64GbHunterRom(romFilePath, bytes);
         }
 
+        if (GbGsRom.Is(bytes))
+        {
+            return new GbGsRom(romFilePath, bytes);
+        }
+
         if (GbcCbRom.Is(bytes))
         {
             return new GbcCbRom(romFilePath, bytes);
@@ -328,16 +333,18 @@ public abstract class Rom
                     innerFormatting: true
                 )
             )
-            .AddColumn("Cheats",
+            .AddColumn("# Games/Cheats",
                 rowsFormat: new CellFormat(
                     foregroundColor: TableValueColor,
-                    alignment: Alignment.Right
+                    alignment: Alignment.Right,
+                    innerFormatting: true
                 )
             )
             .AddColumn("Warnings",
                 rowsFormat: new CellFormat(
                     foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                    alignment: Alignment.Left,
+                    innerFormatting: true
                 )
             )
             .Build();
@@ -355,7 +362,21 @@ public abstract class Rom
             {
                 gameName = $"{gameName}".ForegroundColor(SelectedColor).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline);
             }
-            gameTable.AddRow(gameName, game.Cheats.Count, game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
+            else
+            {
+                gameName = gameName.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold);
+            }
+            gameTable.AddRow(gameName, $"{game.Cheats.Count}".ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
+
+            foreach (Cheat cheat in game.Cheats)
+            {
+                int codeCount = cheat.Codes.Count;
+                gameTable.AddRow($"  - {cheat.CheatName.Value.ForegroundColor(Color.White)}", codeCount, "");
+                foreach (Code code in cheat.Codes)
+                {
+                    gameTable.AddRow($"    {code.Bytes.ToHexString().SetStyle(FontStyleExt.None)}", "", "");
+                }
+            }
         }
 
         Console.WriteLine(gameTable);
