@@ -1,3 +1,5 @@
+using BetterConsoles.Colors.Extensions;
+using BetterConsoles.Core;
 using CommandLine;
 using CommandLine.Text;
 
@@ -30,25 +32,40 @@ public enum FileFormat
     unspecified = 0,
     auto,
     rom,
-    n64_cheats_datel_text,
-    n64_cheats_datel_memcard,
-    n64_cheats_ed_x7_text,
-    n64_cheats_xp_fcd_text,
-    n64_cheats_pj_v1_6_text,
-    n64_cheats_pj_v3_0_text,
-    n64_cheats_openemu_text,
-    n64_cheats_cmgsccc_2000_text,
+    n64_datel_text,
+    n64_datel_memcard,
+    n64_ed_x7_text,
+    n64_xp_fcd_text,
+    n64_pj_v1_6_text,
+    n64_pj_v3_0_text,
+    n64_openemu_text,
 }
 // ReSharper enable InconsistentNaming
 
 internal abstract class Options
 {
-    [Option('C', "clean",
+    internal const string ReportFormats =
+        "auto\n" +
+        "color\n" +
+        "plain";
+
+    internal const string FileFormats =
+        "auto\n" +
+        "rom\n" +
+        "n64_datel_text\n" +
+        "n64_datel_memcard\n" +
+        "n64_ed_x7_text\n" +
+        "n64_xp_fcd_text\n" +
+        "n64_pj_v1_6_text\n" +
+        "n64_pj_v3_0_text\n" +
+        "n64_openemu_text";
+
+    [Option("clean",
         HelpText = "Try to reset user preferences and active game index, delete invalid cheats, sort game list, " +
                    "etc. By default, no cleaning is performed.")]
     public bool Clean { get; set; }
 
-    [Option('B', "hide-banner",
+    [Option("hide-banner",
         HelpText = "Hide the decorative ASCII art banner.")]
     public bool HideBanner { get; set; }
 }
@@ -62,11 +79,15 @@ internal class InfoOptions : Options
     public IEnumerable<string>? InputFiles { get; set; }
 
     [Option("input-formats",
-        HelpText = "List of file format IDs corresponding to --input-files values. See the FILE_FORMAT section.")]
+        HelpText = "List of file format IDs corresponding to --input-files values:\n" +
+                   "\n" +
+                   FileFormats)]
     public IEnumerable<FileFormat>? InputFormats { get; set; }
 
     [Option("output-format",
-        HelpText = "Report format ID to print output with. See the REPORT_FORMAT section.")]
+        HelpText = "Format to use when printing ROM information:\n" +
+                   "\n" +
+                   ReportFormats)]
     public ReportFormat? ReportFormat { get; set; }
 
     [Usage(ApplicationAlias = "hammerhead")]
@@ -76,8 +97,13 @@ internal class InfoOptions : Options
         {
             yield return new Example("Basic usage", new InfoOptions()
             {
-                InputFiles = new []{"datel-cheats.txt", "ar3.enc", "n64-gs-v2.0.bin"},
-                InputFormats = new []{FileFormat.n64_cheats_datel_text, FileFormat.auto},
+                InputFiles = new []
+                {
+                    "datel-cheats.txt".SetStyle(FontStyleExt.Underline),
+                    "ar3.enc".SetStyle(FontStyleExt.Underline),
+                    "n64-gs-v2.0.bin".SetStyle(FontStyleExt.Underline),
+                },
+                InputFormats = new []{FileFormat.n64_datel_text, FileFormat.auto},
                 ReportFormat = Hammerhead.ReportFormat.auto,
             });
             // yield return new Example("Logging warnings", UnParserSettings.WithGroupSwitchesOnly(), new Options { InputFile = "file.bin", LogWarning = true });
@@ -116,14 +142,18 @@ internal class CopyCheatsOptions : Options
         HelpText = "One or more paths to output files to write (ROM dumps or cheat lists).")]
     public IEnumerable<string>? OutputFiles { get; set; }
 
-    [Option("input-format",
-        HelpText = "Force Hammerhead to use the specified file format when reading input files" +
-                   "instead of trying to auto-detect the format.")]
+    [Option("input-formats",
+        HelpText = "Force Hammerhead to use the specified file formats when reading input files " +
+                   "instead of trying to auto-detect them:\n" +
+                   "\n" +
+                   FileFormats)]
     public IEnumerable<FileFormat>? ForceInputFormats { get; set; }
 
-    [Option("output-format",
-        HelpText = "Force Hammerhead to use the specified file format when writing output files" +
-                   "instead of trying to auto-detect the format.")]
+    [Option("output-formats",
+        HelpText = "Force Hammerhead to use the specified file formats when writing output files " +
+                   "instead of trying to auto-detect them:\n" +
+                   "\n" +
+                   FileFormats)]
     public IEnumerable<FileFormat>? ForceOutputFormats { get; set; }
 
     [Option('y', "overwrite",
