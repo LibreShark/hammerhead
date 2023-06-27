@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using Google.Protobuf;
@@ -29,6 +30,16 @@ public static class ExtensionMethods
         "ascii",
         new EncoderReplacementFallback("?"),
         new DecoderReplacementFallback("?"));
+
+    private static readonly Encoding Utf8 = Encoding.GetEncoding(
+        "utf-8",
+        new EncoderReplacementFallback("?"),
+        new DecoderReplacementFallback("?"));
+
+    public static string ToUtf8String(this u8[] bytes)
+    {
+        return Utf8.GetString(bytes);
+    }
 
     public static string ToAsciiString(this u8[] bytes)
     {
@@ -430,6 +441,31 @@ public static class ExtensionMethods
         return string.IsNullOrWhiteSpace(str)
             ? $"UNKNOWN{noun}".ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
             : str;
+    }
+
+    #endregion
+
+    #region Strings
+
+    public static string[] SplitLines(this u8[] s)
+    {
+        return Regex.Split(s.ToAsciiString(), @"\r\f|\n");
+    }
+
+    public static string[] SplitLines(this string s)
+    {
+        return Regex.Split(s, @"\r\f|\n");
+    }
+
+    public static u8[] HexToBytes(this string hex)
+    {
+        int len = hex.Length;
+        u8[] bytes = new u8[len / 2];
+        for (int i = 0; i < len; i += 2)
+        {
+            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+        }
+        return bytes;
     }
 
     #endregion

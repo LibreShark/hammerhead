@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/descriptor.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -188,6 +189,57 @@ message Game {
   repeated Cheat cheats = 3;
   bool is_game_active = 4;
   repeated Warning warnings = 5;
+}
+
+enum TerminalFormat {
+  UNKNOWN_TERMINAL_FORMAT = 0x00;
+  DETECT = 0x01;
+  COLOR = 0x02;
+  PLAIN = 0x03;
+}
+
+enum IoFormat {
+  UNKNOWN_IO_FORMAT = 0x00;
+
+  AUTO = 0x01;
+  ROM = 0x02;
+
+  JSONPROTO = 0x03;
+  TEXTPROTO = 0x04;
+
+  // XML cheat file format for OpenEmu (all consoles).
+  // TODO(CheatoBaggins): Implement
+//  OPENEMU_XML = 0x11;
+
+  // TODO(CheatoBaggins): Add Libretro/RetroArch cheat format
+
+  //
+  // Nintendo 64
+  //
+
+  // Official PC utils for GameShark, Action Replay, Equalizer, and Game Buster.
+  N64_DATEL_TEXT = 0x21;
+
+  // Binary file from a memory card (Controller Pak) cheat list written by a
+  // GameShark, Action Replay, Equalizer, or Game Buster.
+  // TODO(CheatoBaggins): Implement
+//  N64_DATEL_MEMCARD = 0x22;
+
+  // Official PC utils for Xplorer 64.
+  // TODO(CheatoBaggins): Implement
+//  N64_FCD_TEXT = 0x23;
+
+  // EverDrive-64 X7 cheat file format.
+  // TODO(CheatoBaggins): Implement
+//  N64_EDX7_TEXT = 0x24;
+
+  // Project 64 v1.6 cheat file format.
+  // TODO(CheatoBaggins): Implement
+//  N64_PJ64_V160_TEXT = 0x25;
+
+  // Project 64 v3.0.0 cheat file format.
+  // TODO(CheatoBaggins): Implement
+//  N64_PJ64_V300_TEXT = 0x26;
 }
 
 

@@ -1,0 +1,35 @@
+FF72C5A0 0000 (M) MUST BE ON v1 (Most Levels)
+FF75C000!0000 (M) MUST BE ON v2 (Air Force One)
+802D23F0!0020 Lights Don't Glare
+8026AC10!0020 NPCs Can't Aim
+80273E00!0020 NPCs Don't Attack
+8125599C 461F Health Never Decreases (ASM)
+D009C7E4 0008 Combat Boost ON (D-Up) [1/4]
+8009A427 0001 Combat Boost ON (D-Up) [2/4]
+D009C7E4 0004 Combat Boost OFF (D-Down) [3/4]
+8009A427 0000 Combat Boost OFF (D-Down) [4/4]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [1/12]
+81206720 40F2 P1 Solo: Moon Jump (press B) [2/12]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [3/12]
+802066D3 0000 P1 Solo: Moon Jump (press B) [4/12]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [5/12]
+811ED720 40F2 P1 Solo: Moon Jump (press B) [6/12]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [7/12]
+801ED6D3 0000 P1 Solo: Moon Jump (press B) [8/12]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [9/12]
+811D4720 40F2 P1 Solo: Moon Jump (press B) [10/12]
+D009C7E4 0040 P1 Solo: Moon Jump (press B) [11/12]
+801D46D3 0000 P1 Solo: Moon Jump (press B) [12/12]
+D009C7E4 0040 P1 Multi: Moon Jump (press B) [1/4]
+811BB720 40F2 P1 Multi: Moon Jump (press B) [2/4]
+D009C7E4 0040 P1 Multi: Moon Jump (press B) [3/4]
+801BB6D3 0000 P1 Multi: Moon Jump (press B) [4/4]
+812BA8A8 0300 Ammo Never Decreases [1/5] (bullets)
+812C6F20 0080 Ammo Never Decreases [2/5] (RC-P120 cloak)
+812BB892 0000 Ammo Never Decreases [3/5] (combat boost)
+812C6AB2 0000 Ammo Never Decreases [4/5] (Mauler charge-up)
+812BB748 0100 Ammo Never Decreases [5/5] (tranquilizer secondary)
+812BB39E!0000 Throwables Never Decrease (grenades/mines)
+802C9735 00E0 Cloak Never Decreases [1/3]
+802C9738 0000 Cloak Never Decreases [2/3]
+802C973A!0000 Cloak Never Decreases [3/3]

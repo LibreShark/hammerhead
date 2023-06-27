@@ -9,7 +9,6 @@ using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 using NeoSmart.PrettySize;
 
 namespace LibreShark.Hammerhead.Roms;
@@ -209,7 +208,7 @@ public abstract class Rom
         return str.SetStyle(FontStyleExt.Bold);
     }
 
-    public void PrintSummary()
+    public void PrintSummary(bool printGames, bool printCheats, bool printCodes)
     {
         PrintHeading("File properties");
         PrintFilePropTable();
@@ -220,9 +219,9 @@ public abstract class Rom
         Console.WriteLine();
         PrintCustomHeader();
         Console.WriteLine();
-        if (FormatSupportsCustomCheatCodes())
+        if (FormatSupportsCustomCheatCodes() && printGames)
         {
-            PrintGames();
+            PrintGames(printCheats, printCodes);
             Console.WriteLine();
         }
         PrintCustomBody();
@@ -292,7 +291,7 @@ public abstract class Rom
         }
     }
 
-    private void PrintGames()
+    private void PrintGames(bool printCheats, bool printCodes)
     {
         PrintHeading("Games and cheat codes");
 
@@ -369,10 +368,19 @@ public abstract class Rom
             }
             gameTable.AddRow(gameName, $"{game.Cheats.Count}".ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
 
+            if (!printCheats)
+            {
+                continue;
+            }
+
             foreach (Cheat cheat in game.Cheats)
             {
                 int codeCount = cheat.Codes.Count;
                 gameTable.AddRow($"  - {cheat.CheatName.Value.ForegroundColor(Color.White)}", codeCount, "");
+                if (!printCodes)
+                {
+                    continue;
+                }
                 foreach (Code code in cheat.Codes)
                 {
                     gameTable.AddRow($"    {code.Bytes.ToCodeString(Metadata.Console).SetStyle(FontStyleExt.None)}", "", "");

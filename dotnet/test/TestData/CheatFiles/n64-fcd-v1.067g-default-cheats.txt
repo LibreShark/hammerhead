@@ -1,0 +1,5643 @@
+1080 Snowboarding alternativ
+	Special Code - Do Not Use
+		3fffffff:0002
+	Trick Attack Stop Timer Codes Crystal Lake
+		e87d49be:59c8
+	Crystal Peak
+		e87f7e1e:595a
+	Golden Forest
+		e88002ae:59c8
+	Time Attack Stop Timer Codes Crystal Lake
+		e880af7e:595a
+	Crystal Peak
+		e87f7e1e:595a
+	Golden Forest
+		e87f66ae:595a
+	Contest Stop Timer Codes Crystal Lake
+		e87d172e:59c8
+	Crystal Peak
+		e880dfee:59c8
+	Golden Forest
+		e880c4be:59c8
+	Match Race Stop Timer Codes Crystal Lake
+		e8846071:59a3
+	Crystal Peak
+		e87d6555:59a3
+	Golden Forest
+		e87e53e5:59a3
+1080 Snowboarding
+	Trick Attack Crystal Lake Stopt Timer
+		8029F66A:0076
+	Crystal Peak Stopt Timer
+		802AC8EA:0076
+	Golden Forest Stopt Timer
+		802AAF5A:0076
+	Time Attack Crystal Lake Stopt Timer
+		802A582A:0000
+	Crystal Peak Stopt Timer
+		802B2BCA:0000
+	Golden Forest Stopt Timer
+		802B135A:0000
+	Contest Crystal Lake Stopt Timer
+		8029C0DA:0076
+	Crystal Peak Stopt Timer
+		802A889A:0076
+	Golden Forest Stopt Timer
+		802A6D6A:0076
+	Match Race Crystal Lake Kein Schaden
+		802E091F:004B
+	Crystal Peak Kein Schaden
+		80291203:004B
+	Golden Forest Kein Schaden
+		8028FC93:004B
+Airboarders
+	Unbegrenzt Zeit
+		8010fa09:0028
+All Star Tennis 99
+	One set to win game Player 1
+		e36f0107:5958
+	Player 2
+		e36f0106:5958
+	Can not win any sets Player 1
+		e36f0107:595a
+	Player 2
+		e36f0106:595a
+Aero Gauge Codes Tons Of The Best
+	Always first position
+		8013EFF1:0001
+	Freeze lap timer 1
+		8013F001:0000
+	Freeze lap timer 2
+		8013F005:0000
+	Freeze lap timer 3
+		8013F00A:0000
+	Freeze overall timer
+		8013EFF5:0001
+Automobili Lamborghini
+	Unbegrenzt Zeit
+		800ce72f:0041
+	Immer Erster
+		800a5f31:0001
+	Unendlich Runden
+		800a5f35:0001
+Banjo-Kazooie
+	Spezial Code - Nicht Verwenden
+		3fffffff:0002
+	Unendliche Leben 
+		8038696b:0009
+	Unendlich Gesundheit
+		80386963:001f
+		80386965:0001
+	Unendlich Luft
+		8038696e:0064
+	Unendlich Goldene Federn
+		80386953:0064
+	Unendlich Rot Federn
+		8038694f:0064
+	Unendlich Eier
+		80386947:0064
+	Unendlich Jiggies
+		803869ab:0064
+	Unendlich Notes
+		80386943:0064
+	Alle Notes
+		b0050002:0000
+		803869d1:0064
+	Unendlich Schaedel
+		803869a7:0064
+Beetle Adventure Racing alternativ
+	Unlock All Cars
+		e8582249:5963
+	Unlock All Tracks
+		e8582245:5958
+	Unlock All Difficulties
+		e858224d:595b
+	Unlock All Cheats
+		eb685757:595a
+		db5a2d55:5f5f
+	MultiPlayer Codes
+	Unlock All Circuits
+		eb5d5757:595a
+		db5a2d5e:5f5f
+Beetle Adventure Racing
+	Alle Autos
+		8002CFF7:000B
+	Alle Tracks
+		8002CFF3:0006
+	Alle Schwierigkeiten
+		8002CFFB:0003
+	Airport Multiplayer
+		8002D000:0001
+	Parkade Multiplayer
+		8002D001:0001
+	Stadium Multiplayer
+		8002D002:0001
+	Castle Multiplayer
+		8002D003:0001
+	Ice Flows Multiplayer
+		8002D004:0001
+	Volvano Multiplayer
+		8002D005:0001
+	Dunes Multiplayer
+		8002D006:0001
+	Roof Tops Multiplayer
+		8002D007:0001
+	Woods Multiplayer
+		8002D008:0001
+	Number of Ladybug's Cheat
+		8002D009:0001
+	Ladybug Colour Change Cheat
+		8002D00A:0001
+	Lebens Cheat
+		8002D00B:0001
+	Power-ups Cheat
+		8002D00C:0001
+	Zeitlimit Cheat
+		8002D00D:0001
+	Radar Cheat
+		8002D00E:0001
+	Schaden Cheat
+		8002D00F:0001
+	? mode cheat
+		8002D010:0001
+	Time Attack Bonus Boxes Cheat
+		8002D011:0001
+	Breakables Cheat
+		8002D012:0001
+	Environment Cheat
+		8002D013:0001
+	Auto Cheat
+		8002D014:0001
+	Handicap Player 2 Cheat
+		8002D015:0001
+	Farbenaender Cheat
+		8002D016:0001
+	Field of View Cheat
+		8002D017:0001
+	Horn Cheat
+		8002D018:0001
+	Track Music Cheat
+		8002D019:0001
+	Handbrake Power Cheat
+		8002D01A:0001
+Bio Freaks
+	Unendlich Gesundheit
+		811507fa:6400
+	Unendlich Schield
+		811507fe:6400
+	Schielde Immer On
+		8015080a:0022
+	Unendlich Jet Pack Treibstoff
+		81150802:3200
+Body Harvest
+	Unendlich Machine Gun Munition
+		8004817b:00c8
+	Unendlich T.S. Munition
+		80048185:0064
+	Unendlich TNT
+		8004817f:0003
+	Body Count Immer 0
+		8104819a:0000
+	Nur einen Benutzen fuer Surreal Mode
+		82159353:0080
+	Evil Adam Mode
+		82052afd:0002
+	Fat Legged Alien
+		8213fd03:0001
+Bomber Man
+	Unendlich Energie
+		800aee17:0002
+	Unendliche Leben 
+		802ac617:0063
+	Unbegrenzt Kredite
+		802ac61b:0063
+	Stopt Zeitmesser
+		802ac633:0000
+Buck Bumble
+	Unbegrenzt Leben
+		000ec2d0:0064
+	Kein Bonus Countdown
+		000ec2c8:07d0
+Bust-A-Move 2
+	Unendlich Kredite
+		80120171:00ff
+Chopper Attack
+	Unendlich Treibstoff
+		80129a15:0012
+	Unendlich Schield
+		811299b8:0380
+	Unendlich Munition
+		b0050004:0000
+		8012972b:00ff
+	Extra Waffen
+		80129729:0003
+		8012972d:0005
+		80129731:0006
+		80129735:0007
+		80129739:0008
+		80129749:0005
+Cruis'n World
+	Immer Erster
+		803cdf03:0001
+Clay Fighter 63 1/3
+	Alle Charaktere
+		801a86a1:000f
+Chameleon Twist 2
+	Infinite Life Units
+		c86e0dd4:5964
+	99 Coins
+		c86c9c58:59bb
+	Unlock all levels
+		e86c9c60:598f
+	Unlock all Costumes
+		e86c9c6e:5950
+	6 Carrots
+		e86c9c6f:59d0
+Castlevania 64
+	Infinite Health
+		e88ef395:59aa
+	Infinite Red Jewels
+		e88ef3a3:5998
+	Infinite Money
+		c88ef39e:60fa
+Carmageddon
+	Stop Game Timer
+		c86f3572:673d
+	Infinite Credits
+		e86f35ee:504f
+	All Zombies Destroyed
+		e85d9e42:59b6
+Diddy Kong Racing
+	Alle Ballone
+		8020807d:0032
+	Alle Ballone alternativ
+		8020886d:0032
+	Alle Cheats
+		810dfe2e:ffff
+Donkey Kong 64 alternativ
+	Infinite Health
+		c8d31ede:5956
+	Infinite Ammo All Characters
+		edd31ed7:595a
+		e8d31ed7:598c
+	Infinite Crystal coconuts
+		c8d31eda:57f0
+	Infinite Camera Film
+		e8d31edf:5955
+	99 Coins for Donkey Kong
+		837fc896:0063
+	99 Coins for Diddy Kong
+		837fc8f4:0063
+	99 Coins for Tiny Kong
+		837fc9b0:0063
+	99 Coins for Lanky Kong
+		837fc952:0063
+	99 Coins for Chunky Kong
+		837fca0e:0063
+Donkey Kong 64
+	Zeigt versteckte Areas, Blaues Licht
+		8065CC75:0001
+	Zeigt versteckte Areas, Rotes Licht
+		8065CC79:0001
+	Zeigt versteckte Areas, Gruenes Licht
+		8065CC7D:0001
+	Flasher Kong No... Not That Kind Of Flasher
+		80722C5B:0001
+	Feiner Kong
+		80722D99:0001
+	Kong ein bisschen feiner
+		80722DBD:0001
+	Hellbrauner Kong
+		80722CF1:0005
+	Kong ein bisschen sonnengebraeunt
+		80722D5D:0001
+	Kong ein bisschen Neon
+		80722D85:0001
+	Seltsamer Code
+		806F543B:0001
+	Alle Strukturen sind unsichtbar
+		80652629:0001
+	Kong kann im Wasser nicht versenken
+		806EC437:0001
+Dxxx 64 PAL
+	Habe Kettensaege
+		84063508:0001
+	Habe Pistole
+		84063510:0001
+	Habe Schrotflinte
+		84063514:0001 
+	Habe doppellaeufige Schrotflinte
+		84063518:0001
+	Habe Maschinenkanone
+		8406351C:0001
+	Habe Raketenwerfer
+		84063520:0001
+	Habe Plasmagewehr
+		84063524:0001
+	Habe BFG 9000
+		84063528:0001
+	Habe Laser
+		8406352C:0001
+	Habe alle Waffen
+		B00A0004:0000
+		14063508:0001
+	UE Munition Pistole Maschinenkanone
+		84063530:0001
+	Schrotflinten
+		84063534:0001
+	Plasmagewehr BFG 9000 Laser
+		84063538:0001
+	Raketenwerfer
+		8406353C:0001
+	UE Munition alle Waffen
+		B0040004:0000
+		14063530:0001
+	UE Ruestung
+		840634BC:0064
+Extreme G
+	Unendlich Schield
+		801651f5:00c8
+	Unendlich Turbos
+		801651cb:0003
+		801651cf:0003
+	Roach Bike
+		8016983f:0008
+	Benutzen Sie nur einen Boulder Modecode
+		82097687:0001
+	Fish Eye Lens
+		82097687:0002
+	Boulder + Fish Eye
+		82097687:0003
+	Magnify Mode
+		82097687:0004
+	Magnify + Boulder
+		82097687:0005
+	Anti-Gravity Mode
+		82097687:0008
+	Anti-Grav + Boulder
+		82097687:0009
+	Anti-Grav + Fish Eye
+		82097687:000a
+	Anti-Grav+Boulder+FishEye
+		82097687:000b
+	Anti-Grav + Magnify
+		82097687:000c
+	Anti-Grav+Magnify+Boulder
+		82097687:000d
+	Wireframe Mode
+		82097687:0010
+	Stealth Mode
+		82097687:0020
+	Ghost Mode
+		82097687:0040
+F-Zero X
+	Unendlich Leben
+		800d8729:0005
+	Unendlich Energie
+		812c4b48:4326
+		812c4b4c:4326
+	Kontinuierlich Turbo
+		d02c4da0:003f
+		802c4925:0050
+	Immer 1st
+		812c4bc2:0001
+FIFA 64
+	Spieler 1 gewinnt immer
+		80119043:0063
+	Spieler 2 gewinnt immer
+		82119047:0063
+FIFA 98 - TRTTWC
+	Heimmannschaft hat 99 Tore
+		801af433:0063
+	Heimmannschaft hat  0 Tore
+		821af433:0000
+	Gastmannschaft hat 99 Tore
+		801af437:0063
+	Gastmannschaft hat  0 Tore
+		821af437:0000
+Forsaken
+	Unendlich Bikes
+		8004020c:0063
+	Unendlich Shield
+		d014e710:0001
+		8014e710:0010
+	Unendlich Hull
+		d014e712:0001
+		8014e712:0011
+GEX 64
+	Infinite Health
+		e862a71d:5956
+	Infinite Lives
+		c8640a7e:5955
+		e862a719:5955
+Go***ne**
+	Special Code
+		3ffffffe:005c
+	Dam Level Codes
+	Infinite Health 
+		810ba3dc:3f80
+	Infinite Ammo
+		800bab97:0007
+	Facility Level Codes
+	Infinite Health 
+		8309d7dc:3f80
+	Infinite Ammo
+		8209df97:0007
+	Run,Surface A&Depot Level Codes
+	Infinite Health 
+		830c07dc:3f80
+	Infinite Ammo
+		820c0f97:0007
+	Bunker A,B & Silo Level Codes
+	Infinite Health 
+		8309afdc:3f80
+	Infinite Ammo
+		8209b797:0007
+	Firgate Level Codes
+	Infinite Health 
+		830adbdc:3f80
+	Infinite Ammo
+		820ae397:0007
+	Surface B Level Codes
+	Infinite Health 
+		830ccfdc:3f80
+	Infinite Ammo
+		820cd797:0007
+	Statue Level Codes
+	Infinite Health 
+		830ac7dc:3f80
+	Infinite Ammo
+		820acf97:0007
+	Arch,Cav,Cradle,Egyp Level Codes
+	Infinite Health 
+		830b3fdc:3f80
+	Infinite Ammo
+		820b4797:0007
+	Streets Level Codes
+	Ifninite Health 
+		830bdfdc:3f80
+	Infinite Ammo
+		820be797:0007
+	Train,Jungle,Control Level Codes
+	Infinite Health 
+		830a77dc:3f80
+	Infinite Ammo
+		820a7f97:0007
+	Aztec Level Codes
+	Infinite Health 
+		830973dc:3f80
+	Infinite Ammo
+		82097b97:0007
+	Make sure you have the cheat
+	menu active in the game for
+	the following codes:
+	All Guns
+		82058593:0001
+	Bond Invisible
+		8205859a:0001
+	DK Mode
+		8205859c:0001
+	Enemy Rockets
+		820585ac:0001
+	Unlimited Ammo
+		8205859b:0001
+	Invincible
+		82058592:0001
+	Paint Ball Mode
+		8205859f:0001
+	Tiny Bond
+		8205859e:0001
+	Turbo Mode
+		820585a8:0001
+GT 64
+	Immer Erster Platz
+		80162a80:0001
+	Nur 1 Runde fuer Rennen
+		80161df5:0001
+Glover
+	Unbegrenzte Baelle
+		8029129b:0009
+Hexen
+	Unbesiegbar
+		8113f11c:ffff
+	Unbegrenzt Blue Mana
+		8013f14d:00cf
+	Unbegrenzt Green Mana
+		8013f14f:00cf
+	Habe Axe/Staff/Frost Shards.
+		8013f147:00ff
+	Habe Hammer/Firest./Arc.
+		8013f149:00ff
+	Habe Quietus/Wraith./Blood.
+		8013f14b:00ff
+Knockout Kings 2000
+	Infinite Health Player 1
+		c85c10cc:9b22
+		c85c1032:595a
+	Infinite Health Player 2
+		c85c0d3c:9b22
+		c85c0d3a:595a
+	Player 1 Full Punch Meter
+		c85c1040:595a
+		c85c103e:640c
+	Player 2 Full Punch Meter
+		c85c0d48:595a
+		c85c0d46:640c
+	Infinite Boxer Creation Points
+		c85c8afe:59b6
+	Full Power Bar
+		c85c8a02:59b6
+	Full Speed Bar
+		c85c8a06:59b6
+	Full Stamina Bar
+		c85c8a0a:59b6
+	Big Head Mode
+		e86397d4:5959
+	Big Gloves Mode
+		e86397d3:5959
+Holy Magic Century
+	Maximum HP
+		c85b1584:5c37
+		c85b1582:5c37
+	Maximum MP
+		c85b1588:5c37
+		c85b1586:5c37
+	Maximum Defence
+		c85b158a:5c37
+	Maximum Agility
+		c85b158c:5c37
+Hybrid Heaven
+	Special Code - Do Not Use
+		2a00109c:2400
+	Infinite Health
+		c86e6988:594f
+		c86e6986:594f
+		c872b7a2:594f
+	Full Power and Max combos
+		c872b7a6:5c4e
+	Have All Moves
+		cb78575a:595a
+		db7416ae:6060
+		cb78575a:595a
+		db7416b0:5f49
+	Have All Techniques
+		cb83575a:595a
+		db741792:6060
+		cb83575a:595a
+		dc741794:5f49
+	Have code key
+		e86e6e80:5959
+	Have flame unit
+		e86e6e88:5959
+	Have cold unit
+		e86e6e90:5959
+	Have invisible unit
+		e86e6e98:5959
+	Have impulse unit
+		e86e6ea0:5959
+Jetforce Gemini
+	Unendlich Leben
+		801E61E2:0040
+	Unendlich Fortsetzen
+		800A3281:0002
+	Max Leben
+		801E61E5:000C
+	Unendlich Raketenwerfer
+		811E6200:03E7
+Int. Superstar Soccer 98
+	Heimmannschaft hat 10 Tore
+		801a86fd:000a
+	Heimmannschaft hat  0 Tore
+		821a86fd:0000
+	Gastmannschaft hat 10 Tore
+		821a9579:000a
+	Gastmannschaft hat  0 Tore
+		821a9579:0000
+	Max Charakter Create Points
+		d03e0cf2:0001
+		803e0cf2:0063
+Lylat Wars
+	Unendliche Leben 
+		80163c09:0063
+	Unendlich Bombs
+		80179f0b:0005
+Mace: The Dark Ages
+	Unendlich Energie
+		8008b287:0064
+	Habe Extra Charakter
+		8007fa98:0001
+	1 Schlag fuer Tot
+		d208aeff:0064
+		8008aeff:0001
+	Fluffy Pink Bunny Slippers
+		8213c249:0001
+	Enable Ziao Lang
+		8213c281:0001
+Mario Golf
+	Special Code - Do Not Use
+		2c0b1920:0000
+	Unlimited Power Shots
+		c86318f4:6688
+		c86fcb50:6688
+	Unlock All levels
+		c8676242:6ae6
+	All Characters
+		c8627ef0:5956
+		c8627eee:5958
+		c8627ef4:5962
+		c8627ef2:5964
+		c8627ef8:595e
+		c8627ef6:5955
+		c8627efc:5957
+		c8627efa:5961
+		c8627e00:5963
+		c8627ef8:595d
+Mario Kart 64
+	Benutze nur einen der folgenden Single Bana.
+		82165fbd:0001
+	Multi Bananas
+		82165fbd:0002
+	Single Green Turtle
+		82165fbd:0003
+	Multi Green Turtles
+		82165fbd:0004
+	Single Red Turtle
+		82165fbd:0005
+	Multi Red Turtles
+		82165fbd:0006
+	Spiked Turtles
+		82165fbd:0007
+	Lightning Bolt
+		82165fbd:0008
+	Exploding Blocks
+		82165fbd:0009
+	Unbesiegbar
+		82165fbd:000a
+	Unsichtbar
+		82165fbd:000b
+	Turbo Boost
+		82165fbd:000c
+Mario Party
+	Unendlich Gesundheit
+		C85EBB16:504F
+	Unendlich Munition
+		EB5C5768:595A
+		DB62ED03:5F49
+MRC-Multi Racing Championship
+	Unendlich Zeit
+		80094E97:0064
+	Unendlich Zeit 1
+		D0094E97:000A
+		80094E97:0064
+	Immer Erster Platz
+		800A960F:0000
+	Niedrige Kurszeit
+		8009483B:0000
+Mission Impossible
+	Unendlich Gesundheit 
+		810864c2:ffff
+	Unendlich Munition
+		b0060010:0000
+		800a90a7:00ff
+Michael Owens WLS 2000
+	Home Team Scores 15 Goals
+		c85952ec:595f
+		c85cb38a:595f
+	Home Team Scores 0 Goals
+		c85952ec:595a
+		c85cb38a:595a
+	Away Team Scores 15 Goals
+		c8595200:595f
+		c85cb38e:595f
+	Away Team Scores 0 Goals
+		c8595200:595a
+		c85cb38e:595a
+	Infinite Time
+		c85c5d76:595a
+		c861f256:595a
+	Crazy Ball Mode
+		c861e84c:a155
+Mystical Ninja 2
+	All Entry Passes
+		e85ee11a:597e
+	Infinite Health Impact
+		c8707ea6:5a46
+	Infinite Money Impact
+		e8707ea1:5922
+	Infinite Health Player 1
+		e85ee12c:5958
+	Infinite Money Player 1
+		e85ee129:594f
+	Infinite Health Player 2
+		e85ee132:5958
+	Infinite Money Player 2
+		e85ee137:594f
+Mystical Ninja
+	Unendlich Gesundheit 
+		8015d2e7:0028
+	Unendliche Leben 
+		8015d2ef:000a
+	Unendlich Ryo
+		8015d2ea:0010
+	Habe Bazooka
+		8215d3cb:0001
+	Habe Chain Pipe
+		8215d3bf:0002
+	Habe Ebisumaru
+		8215d3a3:0001
+	Habe Fire Cracker Bomb
+		8215d3c4:0001
+	Habe Flute
+		8215d3db:0001
+	Habe Kunai Of Severe Cold
+		8215d3d4:0001
+	Habe Medal Of Flames
+		8215d3df:0001
+	Habe Meat Saw-Hammer
+		8215d3c0:0001
+	Habe Sasuke Character
+		8215d3a4:0001
+	Habe Yae Character
+		8215d3ab:0001
+	Flying Magic
+		8215d3f4:0001
+	Mermaid Magic
+		8215d3fb:0001
+	Mini Ebisumaru Magic
+		8215d3f2:0001
+	Sudden Impact Magic
+		8215d3ec:0001
+	Shell
+		8215d3fc:0001
+	Brown Item
+		8215d402:0001
+	Brown Round Item
+		8215d40f:0001
+	Gold Key
+		8215d412:0001
+	Blue Sausage
+		8215d417:0001
+	Pink Item
+		8215d41b:0001
+	Gold Item
+		8215d41c:0001
+	Blue Item
+		8215d422:0001
+Nagano Winter Olympics
+	Ice Skating 1500M 1 Runde fuer Rennen
+		8813871F:0003
+		8813871B:0002
+	Ice Skating 500M 1 Runde fuer Rennen
+		8813871F:0003
+		8813871B:0002
+	Speed Skating 500M ROUND 1 Maximum Stamina
+		81138724:447A
+	Speed Skating 500M, 1500M ROUND 2 Maximum Stamina
+		88138720:447A
+Offroad Challenge
+	Statischer Zeitmesser
+		8009643b:0032
+Pilot Wings
+	Unlimited Fuel Rocket Belt
+		e88cc0ff:59d9
+	Unlimited Fuel Gyrocopter
+		e88cc0df:59d9
+POKeMON STADIUM DEUTSCH
+	STADION-CODES UE Continues
+		ed605405:5959
+		e8605405:5961
+	Starte Cup mit Runde
+	Pokèmon- & Premium-Cup
+	Superball
+		e8603e16:5959
+	Hyperball
+		e8603e16:595c
+	Meisterball
+		e8603e16:595b
+	Pokèmon-Cup UE KP P1
+		c8603e36:5922
+		c87eb700:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87eb800:595a
+	Pika-Cup UE KP P1
+		c8603e36:5922
+		c87e9da0:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87eabc0:595a
+	Mini-Cup UE KP P1
+		c8603e36:5922
+		c87ec770:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87ecd90:595a
+	Premium-Cup UE KP P1
+		c8603e36:5922
+		c87eb630:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87ec450:595a
+	Schneller Kampf UE KP P1
+		c8603e36:5922
+		c87eb700:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87ebd20:595a
+	Schaukampf UE KP linker Spieler
+		c8603e36:5922
+		c87ed8c0:5922
+	SuddenDeath alle Gegner
+		c8604452:595a
+		c87edee0:595a
+	UE KP rechter Spieler
+		c8604452:5922
+		c87edee0:5922
+	SuddenDeath alle Gegner
+		c8603e36:595a
+		c87ed8c0:595a
+	ARENALEITER-CODES
+	Marmoria-City UE KP P1
+		ed603e16:595a
+		c8603e36:5922
+		ed603e16:595a
+		c87ed080:5922
+	SuddenDeath alle Gegner
+		ed603e16:595a
+		c8604452:595a
+		ed603e16:595a
+		c87ed6a0:595a
+	Azuria-City UE KP P1
+		ed603e16:5959
+		c8603e36:5922
+		ed603e16:5959
+		c87ed5c0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5959
+		c8604452:595a
+		ed603e16:5959
+		c87ee3e0:595a
+	Orania-City UE KP P1
+		ed603e16:595c
+		c8603e36:5922
+		ed603e16:595c
+		c87ec220:5922
+	SuddenDeath alle Gegner
+		ed603e16:595c
+		c8604452:595a
+		ed603e16:595c
+		c87ed040:595a
+	Prismania-City UE KP P1
+		ed603e16:595b
+		c8603e36:5922
+		ed603e16:595b
+		c87ec2f0:5922
+	SuddenDeath alle Gegner
+		ed603e16:595b
+		c8604452:595a
+		ed603e16:595b
+		c87ed010:595a
+	Fuchsania-City UE KP P1
+		ed603e16:5956
+		c8603e36:5922
+		ed603e16:5956
+		c87ed060:5922
+POKeMON STADIUM DEUTSCH Teil 01
+	SuddenDeath alle Gegner
+		ed603e16:5956
+		c8604452:595a
+		ed603e16:5956
+		c87ed680:595a
+	Safronia-City UE KP P1
+		ed603e16:5955
+		c8603e36:5922
+		ed603e16:5955
+		c87ecbf0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5955
+		c8604452:595a
+		ed603e16:5955
+		c87ed110:595a
+	Zinnoberinsel UE KP P1
+		ed603e16:5958
+		c8603e36:5922
+		ed603e16:5958
+		c87ec2b0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5958
+		c8604452:595a
+		ed603e16:5958
+		c87ed0d0:595a
+	Vertania-City UE KP P1
+		ed603e16:5957
+		c8603e36:5922
+		ed603e16:5957
+		c87eccb0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5957
+		c8604452:595a
+		ed603e16:5957
+		c87ed2d0:595a
+	Top Vier UE KP P1
+		ed603e16:5962
+		c8603e36:5922
+		ed603e16:5962
+		c87ec3a0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5962
+		c8604452:595a
+		ed603e16:5962
+		c87ec9c0:595a
+	Finale UE KP P1
+		ed603e16:5961
+		c8603e36:5922
+		ed603e16:5961
+		c87ec3a0:5922
+	SuddenDeath alle Gegner
+		ed603e16:5961
+		c8604452:595a
+		ed603e16:5961
+		c87ec9c0:595a
+	POKèMON-CODES P1
+	Alle P haben max KP
+		eb5c57ac:595a
+		6c623840:5e41
+		eb5c57ac:595a
+		6c623964:5e41
+	Alle P haben max Angriff
+		eb5c57ac:595a
+		6b623956:5e41
+	Alle P haben max Verteidigung
+		eb5c57ac:595a
+		6b623958:5e41
+	Alle P haben max Geschwindigkeit
+		eb5c57ac:595a
+		6b62395a:5e41
+	Alle P haben max Spezial
+		eb5c57ac:595a
+		6b62395c:5e41
+	Alle P haben Level 15
+		eb5c57ac:595a
+		6b623962:5f59
+	Alle P haben Level 25
+		eb5c57ac:595a
+		6b623962:5f67
+	Alle P haben Level 50
+		eb5c57ac:595a
+		6b623962:5f8e
+	Alle P haben Level 100
+		eb5c57ac:595a
+		6b623962:5fc4
+	1.Pokèmon Max KP
+		c8603e36:5c37
+		c860435a:5c37
+	UE PP 1.Faehigkeit
+		e8604358:594f
+	2.Faehigkeit
+		e8604357:594f
+	3.Faehigkeit
+		e8604356:594f
+	4.Faehigkeit
+		e8604355:594f
+	Level 15
+		e860435c:595f
+POKeMON STADIUM DEUTSCH Teil 02
+	Level 25
+		e860435c:5971
+	Level 50
+		e860435c:598c
+	Level 100
+		e860435c:59b6
+	Max Angriff
+		e8604360:594f
+	Max Verteidigung
+		e860435e:594f
+	Max Geschwindigkeit
+		e8604364:594f
+	Max Spezial
+		e8604362:594f
+	2.Pokèmon Max KP
+		c860438a:5c37
+		c86043ae:5c37
+	UE PP 1.Faehigkeit
+		e86043ac:594f
+	2.Faehigkeit
+		e86043ab:594f
+	3.Faehigkeit
+		e86043aa:594f
+	4.Faehigkeit
+		e86043a9:594f
+	Level 15
+		e86043b0:595f
+	Level 25
+		e86043b0:5971
+	Level 50
+		e86043b0:598c
+	Level 100
+		e86043b0:59b6
+	Max Angriff
+		e86043b4:594f
+	Max Verteidigung
+		e86043b2:594f
+	Max Geschwindigkeit
+		e86043b8:594f
+	Max Spezial
+		e86043b6:594f
+	3.Pokèmon
+		e0565758:595a
+		c86043de:5c37
+		c8604302:5c37
+	UE PP 1.Faehigkeit
+		e8604300:594f
+	2.Faehigkeit
+		e86043ff:594f
+	3.Faehigkeit
+		e86043fe:594f
+	4.Faehigkeit
+		e86043fd:594f
+	Level 15
+		e8604304:595f
+	Level 25
+		e8604304:5971
+	Level 50
+		e8604304:598c
+	Level 100
+		e8604304:59b6
+	Max Angriff
+		e8604308:594f
+	Max Verteidigung
+		e8604306:594f
+	Max Geschwindigkeit
+		e860430c:594f
+	Max Spezial
+		e860430a:594f
+	4.Pokèmon
+		e0565758:595a
+		c8604332:5c37
+		c8604456:5c37
+	UE PP 1.Faehigkeit
+		e8604354:594f
+	2.Faehigkeit
+		e8604353:594f
+	3.Faehigkeit
+		e8604352:594f
+	4.Faehigkeit
+		e8604351:594f
+	Level 15
+		e8604458:595f
+	Level 25
+		e8604458:5971
+	Level 50
+		e8604458:598c
+	Level 100
+		e8604458:59b6
+	Max Angriff
+		e860445c:594f
+	Max Verteidigung
+		e860445a:594f
+	Max Geschwindigkeit
+		e8604460:594f
+	Max Spezial
+		e860445e:594f
+POKeMON STADIUM DEUTSCH Teil 03
+	5.Pokèmon
+		e0565758:595a
+		c8604486:5c37
+		c86044aa:5c37
+	UE PP 1.Faehigkeit
+		e86044a8:594f
+	2.Faehigkeit
+		e86044a7:594f
+	3.Faehigkeit
+		e86044a6:594f
+	4.Faehigkeit
+		e86044a5:594f
+	Level 15
+		e86044ac:595f
+	Level 25
+		e86044ac:5971
+	Level 50
+		e86044ac:598c
+	Level 100
+		e86044ac:59b6
+	Max Angriff
+		e86044b0:594f
+	Max Verteidigung
+		e86044ae:594f
+	Max Geschwindigkeit
+		e86044b4:594f
+	Max Spezial
+		e86044b2:594f
+	6.Pokèmon
+		e0565758:595a
+		c86044da:5c37
+		c86044fe:5c37
+	UE PP 1.Faehigkeit
+		e86044fc:594f
+	2.Faehigkeit
+		e86044fb:594f
+	3.Faehigkeit
+		e86044fa:594f
+	4.Faehigkeit
+		e86044f9:594f
+	Level 15
+		e8604400:595f
+	Level 25
+		e8604400:5971
+	Level 50
+		e8604400:598c
+	Level 100
+		e8604400:59b6
+	Max Angriff
+		e8604404:594f
+	Max Verteidigung
+		e8604402:594f
+	Max Geschwindigkeit
+		e8604408:594f
+	Max Spezial
+		e8604406:594f
+	POKèMON-CODES P2
+	Alle P haben max KP
+		eb5c57ac:595a
+		6c623b78:5e41
+		eb5c57ac:595a
+		6c623b9c:5e41
+	Alle P haben max Angriff
+		eb5c57ac:595a
+		6b623bae:5e41
+	Alle P haben max Verteidigung
+		eb5c57ac:595a
+		6b623bb0:5e41
+	Alle P haben max Geschwindigkeit
+		eb5c57ac:595a
+		6b623bb2:5e41
+	Alle P haben max Spezial
+		eb5c57ac:595a
+		6b623bb4:5e41
+	Alle P haben Level 15
+		eb5c57ac:595a
+		6b623b9a:5f59
+	Alle P haben Level 25
+		eb5c57ac:595a
+		6b623b9a:5f67
+	Alle P haben Level 50
+		eb5c57ac:595a
+		6b623b9a:5f8e
+	Alle P haben Level 100
+		eb5c57ac:595a
+		6b623b9a:5fc4
+	1.Pokèmon Max KP
+		c860417e:5c37
+		c86041a2:5c37
+	UE PP 1.Faehigkeit
+		e86041a0:594f
+	2.Faehigkeit
+		e860419f:594f
+	3.Faehigkeit
+		e860419e:594f
+	4.Faehigkeit
+		e860419d:594f
+	Level 15
+		e86041a4:595f
+	Level 25
+		e86041a4:5971
+	Level 50
+		e86041a4:598c
+POKeMON STADIUM DEUTSCH Teil 04
+	Level 100
+		e86041a4:59b6
+	Max Angriff
+		e86041a8:594f
+	Max Verteidigung
+		e86041a6:594f
+	Max Geschwindigkeit
+		e86041ac:594f
+	Max Spezial
+		e86041aa:594f
+	2.Pokèmon Max KP
+		c86041d2:5c37
+		c86041f6:5c37
+	UE PP 1.Faehigkeit
+		e86041f4:594f
+	2.Faehigkeit
+		e86041f3:594f
+	3.Faehigkeit
+		e86041f2:594f
+	4.Faehigkeit
+		e86041f1:594f
+	Level 15
+		e86041f8:595f
+	Level 25
+		e86041f8:5971
+	Level 50
+		e86041f8:598c
+	Level 100
+		e86041f8:59b6
+	Max Angriff
+		e86041fc:594f
+	Max Verteidigung
+		e86041fa:594f
+	Max Geschwindigkeit
+		e8604100:594f
+	Max Spezial
+		e86041fe:594f
+	3.Pokèmon
+		e0565758:595a
+		c8604126:5c37
+		c860414a:5c37
+	UE PP 1.Faehigkeit
+		e8604148:594f
+	2.Faehigkeit
+		e8604147:594f
+	3.Faehigkeit
+		e8604146:594f
+	4.Faehigkeit
+		e8604145:594f
+	Level 15
+		e860414c:595f
+	Level 25
+		e860414c:5971
+	Level 50
+		e860414c:598c
+	Level 100
+		e860414c:59b6
+	Max Angriff
+		e8604150:594f
+	Max Verteidigung
+		e860414e:594f
+	Max Geschwindigkeit
+		e8604154:594f
+	Max Spezial
+		e8604152:594f
+	4.Pokèmon
+		e0565758:595a
+		c860427a:5c37
+		c860429e:5c37
+	UE PP 1.Faehigkeit
+		e860429c:594f
+	2.Faehigkeit
+		e860429b:594f
+	3.Faehigkeit
+		e860429a:594f
+	4.Faehigkeit
+		e8604299:594f
+	Level 15
+		e86042a0:595f
+	Level 25
+		e86042a0:5971
+	Level 50
+		e86042a0:598c
+	Level 100
+		e86042a0:59b6
+	Max Angriff
+		e86042a4:594f
+	Max Verteidigung
+		e86042a2:594f
+	Max Geschwindigkeit
+		e86042a8:594f
+	Max Spezial
+		e86042a6:594f
+	5.Pokèmon
+		e0565758:595a
+		c86042ce:5c37
+		c86042f2:5c37
+POKeMON STADIUM DEUTSCH Teil 05
+	UE PP 1.Faehigkeit
+		e86042f0:594f
+	2.Faehigkeit
+		e86042ef:594f
+	3.Faehigkeit
+		e86042ee:594f
+	4.Faehigkeit
+		e86042ed:594f
+	Level 15
+		e86042f4:595f
+	Level 25
+		e86042f4:5971
+	Level 50
+		e86042f4:598c
+	Level 100
+		e86042f4:59b6
+	Max Angriff
+		e86042f8:594f
+	Max Verteidigung
+		e86042f6:594f
+	Max Geschwindigkeit
+		e86042fc:594f
+	Max Spezial
+		e86042fa:594f
+	6.Pokèmon
+		e0565758:595a
+		c8604222:5c37
+		c8604246:5c37
+	UE PP 1.Faehigkeit
+		e8604244:594f
+	2.Faehigkeit
+		e8604243:594f
+	3.Faehigkeit
+		e8604242:594f
+	4.Faehigkeit
+		e8604241:594f
+	Level 15
+		e8604248:595f
+	Level 25
+		e8604248:5971
+	Level 50
+		e8604248:598c
+	Level 100
+		e8604248:59b6
+	Max Angriff
+		e860424c:594f
+	Max Verteidigung
+		e860424a:594f
+	Max Geschwindigkeit
+		e8604250:594f
+	Max Spezial
+		e860424e:594f
+	POKeMON-MODIFIZIERER
+	P1 1. Pokèmon Bisasam
+		e8603e38:5959
+	Bisaknosp
+		e8603e38:595c
+	Bisaflor
+		e8603e38:595b
+	Glumanda
+		e8603e38:5956
+	Glutexo
+		e8603e38:5955
+	Glurak
+		e8603e38:5958
+	Schiggy
+		e8603e38:5957
+	Schillok
+		e8603e38:5962
+	Turtok
+		e8603e38:5961
+	Raupy
+		e8603e38:5964
+	Safcon
+		e8603e38:5963
+	Smettbo
+		e8603e38:595e
+	Hornliu
+		e8603e38:595d
+	Kokuna
+		e8603e38:5960
+	Bibor
+		e8603e38:595f
+	Taubsi
+		e8603e38:596a
+	Tauboga
+		e8603e38:5969
+	Tauboss
+		e8603e38:596c
+	Rattfratz
+		e8603e38:596b
+	Rattikarl
+		e8603e38:5966
+	Habitak
+		e8603e38:5965
+	Ibitak
+		e8603e38:5968
+	Rettan
+		e8603e38:5967
+POKeMON STADIUM DEUTSCH Teil 06
+	Arbok
+		e8603e38:5972
+	Pikachu
+		e8603e38:5971
+	Raichu
+		e8603e38:5974
+	Sandan
+		e8603e38:5973
+	Sandamer
+		e8603e38:596e
+	Nidoran (weiblich)
+		e8603e38:596d
+	Nidorina
+		e8603e38:5970
+	Nidoqueen
+		e8603e38:596f
+	Nidoran (maennlich)
+		e8603e38:597a
+	Nidorino
+		e8603e38:5979
+	Nidoking
+		e8603e38:597c
+	Piepi
+		e8603e38:597b
+	Pixi
+		e8603e38:5976
+	Vulpix
+		e8603e38:5975
+	Vulnona
+		e8603e38:5978
+	Pummeluff
+		e8603e38:5977
+	Knuddeluff
+		e8603e38:5982
+	Zubat
+		e8603e38:5981
+	Golbat
+		e8603e38:5984
+	Myrapla
+		e8603e38:5983
+	Duflor
+		e8603e38:597e
+	Giflor
+		e8603e38:597d
+	Paras
+		e8603e38:5980
+	Parasek
+		e8603e38:597f
+	Bluzuk
+		e8603e38:598a
+	Omot
+		e8603e38:5989
+	Digda
+		e8603e38:598c
+	Digdri
+		e8603e38:598b
+	Mauzi
+		e8603e38:5986
+	Snobilikat
+		e8603e38:5985
+	Enton
+		e8603e38:5988
+	Entoron
+		e8603e38:5987
+	Menki
+		e8603e38:5992
+	Rasaff
+		e8603e38:5991
+	Fukano
+		e8603e38:5994
+	Arkani
+		e8603e38:5993
+	Quapsel
+		e8603e38:598e
+	Quaputzi
+		e8603e38:598d
+	Quappo
+		e8603e38:5990
+	Abra
+		e8603e38:598f
+	Kadabra
+		e8603e38:599a
+	Simsala
+		e8603e38:5999
+	Machollo
+		e8603e38:599c
+	Maschok
+		e8603e38:599b
+	Machomei
+		e8603e38:5996
+	Knofensa
+		e8603e38:5995
+	Ultrigaria
+		e8603e38:5998
+	Sarzenia
+		e8603e38:5997
+	Tentacha
+		e8603e38:59a2
+	Tentoxa
+		e8603e38:59a1
+POKeMON STADIUM DEUTSCH Teil 07
+	Kleinstein
+		e8603e38:59a4
+	Georok
+		e8603e38:59a3
+	Geowaz
+		e8603e38:599e
+	Ponita
+		e8603e38:599d
+	Gallopa
+		e8603e38:59a0
+	Flegmon
+		e8603e38:599f
+	Lahmus
+		e8603e38:59aa
+	Magnetilo
+		e8603e38:59a9
+	Magneton
+		e8603e38:59ac
+	Porenta
+		e8603e38:59ab
+	Dodu
+		e8603e38:59a6
+	Dodri
+		e8603e38:59a5
+	Jurob
+		e8603e38:59a8
+	Jugong
+		e8603e38:59a7
+	Sleima
+		e8603e38:59b2
+	Sleimok
+		e8603e38:59b1
+	Muschas
+		e8603e38:59b4
+	Austos
+		e8603e38:59b3
+	Nebulak
+		e8603e38:59ae
+	Alpollo
+		e8603e38:59ad
+	Gengar
+		e8603e38:59b0
+	Onix
+		e8603e38:59af
+	Traumato
+		e8603e38:59ba
+	Hypno
+		e8603e38:59b9
+	Krabby
+		e8603e38:59bc
+	Kingler
+		e8603e38:59bb
+	Voltobal
+		e8603e38:59b6
+	Lektrobal
+		e8603e38:59b5
+	Owei
+		e8603e38:59b8
+	Kokowei
+		e8603e38:59b7
+	Tragosso
+		e8603e38:59c2
+	Knogga
+		e8603e38:59c1
+	Kicklee
+		e8603e38:59c4
+	Nockchan
+		e8603e38:59c3
+	Schlurp
+		e8603e38:59be
+	Smogon
+		e8603e38:59bd
+	Smogsmog
+		e8603e38:59c0
+	Rihorn
+		e8603e38:59bf
+	Rizeros
+		e8603e38:59ca
+	Chaneira
+		e8603e38:59c9
+	Tangela
+		e8603e38:59cc
+	Kangama
+		e8603e38:59cb
+	Seeper
+		e8603e38:59c6
+	Seemon
+		e8603e38:59c5
+	Goldini
+		e8603e38:59c8
+	Golking
+		e8603e38:59c7
+	Sterndu
+		e8603e38:59d2
+	Starmie
+		e8603e38:59d1
+	Pantimos
+		e8603e38:59d4
+POKeMON STADIUM DEUTSCH Teil 08
+	Sichlor
+		e8603e38:59d3
+	Rossana
+		e8603e38:59ce
+	Elektek
+		e8603e38:59cd
+	Magmar
+		e8603e38:59d0
+	Pinsir
+		e8603e38:59cf
+	Tauros
+		e8603e38:59da
+	Karpador
+		e8603e38:59d9
+	Garados
+		e8603e38:59dc
+	Lapras
+		e8603e38:59db
+	Ditto
+		e8603e38:59d6
+	Evoli
+		e8603e38:59d5
+	Aquana
+		e8603e38:59d8
+	Blitza
+		e8603e38:59d7
+	Flamara
+		e8603e38:59e2
+	Porygon
+		e8603e38:59e1
+	Amonitas
+		e8603e38:59e4
+	Amoroso
+		e8603e38:59e3
+	Kabuto
+		e8603e38:59de
+	Kabutops
+		e8603e38:59dd
+	Aerodactyl
+		e8603e38:59e0
+	Relaxo
+		e8603e38:59df
+	Arktos
+		e8603e38:59ea
+	Zapdos
+		e8603e38:59e9
+	Lavados
+		e8603e38:59ec
+	Dratini
+		e8603e38:59eb
+	Dragonir
+		e8603e38:59e6
+	Dragoran
+		e8603e38:59e5
+	Mewtu
+		e8603e38:59e8
+	Mew
+		e8603e38:59e7
+	P1 2. Pokèmon Bisasam
+		e860438c:5959
+	Bisaknosp
+		e860438c:595c
+	Bisaflor
+		e860438c:595b
+	Glumanda
+		e860438c:5956
+	Glutexo
+		e860438c:5955
+	Glurak
+		e860438c:5958
+	Schiggy
+		e860438c:5957
+	Schillok
+		e860438c:5962
+	Turtok
+		e860438c:5961
+	Raupy
+		e860438c:5964
+	Safcon
+		e860438c:5963
+	Smettbo
+		e860438c:595e
+	Hornliu
+		e860438c:595d
+	Kokuna
+		e860438c:5960
+	Bibor
+		e860438c:595f
+	Taubsi
+		e860438c:596a
+	Tauboga
+		e860438c:5969
+	Tauboss
+		e860438c:596c
+	Rattfratz
+		e860438c:596b
+	Rattikarl
+		e860438c:5966
+POKeMON STADIUM DEUTSCH Teil 09
+	Habitak
+		e860438c:5965
+	Ibitak
+		e860438c:5968
+	Rettan
+		e860438c:5967
+	Arbok
+		e860438c:5972
+	Pikachu
+		e860438c:5971
+	Raichu
+		e860438c:5974
+	Sandan
+		e860438c:5973
+	Sandamer
+		e860438c:596e
+	Nidoran (weiblich)
+		e860438c:596d
+	Nidorina
+		e860438c:5970
+	Nidoqueen
+		e860438c:596f
+	Nidoran (maennlich)
+		e860438c:597a
+	Nidorino
+		e860438c:5979
+	Nidoking
+		e860438c:597c
+	Piepi
+		e860438c:597b
+	Pixi
+		e860438c:5976
+	Vulpix
+		e860438c:5975
+	Vulnona
+		e860438c:5978
+	Pummeluff
+		e860438c:5977
+	Knuddeluff
+		e860438c:5982
+	Zubat
+		e860438c:5981
+	Golbat
+		e860438c:5984
+	Myrapla
+		e860438c:5983
+	Duflor
+		e860438c:597e
+	Giflor
+		e860438c:597d
+	Paras
+		e860438c:5980
+	Parasek
+		e860438c:597f
+	Bluzuk
+		e860438c:598a
+	Omot
+		e860438c:5989
+	Digda
+		e860438c:598c
+	Digdri
+		e860438c:598b
+	Mauzi
+		e860438c:5986
+	Snobilikat
+		e860438c:5985
+	Enton
+		e860438c:5988
+	Entoron
+		e860438c:5987
+	Menki
+		e860438c:5992
+	Rasaff
+		e860438c:5991
+	Fukano
+		e860438c:5994
+	Arkani
+		e860438c:5993
+	Quapsel
+		e860438c:598e
+	Quaputzi
+		e860438c:598d
+	Quappo
+		e860438c:5990
+	Abra
+		e860438c:598f
+	Kadabra
+		e860438c:599a
+	Simsala
+		e860438c:5999
+	Machollo
+		e860438c:599c
+	Maschok
+		e860438c:599b
+	Machomei
+		e860438c:5996
+	Knofensa
+		e860438c:5995
+	Ultrigaria
+		e860438c:5998
+POKeMON STADIUM DEUTSCH Teil 10
+	Sarzenia
+		e860438c:5997
+	Tentacha
+		e860438c:59a2
+	Tentoxa
+		e860438c:59a1
+	Kleinstein
+		e860438c:59a4
+	Georok
+		e860438c:59a3
+	Geowaz
+		e860438c:599e
+	Ponita
+		e860438c:599d
+	Gallopa
+		e860438c:59a0
+	Flegmon
+		e860438c:599f
+	Lahmus
+		e860438c:59aa
+	Magnetilo
+		e860438c:59a9
+	Magneton
+		e860438c:59ac
+	Porenta
+		e860438c:59ab
+	Dodu
+		e860438c:59a6
+	Dodri
+		e860438c:59a5
+	Jurob
+		e860438c:59a8
+	Jugong
+		e860438c:59a7
+	Sleima
+		e860438c:59b2
+	Sleimok
+		e860438c:59b1
+	Muschas
+		e860438c:59b4
+	Austos
+		e860438c:59b3
+	Nebulak
+		e860438c:59ae
+	Alpollo
+		e860438c:59ad
+	Gengar
+		e860438c:59b0
+	Onix
+		e860438c:59af
+	Traumato
+		e860438c:59ba
+	Hypno
+		e860438c:59b9
+	Krabby
+		e860438c:59bc
+	Kingler
+		e860438c:59bb
+	Voltobal
+		e860438c:59b6
+	Lektrobal
+		e860438c:59b5
+	Owei
+		e860438c:59b8
+	Kokowei
+		e860438c:59b7
+	Tragosso
+		e860438c:59c2
+	Knogga
+		e860438c:59c1
+	Kicklee
+		e860438c:59c4
+	Nockchan
+		e860438c:59c3
+	Schlurp
+		e860438c:59be
+	Smogon
+		e860438c:59bd
+	Smogsmog
+		e860438c:59c0
+	Rihorn
+		e860438c:59bf
+	Rizeros
+		e860438c:59ca
+	Chaneira
+		e860438c:59c9
+	Tangela
+		e860438c:59cc
+	Kangama
+		e860438c:59cb
+	Seeper
+		e860438c:59c6
+	Seemon
+		e860438c:59c5
+	Goldini
+		e860438c:59c8
+	Golking
+		e860438c:59c7
+	Sterndu
+		e860438c:59d2
+POKeMON STADIUM DEUTSCH Teil 11
+	Starmie
+		e860438c:59d1
+	Pantimos
+		e860438c:59d4
+	Sichlor
+		e860438c:59d3
+	Rossana
+		e860438c:59ce
+	Elektek
+		e860438c:59cd
+	Magmar
+		e860438c:59d0
+	Pinsir
+		e860438c:59cf
+	Tauros
+		e860438c:59da
+	Karpador
+		e860438c:59d9
+	Garados
+		e860438c:59dc
+	Lapras
+		e860438c:59db
+	Ditto
+		e860438c:59d6
+	Evoli
+		e860438c:59d5
+	Aquana
+		e860438c:59d8
+	Blitza
+		e860438c:59d7
+	Flamara
+		e860438c:59e2
+	Porygon
+		e860438c:59e1
+	Amonitas
+		e860438c:59e4
+	Amoroso
+		e860438c:59e3
+	Kabuto
+		e860438c:59de
+	Kabutops
+		e860438c:59dd
+	Aerodactyl
+		e860438c:59e0
+	Relaxo
+		e860438c:59df
+	Arktos
+		e860438c:59ea
+	Zapdos
+		e860438c:59e9
+	Lavados
+		e860438c:59ec
+	Dratini
+		e860438c:59eb
+	Dragonir
+		e860438c:59e6
+	Dragoran
+		e860438c:59e5
+	Mewtu
+		e860438c:59e8
+	Mew
+		e860438c:59e7
+	P1 3. Pokèmon Bisasam
+		e86043e0:5959
+	Bisaknosp
+		e86043e0:595c
+	Bisaflor
+		e86043e0:595b
+	Glumanda
+		e86043e0:5956
+	Glutexo
+		e86043e0:5955
+	Glurak
+		e86043e0:5958
+	Schiggy
+		e86043e0:5957
+	Schillok
+		e86043e0:5962
+	Turtok
+		e86043e0:5961
+	Raupy
+		e86043e0:5964
+	Safcon
+		e86043e0:5963
+	Smettbo
+		e86043e0:595e
+	Hornliu
+		e86043e0:595d
+	Kokuna
+		e86043e0:5960
+	Bibor
+		e86043e0:595f
+	Taubsi
+		e86043e0:596a
+	Tauboga
+		e86043e0:5969
+	Tauboss
+		e86043e0:596c
+POKeMON STADIUM DEUTSCH Teil 12
+	Rattfratz
+		e86043e0:596b
+	Rattikarl
+		e86043e0:5966
+	Habitak
+		e86043e0:5965
+	Ibitak
+		e86043e0:5968
+	Rettan
+		e86043e0:5967
+	Arbok
+		e86043e0:5972
+	Pikachu
+		e86043e0:5971
+	Raichu
+		e86043e0:5974
+	Sandan
+		e86043e0:5973
+	Sandamer
+		e86043e0:596e
+	Nidoran (weiblich)
+		e86043e0:596d
+	Nidorina
+		e86043e0:5970
+	Nidoqueen
+		e86043e0:596f
+	Nidoran (maennlich)
+		e86043e0:597a
+	Nidorino
+		e86043e0:5979
+	Nidoking
+		e86043e0:597c
+	Piepi
+		e86043e0:597b
+	Pixi
+		e86043e0:5976
+	Vulpix
+		e86043e0:5975
+	Vulnona
+		e86043e0:5978
+	Pummeluff
+		e86043e0:5977
+	Knuddeluff
+		e86043e0:5982
+	Zubat
+		e86043e0:5981
+	Golbat
+		e86043e0:5984
+	Myrapla
+		e86043e0:5983
+	Duflor
+		e86043e0:597e
+	Giflor
+		e86043e0:597d
+	Paras
+		e86043e0:5980
+	Parasek
+		e86043e0:597f
+	Bluzuk
+		e86043e0:598a
+	Omot
+		e86043e0:5989
+	Digda
+		e86043e0:598c
+	Digdri
+		e86043e0:598b
+	Mauzi
+		e86043e0:5986
+	Snobilikat
+		e86043e0:5985
+	Enton
+		e86043e0:5988
+	Entoron
+		e86043e0:5987
+	Menki
+		e86043e0:5992
+	Rasaff
+		e86043e0:5991
+	Fukano
+		e86043e0:5994
+	Arkani
+		e86043e0:5993
+	Quapsel
+		e86043e0:598e
+	Quaputzi
+		e86043e0:598d
+	Quappo
+		e86043e0:5990
+	Abra
+		e86043e0:598f
+	Kadabra
+		e86043e0:599a
+	Simsala
+		e86043e0:5999
+	Machollo
+		e86043e0:599c
+	Maschok
+		e86043e0:599b
+	Machomei
+		e86043e0:5996
+POKeMON STADIUM DEUTSCH Teil 13
+	Knofensa
+		e86043e0:5995
+	Ultrigaria
+		e86043e0:5998
+	Sarzenia
+		e86043e0:5997
+	Tentacha
+		e86043e0:59a2
+	Tentoxa
+		e86043e0:59a1
+	Kleinstein
+		e86043e0:59a4
+	Georok
+		e86043e0:59a3
+	Geowaz
+		e86043e0:599e
+	ponita
+		e86043e0:599d
+	Gallopa
+		e86043e0:59a0
+	Flegmon
+		e86043e0:599f
+	Lahmus
+		e86043e0:59aa
+	Magnetilo
+		e86043e0:59a9
+	Magneton
+		e86043e0:59ac
+	Porenta
+		e86043e0:59ab
+	Dodu
+		e86043e0:59a6
+	Dodri
+		e86043e0:59a5
+	Jurob
+		e86043e0:59a8
+	Jugong
+		e86043e0:59a7
+	Sleima
+		e86043e0:59b2
+	Sleimok
+		e86043e0:59b1
+	Muschas
+		e86043e0:59b4
+	Austos
+		e86043e0:59b3
+	Nebulak
+		e86043e0:59ae
+	Alpollo
+		e86043e0:59ad
+	Gengar
+		e86043e0:59b0
+	Onix
+		e86043e0:59af
+	Traumato
+		e86043e0:59ba
+	Hypno
+		e86043e0:59b9
+	Krabby
+		e86043e0:59bc
+	Kingler
+		e86043e0:59bb
+	Voltobal
+		e86043e0:59b6
+	Lektrobal
+		e86043e0:59b5
+	Owei
+		e86043e0:59b8
+	Kokowei
+		e86043e0:59b7
+	Tragosso
+		e86043e0:59c2
+	Knogga
+		e86043e0:59c1
+	Kicklee
+		e86043e0:59c4
+	Nockchan
+		e86043e0:59c3
+	Schlurp
+		e86043e0:59be
+	Smogon
+		e86043e0:59bd
+	Smogsmog
+		e86043e0:59c0
+	Rihorn
+		e86043e0:59bf
+	Rizeros
+		e86043e0:59ca
+	Chaneira
+		e86043e0:59c9
+	Tangela
+		e86043e0:59cc
+	Kangama
+		e86043e0:59cb
+	Seeper
+		e86043e0:59c6
+	Seemon
+		e86043e0:59c5
+POKeMON STADIUM DEUTSCH Teil 14
+	Goldini
+		e86043e0:59c8
+	Golking
+		e86043e0:59c7
+	Sterndu
+		e86043e0:59d2
+	Starmie
+		e86043e0:59d1
+	Pantimos
+		e86043e0:59d4
+	Sichlor
+		e86043e0:59d3
+	Rossana
+		e86043e0:59ce
+	Elektek
+		e86043e0:59cd
+	Magmar
+		e86043e0:59d0
+	Pinsir
+		e86043e0:59cf
+	Tauros
+		e86043e0:59da
+	Karpador
+		e86043e0:59d9
+	Garados
+		e86043e0:59dc
+	Lapras
+		e86043e0:59db
+	Ditto
+		e86043e0:59d6
+	Evoli
+		e86043e0:59d5
+	Aquana
+		e86043e0:59d8
+	Blitza
+		e86043e0:59d7
+	Flamara
+		e86043e0:59e2
+	Porygon
+		e86043e0:59e1
+	Amonitas
+		e86043e0:59e4
+	Amoroso
+		e86043e0:59e3
+	Kabuto
+		e86043e0:59de
+	Kabutops
+		e86043e0:59dd
+	Aerodactyl
+		e86043e0:59e0
+	Relaxo
+		e86043e0:59df
+	Arktos
+		e86043e0:59ea
+	Zapdos
+		e86043e0:59e9
+	Lavados
+		e86043e0:59ec
+	Dratini
+		e86043e0:59eb
+	Dragonir
+		e86043e0:59e6
+	Dragoran
+		e86043e0:59e5
+	Mewtu
+		e86043e0:59e8
+	Mew
+		e86043e0:59e7
+	P1 4. Pokèmon Bisasam
+		e8604334:5959
+	Bisaknosp
+		e8604334:595c
+	Bisaflor
+		e8604334:595b
+	Glumanda
+		e8604334:5956
+	Glutexo
+		e8604334:5955
+	Glurak
+		e8604334:5958
+	Schiggy
+		e8604334:5957
+	Schillok
+		e8604334:5962
+	Turtok
+		e8604334:5961
+	Raupy
+		e8604334:5964
+	Safcon
+		e8604334:5963
+	Smettbo
+		e8604334:595e
+	Hornliu
+		e8604334:595d
+	Kokuna
+		e8604334:5960
+	Bibor
+		e8604334:595f
+	Taubsi
+		e8604334:596a
+POKeMON STADIUM DEUTSCH Teil 15
+	Tauboga
+		e8604334:5969
+	Tauboss
+		e8604334:596c
+	Rattfratz
+		e8604334:596b
+	Rattikarl
+		e8604334:5966
+	Habitak
+		e8604334:5965
+	Ibitak
+		e8604334:5968
+	Rettan
+		e8604334:5967
+	Arbok
+		e8604334:5972
+	Pikachu
+		e8604334:5971
+	Raichu
+		e8604334:5974
+	Sandan
+		e8604334:5973
+	Sandamer
+		e8604334:596e
+	Nidoran (weiblich)
+		e8604334:596d
+	Nidorina
+		e8604334:5970
+	Nidoqueen
+		e8604334:596f
+	Nidoran (maennlich)
+		e8604334:597a
+	Nidorino
+		e8604334:5979
+	Nidoking
+		e8604334:597c
+	Piepi
+		e8604334:597b
+	Pixi
+		e8604334:5976
+	Vulpix
+		e8604334:5975
+	Vulnona
+		e8604334:5978
+	Pummeluff
+		e8604334:5977
+	Knuddeluff
+		e8604334:5982
+	Zubat
+		e8604334:5981
+	Golbat
+		e8604334:5984
+	Myrapla
+		e8604334:5983
+	Duflor
+		e8604334:597e
+	Giflor
+		e8604334:597d
+	Paras
+		e8604334:5980
+	Parasek
+		e8604334:597f
+	Bluzuk
+		e8604334:598a
+	Omot
+		e8604334:5989
+	Digda
+		e8604334:598c
+	Digdri
+		e8604334:598b
+	Mauzi
+		e8604334:5986
+	Snobilikat
+		e8604334:5985
+	Enton
+		e8604334:5988
+	Entoron
+		e8604334:5987
+	Menki
+		e8604334:5992
+	Rasaff
+		e8604334:5991
+	Fukano
+		e8604334:5994
+	Arkani
+		e8604334:5993
+	Quapsel
+		e8604334:598e
+	Quaputzi
+		e8604334:598d
+	Quappo
+		e8604334:5990
+	Abra
+		e8604334:598f
+	Kadabra
+		e8604334:599a
+	Simsala
+		e8604334:5999
+POKeMON STADIUM DEUTSCH Teil 16
+	Machollo
+		e8604334:599c
+	Maschok
+		e8604334:599b
+	Machomei
+		e8604334:5996
+	Knofensa
+		e8604334:5995
+	Ultrigaria
+		e8604334:5998
+	Sarzenia
+		e8604334:5997
+	Tentacha
+		e8604334:59a2
+	Tentoxa
+		e8604334:59a1
+	Kleinstein
+		e8604334:59a4
+	Georok
+		e8604334:59a3
+	Geowaz
+		e8604334:599e
+	ponita
+		e8604334:599d
+	Gallopa
+		e8604334:59a0
+	Flegmon
+		e8604334:599f
+	Lahmus
+		e8604334:59aa
+	Magnetilo
+		e8604334:59a9
+	Magneton
+		e8604334:59ac
+	Porenta
+		e8604334:59ab
+	Dodu
+		e8604334:59a6
+	Dodri
+		e8604334:59a5
+	Jurob
+		e8604334:59a8
+	Jugong
+		e8604334:59a7
+	Sleima
+		e8604334:59b2
+	Sleimok
+		e8604334:59b1
+	Muschas
+		e8604334:59b4
+	Austos
+		e8604334:59b3
+	Nebulak
+		e8604334:59ae
+	Alpollo
+		e8604334:59ad
+	Gengar
+		e8604334:59b0
+	Onix
+		e8604334:59af
+	Traumato
+		e8604334:59ba
+	Hypno
+		e8604334:59b9
+	Krabby
+		e8604334:59bc
+	Kingler
+		e8604334:59bb
+	Voltobal
+		e8604334:59b6
+	Lektrobal
+		e8604334:59b5
+	Owei
+		e8604334:59b8
+	Kokowei
+		e8604334:59b7
+	Tragosso
+		e8604334:59c2
+	Knogga
+		e8604334:59c1
+	Kicklee
+		e8604334:59c4
+	Nockchan
+		e8604334:59c3
+	Schlurp
+		e8604334:59be
+	Smogon
+		e8604334:59bd
+	Smogsmog
+		e8604334:59c0
+	Rihorn
+		e8604334:59bf
+	Rizeros
+		e8604334:59ca
+	Chaneira
+		e8604334:59c9
+	Tangela
+		e8604334:59cc
+	Kangama
+		e8604334:59cb
+POKeMON STADIUM DEUTSCH Teil 17
+	Seeper
+		e8604334:59c6
+	Seemon
+		e8604334:59c5
+	Goldini
+		e8604334:59c8
+	Golking
+		e8604334:59c7
+	Sterndu
+		e8604334:59d2
+	Starmie
+		e8604334:59d1
+	Pantimos
+		e8604334:59d4
+	Sichlor
+		e8604334:59d3
+	Rossana
+		e8604334:59ce
+	Elektek
+		e8604334:59cd
+	Magmar
+		e8604334:59d0
+	Pinsir
+		e8604334:59cf
+	Tauros
+		e8604334:59da
+	Karpador
+		e8604334:59d9
+	Garados
+		e8604334:59dc
+	Lapras
+		e8604334:59db
+	Ditto
+		e8604334:59d6
+	Evoli
+		e8604334:59d5
+	Aquana
+		e8604334:59d8
+	Blitza
+		e8604334:59d7
+	Flamara
+		e8604334:59e2
+	Porygon
+		e8604334:59e1
+	Amonitas
+		e8604334:59e4
+	Amoroso
+		e8604334:59e3
+	Kabuto
+		e8604334:59de
+	Kabutops
+		e8604334:59dd
+	Aerodactyl
+		e8604334:59e0
+	Relaxo
+		e8604334:59df
+	Arktos
+		e8604334:59ea
+	Zapdos
+		e8604334:59e9
+	Lavados
+		e8604334:59ec
+	Dratini
+		e8604334:59eb
+	Dragonir
+		e8604334:59e6
+	Dragoran
+		e8604334:59e5
+	Mewtu
+		e8604334:59e8
+	Mew
+		e8604334:59e7
+	P1 5. Pokèmon Bisasam
+		e8604488:5959
+	Bisaknosp
+		e8604488:595c
+	Bisaflor
+		e8604488:595b
+	Glumanda
+		e8604488:5956
+	Glutexo
+		e8604488:5955
+	Glurak
+		e8604488:5958
+	Schiggy
+		e8604488:5957
+	Schillok
+		e8604488:5962
+	Turtok
+		e8604488:5961
+	Raupy
+		e8604488:5964
+	Safcon
+		e8604488:5963
+	Smettbo
+		e8604488:595e
+	Hornliu
+		e8604488:595d
+POKeMON STADIUM DEUTSCH Teil 18
+	Kokuna
+		e8604488:5960
+	Bibor
+		e8604488:595f
+	Taubsi
+		e8604488:596a
+	Tauboga
+		e8604488:5969
+	Tauboss
+		e8604488:596c
+	Rattfratz
+		e8604488:596b
+	Rattikarl
+		e8604488:5966
+	Habitak
+		e8604488:5965
+	Ibitak
+		e8604488:5968
+	Rettan
+		e8604488:5967
+	Arbok
+		e8604488:5972
+	Pikachu
+		e8604488:5971
+	Raichu
+		e8604488:5974
+	Sandan
+		e8604488:5973
+	Sandamer
+		e8604488:596e
+	Nidoran (weiblich)
+		e8604488:596d
+	Nidorina
+		e8604488:5970
+	Nidoqueen
+		e8604488:596f
+	Nidoran (maennlich)
+		e8604488:597a
+	Nidorino
+		e8604488:5979
+	Nidoking
+		e8604488:597c
+	Piepi
+		e8604488:597b
+	Pixi
+		e8604488:5976
+	Vulpix
+		e8604488:5975
+	Vulnona
+		e8604488:5978
+	Pummeluff
+		e8604488:5977
+	Knuddeluff
+		e8604488:5982
+	Zubat
+		e8604488:5981
+	Golbat
+		e8604488:5984
+	Myrapla
+		e8604488:5983
+	Duflor
+		e8604488:597e
+	Giflor
+		e8604488:597d
+	Paras
+		e8604488:5980
+	Parasek
+		e8604488:597f
+	Bluzuk
+		e8604488:598a
+	Omot
+		e8604488:5989
+	Digda
+		e8604488:598c
+	Digdri
+		e8604488:598b
+	Mauzi
+		e8604488:5986
+	Snobilikat
+		e8604488:5985
+	Enton
+		e8604488:5988
+	Entoron
+		e8604488:5987
+	Menki
+		e8604488:5992
+	Rasaff
+		e8604488:5991
+	Fukano
+		e8604488:5994
+	Arkani
+		e8604488:5993
+	Quapsel
+		e8604488:598e
+	Quaputzi
+		e8604488:598d
+	Quappo
+		e8604488:5990
+	Abra
+		e8604488:598f
+POKeMON STADIUM DEUTSCH Teil 19
+	Kadabra
+		e8604488:599a
+	Simsala
+		e8604488:5999
+	Machollo
+		e8604488:599c
+	Maschok
+		e8604488:599b
+	Machomei
+		e8604488:5996
+	Knofensa
+		e8604488:5995
+	Ultrigaria
+		e8604488:5998
+	Sarzenia
+		e8604488:5997
+	Tentacha
+		e8604488:59a2
+	Tentoxa
+		e8604488:59a1
+	Kleinstein
+		e8604488:59a4
+	Georok
+		e8604488:59a3
+	Geowaz
+		e8604488:599e
+	ponita
+		e8604488:599d
+	Gallopa
+		e8604488:59a0
+	Flegmon
+		e8604488:599f
+	Lahmus
+		e8604488:59aa
+	Magnetilo
+		e8604488:59a9
+	Magneton
+		e8604488:59ac
+	Porenta
+		e8604488:59ab
+	Dodu
+		e8604488:59a6
+	Dodri
+		e8604488:59a5
+	Jurob
+		e8604488:59a8
+	Jugong
+		e8604488:59a7
+	Sleima
+		e8604488:59b2
+	Sleimok
+		e8604488:59b1
+	Muschas
+		e8604488:59b4
+	Austos
+		e8604488:59b3
+	Nebulak
+		e8604488:59ae
+	Alpollo
+		e8604488:59ad
+	Gengar
+		e8604488:59b0
+	Onix
+		e8604488:59af
+	Traumato
+		e8604488:59ba
+	Hypno
+		e8604488:59b9
+	Krabby
+		e8604488:59bc
+	Kingler
+		e8604488:59bb
+	Voltobal
+		e8604488:59b6
+	Lektrobal
+		e8604488:59b5
+	Owei
+		e8604488:59b8
+	Kokowei
+		e8604488:59b7
+	Tragosso
+		e8604488:59c2
+	Knogga
+		e8604488:59c1
+	Kicklee
+		e8604488:59c4
+	Nockchan
+		e8604488:59c3
+	Schlurp
+		e8604488:59be
+	Smogon
+		e8604488:59bd
+	Smogsmog
+		e8604488:59c0
+	Rihorn
+		e8604488:59bf
+	Rizeros
+		e8604488:59ca
+POKeMON STADIUM DEUTSCH Teil 20
+	Chaneira
+		e8604488:59c9
+	Tangela
+		e8604488:59cc
+	Kangama
+		e8604488:59cb
+	Seeper
+		e8604488:59c6
+	Seemon
+		e8604488:59c5
+	Goldini
+		e8604488:59c8
+	Golking
+		e8604488:59c7
+	Sterndu
+		e8604488:59d2
+	Starmie
+		e8604488:59d1
+	Pantimos
+		e8604488:59d4
+	Sichlor
+		e8604488:59d3
+	Rossana
+		e8604488:59ce
+	Elektek
+		e8604488:59cd
+	Magmar
+		e8604488:59d0
+	Pinsir
+		e8604488:59cf
+	Tauros
+		e8604488:59da
+	Karpador
+		e8604488:59d9
+	Garados
+		e8604488:59dc
+	Lapras
+		e8604488:59db
+	Ditto
+		e8604488:59d6
+	Evoli
+		e8604488:59d5
+	Aquana
+		e8604488:59d8
+	Blitza
+		e8604488:59d7
+	Flamara
+		e8604488:59e2
+	Porygon
+		e8604488:59e1
+	Amonitas
+		e8604488:59e4
+	Amoroso
+		e8604488:59e3
+	Kabuto
+		e8604488:59de
+	Kabutops
+		e8604488:59dd
+	Aerodactyl
+		e8604488:59e0
+	Relaxo
+		e8604488:59df
+	Arktos
+		e8604488:59ea
+	Zapdos
+		e8604488:59e9
+	Lavados
+		e8604488:59ec
+	Dratini
+		e8604488:59eb
+	Dragonir
+		e8604488:59e6
+	Dragoran
+		e8604488:59e5
+	Mewtu
+		e8604488:59e8
+	Mew
+		e8604488:59e7
+	P2 POKèMON MODIFIZIERER
+	P2 1. Pokèmon Bisasam
+		e8604180:5959
+	Bisaknosp
+		e8604180:595c
+	Bisaflor
+		e8604180:595b
+	Glumanda
+		e8604180:5956
+	Glutexo
+		e8604180:5955
+	Glurak
+		e8604180:5958
+	Schiggy
+		e8604180:5957
+	Schillok
+		e8604180:5962
+	Turtok
+		e8604180:5961
+	Raupy
+		e8604180:5964
+POKeMON STADIUM DEUTSCH Teil 21
+	Safcon
+		e8604180:5963
+	Smettbo
+		e8604180:595e
+	Hornliu
+		e8604180:595d
+	Kokuna
+		e8604180:5960
+	Bibor
+		e8604180:595f
+	Taubsi
+		e8604180:596a
+	Tauboga
+		e8604180:5969
+	Tauboss
+		e8604180:596c
+	Rattfratz
+		e8604180:596b
+	Rattikarl
+		e8604180:5966
+	Habitak
+		e8604180:5965
+	Ibitak
+		e8604180:5968
+	Rettan
+		e8604180:5967
+	Arbok
+		e8604180:5972
+	Pikachu
+		e8604180:5971
+	Raichu
+		e8604180:5974
+	Sandan
+		e8604180:5973
+	Sandamer
+		e8604180:596e
+	Nidoran (weiblich)
+		e8604180:596d
+	Nidorina
+		e8604180:5970
+	Nidoqueen
+		e8604180:596f
+	Nidoran (maennlich)
+		e8604180:597a
+	Nidorino
+		e8604180:5979
+	Nidoking
+		e8604180:597c
+	Piepi
+		e8604180:597b
+	Pixi
+		e8604180:5976
+	Vulpix
+		e8604180:5975
+	Vulnona
+		e8604180:5978
+	Pummeluff
+		e8604180:5977
+	Knuddeluff
+		e8604180:5982
+	Zubat
+		e8604180:5981
+	Golbat
+		e8604180:5984
+	Myrapla
+		e8604180:5983
+	Duflor
+		e8604180:597e
+	Giflor
+		e8604180:597d
+	Paras
+		e8604180:5980
+	Parasek
+		e8604180:597f
+	Bluzuk
+		e8604180:598a
+	Omot
+		e8604180:5989
+	Digda
+		e8604180:598c
+	Digdri
+		e8604180:598b
+	Mauzi
+		e8604180:5986
+	Snobilikat
+		e8604180:5985
+	Enton
+		e8604180:5988
+	Entoron
+		e8604180:5987
+	Menki
+		e8604180:5992
+	Rasaff
+		e8604180:5991
+	Fukano
+		e8604180:5994
+	Arkani
+		e8604180:5993
+	Quapsel
+		e8604180:598e
+POKeMON STADIUM DEUTSCH Teil 22
+	Quaputzi
+		e8604180:598d
+	Quappo
+		e8604180:5990
+	Abra
+		e8604180:598f
+	Kadabra
+		e8604180:599a
+	Simsala
+		e8604180:5999
+	Machollo
+		e8604180:599c
+	Maschok
+		e8604180:599b
+	Machomei
+		e8604180:5996
+	Knofensa
+		e8604180:5995
+	Ultrigaria
+		e8604180:5998
+	Sarzenia
+		e8604180:5997
+	Tentacha
+		e8604180:59a2
+	Tentoxa
+		e8604180:59a1
+	Kleinstein
+		e8604180:59a4
+	Georok
+		e8604180:59a3
+	Geowaz
+		e8604180:599e
+	ponita
+		e8604180:599d
+	Gallopa
+		e8604180:59a0
+	Flegmon
+		e8604180:599f
+	Lahmus
+		e8604180:59aa
+	Magnetilo
+		e8604180:59a9
+	Magneton
+		e8604180:59ac
+	Porenta
+		e8604180:59ab
+	Dodu
+		e8604180:59a6
+	Dodri
+		e8604180:59a5
+	Jurob
+		e8604180:59a8
+	Jugong
+		e8604180:59a7
+	Sleima
+		e8604180:59b2
+	Sleimok
+		e8604180:59b1
+	Muschas
+		e8604180:59b4
+	Austos
+		e8604180:59b3
+	Nebulak
+		e8604180:59ae
+	Alpollo
+		e8604180:59ad
+	Gengar
+		e8604180:59b0
+	Onix
+		e8604180:59af
+	Traumato
+		e8604180:59ba
+	Hypno
+		e8604180:59b9
+	Krabby
+		e8604180:59bc
+	Kingler
+		e8604180:59bb
+	Voltobal
+		e8604180:59b6
+	Lektrobal
+		e8604180:59b5
+	Owei
+		e8604180:59b8
+	Kokowei
+		e8604180:59b7
+	Tragosso
+		e8604180:59c2
+	Knogga
+		e8604180:59c1
+	Kicklee
+		e8604180:59c4
+	Nockchan
+		e8604180:59c3
+	Schlurp
+		e8604180:59be
+	Smogon
+		e8604180:59bd
+POKeMON STADIUM DEUTSCH Teil 23
+	Smogsmog
+		e8604180:59c0
+	Rihorn
+		e8604180:59bf
+	Rizeros
+		e8604180:59ca
+	Chaneira
+		e8604180:59c9
+	Tangela
+		e8604180:59cc
+	Kangama
+		e8604180:59cb
+	Seeper
+		e8604180:59c6
+	Seemon
+		e8604180:59c5
+	Goldini
+		e8604180:59c8
+	Golking
+		e8604180:59c7
+	Sterndu
+		e8604180:59d2
+	Starmie
+		e8604180:59d1
+	Pantimos
+		e8604180:59d4
+	Sichlor
+		e8604180:59d3
+	Rossana
+		e8604180:59ce
+	Elektek
+		e8604180:59cd
+	Magmar
+		e8604180:59d0
+	Pinsir
+		e8604180:59cf
+	Tauros
+		e8604180:59da
+	Karpador
+		e8604180:59d9
+	Garados
+		e8604180:59dc
+	Lapras
+		e8604180:59db
+	Ditto
+		e8604180:59d6
+	Evoli
+		e8604180:59d5
+	Aquana
+		e8604180:59d8
+	Blitza
+		e8604180:59d7
+	Flamara
+		e8604180:59e2
+	Porygon
+		e8604180:59e1
+	Amonitas
+		e8604180:59e4
+	Amoroso
+		e8604180:59e3
+	Kabuto
+		e8604180:59de
+	Kabutops
+		e8604180:59dd
+	Aerodactyl
+		e8604180:59e0
+	Relaxo
+		e8604180:59df
+	Arktos
+		e8604180:59ea
+	Zapdos
+		e8604180:59e9
+	Lavados
+		e8604180:59ec
+	Dratini
+		e8604180:59eb
+	Dragonir
+		e8604180:59e6
+	Dragoran
+		e8604180:59e5
+	Mewtu
+		e8604180:59e8
+	Mew
+		e8604180:59e7
+	P2 2. Pokèmon Bisasam
+		e86041d4:5959
+	Bisaknosp
+		e86041d4:595c
+	Bisaflor
+		e86041d4:595b
+	Glumanda
+		e86041d4:5956
+	Glutexo
+		e86041d4:5955
+	Glurak
+		e86041d4:5958
+	Schiggy
+		e86041d4:5957
+	Schillok
+		e86041d4:5962
+POKeMON STADIUM DEUTSCH Teil 24
+	Turtok
+		e86041d4:5961
+	Raupy
+		e86041d4:5964
+	Safcon
+		e86041d4:5963
+	Smettbo
+		e86041d4:595e
+	Hornliu
+		e86041d4:595d
+	Kokuna
+		e86041d4:5960
+	Bibor
+		e86041d4:595f
+	Taubsi
+		e86041d4:596a
+	Tauboga
+		e86041d4:5969
+	Tauboss
+		e86041d4:596c
+	Rattfratz
+		e86041d4:596b
+	Rattikarl
+		e86041d4:5966
+	Habitak
+		e86041d4:5965
+	Ibitak
+		e86041d4:5968
+	Rettan
+		e86041d4:5967
+	Arbok
+		e86041d4:5972
+	Pikachu
+		e86041d4:5971
+	Raichu
+		e86041d4:5974
+	Sandan
+		e86041d4:5973
+	Sandamer
+		e86041d4:596e
+	Nidoran (weiblich)
+		e86041d4:596d
+	Nidorina
+		e86041d4:5970
+	Nidoqueen
+		e86041d4:596f
+	Nidoran (maennlich)
+		e86041d4:597a
+	Nidorino
+		e86041d4:5979
+	Nidoking
+		e86041d4:597c
+	Piepi
+		e86041d4:597b
+	Pixi
+		e86041d4:5976
+	Vulpix
+		e86041d4:5975
+	Vulnona
+		e86041d4:5978
+	Pummeluff
+		e86041d4:5977
+	Knuddeluff
+		e86041d4:5982
+	Zubat
+		e86041d4:5981
+	Golbat
+		e86041d4:5984
+	Myrapla
+		e86041d4:5983
+	Duflor
+		e86041d4:597e
+	Giflor
+		e86041d4:597d
+	Paras
+		e86041d4:5980
+	Parasek
+		e86041d4:597f
+	Bluzuk
+		e86041d4:598a
+	Omot
+		e86041d4:5989
+	Digda
+		e86041d4:598c
+	Digdri
+		e86041d4:598b
+	Mauzi
+		e86041d4:5986
+	Snobilikat
+		e86041d4:5985
+	Enton
+		e86041d4:5988
+	Entoron
+		e86041d4:5987
+	Menki
+		e86041d4:5992
+	Rasaff
+		e86041d4:5991
+POKeMON STADIUM DEUTSCH Teil 25
+	Fukano
+		e86041d4:5994
+	Arkani
+		e86041d4:5993
+	Quapsel
+		e86041d4:598e
+	Quaputzi
+		e86041d4:598d
+	Quappo
+		e86041d4:5990
+	Abra
+		e86041d4:598f
+	Kadabra
+		e86041d4:599a
+	Simsala
+		e86041d4:5999
+	Machollo
+		e86041d4:599c
+	Maschok
+		e86041d4:599b
+	Machomei
+		e86041d4:5996
+	Knofensa
+		e86041d4:5995
+	Ultrigaria
+		e86041d4:5998
+	Sarzenia
+		e86041d4:5997
+	Tentacha
+		e86041d4:59a2
+	Tentoxa
+		e86041d4:59a1
+	Kleinstein
+		e86041d4:59a4
+	Georok
+		e86041d4:59a3
+	Geowaz
+		e86041d4:599e
+	ponita
+		e86041d4:599d
+	Gallopa
+		e86041d4:59a0
+	Flegmon
+		e86041d4:599f
+	Lahmus
+		e86041d4:59aa
+	Magnetilo
+		e86041d4:59a9
+	Magneton
+		e86041d4:59ac
+	Porenta
+		e86041d4:59ab
+	Dodu
+		e86041d4:59a6
+	Dodri
+		e86041d4:59a5
+	Jurob
+		e86041d4:59a8
+	Jugong
+		e86041d4:59a7
+	Sleima
+		e86041d4:59b2
+	Sleimok
+		e86041d4:59b1
+	Muschas
+		e86041d4:59b4
+	Austos
+		e86041d4:59b3
+	Nebulak
+		e86041d4:59ae
+	Alpollo
+		e86041d4:59ad
+	Gengar
+		e86041d4:59b0
+	Onix
+		e86041d4:59af
+	Traumato
+		e86041d4:59ba
+	Hypno
+		e86041d4:59b9
+	Krabby
+		e86041d4:59bc
+	Kingler
+		e86041d4:59bb
+	Voltobal
+		e86041d4:59b6
+	Lektrobal
+		e86041d4:59b5
+	Owei
+		e86041d4:59b8
+	Kokowei
+		e86041d4:59b7
+	Tragosso
+		e86041d4:59c2
+	Knogga
+		e86041d4:59c1
+	Kicklee
+		e86041d4:59c4
+	Nockchan
+		e86041d4:59c3
+POKeMON STADIUM DEUTSCH Teil 26
+	Schlurp
+		e86041d4:59be
+	Smogon
+		e86041d4:59bd
+	Smogsmog
+		e86041d4:59c0
+	Rihorn
+		e86041d4:59bf
+	Rizeros
+		e86041d4:59ca
+	Chaneira
+		e86041d4:59c9
+	Tangela
+		e86041d4:59cc
+	Kangama
+		e86041d4:59cb
+	Seeper
+		e86041d4:59c6
+	Seemon
+		e86041d4:59c5
+	Goldini
+		e86041d4:59c8
+	Golking
+		e86041d4:59c7
+	Sterndu
+		e86041d4:59d2
+	Starmie
+		e86041d4:59d1
+	Pantimos
+		e86041d4:59d4
+	Sichlor
+		e86041d4:59d3
+	Rossana
+		e86041d4:59ce
+	Elektek
+		e86041d4:59cd
+	Magmar
+		e86041d4:59d0
+	Pinsir
+		e86041d4:59cf
+	Tauros
+		e86041d4:59da
+	Karpador
+		e86041d4:59d9
+	Garados
+		e86041d4:59dc
+	Lapras
+		e86041d4:59db
+	Ditto
+		e86041d4:59d6
+	Evoli
+		e86041d4:59d5
+	Aquana
+		e86041d4:59d8
+	Blitza
+		e86041d4:59d7
+	Flamara
+		e86041d4:59e2
+	Porygon
+		e86041d4:59e1
+	Amonitas
+		e86041d4:59e4
+	Amoroso
+		e86041d4:59e3
+	Kabuto
+		e86041d4:59de
+	Kabutops
+		e86041d4:59dd
+	Aerodactyl
+		e86041d4:59e0
+	Relaxo
+		e86041d4:59df
+	Arktos
+		e86041d4:59ea
+	Zapdos
+		e86041d4:59e9
+	Lavados
+		e86041d4:59ec
+	Dratini
+		e86041d4:59eb
+	Dragonir
+		e86041d4:59e6
+	Dragoran
+		e86041d4:59e5
+	Mewtu
+		e86041d4:59e8
+	Mew
+		e86041d4:59e7
+	P2 3. Pokèmon Bisasam
+		e8604128:5959
+	Bisaknosp
+		e8604128:595c
+	Bisaflor
+		e8604128:595b
+	Glumanda
+		e8604128:5956
+	Glutexo
+		e8604128:5955
+POKeMON STADIUM DEUTSCH Teil 27
+	Glurak
+		e8604128:5958
+	Schiggy
+		e8604128:5957
+	Schillok
+		e8604128:5962
+	Turtok
+		e8604128:5961
+	Raupy
+		e8604128:5964
+	Safcon
+		e8604128:5963
+	Smettbo
+		e8604128:595e
+	Hornliu
+		e8604128:595d
+	Kokuna
+		e8604128:5960
+	Bibor
+		e8604128:595f
+	Taubsi
+		e8604128:596a
+	Tauboga
+		e8604128:5969
+	Tauboss
+		e8604128:596c
+	Rattfratz
+		e8604128:596b
+	Rattikarl
+		e8604128:5966
+	Habitak
+		e8604128:5965
+	Ibitak
+		e8604128:5968
+	Rettan
+		e8604128:5967
+	Arbok
+		e8604128:5972
+	Pikachu
+		e8604128:5971
+	Raichu
+		e8604128:5974
+	Sandan
+		e8604128:5973
+	Sandamer
+		e8604128:596e
+	Nidoran (weiblich)
+		e8604128:596d
+	Nidorina
+		e8604128:5970
+	Nidoqueen
+		e8604128:596f
+	Nidoran (maennlich)
+		e8604128:597a
+	Nidorino
+		e8604128:5979
+	Nidoking
+		e8604128:597c
+	Piepi
+		e8604128:597b
+	Pixi
+		e8604128:5976
+	Vulpix
+		e8604128:5975
+	Vulnona
+		e8604128:5978
+	Pummeluff
+		e8604128:5977
+	Knuddeluff
+		e8604128:5982
+	Zubat
+		e8604128:5981
+	Golbat
+		e8604128:5984
+	Myrapla
+		e8604128:5983
+	Duflor
+		e8604128:597e
+	Giflor
+		e8604128:597d
+	Paras
+		e8604128:5980
+	Parasek
+		e8604128:597f
+	Bluzuk
+		e8604128:598a
+	Omot
+		e8604128:5989
+	Digda
+		e8604128:598c
+	Digdri
+		e8604128:598b
+	Mauzi
+		e8604128:5986
+	Snobilikat
+		e8604128:5985
+	Enton
+		e8604128:5988
+	Entoron
+		e8604128:5987
+POKeMON STADIUM DEUTSCH Teil 28
+	Menki
+		e8604128:5992
+	Rasaff
+		e8604128:5991
+	Fukano
+		e8604128:5994
+	Arkani
+		e8604128:5993
+	Quapsel
+		e8604128:598e
+	Quaputzi
+		e8604128:598d
+	Quappo
+		e8604128:5990
+	Abra
+		e8604128:598f
+	Kadabra
+		e8604128:599a
+	Simsala
+		e8604128:5999
+	Machollo
+		e8604128:599c
+	Maschok
+		e8604128:599b
+	Machomei
+		e8604128:5996
+	Knofensa
+		e8604128:5995
+	Ultrigaria
+		e8604128:5998
+	Sarzenia
+		e8604128:5997
+	Tentacha
+		e8604128:59a2
+	Tentoxa
+		e8604128:59a1
+	Kleinstein
+		e8604128:59a4
+	Georok
+		e8604128:59a3
+	Geowaz
+		e8604128:599e
+	ponita
+		e8604128:599d
+	Gallopa
+		e8604128:59a0
+	Flegmon
+		e8604128:599f
+	Lahmus
+		e8604128:59aa
+	Magnetilo
+		e8604128:59a9
+	Magneton
+		e8604128:59ac
+	Porenta
+		e8604128:59ab
+	Dodu
+		e8604128:59a6
+	Dodri
+		e8604128:59a5
+	Jurob
+		e8604128:59a8
+	Jugong
+		e8604128:59a7
+	Sleima
+		e8604128:59b2
+	Sleimok
+		e8604128:59b1
+	Muschas
+		e8604128:59b4
+	Austos
+		e8604128:59b3
+	Nebulak
+		e8604128:59ae
+	Alpollo
+		e8604128:59ad
+	Gengar
+		e8604128:59b0
+	Onix
+		e8604128:59af
+	Traumato
+		e8604128:59ba
+	Hypno
+		e8604128:59b9
+	Krabby
+		e8604128:59bc
+	Kingler
+		e8604128:59bb
+	Voltobal
+		e8604128:59b6
+	Lektrobal
+		e8604128:59b5
+	Owei
+		e8604128:59b8
+	Kokowei
+		e8604128:59b7
+	Tragosso
+		e8604128:59c2
+POKeMON STADIUM DEUTSCH Teil 29
+	Knogga
+		e8604128:59c1
+	Kicklee
+		e8604128:59c4
+	Nockchan
+		e8604128:59c3
+	Schlurp
+		e8604128:59be
+	Smogon
+		e8604128:59bd
+	Smogsmog
+		e8604128:59c0
+	Rihorn
+		e8604128:59bf
+	Rizeros
+		e8604128:59ca
+	Chaneira
+		e8604128:59c9
+	Tangela
+		e8604128:59cc
+	Kangama
+		e8604128:59cb
+	Seeper
+		e8604128:59c6
+	Seemon
+		e8604128:59c5
+	Goldini
+		e8604128:59c8
+	Golking
+		e8604128:59c7
+	Sterndu
+		e8604128:59d2
+	Starmie
+		e8604128:59d1
+	Pantimos
+		e8604128:59d4
+	Sichlor
+		e8604128:59d3
+	Rossana
+		e8604128:59ce
+	Elektek
+		e8604128:59cd
+	Magmar
+		e8604128:59d0
+	Pinsir
+		e8604128:59cf
+	Tauros
+		e8604128:59da
+	Karpador
+		e8604128:59d9
+	Garados
+		e8604128:59dc
+	Lapras
+		e8604128:59db
+	Ditto
+		e8604128:59d6
+	Evoli
+		e8604128:59d5
+	Aquana
+		e8604128:59d8
+	Blitza
+		e8604128:59d7
+	Flamara
+		e8604128:59e2
+	Porygon
+		e8604128:59e1
+	Amonitas
+		e8604128:59e4
+	Amoroso
+		e8604128:59e3
+	Kabuto
+		e8604128:59de
+	Kabutops
+		e8604128:59dd
+	Aerodactyl
+		e8604128:59e0
+	Relaxo
+		e8604128:59df
+	Arktos
+		e8604128:59ea
+	Zapdos
+		e8604128:59e9
+	Lavados
+		e8604128:59ec
+	Dratini
+		e8604128:59eb
+	Dragonir
+		e8604128:59e6
+	Dragoran
+		e8604128:59e5
+	Mewtu
+		e8604128:59e8
+	Mew
+		e8604128:59e7
+	P2 4. Pokèmon Bisasam
+		e860427c:5959
+	Bisaknosp
+		e860427c:595c
+POKeMON STADIUM DEUTSCH Teil 30
+	Bisaflor
+		e860427c:595b
+	Glumanda
+		e860427c:5956
+	Glutexo
+		e860427c:5955
+	Glurak
+		e860427c:5958
+	Schiggy
+		e860427c:5957
+	Schillok
+		e860427c:5962
+	Turtok
+		e860427c:5961
+	Raupy
+		e860427c:5964
+	Safcon
+		e860427c:5963
+	Smettbo
+		e860427c:595e
+	Hornliu
+		e860427c:595d
+	Kokuna
+		e860427c:5960
+	Bibor
+		e860427c:595f
+	Taubsi
+		e860427c:596a
+	Tauboga
+		e860427c:5969
+	Tauboss
+		e860427c:596c
+	Rattfratz
+		e860427c:596b
+	Rattikarl
+		e860427c:5966
+	Habitak
+		e860427c:5965
+	Ibitak
+		e860427c:5968
+	Rettan
+		e860427c:5967
+	Arbok
+		e860427c:5972
+	Pikachu
+		e860427c:5971
+	Raichu
+		e860427c:5974
+	Sandan
+		e860427c:5973
+	Sandamer
+		e860427c:596e
+	Nidoran (weiblich)
+		e860427c:596d
+	Nidorina
+		e860427c:5970
+	Nidoqueen
+		e860427c:596f
+	Nidoran (maennlich)
+		e860427c:597a
+	Nidorino
+		e860427c:5979
+	Nidoking
+		e860427c:597c
+	Piepi
+		e860427c:597b
+	Pixi
+		e860427c:5976
+	Vulpix
+		e860427c:5975
+	Vulnona
+		e860427c:5978
+	Pummeluff
+		e860427c:5977
+	Knuddeluff
+		e860427c:5982
+	Zubat
+		e860427c:5981
+	Golbat
+		e860427c:5984
+	Myrapla
+		e860427c:5983
+	Duflor
+		e860427c:597e
+	Giflor
+		e860427c:597d
+	Paras
+		e860427c:5980
+	Parasek
+		e860427c:597f
+	Bluzuk
+		e860427c:598a
+	Omot
+		e860427c:5989
+	Digda
+		e860427c:598c
+	Digdri
+		e860427c:598b
+	Mauzi
+		e860427c:5986
+POKeMON STADIUM DEUTSCH Teil 31
+	Snobilikat
+		e860427c:5985
+	Enton
+		e860427c:5988
+	Entoron
+		e860427c:5987
+	Menki
+		e860427c:5992
+	Rasaff
+		e860427c:5991
+	Fukano
+		e860427c:5994
+	Arkani
+		e860427c:5993
+	Quapsel
+		e860427c:598e
+	Quaputzi
+		e860427c:598d
+	Quappo
+		e860427c:5990
+	Abra
+		e860427c:598f
+	Kadabra
+		e860427c:599a
+	Simsala
+		e860427c:5999
+	Machollo
+		e860427c:599c
+	Maschok
+		e860427c:599b
+	Machomei
+		e860427c:5996
+	Knofensa
+		e860427c:5995
+	Ultrigaria
+		e860427c:5998
+	Sarzenia
+		e860427c:5997
+	Tentacha
+		e860427c:59a2
+	Tentoxa
+		e860427c:59a1
+	Kleinstein
+		e860427c:59a4
+	Georok
+		e860427c:59a3
+	Geowaz
+		e860427c:599e
+	ponita
+		e860427c:599d
+	Gallopa
+		e860427c:59a0
+	Flegmon
+		e860427c:599f
+	Lahmus
+		e860427c:59aa
+	Magnetilo
+		e860427c:59a9
+	Magneton
+		e860427c:59ac
+	Porenta
+		e860427c:59ab
+	Dodu
+		e860427c:59a6
+	Dodri
+		e860427c:59a5
+	Jurob
+		e860427c:59a8
+	Jugong
+		e860427c:59a7
+	Sleima
+		e860427c:59b2
+	Sleimok
+		e860427c:59b1
+	Muschas
+		e860427c:59b4
+	Austos
+		e860427c:59b3
+	Nebulak
+		e860427c:59ae
+	Alpollo
+		e860427c:59ad
+	Gengar
+		e860427c:59b0
+	Onix
+		e860427c:59af
+	Traumato
+		e860427c:59ba
+	Hypno
+		e860427c:59b9
+	Krabby
+		e860427c:59bc
+	Kingler
+		e860427c:59bb
+	Voltobal
+		e860427c:59b6
+	Lektrobal
+		e860427c:59b5
+POKeMON STADIUM DEUTSCH Teil 32
+	Owei
+		e860427c:59b8
+	Kokowei
+		e860427c:59b7
+	Tragosso
+		e860427c:59c2
+	Knogga
+		e860427c:59c1
+	Kicklee
+		e860427c:59c4
+	Nockchan
+		e860427c:59c3
+	Schlurp
+		e860427c:59be
+	Smogon
+		e860427c:59bd
+	Smogsmog
+		e860427c:59c0
+	Rihorn
+		e860427c:59bf
+	Rizeros
+		e860427c:59ca
+	Chaneira
+		e860427c:59c9
+	Tangela
+		e860427c:59cc
+	Kangama
+		e860427c:59cb
+	Seeper
+		e860427c:59c6
+	Seemon
+		e860427c:59c5
+	Goldini
+		e860427c:59c8
+	Golking
+		e860427c:59c7
+	Sterndu
+		e860427c:59d2
+	Starmie
+		e860427c:59d1
+	Pantimos
+		e860427c:59d4
+	Sichlor
+		e860427c:59d3
+	Rossana
+		e860427c:59ce
+	Elektek
+		e860427c:59cd
+	Magmar
+		e860427c:59d0
+	Pinsir
+		e860427c:59cf
+	Tauros
+		e860427c:59da
+	Karpador
+		e860427c:59d9
+	Garados
+		e860427c:59dc
+	Lapras
+		e860427c:59db
+	Ditto
+		e860427c:59d6
+	Evoli
+		e860427c:59d5
+	Aquana
+		e860427c:59d8
+	Blitza
+		e860427c:59d7
+	Flamara
+		e860427c:59e2
+	Porygon
+		e860427c:59e1
+	Amonitas
+		e860427c:59e4
+	Amoroso
+		e860427c:59e3
+	Kabuto
+		e860427c:59de
+	Kabutops
+		e860427c:59dd
+	Aerodactyl
+		e860427c:59e0
+	Relaxo
+		e860427c:59df
+	Arktos
+		e860427c:59ea
+	Zapdos
+		e860427c:59e9
+	Lavados
+		e860427c:59ec
+	Dratini
+		e860427c:59eb
+	Dragonir
+		e860427c:59e6
+	Dragoran
+		e860427c:59e5
+	Mewtu
+		e860427c:59e8
+	Mew
+		e860427c:59e7
+POKeMON STADIUM DEUTSCH Teil 33
+	P2 5. Pokèmon Bisasam
+		e86042d0:5959
+	Bisaknosp
+		e86042d0:595c
+	Bisaflor
+		e86042d0:595b
+	Glumanda
+		e86042d0:5956
+	Glutexo
+		e86042d0:5955
+	Glurak
+		e86042d0:5958
+	Schiggy
+		e86042d0:5957
+	Schillok
+		e86042d0:5962
+	Turtok
+		e86042d0:5961
+	Raupy
+		e86042d0:5964
+	Safcon
+		e86042d0:5963
+	Smettbo
+		e86042d0:595e
+	Hornliu
+		e86042d0:595d
+	Kokuna
+		e86042d0:5960
+	Bibor
+		e86042d0:595f
+	Taubsi
+		e86042d0:596a
+	Tauboga
+		e86042d0:5969
+	Tauboss
+		e86042d0:596c
+	Rattfratz
+		e86042d0:596b
+	Rattikarl
+		e86042d0:5966
+	Habitak
+		e86042d0:5965
+	Ibitak
+		e86042d0:5968
+	Rettan
+		e86042d0:5967
+	Arbok
+		e86042d0:5972
+	Pikachu
+		e86042d0:5971
+	Raichu
+		e86042d0:5974
+	Sandan
+		e86042d0:5973
+	Sandamer
+		e86042d0:596e
+	Nidoran (weiblich)
+		e86042d0:596d
+	Nidorina
+		e86042d0:5970
+	Nidoqueen
+		e86042d0:596f
+	Nidoran (maennlich)
+		e86042d0:597a
+	Nidorino
+		e86042d0:5979
+	Nidoking
+		e86042d0:597c
+	Piepi
+		e86042d0:597b
+	Pixi
+		e86042d0:5976
+	Vulpix
+		e86042d0:5975
+	Vulnona
+		e86042d0:5978
+	Pummeluff
+		e86042d0:5977
+	Knuddeluff
+		e86042d0:5982
+	Zubat
+		e86042d0:5981
+	Golbat
+		e86042d0:5984
+	Myrapla
+		e86042d0:5983
+	Duflor
+		e86042d0:597e
+	Giflor
+		e86042d0:597d
+	Paras
+		e86042d0:5980
+	Parasek
+		e86042d0:597f
+	Bluzuk
+		e86042d0:598a
+	Omot
+		e86042d0:5989
+	Digda
+		e86042d0:598c
+POKeMON STADIUM DEUTSCH Teil 34
+	Digdri
+		e86042d0:598b
+	Mauzi
+		e86042d0:5986
+	Snobilikat
+		e86042d0:5985
+	Enton
+		e86042d0:5988
+	Entoron
+		e86042d0:5987
+	Menki
+		e86042d0:5992
+	Rasaff
+		e86042d0:5991
+	Fukano
+		e86042d0:5994
+	Arkani
+		e86042d0:5993
+	Quapsel
+		e86042d0:598e
+	Quaputzi
+		e86042d0:598d
+	Quappo
+		e86042d0:5990
+	Abra
+		e86042d0:598f
+	Kadabra
+		e86042d0:599a
+	Simsala
+		e86042d0:5999
+	Machollo
+		e86042d0:599c
+	Maschok
+		e86042d0:599b
+	Machomei
+		e86042d0:5996
+	Knofensa
+		e86042d0:5995
+	Ultrigaria
+		e86042d0:5998
+	Sarzenia
+		e86042d0:5997
+	Tentacha
+		e86042d0:59a2
+	Tentoxa
+		e86042d0:59a1
+	Kleinstein
+		e86042d0:59a4
+	Georok
+		e86042d0:59a3
+	Geowaz
+		e86042d0:599e
+	ponita
+		e86042d0:599d
+	Gallopa
+		e86042d0:59a0
+	Flegmon
+		e86042d0:599f
+	Lahmus
+		e86042d0:59aa
+	Magnetilo
+		e86042d0:59a9
+	Magneton
+		e86042d0:59ac
+	Porenta
+		e86042d0:59ab
+	Dodu
+		e86042d0:59a6
+	Dodri
+		e86042d0:59a5
+	Jurob
+		e86042d0:59a8
+	Jugong
+		e86042d0:59a7
+	Sleima
+		e86042d0:59b2
+	Sleimok
+		e86042d0:59b1
+	Muschas
+		e86042d0:59b4
+	Austos
+		e86042d0:59b3
+	Nebulak
+		e86042d0:59ae
+	Alpollo
+		e86042d0:59ad
+	Gengar
+		e86042d0:59b0
+	Onix
+		e86042d0:59af
+	Traumato
+		e86042d0:59ba
+	Hypno
+		e86042d0:59b9
+	Krabby
+		e86042d0:59bc
+	Kingler
+		e86042d0:59bb
+Resident Evil 2 PAL
+	XploderCheck muss an sein
+		e8965758:595a
+		2c0004f0:0000
+	UE Gesundheit
+		c8613176:5959
+	Keine Vergiftungen
+		c861313c:595a
+	Schnellfeuer alle Waffen
+		c8613170:645a
+	Nur einmal gespeichert
+		c864a9a8:595a
+	Spiele The 4th Survivor-Mission
+		c8612e42:59a2
+	Spiele To-Fu-Mission
+		c8612e42:59a1
+	Start zweites Szenario Intro ueberspringen
+		e3613364:599a
+	Habe Rucksack 10 Inventarplaetze
+		d50e584e:0000
+		850e584e:0001
+	SPIELE ALS Leon
+		c8613390:59da
+	Claire
+		c8613390:5ada
+	Leon verwundet
+		c8613390:55da
+	Claire ohne Jacke
+		c8613390:56da
+	Leon als S.T.A.R.S.-Mitglied
+		c8613390:61da
+	Claire als Biker
+		c8613390:62da
+	Leon als Biker
+		c8613390:63da
+	Leon seine Kleidung und Kopf ihr Koerper
+		c8613390:64da
+	Hunk absturzfreudig
+		c8613390:5dda
+	To-Fu
+		c8613390:5eda
+	Ada absturzfreudig
+		c8613390:5fda
+	Cheryl
+		c8613390:60da
+	WAFFEN CODES Waffe auf erstem Inventarplatz
+	Kampfmesser
+		e364b020:5959
+	H & K VP70
+		e364b020:595c
+	Browning HP
+		e364b020:595b
+	H & K VP70 modifiziert
+		e364b020:5956
+	Desert Eagle 50A.E.
+		e364b020:5955
+	Desert Eagle 50A.E. 10inch
+		e364b020:5958
+	Remington M1100-P
+		e364b020:5957
+	Remington M1100 Halb-Automatik
+		e364b020:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b020:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b020:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b020:5963
+	Armbrust
+		e364b020:595e
+	Colt S.A.A.
+		e364b020:595d
+	Elektroschocker
+		e364b020:5960
+	MAC 11 MG
+		e364b020:595f
+	Umbrella Flammenwerfer
+		e364b020:596a
+	Raketenwerfer
+		e364b020:5969
+	Gatling Gun
+		e364b020:596c
+	Habe Waffe auf zweitem Inventarplatz
+		e364b024:5959
+	H & K VP70
+		e364b024:595c
+	Browning HP
+		e364b024:595b
+	H & K VP70 modifiziert
+		e364b024:5956
+	Desert Eagle 50A.E.
+		e364b024:5955
+	Desert Eagle 50A.E. 10inch
+		e364b024:5958
+	Remington M1100-P
+		e364b024:5957
+	Remington M1100 Halb-Automatik
+		e364b024:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b024:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b024:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b024:5963
+	Armbrust
+		e364b024:595e
+	Colt S.A.A.
+		e364b024:595d
+	Elektroschocker
+		e364b024:5960
+	MAC 11 MG
+		e364b024:595f
+	Umbrella Flammenwerfer
+		e364b024:596a
+	Raketenwerfer
+		e364b024:5969
+	Gatling Gun
+		e364b024:596c
+Resident Evil 2 PAL Teil 01
+	Habe Waffe auf drittem Inventarplatz
+		e364b028:5959
+	H & K VP70
+		e364b028:595c
+	Browning HP
+		e364b028:595b
+	H & K VP70 modifiziert
+		e364b028:5956
+	Desert Eagle 50A.E.
+		e364b028:5955
+	Desert Eagle 50A.E. 10inch
+		e364b028:5958
+	Remington M1100-P
+		e364b028:5957
+	Remington M1100 Halb-Automatik
+		e364b028:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b028:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b028:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b028:5963
+	Armbrust
+		e364b028:595e
+	Colt S.A.A.
+		e364b028:595d
+	Elektroschocker
+		e364b028:5960
+	MAC 11 MG
+		e364b028:595f
+	Umbrella Flammenwerfer
+		e364b028:596a
+	Raketenwerfer
+		e364b028:5969
+	Gatling Gun
+		e364b028:596c
+	Habe Waffe auf viertem Inventarplatz
+		e364b02c:5959
+	H & K VP70
+		e364b02c:595c
+	Browning HP
+		e364b02c:595b
+	H & K VP70 modifiziert
+		e364b02c:5956
+	Desert Eagle 50A.E.
+		e364b02c:5955
+	Desert Eagle 50A.E. 10inch
+		e364b02c:5958
+	Remington M1100-P
+		e364b02c:5957
+	Remington M1100 Halb-Automatik
+		e364b02c:5962
+	M79 Granatwerfer Brandgeschosse
+		030e59d4:0009
+	M79 Granatwerfer Explosivgeschosse
+		e364b02c:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b02c:5963
+	Armbrust
+		e364b02c:595e
+	Colt S.A.A.
+		e364b02c:595d
+	Elektroschocker
+		e364b02c:5960
+	MAC 11 MG
+		e364b02c:595f
+	Umbrella Flammenwerfer
+		e364b02c:596a
+	Raketenwerfer
+		e364b02c:5969
+	Gatling Gun
+		e364b02c:596c
+	Habe Waffe auf fuenftem Inventarplatz
+		e364b030:5959
+	H & K VP70
+		e364b030:595c
+	Browning HP
+		e364b030:595b
+	H & K VP70 modifiziert
+		e364b030:5956
+	Desert Eagle 50A.E.
+		e364b030:5955
+	Desert Eagle 50A.E. 10inch
+		e364b030:5958
+	Remington M1100-P
+		e364b030:5957
+	Remington M1100 Halb-Automatik
+		e364b030:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b030:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b030:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b030:5963
+	Armbrust
+		e364b030:595e
+	Colt S.A.A.
+		e364b030:595d
+	Elektroschocker
+		e364b030:5960
+	MAC 11 MG
+		e364b030:595f
+	Umbrella Flammenwerfer
+		e364b030:596a
+	Raketenwerfer
+		e364b030:5969
+	Gatling Gun
+		e364b030:596c
+Resident Evil 2 PAL Teil 02
+	Habe Waffe auf sechstem Inventarplatz
+		e364b034:5959
+	H & K VP70
+		e364b034:595c
+	Browning HP
+		e364b034:595b
+	H & K VP70 modifiziert
+		e364b034:5956
+	Desert Eagle 50A.E.
+		e364b034:5955
+	Desert Eagle 50A.E. 10inch
+		e364b034:5958
+	Remington M1100-P
+		e364b034:5957
+	Remington M1100 Halb-Automatik
+		e364b034:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b034:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b034:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b034:5963
+	Armbrust
+		e364b034:595e
+	Colt S.A.A.
+		e364b034:595d
+	Elektroschocker
+		e364b034:5960
+	MAC 11 MG
+		e364b034:595f
+	Umbrella Flammenwerfer
+		e364b034:596a
+	Raketenwerfer
+		e364b034:5969
+	Gatling Gun
+		e364b034:596c
+	Habe Waffe auf siebtem Inventarplatz
+		e364b038:5959
+	H & K VP70
+		e364b038:595c
+	Browning HP
+		e364b038:595b
+	H & K VP70 modifiziert
+		e364b038:5956
+	Desert Eagle 50A.E.
+		e364b038:5955
+	Desert Eagle 50A.E. 10inch
+		e364b038:5958
+	Remington M1100-P
+		e364b038:5957
+	Remington M1100 Halb-Automatik
+		e364b038:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b038:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b038:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b038:5963
+	Armbrust
+		e364b038:595e
+	Colt S.A.A.
+		e364b038:595d
+	Elektroschocker
+		e364b038:5960
+	MAC 11 MG
+		e364b038:595f
+	Umbrella Flammenwerfer
+		e364b038:596a
+	Raketenwerfer
+		e364b038:5969
+	Gatling Gun
+		e364b038:596c
+	Habe Waffe auf achtem Inventarplatz
+		e364b03c:5959
+	H & K VP70
+		e364b03c:595c
+	Browning HP
+		e364b03c:595b
+	H & K VP70 modifiziert
+		e364b03c:5956
+	Desert Eagle 50A.E.
+		e364b03c:5955
+	Desert Eagle 50A.E. 10inch
+		e364b03c:5958
+	Remington M1100-P
+		e364b03c:5957
+	Remington M1100 Halb-Automatik
+		e364b03c:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b03c:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b03c:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b03c:5963
+	Armbrust
+		e364b03c:595e
+	Colt S.A.A.
+		e364b03c:595d
+	Elektroschocker
+		e364b03c:5960
+	MAC 11 MG
+		e364b03c:595f
+	Umbrella Flammenwerfer
+		e364b03c:596a
+	Raketenwerfer
+		e364b03c:5969
+	Gatling Gun
+		e364b03c:596c
+Resident Evil 2 PAL Teil 03
+	Habe Waffe auf neuntem Inventarplatz
+		e364b040:5959
+	H & K VP70
+		e364b040:595c
+	Browning HP
+		e364b040:595b
+	H & K VP70 modifiziert
+		e364b040:5956
+	Desert Eagle 50A.E.
+		e364b040:5955
+	Desert Eagle 50A.E. 10inch
+		e364b040:5958
+	Remington M1100-P
+		e364b040:5957
+	Remington M1100 Halb-Automatik
+		e364b040:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b040:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b040:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b040:5963
+	Armbrust
+		e364b040:595e
+	Colt S.A.A.
+		e364b040:595d
+	Elektroschocker
+		e364b040:5960
+	MAC 11 MG
+		e364b040:595f
+	Umbrella Flammenwerfer
+		e364b040:596a
+	Raketenwerfer
+		e364b040:5969
+	Gatling Gun
+		e364b040:596c
+	Habe Waffe auf zehntem Inventarplatz
+		e364b044:5959
+	H & K VP70
+		e364b044:595c
+	Browning HP
+		e364b044:595b
+	H & K VP70 modifiziert
+		e364b044:5956
+	Desert Eagle 50A.E.
+		e364b044:5955
+	Desert Eagle 50A.E. 10inch
+		e364b044:5958
+	Remington M1100-P
+		e364b044:5957
+	Remington M1100 Halb-Automatik
+		e364b044:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b044:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b044:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b044:5963
+	Armbrust
+		e364b044:595e
+	Colt S.A.A.
+		e364b044:595d
+	Elektroschocker
+		e364b044:5960
+	MAC 11 MG
+		e364b044:595f
+	Umbrella Flammenwerfer
+		e364b044:596a
+	Raketenwerfer
+		e364b044:5969
+	Gatling Gun
+		e364b044:596c
+	Habe Waffe auf elftem Inventarplatz
+	Feuerzeug Dietrich Position
+		e364b048:5959
+	H & K VP70
+		e364b048:595c
+	Browning HP
+		e364b048:595b
+	H & K VP70 modifiziert
+		e364b048:5956
+	Desert Eagle 50A.E.
+		e364b048:5955
+	Desert Eagle 50A.E. 10inch
+		e364b048:5958
+	Remington M1100-P
+		e364b048:5957
+	Remington M1100 Halb-Automatik
+		e364b048:5962
+	M79 Granatwerfer Brandgeschosse
+		e364b048:5961
+	M79 Granatwerfer Explosivgeschosse
+		e364b048:5964
+	M79 Granatwerfer Saeuregeschosse
+		e364b048:5963
+	Armbrust
+		e364b048:595e
+	Colt S.A.A.
+		e364b048:595d
+	Elektroschocker
+		e364b048:5960
+	MAC 11 MG
+		e364b048:595f
+	Umbrella Flammenwerfer
+		e364b048:596a
+	Raketenwerfer
+		e364b048:5969
+	Gatling Gun
+		e364b048:596c
+	LEON-CODES
+	Alle Waffen & UE MU I Note Note 1
+		ed64b01f:5969
+		eb5d575c:5959
+		6b5ea616:5f5f
+		ed64b01f:5969
+		eb60575c:595a
+		6b5ea615:5f49
+Resident Evil 2 PAL Teil 04
+	Alle Waffen & UE MU II Note Note 1
+		ed64b01f:5969
+		eb5d575c:5959
+		6b5ea616:5f56
+		ed64b01f:5969
+		eb60575c:595a
+		6b5ea615:5f49
+	CLAIRE-CODES
+	Alle Waffen & UE MU I Note Note 1
+		ed64b01f:595e
+		eb5d575c:5959
+		6b5ea616:5f5f
+		ed64b01f:595e
+		eb60575c:595a
+		6b5ea615:5f49
+	Alle Waffen & UE MU II Note Note 1
+		ed64b01f:595e
+		eb5d575c:5959
+		6b5ea616:5f56
+		ed64b01f:595e
+		eb60575c:595a
+		6b5ea615:5f49
+	INVENTAR CODES UE Gegenstand
+	Erster Platz
+		e364b01f:594f
+	Zweiter Platz
+		e364b023:594f
+	Dritter Platz
+		e364b027:594f
+	Vierter Platz
+		e364b02b:594f
+	Fuenfter Platz
+		e364b02f:594f
+	Sechster Platz
+		e364b033:594f
+	Siebter Platz
+		e364b037:594f
+	Achter Platz
+		e364b03b:594f
+	Neunter Platz
+		e364b03f:594f
+	Zehnter Platz
+		e364b043:594f
+	UE alle Plaetze
+		eb5f575c:595a
+		6b5ea615:5f49
+	UE Farbbaender ersetzt Feuerzeug Dietrich
+		e039f348:5970
+		e039f347:594f
+	TRUHEN CODES Habe UE Gegenstand
+	Erster Platz
+		e364b04b:594f
+	Zweiter Platz
+		e364b04f:594f
+	Dritter Platz
+		e364b053:594f
+	Vierter Platz
+		e364ad57:594f
+	Fuenfter Platz
+		e364ad5b:594f
+	Sechster Platz
+		e364ad5f:594f
+	Siebter Platz
+		e364ad63:594f
+	Achter Platz
+		e364ad67:594f
+	Neunter Platz
+		e364ad6b:594f
+	Zehnter Platz
+		e364ad6f:594f
+	11. Platz
+		e364ad73:594f
+	12. Platz
+		e364ad77:594f
+	13. Platz
+		e364ad7b:594f
+	14. Platz
+		e364ad7f:594f
+	15. Platz
+		e364ad83:594f
+	16. Platz
+		e364ad87:594f
+	17. Platz
+		e364ad8b:594f
+	18. Platz
+		e364ad8f:594f
+	19. Platz
+		e364ad93:594f
+	20. Platz
+		e364ad97:594f
+	21. Platz
+		e364ad9b:594f
+	22. Platz
+		e364ad9f:594f
+	23. Platz
+		e364ada3:594f
+	24. Platz
+		e364ada7:594f
+	25. Platz
+		e364adab:594f
+	26. Platz
+		e364adaf:594f
+	27. Platz
+		e364adb3:594f
+	28. Platz
+		e364adb7:594f
+	29. Platz
+		e364adbb:594f
+	30. Platz
+		e364adbf:594f
+	31. Platz
+		e364adc3:594f
+	32. Platz
+		e364adc7:594f
+	33. Platz
+		e364adcb:594f
+	34. Platz
+		e364adcf:594f
+Resident Evil 2 PAL Teil 05
+	35. Platz
+		e364add3:594f
+	36. Platz
+		e364add7:594f
+	37. Platz
+		e364addb:594f
+	38. Platz
+		e364addf:594f
+	39. Platz
+		e364ade3:594f
+	40. Platz
+		e364ade7:594f
+	41. Platz
+		e364adeb:594f
+	42. Platz
+		e364adef:594f
+	43.Platz
+		e364adf3:594f
+	44. Platz
+		e364adf7:594f
+	45. Platz
+		e364adfb:594f
+	46.Platz
+		e364adff:594f
+	47.Platz
+		e364ad03:594f
+	48. Platz
+		e364ad07:594f
+	49. Platz
+		e364ad0b:594f
+	50. Platz
+		e364ad0f:594f
+	51. Platz
+		e364ad13:594f
+	52. Platz
+		e364ad17:594f
+	53. Platz
+		e364ad1b:594f
+	54. Platz
+		e364ad1f:594f
+	55. Platz
+		e364ad23:594f
+	56. Platz
+		e364ad27:594f
+	57. Platz
+		e364ad2b:594f
+	58. Platz
+		e364ad2f:594f
+	59. Platz
+		e364ad33:594f
+	60. Platz
+		e364ad37:594f
+	61. Platz
+		e364ad3b:594f
+	62. Platz
+		e364ad3f:594f
+	63. Platz
+		e364ad43:594f
+	64. Platz
+		e364ae47:594f
+	UE Gegenstaende alle Plaetze
+		eb96575c:595a
+		6b5ea651:5f49
+	CHEST ITEMS
+	Erster Platz Farbbaender
+		e364b04c:5970
+	Zweiter Platz kleiner Schluessel
+		e364b050:596f
+	Dritter Platz Erste-Hilfe-Spray
+		e364b054:597b
+	Vierter Platz Chemikalie FR-W09
+		e364ad58:5976
+	Fuenfter Platz Chemikalie AC-W24
+		e364ad5c:5975
+	Sechster Platz gemischte Kraeuter gruen
+		e364ad60:5981
+	Siebter Platz gemischte Kraeuter rot & gruen
+		e364ad64:5984
+	Achter Platz gemischte Kraeuter blau & gruen
+		e364ad68:5983
+	Neunter Platz Feuerzeug
+		e364ad6c:597f
+	Zehnter Platz Dietrich
+		e364ad70:598a
+	11. Platz Ventilgriff
+		e364ad74:598c
+	12. Platz rotes Edelstein
+		e364ad78:598b
+	13. Platz rote Schluesselkarte
+		e364ad7c:5986
+	14. Platz blaue Schluesselkarte
+		e364ad80:5985
+	15. Platz Schlangenstein
+		e364ad84:5988
+	16. Platz Jaguarstein
+		e364ad88:5987
+	17. Platz blauer Stein
+		e364ad8c:5992
+Resident Evil 2 PAL Teil 06
+	18. Platz Plattform Schluessel
+		e364ad90:59bb
+	19. Platz Adlerstein
+		e364ad94:5994
+	20. Platz Bishop Plug 
+		e364ad98:5993
+	21. Platz Rook Plug
+		e364ad9c:598e
+	22. Platz Knight Plug
+		e364ada0:598d
+	23. Platz King Plug
+		e364ada4:5990
+	24. Platz Waffenschrankschluessel
+		e364ada8:598f
+	25. Platz Zuender
+		e364adac:599a
+	26.Platz Plastiksprengstoff
+		e364adb0:5999
+	27. Platz Sprengstoff & Zuender
+		e364adb4:599c
+	28. Platz Eckige Kurbel
+		e364adb8:599b
+	29. Platz Einhorn Medaille
+		e364adbc:5997
+	30. Platz Adler Medaille
+		e364adc0:59a2
+	31.Platz Wolf Medaille
+		e364adc4:59a1
+	32. Platz goldenes Zahnrad
+		e364adc8:59a4
+	33. Platz Gullistange
+		e364adcc:59a3
+	34. Platz Hauptstromsicherung
+		e364add0:599e
+	35. Platz Sicherungsklemme
+		e364add4:599d
+	36. Platz Impfstoff fuer Sherry
+		e364add8:59a0
+	37. Platz Impfstoffbehaelter
+		e364addc:599f
+	38.Platz Grundstoff fuer Impfserum
+		e364ade0:59a9
+	39. Platz G-Virus
+		e364ade4:59ac
+	40. Platz Spezial-Schrankschluessel
+		e364ade8:59ab
+	41. Platz Generator Stromstecker S
+		e364adec:59a6
+	42. Platz Generator Stromstecker N
+		e364adf0:59a5
+	43. Platz Kabel
+		e364adf4:59a8
+	44. Platz Heckkabinenschluessel
+		e364adf8:59b2
+	45. Platz Precinct-Schluessel blau
+		e364adfc:59b1
+	46. Platz Precinct-Schluessel rot
+		e364ad00:59b4
+	47. Platz Precinct-Schluessel rot
+		e364ad04:59b3
+	48. Platz Precinct-Schluessel gruen
+		e364ad08:59ae
+	49. Platz roter Schalttafel-Schluessel
+		e364ad0c:59ad
+	50. Platz gelber Schalttafel-Schluessel
+		e364ad10:59b0
+	51. Platz Generatorraum-Schluessel
+		e364ad14:59af
+	52. Platz MO Disk
+		e364ad18:59ba
+	53. Platz Labor Schluesselkarte
+		e364ad1c:59b9
+	54. Platz Hauptschluessel
+		e364ad20:59bc
+	55. Platz Plattformschluessel
+		e364ad24:59bb
+	56. Platz Schrot
+		e364ad28:5965
+	57. Platz Magnum-MU
+		e364ad2c:5968
+	58. Platz Flamm-Oel
+		e364ad30:5967
+	59. Platz Explosivgeschosse
+		e364ad34:5972
+	60. Platz Brandgeschosse
+		e364ad38:5971
+	61. Platz Saeuregeschosse
+		e364ad3c:5974
+	62. Platz MG MU
+		e364ad40:5973
+	63. Platz Elektroschocker-MU
+		e364ad44:596e
+	64. Platz Armbrust Bolzen
+		e364ad48:596d
+	Note Zuerst einen Schuss abfeuern dann
+	sind im Inventar alle Waffen zugaenglich
+	Nur einen der beiden Codes verwenden
+	Note 1 Zuammen mit Rucksack Code verwenden
+Rayman 2 alternativ
+	Infinite Health
+		c86f1ca4:5970
+	Infinite Oxygen
+		c8639dd8:9ce8
+	Open All Levels
+		cb5a5756:595a
+		db6d6e5e:4a49
+	Have All Cages
+		cb5b5756:595a
+		db6d6d4e:4a49
+	Have All Yellow Lums
+		cb8d5756:595a
+		db6d6dd6:4a49
+		cb645756:595a
+		dc6d6e6a:4a49
+	Invincible Rayman
+		c8716078:595a
+Rayman 2
+	Unendliche Gesundheit
+		811BC54C:001E
+	Unendlicher Sauerstoff
+		810F4A80:4396
+	Oeffnet alle Level
+		811F1100:FFFF
+		811F1102:FFFF
+		811F1104:FFFF
+		811F1106:FFFF
+	Sie haben alle Kaefige
+		811F10F0:FFFF
+		811F10F2:FFFF
+		811F10F4:FFFF
+		811F10F6:FFFF
+		811F10F8:FFFF
+		811F10FA:FFFF
+		811FA0FC:FFFF
+	Habe alle gelben Lums
+		811F1088:FFFF
+		811F108A:FFFF
+		811F108C:FFFF
+		811F108E:FFFF
+		811F1090:FFFF
+		811F1092:FFFF
+		811F1094:FFFF
+		811F1096:FFFF
+		811F1098:FFFF
+		811F109A:FFFF
+		811F109C:FFFF
+		811F109E:FFFF
+		811F10A0:FFFF
+		811F10A2:FFFF
+		811F10A4:FFFF
+		811F10A6:FFFF
+		811F10A8:FFFF
+		811F10AA:FFFF
+		811F10AC:FFFF
+		811F10AE:FFFF
+		811F10B0:FFFF
+		811F10B2:FFFF
+		811F10B4:FFFF
+		811F10B6:FFFF
+		811F10B8:FFFF
+		811F10BA:FFFF
+		811F10BC:FFFF
+		811F10BE:FFFF
+		811F10C0:FFFF
+		811F10C2:FFFF
+		811F10C4:FFFF
+		811F10C6:FFFF
+		811F10C8:FFFF
+		811F10CA:FFFF
+		811F10CC:FFFF
+		811F10CE:FFFF
+		811F10D0:FFFF
+		811F10D2:FFFF
+		811F10D4:FFFF
+		811F10D6:FFFF
+		811F10D8:FFFF
+		811F10DA:FFFF
+		811F10DC:FFFF
+		811F10DE:FFFF
+		811F10E0:FFFF
+		811F10E2:FFFF
+		811F10E4:FFFF
+		811F10E6:FFFF
+		811F10E8:FFFF
+		811F10EA:FFFF
+		811F10EC:FFFF
+		811F10EE:FFFF
+		811F10F0:FFFF
+		811F10F2:FFFF
+		811F10F4:FFFF
+		811F10F6:FFFF
+		811F10F8:FFFF
+		811F111C:FFFF
+		811F111E:FFFF
+		811F1120:FFFF
+		811F1122:FFFF
+		811F1124:FFFF
+		811F1126:FFFF
+		811F1128:FFFF
+		811F112A:FFFF
+		811F112C:FFFF
+		811F112E:FFFF
+		811F1130:FFFF
+		811F1132:FFFF
+		811F1134:FFFF
+		811F1136:FFFF
+	Einen Schlag bekommen fuer unbesiegbar
+		811D0920:0000
+Rogue Squadron
+	Unendliche Leben
+		80130af0:0003
+	Unendlich Schield
+		80137e5d:00af
+		81137e5e:0000
+	Unendlich Raketen
+		8010ca02:0006
+	Alle Level
+		e8675e83:59d0
+San Francisco Rush
+	Always Finish First
+		e8666b5f:595a
+	Have Two Special Cars
+		c86204a6:504f
+		c86204aa:504f
+		c86204c0:504f
+		c86204ec:504f
+		c86204fe:504f
+		c8620418:504f
+	Activate Fast Sky
+		e86397df:5959
+	Activate Auto Abort Disable
+		e8639898:5959
+	Activate Cones to Mines
+		e861f770:5959
+StarWars EP1 POD Racer
+	Infinite Truguts
+		c8651e6e:504f
+	Always finish first
+		e86873e3:5959
+	All tracks
+		c8651e60:504f
+		c8651e5e:504f
+	All Characters
+		c8651e6c:59cd
+		c8651e6a:504f
+Snowboard Kids
+	Unendlich Geld
+		81122728:c350
+	Habe alle Tracks
+		800ece7c:0003
+	Habe alle Gold Medalien
+		b1060002:0000
+		800ece62:0101
+	Nur 1 Runde fuer Rennen
+		801226c8:0009
+Shadow Man
+	Infinite Bullets
+		c85bae8e:596a
+	Infinite Voodoo
+		e85bae7e:594f
+		e85bae7d:594f
+	Infinite Air
+		e85bae72:59f1
+	Infinite Health
+		c85bae6e:786a
+	Infinite Shotgun Shells
+		c85bae81:5962
+	Have Calabash
+		e8575f45:5663
+	Have Flashlight
+		e8575aa5:6363
+	All Items
+		50001d20:0000
+		e85759a5:5963
+Shadows Of The Empire
+	Unendliche Leben 
+		800e2333:00ff
+	Unendlich Missiles
+		800e2fd5:00ff
+Super Mario 64
+	Unendliche Leben
+		803094dd:0064
+	Unendlich Energie
+		813094de:08ff
+	Unendlich Hut
+		813094e6:ffff
+Superstar Soccer
+	Heimmannschaft hat 9 Tore
+		80119f2b:0009
+	Heimmannschaft hat 0 Tore
+		82119f2b:0000
+	Gastmannschaft hat 9 Tore
+		8211a9bf:0009
+	Gastmannschaft hat 0 Tore
+		8011a9bf:0000
+Superstar Soccer 98
+	Heimmannschaft hat 9 Tore
+		801a86fd:0009
+	Heimmannschaft hat 0 Tore
+		821a86fd:0000
+	Gastmannschaft hat 9 Tore
+		821a9579:0009
+	Gastmannschaft hat 0 Tore
+		821a9579:0000
+Snowboard Kids
+	Unendlich Geld
+		81122728:C350
+	Nur eine Runde fuer Rennen
+		811226C8:0009
+	Gold Medalien
+		810ECE62:0101
+		810ECE64:0101
+		810ECE66:0101
+		810ECE68:0101
+		810ECE6A:0101
+		810ECE6C:0101
+	Alle Tracks
+		800ECE7C:0003
+Spacestation Silicon Valley
+	Unendliche Gesundheit EVO
+		801DE085:0080
+	* Benutze nur UE Gesundheit je Tier
+	Mouse,Hyena
+		801DFB51:0080
+	Rocket Dog
+		801DEC01:0080
+	King Rat
+		801E19F1:0080
+	Spit Dog,Bear,King Pen,FB EVO
+		801DE459:0080
+	Fox,Pen,Husky,Tortoise Tank
+		801DFF25:0080
+	Bunny, Racing Turtle
+		801DF3A9:0080
+	Rocket Husky
+		801E1DC5:0080
+	Cool Cod
+		801E4039:0080
+	Elephant
+		801DE82D:0080
+	Lion, Camel
+		801E02F9:0080
+	Desert Fox
+		801E161D:0080
+	A.Desert Rat,Vulture,Box Kang
+		801DEFD5:0080
+	Benutze nur Geschicklichkeit je Tier
+	Power Mouse
+		801DFCE4:0004
+	Rocket Dog
+		801E3A24:0004
+	King Rat
+		801E1B84:0004
+	King Penguin
+		801DE5EC:0004
+	Benutze nur Unendlich Geschicklichkeit je Tier B CODES
+	Rocket Dog
+		801E3A28:0004
+	Bear
+		801DE5F0:0004
+	Power Pen,Husky,Fox,Tort Tank
+		801E00BC:0004
+	Bunny,Racing Turtle
+		801DF540:0004
+	Rocket Husky
+		801E1F5C:0004
+	Hyena
+		801DF914:0004
+	Lion
+		801E0490:0004
+	Armed Desert Rat
+		801DF16C:0004
+	Desert Fox
+		801E17B4:0004
+	Boxing Kangeroo
+		801DF16C:0004
+	Benutze nur einen fuer Level select
+	Final Euro Eden Level
+		803F7EC5:0009
+	Final Arctic Kingdom Level
+		803F7EC5:0010
+	Final Jungle Safari Level
+		803F7EC5:0016
+	Final Desert Adventure Level
+		803F7EC5:001D
+	Big Celebration Parade
+		803F7EC5:001E
+	Spacecraft Shoot-em-up
+		803E7EC5:001F
+Top Gear Overdrive
+	Unendlich Nitro
+		800F590F:000F
+	Unendlich Geld
+		810F5905:0FA0
+	Extra Autos
+		80102A71:000E
+	Extra Runden
+		80102A68:0005
+Top Gear Rally
+	Nur 1 Runde fahren champ. mode
+		8031ebdb:0002
+	Habe Extra Auto
+		8032690d:00ff
+	Habe Extra Funny Cars
+		8032690c:000f
+	Habe Extra Tracks
+		8032690f:00ff
+Turok - Dinosaur Hunter
+	Habe alle Waffen
+		b00c0004:0000
+		80128da7:0001
+	Alle Schluessel
+		b0070004:0000
+		80128de3:0007
+	Unendlich Munition
+		b0030004:0000
+		80128d63:00ff
+		b0060004:0000
+		80128d7f:00ff
+Turok 2
+	Activiere Cheat Menu
+		8112167c:ffff
+		8112167e:ffff
+Wave Race 64
+	Super Speed
+		801c0077:00FF
+	Fehlversuche zaehlen nicht
+		801C007F:0000
+	Unendlich Stunt Mode Zeit
+		801C020E:00FF
+WCW vs NWO
+	Habe alle Charakter
+		800606d5:00ff
+	Kein Time Out
+		800f16f4:0014
+	Maximum Spirit
+		800f0831:0064
+	Habe Aluminium Baseball Bat
+		830f1c50:0000
+		800f1c52:0000
+	Habe Baseball Bat
+		830f1c50:0101
+		800f1c52:0000
+	Habe Stuhl
+		830f1c50:0202
+		800f1c52:0000
+	Habe Tischstueck
+		830f1c50:0303
+		800f1c52:0000
+WipeOut 64
+	Unendlich Check Point zeit
+		810CDE92:0960
+	Unendlich Schild
+		8109BCEE:0000
+	Nur eine Runde fuer Rennen
+		D01BC502:0001
+		811BC502:0300
+	Keine Runde fuer Rennen
+		D01BC502:0000
+		811BC502:0300
+	Oeffnet Velocitar
+		80093249:0001
+	Oeffnet Piranha II
+		800933C9:0001
+	Oeffnet Super Combo Challenge
+		8009351D:0000
+	Immer nur eine Waffe benutzen
+	Minen
+		841BC4F6:0003
+	E-Pack
+		841BC4F6:0006
+	Autopilot
+		841BC4F6:0007
+	Turbo
+		841BC4F6:0009
+	Raketen
+		841BC4F6:0001
+	Lenkraketen
+		841BC4F6:0002
+	Electro Bold
+		841BC4F6:0005
+	Schild
+		841BC4F6:0008
+	Quake Disruptor
+		841BC4F6:000C
+	Feisar Minigun
+		841BC4F6:000F
+	QIREX Power Snare
+		841BC4F6:0011
+	AG SYSTEMS Shield Raider
+		841BC4F6:0012
+Wetrix
+	Leerer Abfluss
+		b0050001:0000
+		801bf991:0000
+	Stopt Zeitmesser
+		801bf9b2:00ff
+Wrestlemania 2000
+	Special Code - Do Not Use
+		2c0376e0:0000
+	Dummy Code for Trainer
+		e8965758:595a
+	All Characters Available
+		c85d44ae:504f
+WWF War Zone
+	Ermoeglicht Cheat Menue
+		8113a678:1000
+		8113a67a:07ff
+		8113a67c:2000
+		8113a67e:3fff
+Virtual Pool 64
+	Pot 1 fuer gewonnen Stelle auf 25p in straight pool
+		802EF71D:0019
+	Schlechte bleibt auf 0
+		802EF725:0000
+	Score 0 Punkte in shark skins
+		802EF723:0000
+	Habe 5 Spiele gewonnen
+		802EF721:0005
+Yoshi's Story
+	Unbegrenzt Leben 
+		800f959f:00ff
+	Unendlich Gesundheit
+		b0080004:0000
+		800f954f:0008
+Zelda alternativ
+	Special Code for Trainer
+		2c0004e4:0000
+	Dummy Code for Trainer
+		e8965758:595a
+	Infinite Rupees
+		c865db5c:5c37
+	Infinite Health 
+		c865db58:5a9a
+	Have All Equipment
+		8311846c:7777
+	Have All Quest Status Items
+		83118474:30ff
+		83118476:ffff
+	Infinite Beans
+		82118452:0010
+		8211846a:0063
+	Infinite Bombs
+		82118446:0002
+		8211845e:0028
+	Infinite Bombchus
+		8211844c:0009
+		82118464:0063
+	Infinite Deku Nuts
+		e865db9b:5959
+		e865dbb3:59bb
+	Infinite Deku Sticks
+		82118444:0000
+		8211845c:0063
+	Infinite Magic
+		82118403:0030
+	Infinite Slingshot Bullets
+		8211844a:0006
+		82118462:0032
+	Have Fairy Bow
+		82118447:0003
+	Have Lens Of Truth
+		82118451:000f
+	Have Fire Arrow
+		82118448:0004
+	Have Ice Arrow
+		8211844e:000c
+	Have Light Arrow
+		82118454:0012
+	Have Dins Magic
+		82118449:0005
+	Have Farores Magic
+		8211844f:000d
+	Have Nayrus Magic
+		82118455:0013
+	Have Silver Scale
+		82118472:0002
+	Have Golden Scale
+		82118472:0004
+	Have Bullet Bag50
+		82118472:00c0
+	Have Boomerang
+		82118451:000e
+	Have Fairy Ocarina
+		8211844b:0007
+	Have Ocarina Of Time
+		8211844b:0008
+	Have Megaton Hammer
+		82118453:0011
+	Have Hookshot
+		8211844d:000a
+	Have Longshot
+		8211844d:000b
+	Have Quiver
+		82118471:0001
+		82118472:0004
+	Infinite Arrows
+		8211845f:0032
+Zelda
+	Unendlich Rupees
+		81118404:03e7
+	Unendlich Gesundheit 
+		81118400:0140
+	Habe alle Ausstattung
+		8311846c:7777
+	Habe alle Such-Status-Gegenstaende
+		83118474:30ff
+		83118476:ffff
+	Unendlich Bohnen
+		82118452:0010
+		8211846a:0063
+	Unendlich Bomben
+		82118446:0002
+		8211845e:0028
+	Unendlich Bombchus
+		8211844c:0009
+		82118464:0063
+	Unendlich Deku Nuesse
+		80118445:0001
+		8011845d:0063
+	Unendlich Deku Stoecke
+		82118444:0000
+		8211845c:0063
+	Unendlich Magie
+		82118403:0030
+	Unendlich Slingshot Kugel
+		8211844a:0006
+		82118462:0032
+	Habe Feen Bogen
+		82118447:0003
+	Habe Linse der Wahrheit
+		82118451:000f
+	Habe Feuer Pfeil
+		82118448:0004
+	Habe Eis Pfeil
+		8211844e:000c
+	Habe Licht Pfeil
+		82118454:0012
+	Habe Dins Magie
+		82118449:0005
+	Habe Farores Magie
+		8211844f:000d
+	Habe Nayrus Magie
+		82118455:0013
+	Habe Silber Waage
+		82118472:0002
+	Habe Gold Waage
+		82118472:0004
+	Habe Munitionstasche 50
+		82118472:00c0
+	Habe Bumerang
+		82118451:000e
+	Habe Feen Ocarina
+		8211844b:0007
+	Habe Ocarina Of Time
+		8211844b:0008
+	Habe Megatonnen Hammer
+		82118453:0011
+	Habe Hakenschuss
+		8211844d:000a
+	Habe Langer Schuss
+		8211844d:000b
+	Habe Koecher
+		82118471:0001
+		82118472:0004
+	Unendlich Pfeile
+		8211845f:0032
