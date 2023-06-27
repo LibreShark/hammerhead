@@ -114,6 +114,10 @@ internal static class Program
         {
             PrintRomInfo(info.InputFiles ?? new List<string>());
         }
+        else if (writeRom != null)
+        {
+            ;
+        }
 
         return 0;
     }

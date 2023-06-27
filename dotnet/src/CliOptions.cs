@@ -33,7 +33,7 @@ public enum FileFormat
     auto,
     rom,
     n64_datel_text,
-    n64_datel_memcard,
+    // n64_datel_memcard,
     n64_ed_x7_text,
     n64_xp_fcd_text,
     n64_pj_v1_6_text,
@@ -45,25 +45,27 @@ public enum FileFormat
 internal abstract class Options
 {
     internal const string ReportFormats =
-        "auto\n" +
+        "auto (default)\n" +
         "color\n" +
         "plain";
 
     internal const string FileFormats =
-        "auto\n" +
+        "auto (default)\n" +
         "rom\n" +
         "n64_datel_text\n" +
-        "n64_datel_memcard\n" +
-        "n64_ed_x7_text\n" +
-        "n64_xp_fcd_text\n" +
-        "n64_pj_v1_6_text\n" +
-        "n64_pj_v3_0_text\n" +
-        "n64_openemu_text";
+        // "n64_datel_memcard\n" +
+        // "n64_ed_x7_text\n" +
+        // "n64_xp_fcd_text\n" +
+        // "n64_pj_v1_6_text\n" +
+        // "n64_pj_v3_0_text\n" +
+        // "n64_openemu_text\n" +
+        "";
 
-    [Option("clean",
-        HelpText = "Try to reset user preferences and active game index, delete invalid cheats, sort game list, " +
-                   "etc. By default, no cleaning is performed.")]
-    public bool Clean { get; set; }
+    // TODO(CheatoBaggins): Implement
+    // [Option("clean",
+    //     HelpText = "Try to reset user preferences and active game index, delete invalid cheats, sort game list, " +
+    //                "etc. By default, no cleaning is performed.")]
+    // public bool Clean { get; set; }
 
     [Option("hide-banner",
         HelpText = "Hide the decorative ASCII art banner.")]
@@ -71,7 +73,7 @@ internal abstract class Options
 }
 
 [Verb("info",
-    HelpText = "Display detailed information about ROM files and cheat list files.")]
+    HelpText = "Display detailed information about ROM and cheat list files.")]
 internal class InfoOptions : Options
 {
     [Option('i', "input-files", Required = true,
@@ -84,13 +86,13 @@ internal class InfoOptions : Options
                    FileFormats)]
     public IEnumerable<FileFormat>? InputFormats { get; set; }
 
-    [Option("output-format",
-        HelpText = "Format to use when printing ROM information:\n" +
-                   "\n" +
-                   ReportFormats)]
-    public ReportFormat? ReportFormat { get; set; }
+    // [Option("output-format",
+    //     HelpText = "Format to use when printing ROM information:\n" +
+    //                "\n" +
+    //                ReportFormats)]
+    // public ReportFormat? OutputFormat { get; set; }
 
-    [Usage(ApplicationAlias = "hammerhead")]
+    [Usage/*(ApplicationAlias = "hammerhead")*/]
     public static IEnumerable<Example> Examples
     {
         get
@@ -104,7 +106,7 @@ internal class InfoOptions : Options
                     "n64-gs-v2.0.bin".SetStyle(FontStyleExt.Underline),
                 },
                 InputFormats = new []{FileFormat.n64_datel_text, FileFormat.auto},
-                ReportFormat = Hammerhead.ReportFormat.auto,
+                // OutputFormat = Hammerhead.ReportFormat.auto,
             });
             // yield return new Example("Logging warnings", UnParserSettings.WithGroupSwitchesOnly(), new Options { InputFile = "file.bin", LogWarning = true });
             // yield return new Example("Logging errors", new[] { UnParserSettings.WithGroupSwitchesOnly(), UnParserSettings.WithUseEqualTokenOnly() }, new Options { InputFile = "file.bin", LogError = true });
