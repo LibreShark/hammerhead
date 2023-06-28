@@ -38,7 +38,7 @@ public abstract class Rom : IDataSource
         IEnumerable<byte> rawInput,
         BinaryScribe scribe,
         GameConsole console,
-        RomFormat format
+        RomFormat romFormat
     )
     {
         Scribe = scribe;
@@ -48,7 +48,7 @@ public abstract class Rom : IDataSource
         {
             FilePath = filePath,
             Console = console,
-            Format = format,
+            RomFormat = romFormat,
             FileChecksum = RawInput.ComputeChecksums(),
         };
     }
@@ -237,11 +237,11 @@ public abstract class Rom : IDataSource
 
     public bool IsValidFormat()
     {
-        return Metadata.Format != RomFormat.UnknownRomFormat;
+        return Metadata.RomFormat != RomFormat.UnknownRomFormat;
     }
 
     public bool IsInvalidFormat()
     {
-        return Metadata.Format == RomFormat.UnknownRomFormat;
+        return Metadata.RomFormat == RomFormat.UnknownRomFormat;
     }
 }

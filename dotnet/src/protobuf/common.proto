@@ -129,41 +129,51 @@ message ChecksumResult {
   string sha1_hex = 4;
 }
 
+message FeatureSet {
+  bool cheats = 1;
+  bool firmware = 2;
+  bool user_prefs = 3;
+  bool file_encryption = 4;
+  bool file_scrambling = 5;
+  bool file_compression = 6;
+}
+
 message RomMetadata {
   string file_path = 1;
   GameConsole console = 2;
-  RomFormat format = 3;
+  RomFormat rom_format = 3;
   RomBrand brand = 4;
+  FeatureSet features = 5;
 
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
   // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype", "v2.0 Platinum".
-  string display_version = 5;
+  string display_version = 6;
 
   // Machine-readable version number for sorting purposes.
-  double sortable_version = 6;
+  double sortable_version = 7;
 
   // Raw, unprocessed build date found in the ROM file.
-  RomString build_date_raw = 7;
+  RomString build_date_raw = 8;
 
   // ISO 8601 date/time stamp of when the ROM was built.
   // E.g., "1997-08-01T12:50:00+0100".
-  string build_date_iso = 8;
-  .google.protobuf.Timestamp build_date_proto = 14;
+  string build_date_iso = 9;
+  .google.protobuf.Timestamp build_date_proto = 10;
 
   // Case-insensitive IETF BCP 47 language and region tag.
   // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
   // See RFC 5646 (obsoletes RFC 4646).
-  string language_ietf_code = 9;
+  string language_ietf_code = 11;
 
-  ChecksumResult file_checksum = 10;
-  ChecksumResult firmware_checksum = 11;
+  ChecksumResult file_checksum = 12;
+  ChecksumResult firmware_checksum = 13;
 
-  repeated RomString identifiers = 12;
+  repeated RomString identifiers = 14;
 
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
-  bool is_known_version = 13;
+  bool is_known_version = 15;
 }
 
 message Warning {

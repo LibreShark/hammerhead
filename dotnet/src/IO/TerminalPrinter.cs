@@ -171,7 +171,7 @@ public class TerminalPrinter
         string fileSize = $"{PrettySize.Format(_file.Buffer.Length)} " +
                           $"(0x{_file.Buffer.Length:X8} = {_file.Buffer.Length} bytes)";
 
-        table.AddRow("File format", OrUnknown(_file.Metadata.Format.ToDisplayString()));
+        table.AddRow("File format", OrUnknown(_file.Metadata.RomFormat.ToDisplayString()));
         table.AddRow("Platform", OrUnknown(_file.Metadata.Console.ToDisplayString()));
         table.AddRow("Brand", OrUnknown(GetDisplayBrand()));
         table.AddRow("Locale", OrUnknown(GetDisplayLocale()));

@@ -86,7 +86,7 @@ internal static class Program
         var printer = new TerminalPrinter(rom, @params.PrintFormat);
         if (!rom.FormatSupportsFileEncryption())
         {
-            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "encrypted");
@@ -108,7 +108,7 @@ internal static class Program
         var printer = new TerminalPrinter(rom, @params.PrintFormat);
         if (!rom.FormatSupportsFileEncryption())
         {
-            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "decrypted");
@@ -130,7 +130,7 @@ internal static class Program
         var printer = new TerminalPrinter(rom, @params.PrintFormat);
         if (!rom.FormatSupportsFileScrambling())
         {
-            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "scrambled");
@@ -153,7 +153,7 @@ internal static class Program
         var printer = new TerminalPrinter(rom, @params.PrintFormat);
         if (!rom.FormatSupportsFileScrambling())
         {
-            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "unscrambled");

@@ -108,7 +108,7 @@ public sealed class GbcXpRom : Rom
 
     public static bool Is(Rom rom)
     {
-        return rom.Metadata.Format == ThisRomFormat;
+        return rom.Metadata.RomFormat == ThisRomFormat;
     }
 
     public static bool Is(RomFormat type)

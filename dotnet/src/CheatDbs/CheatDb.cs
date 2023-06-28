@@ -25,7 +25,7 @@ public abstract class CheatDb : IDataSource
 
     public readonly FileFormat FileFormat;
 
-    public RomFormat RomFormat => Metadata.Format;
+    public RomFormat RomFormat => Metadata.RomFormat;
 
     protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat fileFormat, RomFormat romFormat)
     {
@@ -37,7 +37,7 @@ public abstract class CheatDb : IDataSource
         {
             FilePath = filePath,
             Console = console,
-            Format = romFormat,
+            RomFormat = romFormat,
             FileChecksum = RawInput.ComputeChecksums(),
         };
     }
