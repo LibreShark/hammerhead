@@ -91,14 +91,12 @@ public class Cli
 
     private static readonly Option<bool?> ColorOption = new Option<bool?>(
         aliases: new string[] { "--color" },
-        description: "Force Hammerhead to output ANSI color code escape sequences when printing to stdout.",
-        getDefaultValue: () => null
+        description: "Force Hammerhead to output ANSI color code escape sequences when printing to stdout."
     );
 
     private static readonly Option<bool?> NoColorOption = new Option<bool?>(
         aliases: new string[] { "--no-color" },
-        description: "Force Hammerhead to disable ANSI color code escape sequences when printing to stdout.",
-        getDefaultValue: () => null
+        description: "Force Hammerhead to disable ANSI color code escape sequences when printing to stdout."
     );
 
     private static readonly Option<bool> HideGamesOption = new Option<bool>(

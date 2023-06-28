@@ -16,29 +16,6 @@ namespace LibreShark.Hammerhead;
 */
 
 /*
-.
-
-
-Input/output formats (IO_FORMAT):
-
-Value                 | Description
---------------------- | -----------
-auto                  | Default. Auto-detect the input format, or output the same format as the input if possible (otherwise the closest output format to the input)
-rom                   | Full binary ROM file (game enhancer firmware dump)
-jsonproto             | Plain text, console-agnostic protobuf JSON format
-textproto             | Plain text, console-agnostic protobuf text format
-n64_openemu_xml       | Plain text, console-agnostic cheat list for OpenEMU
-n64_datel_text        | Plain text cheat list for Datel's official N64 GS Utils PC program
-n64_datel_memcard     | Binary cheat list for Datel's GameShark/AR memory card (aka Controller Pak) format
-n64_fcd_text          | Plain text cheat list for FCD's official Xplorer 64 cheat manager PC utility
-n64_edx7_text         | Plain text cheat list for EverDrive-64 X7 flash carts
-n64_pj64_v160_text    | Plain text cheat list for Project 64 v1.6 `.cht` file
-n64_pj64_v300_text    | Plain text cheat list for Project 64 v3+ `.cht` file
-
-
-
-
-
 
 # Global options
 --clean
@@ -63,7 +40,6 @@ hh cheats dump *.rom [--output-format=auto]
 hh cheats copy [--input-format=auto] [--output-format=auto] FROM.bin [-o TO.txt]
 hh cheats copy [--input-format=auto] [--output-format=auto] FROM.txt [-o TO.bin] [--clean]
 
-.
 */
 
 internal static class Program
