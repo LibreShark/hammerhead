@@ -1,3 +1,6 @@
+using System.CommandLine;
+using System.CommandLine.Binding;
+using System.CommandLine.Invocation;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -469,4 +472,25 @@ public static class ExtensionMethods
     }
 
     #endregion
+
+    public static T? GetValue<T>(
+        this IValueDescriptor<T> symbol,
+        InvocationContext context)
+    {
+        if (symbol is IValueSource valueSource &&
+            valueSource.TryGetValue(symbol, context.BindingContext, out var boundValue) &&
+            boundValue is T value)
+        {
+            return value;
+        }
+        if (symbol is Argument<T> arg)
+        {
+            return context.ParseResult.GetValueForArgument(arg);
+        }
+        if (symbol is Option<T> opt)
+        {
+            return context.ParseResult.GetValueForOption(opt);
+        }
+        throw new ArgumentException("Symbol must be an Argument<T> or Option<T>, but object is neither.");
+    }
 }

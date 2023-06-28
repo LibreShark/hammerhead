@@ -191,15 +191,15 @@ message Game {
   repeated Warning warnings = 5;
 }
 
-enum TerminalFormat {
-  UNKNOWN_TERMINAL_FORMAT = 0x00;
+enum PrintFormat {
+  UNKNOWN_PRINT_FORMAT = 0x00;
   DETECT = 0x01;
   COLOR = 0x02;
   PLAIN = 0x03;
 }
 
-enum IoFormat {
-  UNKNOWN_IO_FORMAT = 0x00;
+enum FileFormat {
+  UNKNOWN_FILE_FORMAT = 0x00;
 
   AUTO = 0x01;
   ROM = 0x02;

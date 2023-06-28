@@ -208,7 +208,7 @@ public abstract class Rom
         return str.SetStyle(FontStyleExt.Bold);
     }
 
-    public void PrintSummary(bool printGames, bool printCheats, bool printCodes)
+    public void PrintSummary(InfoCmdParams @params)
     {
         PrintHeading("File properties");
         PrintFilePropTable();
@@ -219,9 +219,9 @@ public abstract class Rom
         Console.WriteLine();
         PrintCustomHeader();
         Console.WriteLine();
-        if (FormatSupportsCustomCheatCodes() && printGames)
+        if (FormatSupportsCustomCheatCodes() && !@params.HideGames)
         {
-            PrintGames(printCheats, printCodes);
+            PrintGames(@params);
             Console.WriteLine();
         }
         PrintCustomBody();
@@ -291,7 +291,7 @@ public abstract class Rom
         }
     }
 
-    private void PrintGames(bool printCheats, bool printCodes)
+    private void PrintGames(InfoCmdParams @params)
     {
         PrintHeading("Games and cheat codes");
 
@@ -368,7 +368,7 @@ public abstract class Rom
             }
             gameTable.AddRow(gameName, $"{game.Cheats.Count}".ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
 
-            if (!printCheats)
+            if (@params.HideCheats)
             {
                 continue;
             }
@@ -377,7 +377,7 @@ public abstract class Rom
             {
                 int codeCount = cheat.Codes.Count;
                 gameTable.AddRow($"  - {cheat.CheatName.Value.ForegroundColor(Color.White)}", codeCount, "");
-                if (!printCodes)
+                if (@params.HideCodes)
                 {
                     continue;
                 }

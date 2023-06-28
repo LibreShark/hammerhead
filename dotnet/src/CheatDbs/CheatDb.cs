@@ -19,9 +19,9 @@ public abstract class CheatDb
 
     public readonly string FilePath;
     public readonly GameConsole Console;
-    public readonly IoFormat Format;
+    public readonly FileFormat Format;
 
-    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, IoFormat format)
+    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat format)
     {
         Bytes = rawInput;
         FilePath = filePath;
@@ -31,12 +31,12 @@ public abstract class CheatDb
 
     public bool IsKnown()
     {
-        return Format != IoFormat.UnknownIoFormat;
+        return Format != FileFormat.UnknownFileFormat;
     }
 
     public bool IsUnknown()
     {
-        return Format == IoFormat.UnknownIoFormat;
+        return Format == FileFormat.UnknownFileFormat;
     }
 
     public abstract List<Game> ReadGames();

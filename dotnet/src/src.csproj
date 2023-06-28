@@ -11,7 +11,7 @@
         <PackageId>LibreShark.Hammerhead</PackageId>
         <Title>Hammerhead</Title>
         <Authors>LibreShark project contributors</Authors>
-        <Description>A Swiss Army Knife for reading, writing, encrypting, and decrypting ROM/firmware dumps from 1990s-2000s era video game enhancers (GameShark, Action Replay, Code Breaker, Xplorer/Xploder, etc.).</Description>
+        <Description>Hammerhead is a Swiss Army Knife for ROM files: it supports reading, writing, encrypting, and decrypting ROM/firmware dumps from 1990s-2000s era video game enhancers (GameShark, Action Replay, Code Breaker, Xplorer/Xploder, etc.).</Description>
         <Copyright>MIT license</Copyright>
         <PackageProjectUrl>https://github.com/LibreShark/hammerhead</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/LibreShark/hammerhead/blob/main/LICENSE</PackageLicenseUrl>

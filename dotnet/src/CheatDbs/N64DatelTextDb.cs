@@ -17,10 +17,10 @@ using f64 = Double;
 public class N64DatelTextDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
-    private const IoFormat ThisIoFormat = IoFormat.N64DatelText;
+    private const FileFormat ThisFileFormat = FileFormat.N64DatelText;
 
     public N64DatelTextDb(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, ThisConsole, ThisIoFormat)
+        : base(filePath, rawInput, ThisConsole, ThisFileFormat)
     {
     }
 

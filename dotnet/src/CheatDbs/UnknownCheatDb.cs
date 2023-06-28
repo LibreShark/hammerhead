@@ -14,10 +14,10 @@ using f64 = Double;
 public class UnknownCheatDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.UnknownGameConsole;
-    private const IoFormat ThisIoFormat = IoFormat.UnknownIoFormat;
+    private const FileFormat ThisFileFormat = FileFormat.UnknownFileFormat;
 
     public UnknownCheatDb(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, ThisConsole, ThisIoFormat)
+        : base(filePath, rawInput, ThisConsole, ThisFileFormat)
     {
     }
 
