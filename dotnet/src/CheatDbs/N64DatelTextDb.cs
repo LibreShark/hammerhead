@@ -14,7 +14,7 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public class N64DatelTextDb : CheatDb
+public sealed class N64DatelTextDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const FileFormat ThisFileFormat = FileFormat.N64DatelText;
@@ -23,6 +23,7 @@ public class N64DatelTextDb : CheatDb
     public N64DatelTextDb(string filePath, u8[] rawInput)
         : base(filePath, rawInput, ThisConsole, ThisFileFormat, ThisRomFormat)
     {
+        Games.AddRange(ReadGames());
     }
 
     private enum ParserState
@@ -44,81 +45,69 @@ public class N64DatelTextDb : CheatDb
             .ToArray();
         foreach (string line in lines)
         {
-            Match nameMatch = Regex.Match(line, "\"(?<name>[^\"]*)\"\\s*(?<off>\\.off)?\\s*(?:;\\s*(?<comment>.+))");
-            Match codeMatch = Regex.Match(line, "(?<address>[a-fA-F0-9]{8})\\s(?<value>[a-fA-F0-9]{8})\\s*(?:;\\s*(?<comment>.+))");
-            Match endMatch = Regex.Match(line, "\\.end");
-            Match emptyMatch = Regex.Match(line, "^$|^;");
+            Match nameMatch = Regex.Match(line, @"""(?<name>[^""]*)""\s*(?<off>\.off)?\s*(?:;\s*(?<comment>.*))?");
+            Match codeMatch = Regex.Match(line, @"(?<address>[a-fA-F0-9]{8})\s(?<value>[a-fA-F0-9]{4})\s*(?:;\s*(?<comment>.*))?");
+            Match endMatch = Regex.Match(line, @"\.end");
+            Match emptyMatch = Regex.Match(line, @"^$|^;");
 
             if (emptyMatch.Success)
             {
                 continue;
             }
 
-            if (state == ParserState.InList)
+            switch (state)
             {
-                if (!nameMatch.Success)
-                {
-                    System.Console.Error.WriteLine($"[state=InList] Unrecognized line in cheat file: `{line}`");
-                    continue;
-                }
-
-                curGame = new Game()
-                {
-                    GameIndex = (u32)games.Count,
-                    GameName = new RomString() { Value = nameMatch.Groups["name"].Value },
-                };
-                games.Add(curGame);
-                state = ParserState.InGame;
-            }
-            else if (state == ParserState.InGame)
-            {
-                if (endMatch.Success)
-                {
-                    state = ParserState.InList;
-                    continue;
-                }
-                if (!nameMatch.Success)
-                {
-                    System.Console.Error.WriteLine($"[state=InGame] Unrecognized line in cheat file: `{line}`");
-                    continue;
-                }
-
-                curCheat = new Cheat()
-                {
-                    CheatIndex = (u32)curGame.Cheats.Count,
-                    CheatName = new RomString() { Value = nameMatch.Groups["name"].Value },
-                    IsCheatActive = !(nameMatch.Groups["off"].Success && nameMatch.Groups["off"].Value.Length > 0),
-                };
-                curGame.Cheats.Add(curCheat);
-                state = ParserState.InCheat;
-            }
-            else if (state == ParserState.InCheat)
-            {
-                if (endMatch.Success)
-                {
-                    state = ParserState.InList;
-                    continue;
-                }
-                if (nameMatch.Success)
-                {
+                case ParserState.InList when nameMatch.Success:
+                    curGame = new Game()
+                    {
+                        GameIndex = (u32)games.Count,
+                        GameName = new RomString() { Value = nameMatch.Groups["name"].Value },
+                    };
+                    games.Add(curGame);
                     state = ParserState.InGame;
+                    break;
+                case ParserState.InList:
+                    Console.Error.WriteLine($"[state=InList] Unrecognized line in cheat file: `{line}`");
                     continue;
-                }
-                if (!codeMatch.Success)
-                {
-                    System.Console.Error.WriteLine($"[state=InCheat] Unrecognized line in cheat file: `{line}`");
+                case ParserState.InGame when endMatch.Success:
+                    state = ParserState.InList;
                     continue;
-                }
-
-                curCheat.Codes.Add(new Code()
+                case ParserState.InGame when nameMatch.Success:
+                case ParserState.InCheat when nameMatch.Success:
+                    curCheat = new Cheat()
+                    {
+                        CheatIndex = (u32)curGame.Cheats.Count,
+                        CheatName = new RomString() { Value = nameMatch.Groups["name"].Value },
+                        IsCheatActive = !(nameMatch.Groups["off"].Success && nameMatch.Groups["off"].Value.Length > 0),
+                    };
+                    curGame.Cheats.Add(curCheat);
+                    state = ParserState.InCheat;
+                    break;
+                case ParserState.InGame:
+                    Console.Error.WriteLine($"[state=InGame] Unrecognized line in cheat file: `{line}`");
+                    continue;
+                case ParserState.InCheat when endMatch.Success:
+                    state = ParserState.InList;
+                    continue;
+                case ParserState.InCheat when codeMatch.Success:
                 {
-                    CodeIndex = (u32)curCheat.Codes.Count,
-                    Bytes = ByteString.CopyFrom(
-                        $"{codeMatch.Groups["address"].Value}{codeMatch.Groups["value"].Value}".HexToBytes()),
-                    Comment = codeMatch.Groups["comment"].Success && !string.IsNullOrWhiteSpace(codeMatch.Groups["comment"].Value)
-                        ? codeMatch.Groups["comment"].Value
-                        : null,
-                });
+                    var code = new Code()
+                    {
+                        CodeIndex = (u32)curCheat.Codes.Count,
+                        Bytes = ByteString.CopyFrom(
+                            $"{codeMatch.Groups["address"].Value}{codeMatch.Groups["value"].Value}".HexToBytes()),
+                        Comment = codeMatch.Groups["comment"].Success && !string.IsNullOrWhiteSpace(codeMatch.Groups["comment"].Value)
+                            ? codeMatch.Groups["comment"].Value
+                            : "",
+                    };
+                    curCheat.Codes.Add(code);
+                    break;
+                }
+                case ParserState.InCheat:
+                    Console.Error.WriteLine($"[state=InCheat] Unrecognized line in cheat file: `{line}`");
+                    continue;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

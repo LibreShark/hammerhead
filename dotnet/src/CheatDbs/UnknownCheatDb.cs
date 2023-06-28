@@ -11,7 +11,7 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public class UnknownCheatDb : CheatDb
+public sealed class UnknownCheatDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.UnknownGameConsole;
     private const FileFormat ThisFileFormat = FileFormat.UnknownFileFormat;

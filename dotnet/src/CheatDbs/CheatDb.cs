@@ -31,8 +31,8 @@ public abstract class CheatDb : IDataSource
     {
         RawInput = rawInput.ToImmutableArray();
         Buffer = rawInput;
-        Games = new List<Game>();
         FileFormat = fileFormat;
+        Games = new List<Game>();
         Metadata = new RomMetadata()
         {
             FilePath = filePath,
@@ -89,6 +89,7 @@ public abstract class CheatDb : IDataSource
 
     public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params)
     {
+        printer.PrintGames(@params);
     }
 
     public virtual void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
