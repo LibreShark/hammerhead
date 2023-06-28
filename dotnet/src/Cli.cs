@@ -28,20 +28,25 @@ public class InfoCmdParams : CmdParams
 
 public class RomCmdParams : CmdParams
 {
-    public FileInfo? InputFile { get; set; }
+    public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
 }
 
-public class CheatsCmdParams : CmdParams
+public class DumpCheatsCmdParams : CmdParams
 {
-    public FileInfo? InputFile { get; set; }
-    public FileInfo[] InputFiles { get; set; }
-    public FileInfo? OutputFile { get; set; }
+    public FileInfo[] InputFiles { get; init; }
+    public DirectoryInfo? OutputDir { get; set; }
 
-    public CheatsCmdParams()
+    public DumpCheatsCmdParams()
     {
         InputFiles = new FileInfo[] { };
     }
+}
+
+public class CopyCheatsCmdParams : CmdParams
+{
+    public FileInfo? InputFile { get; init; }
+    public FileInfo? OutputFile { get; set; }
 }
 
 public class Cli
@@ -65,38 +70,42 @@ public class Cli
 
     private static readonly Option<FileFormat> InputFormatOption = new Option<FileFormat>(
         aliases: new string[] { "--input-format" },
-        description: "Force Hammerhead to use a specific file format when reading input files.",
+        description: "Force Hammerhead to use a specific file format when reading input files.\n" +
+                     "<input_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
         getDefaultValue: () => FileFormat.Auto
     )
     {
-        ArgumentHelpName = "auto|rom|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+        ArgumentHelpName = "input_format",
     };
 
     private static readonly Option<FileFormat> DumpCheatsOutputFormatOption = new Option<FileFormat>(
         aliases: new string[] { "--output-format" },
-        description: "Force Hammerhead to use a specific file format when writing output files.",
+        description: "Force Hammerhead to use a specific file format when writing output files.\n" +
+                     "<output_format>: auto|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
         getDefaultValue: () => FileFormat.Auto
     )
     {
-        ArgumentHelpName = "auto|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+        ArgumentHelpName = "output_format",
     };
 
     private static readonly Option<FileFormat> CopyCheatsOutputFormatOption = new Option<FileFormat>(
         aliases: new string[] { "--output-format" },
-        description: "Force Hammerhead to use a specific file format when writing output files.",
+        description: "Force Hammerhead to use a specific file format when writing output files.\n" +
+                     "<output_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
         getDefaultValue: () => FileFormat.Auto
     )
     {
-        ArgumentHelpName = "auto|rom|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+        ArgumentHelpName = "output_format",
     };
 
     private static readonly Option<PrintFormat> PrintFormatOption = new Option<PrintFormat>(
         aliases: new string[] { "--print-format" },
-        description: "Force Hammerhead to print to stdout using the specified format.",
+        description: "Force Hammerhead to print to stdout using the specified format.\n" +
+                     "<print_format>: detect|color|plain|json|proto|markdown",
         getDefaultValue: () => PrintFormat.Detect
     )
     {
-        ArgumentHelpName = "detect|color|plain|json|proto|markdown",
+        ArgumentHelpName = "print_format",
     };
 
     private static readonly Option<bool?> ColorOption = new Option<bool?>(
@@ -126,14 +135,14 @@ public class Cli
 
     private static readonly Argument<FileInfo[]> InputFilesArgument = new Argument<FileInfo[]>(
         "input_files",
-        "One or more firmware dumps (ROM files) or cheat lists to read.")
+        "One or more input files to read.")
     {
         Arity = ArgumentArity.OneOrMore,
     };
 
     private static readonly Argument<FileInfo> InputFileArgument = new Argument<FileInfo>(
         "input_file",
-        "Path to a ROM file to read.")
+        "Path to an input file to read.")
     {
         Arity = ArgumentArity.ExactlyOne,
     };
@@ -295,7 +304,8 @@ public class Cli
     public event EventHandler<RomCmdParams>? OnUnscrambleRom;
     public event EventHandler<RomCmdParams>? OnSplitRom;
     public event EventHandler<RomCmdParams>? OnCombineRom;
-    public event EventHandler<CheatsCmdParams>? CheatsCmdHandlers;
+    public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
+    public event EventHandler<CopyCheatsCmdParams>? OnCopyCheats;
 
     public RootCommand RootCommand => _rootCmd;
 
@@ -315,9 +325,8 @@ public class Cli
         _romCmd.AddCommand(_decryptRomCmd);
         _romCmd.AddCommand(_scrambleRomCmd);
         _romCmd.AddCommand(_unscrambleRomCmd);
-        // TODO(CheatoBaggins): Implement
-        // _romCmd.AddCommand(_splitRomCmd);
-        // _romCmd.AddCommand(_combineRomCmd);
+        _romCmd.AddCommand(_splitRomCmd);
+        _romCmd.AddCommand(_combineRomCmd);
 
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
@@ -444,6 +453,40 @@ public class Cli
             };
             Always?.Invoke(this, cmdParams);
             OnCombineRom?.Invoke(this, cmdParams);
+        });
+
+        _dumpCheatsCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
+        {
+            var cmdParams = new DumpCheatsCmdParams()
+            {
+                // Global options
+                PrintFormat = GetPrintFormat(ctx),
+                HideBanner = HideBannerOption.GetValue(ctx),
+                Clean = CleanOption.GetValue(ctx),
+
+                // Command-specific arguments
+                InputFiles = InputFilesArgument.GetValue(ctx)!,
+                OutputDir = OutputDirOption.GetValue(ctx),
+            };
+            Always?.Invoke(this, cmdParams);
+            OnDumpCheats?.Invoke(this, cmdParams);
+        });
+
+        _copyCheatsCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
+        {
+            var cmdParams = new CopyCheatsCmdParams()
+            {
+                // Global options
+                PrintFormat = GetPrintFormat(ctx),
+                HideBanner = HideBannerOption.GetValue(ctx),
+                Clean = CleanOption.GetValue(ctx),
+
+                // Command-specific arguments
+                InputFile = InputFileArgument.GetValue(ctx)!,
+                OutputFile = OutputFileOption.GetValue(ctx),
+            };
+            Always?.Invoke(this, cmdParams);
+            OnCopyCheats?.Invoke(this, cmdParams);
         });
     }
 

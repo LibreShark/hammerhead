@@ -212,7 +212,7 @@ enum FileFormat {
 
   // XML cheat file format for OpenEmu (all consoles).
   // TODO(CheatoBaggins): Implement
-//  OPENEMU_XML = 0x11;
+  OPENEMU = 0x11;
 
   // TODO(CheatoBaggins): Add Libretro/RetroArch cheat format
 
@@ -226,23 +226,23 @@ enum FileFormat {
   // Binary file from a memory card (Controller Pak) cheat list written by a
   // GameShark, Action Replay, Equalizer, or Game Buster.
   // TODO(CheatoBaggins): Implement
-//  N64_DATEL_MEMCARD = 0x22;
+  N64_DATEL_MEMCARD = 0x22;
 
   // Official PC utils for Xplorer 64.
   // TODO(CheatoBaggins): Implement
-//  N64_FCD_TEXT = 0x23;
+  N64_FCD_TEXT = 0x23;
 
   // EverDrive-64 X7 cheat file format.
   // TODO(CheatoBaggins): Implement
-//  N64_EDX7_TEXT = 0x24;
+  N64_EDX7 = 0x24;
 
   // Project 64 v1.6 cheat file format.
   // TODO(CheatoBaggins): Implement
-//  N64_PJ64_V160_TEXT = 0x25;
+  N64_PJ64_V1 = 0x25;
 
   // Project 64 v3.0.0 cheat file format.
   // TODO(CheatoBaggins): Implement
-//  N64_PJ64_V300_TEXT = 0x26;
+  N64_PJ64_V3 = 0x26;
 }
 
 
