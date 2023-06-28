@@ -448,13 +448,11 @@ public class Cli
 
     private static PrintFormat GetPrintFormat(InvocationContext ctx)
     {
-        PrintFormat optionValue = PrintFormatOption.GetValue(ctx);
-        if (optionValue != default)
+        PrintFormat printFormat = PrintFormatOption.GetValue(ctx);
+        if (printFormat != default)
         {
-            return optionValue;
+            return printFormat;
         }
-
-        var printFormat = PrintFormat.Detect;
         if (NoColorOption.GetValue(ctx) == true)
         {
             printFormat = PrintFormat.Plain;
