@@ -27,7 +27,8 @@ public sealed class UnknownCheatDb : CheatDb
         return new List<Game>();
     }
 
-    protected override void WriteGames(IEnumerable<Game> games)
+    protected override u8[] WriteGames(IEnumerable<Game> games)
     {
+        return Array.Empty<u8>();
     }
 }

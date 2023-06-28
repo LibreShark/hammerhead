@@ -44,7 +44,7 @@ public abstract class CheatDb : IDataSource
 
     protected abstract List<Game> ReadGames();
 
-    protected abstract void WriteGames(IEnumerable<Game> games);
+    protected abstract u8[] WriteGames(IEnumerable<Game> games);
 
     public bool IsValidFormat()
     {

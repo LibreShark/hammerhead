@@ -1,20 +1,11 @@
 ﻿using System.CommandLine;
-using System.Diagnostics;
-using System.Drawing;
 using System.Text.RegularExpressions;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
 using LibreShark.Hammerhead.CheatDbs;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 using LibreShark.Hammerhead.Roms;
+using NUnit.Framework;
 
 namespace LibreShark.Hammerhead;
-
-/*
-
-
-*/
 
 /*
 
@@ -54,6 +45,7 @@ internal static class Program
         cli.OnDecryptRom += (_, @params) => DecryptRom(@params);
         cli.OnScrambleRom += (_, @params) => ScrambleRom(@params);
         cli.OnUnscrambleRom += (_, @params) => UnscrambleRom(@params);
+        cli.OnDumpCheats += (_, @params) => DumpCheats(@params);
         return await cli.RootCommand.InvokeAsync(args);
     }
 
@@ -174,6 +166,34 @@ internal static class Program
         {
             File.WriteAllBytes(outputFile.FullName, rom.Buffer);
         });
+    }
+
+    private static void DumpCheats(DumpCheatsCmdParams @params)
+    {
+        foreach (FileInfo inputFile in @params.InputFiles)
+        {
+            var rom = Rom.FromFile(inputFile.FullName);
+            var cheatDb = CheatDb.FromFile(inputFile.FullName);
+            TerminalPrinter printer = rom.IsValidFormat() || !cheatDb.IsValidFormat()
+                ? new TerminalPrinter(rom, @params.PrintFormat)
+                : new TerminalPrinter(cheatDb, @params.PrintFormat);
+
+            IDataSource dataSource = rom.IsValidFormat() ? rom : cheatDb;
+            List<Game> games = dataSource.Games;
+
+            // TODO(CheatoBaggins): Auto-detect output file type!
+
+            FileInfo outputFile = GenerateOutputFileName(inputFile, "cheats");
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+                continue;
+            }
+            printer.PrintRomCommand("Dumping cheat file", inputFile, outputFile, () =>
+            {
+                // File.WriteAllBytes(outputFile.FullName, ...);
+            });
+        }
     }
 
     private static FileInfo GenerateOutputFileName(FileInfo inputFile, string suffix)

@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 
@@ -114,9 +115,46 @@ public sealed class N64DatelTextDb : CheatDb
         return games;
     }
 
-    protected override void WriteGames(IEnumerable<Game> games)
+    protected override u8[] WriteGames(IEnumerable<Game> games)
     {
-        throw new NotImplementedException();
+        Game[] gamesArray = games.ToArray();
+        var sb = new StringBuilder();
+        sb.Append($"""
+;------------------------------------
+;{gamesArray.Length} Games in list
+;------------------------------------
+""");
+        foreach (Game game in gamesArray)
+        {
+            sb.Append($"""
+;------------------------------------
+{Quote(game.GameName.Value)}
+;------------------------------------
+""");
+            foreach (Cheat cheat in game.Cheats)
+            {
+                string cheatOff = cheat.IsCheatActive ? "" : " .off";
+                sb.AppendLine(Quote(cheat.CheatName.Value) + cheatOff);
+                foreach (Code code in cheat.Codes)
+                {
+                    sb.Append(code.Bytes.ToCodeString(Metadata.Console));
+                    if (!string.IsNullOrWhiteSpace(code.Comment))
+                    {
+                        sb.Append(" ; ");
+                        sb.Append(code.Comment);
+                    }
+                    sb.AppendLine();
+                }
+            }
+
+            sb.AppendLine(".end");
+        }
+        return sb.ToAsciiBytes();
+    }
+
+    private static string Quote(string s)
+    {
+        return '"' + s + '"';
     }
 
     public static bool Is(u8[] buffer)

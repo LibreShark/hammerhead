@@ -45,9 +45,29 @@ public static class ExtensionMethods
         return Utf8.GetString(bytes);
     }
 
+    public static u8[] ToUtf8Bytes(this string str)
+    {
+        return Utf8.GetBytes(str);
+    }
+
+    public static u8[] ToUtf8Bytes(this StringBuilder str)
+    {
+        return Utf8.GetBytes(str.ToString());
+    }
+
     public static string ToAsciiString(this u8[] bytes)
     {
         return Ascii.GetString(bytes);
+    }
+
+    public static u8[] ToAsciiBytes(this string str)
+    {
+        return Ascii.GetBytes(str);
+    }
+
+    public static u8[] ToAsciiBytes(this StringBuilder str)
+    {
+        return Ascii.GetBytes(str.ToString());
     }
 
     public static string ToHexString(this IEnumerable<byte> eBytes, string delimiter = "")
