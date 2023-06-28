@@ -14,7 +14,7 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public interface IDataProvider
+public interface IDataSource
 {
     public ImmutableArray<u8> RawInput { get; }
 

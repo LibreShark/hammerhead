@@ -16,7 +16,7 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class Rom : IDataProvider
+public abstract class Rom : IDataSource
 {
     public ImmutableArray<u8> RawInput { get; }
 

@@ -16,7 +16,7 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class CheatDb : IDataProvider
+public abstract class CheatDb : IDataSource
 {
     public ImmutableArray<byte> RawInput { get; }
     public u8[] Buffer { get; }

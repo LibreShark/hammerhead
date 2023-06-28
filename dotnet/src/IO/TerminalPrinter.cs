@@ -19,7 +19,7 @@ public class TerminalPrinter
     public readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
     public readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
 
-    private readonly IDataProvider _file;
+    private readonly IDataSource _file;
     private readonly PrintFormat _printFormat;
 
     private CellFormat HeaderCellFormat
@@ -54,7 +54,7 @@ public class TerminalPrinter
                 ? TableConfig.Markdown()
                 : TableConfig.Simple();
 
-    public TerminalPrinter(IDataProvider file, PrintFormat printFormat)
+    public TerminalPrinter(IDataSource file, PrintFormat printFormat)
     {
         _file = file;
         _printFormat = GetEffectivePrintFormat(printFormat);
