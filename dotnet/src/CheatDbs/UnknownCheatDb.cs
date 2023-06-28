@@ -15,9 +15,10 @@ public class UnknownCheatDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.UnknownGameConsole;
     private const FileFormat ThisFileFormat = FileFormat.UnknownFileFormat;
+    private const RomFormat ThisRomFormat = RomFormat.UnknownRomFormat;
 
     public UnknownCheatDb(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, ThisConsole, ThisFileFormat)
+        : base(filePath, rawInput, ThisConsole, ThisFileFormat, ThisRomFormat)
     {
     }
 

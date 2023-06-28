@@ -344,6 +344,11 @@ public sealed class N64GsRom : Rom
         return !bytes.Contains(" Version ");
     }
 
+    public override u8[] Encrypt()
+    {
+        return N64GsCrypter.Encrypt(Buffer);
+    }
+
     private static BinaryScribe Decrypt(u8[] input)
     {
         u8[] output = DetectEncrypted(input)

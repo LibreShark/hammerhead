@@ -116,11 +116,7 @@ public class TerminalPrinter
 
     public void PrintDetails(FileInfo inputFile, InfoCmdParams @params)
     {
-        string homeDir = Environment.GetEnvironmentVariable("userdir") ?? // Windows
-                         Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
-                         "~";
-
-        Console.WriteLine(InputFilePathStyle(inputFile.FullName.Replace(homeDir, "~")));
+        Console.WriteLine(InputFilePathStyle(inputFile.ShortName()));
         Console.WriteLine();
         PrintHeading("File properties");
         PrintFilePropTable(@params);
@@ -148,12 +144,19 @@ public class TerminalPrinter
 
     public void PrintHeading(string title)
     {
-        string horizontalLine = "".PadRight(80, '=');
-        Console.WriteLine();
-        Console.WriteLine(horizontalLine);
-        Console.WriteLine($"= {title,-76} =");
-        Console.WriteLine(horizontalLine);
-        Console.WriteLine();
+        if (IsMarkdown)
+        {
+            Console.WriteLine($"## {title}");
+        }
+        else
+        {
+            string horizontalLine = "".PadRight(80, '=');
+            Console.WriteLine();
+            Console.WriteLine(horizontalLine);
+            Console.WriteLine($"= {title,-76} =");
+            Console.WriteLine(horizontalLine);
+            Console.WriteLine();
+        }
     }
 
     public void PrintFilePropTable(InfoCmdParams @params)
@@ -184,11 +187,6 @@ public class TerminalPrinter
         Console.WriteLine(table);
     }
 
-    public string OrUnknown(string s)
-    {
-        return UnknownStyle(s.OrUnknown());
-    }
-
     public void PrintChecksums(InfoCmdParams @params)
     {
         Table filePropTable = new TableBuilder(HeaderCellFormat)
@@ -196,10 +194,11 @@ public class TerminalPrinter
             .AddColumn("Checksum", rowsFormat: ValueCell())
             .Build();
 
-        filePropTable.AddRow("CRC-32 (standard)", _file.Metadata.FileChecksum.Crc32Hex);
-        filePropTable.AddRow("CRC-32C (Castagnoli)", _file.Metadata.FileChecksum.Crc32CHex);
-        filePropTable.AddRow("MD5", _file.Metadata.FileChecksum.Md5Hex);
-        filePropTable.AddRow("SHA-1", _file.Metadata.FileChecksum.Sha1Hex);
+        ChecksumResult? checksums = _file.Metadata.FileChecksum;
+        filePropTable.AddRow("CRC-32 (standard)", OrUnknown(checksums?.Crc32Hex));
+        filePropTable.AddRow("CRC-32C (Castagnoli)", OrUnknown(checksums?.Crc32CHex));
+        filePropTable.AddRow("MD5", OrUnknown(checksums?.Md5Hex));
+        filePropTable.AddRow("SHA-1", OrUnknown(checksums?.Sha1Hex));
 
         filePropTable.Config = TableConfig;
 
@@ -352,10 +351,23 @@ public class TerminalPrinter
             : str;
     }
 
+    public string OrUnknown(string? s)
+    {
+        if (string.IsNullOrWhiteSpace(s))
+        {
+            return UnknownStyle("UNKNOWN");
+        }
+        if (s.ToUpperInvariant().Contains("UNKNOWN"))
+        {
+            return UnknownStyle(s);
+        }
+        return s;
+    }
+
     private string UnknownStyle(string str)
     {
         return IsColor
-            ? Italic(str)
+            ? Italic(str.ForegroundColor(UnknownColor))
             : str;
     }
 
@@ -415,4 +427,32 @@ public class TerminalPrinter
     }
 
     #endregion
+
+    public void PrintError(string message)
+    {
+        if (!message.ToUpperInvariant().Contains("ERROR"))
+        {
+            message = $"ERROR: {message}";
+        }
+        string styled = IsColor
+            ? Italic(message.ForegroundColor(Color.Red))
+            : message;
+        Console.Error.WriteLine($"\n{styled}\n");
+    }
+
+    public void PrintRomCommand(string heading, FileInfo inputFile, FileInfo outputFile, Action action)
+    {
+        Console.WriteLine();
+        Console.WriteLine(Bold($"{heading}:"));
+        Console.WriteLine();
+        Console.WriteLine($"Input:  {InputFilePathStyle(inputFile.ShortName())}");
+        Console.WriteLine($"Output: {InputFilePathStyle(outputFile.ShortName())}");
+        Console.WriteLine();
+        Console.WriteLine("...");
+        Console.WriteLine();
+        action();
+        Console.WriteLine();
+        Console.WriteLine("Done!");
+        Console.WriteLine();
+    }
 }

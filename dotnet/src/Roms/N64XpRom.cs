@@ -106,6 +106,11 @@ public sealed class N64XpRom : Rom
         return new BigEndianScribe(output);
     }
 
+    public override u8[] Scramble()
+    {
+        return N64XpScrambler.ScrambleXpRom(Buffer);
+    }
+
     public override bool FormatSupportsFileScrambling()
     {
         return true;

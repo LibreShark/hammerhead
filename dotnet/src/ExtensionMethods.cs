@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
+using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.N64;
@@ -407,31 +408,50 @@ public static class ExtensionMethods
 
     public static string ToIsoString(this DateTime dt)
     {
-        // Wed Nov 24 15:25:52 GMT 1999
-        // 1999-11-24T15:25:52Z
-        return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
+        // 1999-11-24T15:25:52
+        return dt.ToString("yyyy-MM-ddTHH:mm:ss");
     }
 
     public static string ToIsoString(this DateTimeOffset dt)
     {
-        // Wed Nov 24 15:25:52 GMT 1999
         // 1999-11-24T15:25:52Z
         return dt.ToString("yyyy-MM-ddTHH:mm:ssK");
     }
 
-    public static string ToUtcString(this TimeSpan ts)
+    public static string ToFilenameString(this DateTime dt)
     {
-        return "UTC" + ts.Hours switch
+        // 19991124T152552
+        return dt.ToString("yyyyMMddTHHmmss");
+    }
+
+    public static string ToFilenameString(this DateTimeOffset dt)
+    {
+        // 19991124T152552+0500
+        return dt.ToString("yyyyMMddTHHmmss" + dt.Offset.ToUtcOffsetString(false));
+    }
+
+    public static string ToUtcOffsetString(this TimeSpan ts, bool separators = true)
+    {
+        if (separators)
         {
-            0 => "+00:00",
-            > 0 => $"+{ts.Hours:D2}:{ts.Minutes:D2}",
-            _ => $"{ts.Hours:D2}:{ts.Minutes:D2}",
+            return "UTC" + ts.Hours switch
+            {
+                0 => "+00:00",
+                > 0 => $"+{ts.Hours:D2}:{ts.Minutes:D2}",
+                _ => $"{ts.Hours:D2}:{ts.Minutes:D2}",
+            };
+        }
+        return ts.Hours switch
+        {
+            0 => "+0000",
+            > 0 => $"+{ts.Hours:D2}{ts.Minutes:D2}",
+            _ => $"{ts.Hours:D2}{ts.Minutes:D2}",
         };
     }
 
-    public static string ToUtcString(this Duration duration)
+    public static string ToUtcOffsetString(this Duration duration, bool separators = true)
     {
-        return duration.ToTimeSpan().ToUtcString();
+        return duration.ToTimeSpan().ToUtcOffsetString(separators);
     }
 
     #endregion
@@ -470,6 +490,24 @@ public static class ExtensionMethods
         return Regex.Split(s, @"\r\f|\n");
     }
 
+    public static string ShortenFilePath(this string fullPath)
+    {
+        string cwd = Environment.CurrentDirectory;
+        string homeDir = Environment.GetEnvironmentVariable("userdir") ?? // Windows
+                         Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
+                         "~";
+
+        return fullPath
+                .Replace(cwd + Path.DirectorySeparatorChar, "")
+                .Replace(homeDir, "~")
+            ;
+    }
+
+    public static string ShortName(this FileSystemInfo file)
+    {
+        return file.FullName.ShortenFilePath();
+    }
+
     public static u8[] HexToBytes(this string hex)
     {
         int len = hex.Length;
@@ -479,6 +517,28 @@ public static class ExtensionMethods
             bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
         }
         return bytes;
+    }
+
+    public static ChecksumResult ComputeChecksums(this IEnumerable<u8> bytes)
+    {
+        u8[] byteArray = bytes.ToArray();
+        return new ChecksumResult()
+        {
+            Crc32Hex = U32ToHexString(Crc32Algorithm.Compute(byteArray)),
+            Crc32CHex = U32ToHexString(Crc32CAlgorithm.Compute(byteArray)),
+            Md5Hex = BytesToHexString(System.Security.Cryptography.MD5.HashData(byteArray)),
+            Sha1Hex = BytesToHexString(System.Security.Cryptography.SHA1.HashData(byteArray)),
+        };
+    }
+
+    private static string U32ToHexString(u32 checksum)
+    {
+        return checksum.ToString("X8");
+    }
+
+    private static string BytesToHexString(IEnumerable<u8> bytes)
+    {
+        return string.Join("", bytes.Select((b) => b.ToString("X2")));
     }
 
     #endregion

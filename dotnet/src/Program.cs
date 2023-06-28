@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
 using LibreShark.Hammerhead.CheatDbs;
@@ -49,6 +50,10 @@ internal static class Program
         var cli = new Cli();
         cli.Always += (_, @params) => PrintBanner(@params);
         cli.OnInfo += (_, @params) => PrintFileInfo(@params);
+        cli.OnEncryptRom += (_, @params) => EncryptRom(@params);
+        cli.OnDecryptRom += (_, @params) => DecryptRom(@params);
+        cli.OnScrambleRom += (_, @params) => ScrambleRom(@params);
+        cli.OnUnscrambleRom += (_, @params) => UnscrambleRom(@params);
         return await cli.RootCommand.InvokeAsync(args);
     }
 
@@ -75,48 +80,134 @@ internal static class Program
         {
             var rom = Rom.FromFile(romFile.FullName);
             var cheatDb = CheatDb.FromFile(romFile.FullName);
-            TerminalPrinter? printer = null;
-            if (rom.IsValidFormat())
-            {
-                printer = new TerminalPrinter(rom, @params.PrintFormat);
-            }
-            else if (cheatDb.IsValidFormat())
-            {
-                printer = new TerminalPrinter(cheatDb, @params.PrintFormat);
-            }
-            printer?.PrintDetails(romFile, @params);
+            TerminalPrinter printer = rom.IsValidFormat() || !cheatDb.IsValidFormat()
+                ? new TerminalPrinter(rom, @params.PrintFormat)
+                : new TerminalPrinter(cheatDb, @params.PrintFormat);
+            printer.PrintDetails(romFile, @params);
         }
     }
 
-    private static int ScrambleXp64(IEnumerable<string> inputRomFilePaths)
+    private static void EncryptRom(RomCmdParams @params)
     {
-        foreach (var inputRomFilePath in inputRomFilePaths)
+        FileInfo inputFile = @params.InputFile!;
+        var rom = Rom.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(rom, @params.PrintFormat);
+        if (!rom.FormatSupportsFileEncryption())
         {
-            var unscrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "scrambled.bin");
-
-            Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
-
-            var scrambledBytes = N64XpScrambler.ScrambleXpRom(unscrambledBytes);
-            File.WriteAllBytes(outputRomFilePath, scrambledBytes);
+            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            return;
         }
-
-        return 0;
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "encrypted");
+        if (outputFile.Exists && !@params.OverwriteExistingFiles)
+        {
+            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            return;
+        }
+        printer.PrintRomCommand("Encrypting ROM file", inputFile, outputFile, () =>
+        {
+            File.WriteAllBytes(outputFile.FullName, rom.Encrypt());
+        });
     }
 
-    private static int UnscrambleXp64(IEnumerable<string> inputRomFilePaths)
+    private static void DecryptRom(RomCmdParams @params)
     {
-        foreach (var inputRomFilePath in inputRomFilePaths)
+        FileInfo inputFile = @params.InputFile!;
+        var rom = Rom.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(rom, @params.PrintFormat);
+        if (!rom.FormatSupportsFileEncryption())
         {
-            var scrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "unscrambled.bin");
+            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            return;
+        }
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "decrypted");
+        if (outputFile.Exists && !@params.OverwriteExistingFiles)
+        {
+            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            return;
+        }
+        printer.PrintRomCommand("Decrypting ROM file", inputFile, outputFile, () =>
+        {
+            File.WriteAllBytes(outputFile.FullName, rom.Buffer);
+        });
+    }
 
-            Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
-
-            var unscrambledBytes = N64XpScrambler.UnscrambleXpRom(scrambledBytes);
-            File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
+    private static void ScrambleRom(RomCmdParams @params)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        var rom = Rom.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(rom, @params.PrintFormat);
+        if (!rom.FormatSupportsFileScrambling())
+        {
+            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            return;
+        }
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "scrambled");
+        if (outputFile.Exists && !@params.OverwriteExistingFiles)
+        {
+            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            return;
         }
 
-        return 0;
+        printer.PrintRomCommand("Scrambling ROM file", inputFile, outputFile, () =>
+        {
+            File.WriteAllBytes(outputFile.FullName, rom.Scramble());
+        });
+    }
+
+    private static void UnscrambleRom(RomCmdParams @params)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        var rom = Rom.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(rom, @params.PrintFormat);
+        if (!rom.FormatSupportsFileScrambling())
+        {
+            printer.PrintError($"{rom.Metadata.Format.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            return;
+        }
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "unscrambled");
+        if (outputFile.Exists && !@params.OverwriteExistingFiles)
+        {
+            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            return;
+        }
+        printer.PrintRomCommand("Unscrambling ROM file", inputFile, outputFile, () =>
+        {
+            File.WriteAllBytes(outputFile.FullName, rom.Buffer);
+        });
+    }
+
+    private static FileInfo GenerateOutputFileName(FileInfo inputFile, string suffix)
+    {
+        string inFileName = inputFile.Name;
+        string inFileDir = inputFile.DirectoryName!;
+        string oldExt = inputFile.Extension;
+
+        string newExt = $".{DateTime.Now.ToFilenameString()}.{suffix}{oldExt}";
+        string outFileName;
+
+        Match match = Regex.Match(inFileName, "\\.[0-9tTzZ.-]{4,}\\.\\w+\\.\\w+$");
+        if (match.Success)
+        {
+            outFileName = inFileName.Replace(match.Value, newExt);
+        }
+        else
+        {
+            outFileName = Path.ChangeExtension(inFileName, newExt);
+        }
+
+        string outFileDir = inFileDir;
+
+        try
+        {
+            string testFilePath = Path.Join(inFileDir, Path.GetRandomFileName());
+            File.WriteAllText(testFilePath, "test");
+            File.Delete(testFilePath);
+        }
+        catch
+        {
+            outFileDir = Directory.CreateTempSubdirectory("hammerhead-").FullName;
+        }
+
+        return new FileInfo(Path.Join(outFileDir, outFileName));
     }
 }

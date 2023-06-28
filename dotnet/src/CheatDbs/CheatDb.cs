@@ -25,9 +25,11 @@ public abstract class CheatDb : IDataSource
 
     public readonly FileFormat FileFormat;
 
-    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat fileFormat)
+    public RomFormat RomFormat => Metadata.Format;
+
+    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat fileFormat, RomFormat romFormat)
     {
-        RawInput = RawInput.ToImmutableArray();
+        RawInput = rawInput.ToImmutableArray();
         Buffer = rawInput;
         Games = new List<Game>();
         FileFormat = fileFormat;
@@ -35,6 +37,8 @@ public abstract class CheatDb : IDataSource
         {
             FilePath = filePath,
             Console = console,
+            Format = romFormat,
+            FileChecksum = RawInput.ComputeChecksums(),
         };
     }
 
@@ -44,12 +48,14 @@ public abstract class CheatDb : IDataSource
 
     public bool IsValidFormat()
     {
-        return FileFormat != FileFormat.UnknownFileFormat;
+        return FileFormat != FileFormat.UnknownFileFormat &&
+               RomFormat != RomFormat.UnknownRomFormat;
     }
 
     public bool IsInvalidFormat()
     {
-        return FileFormat == FileFormat.UnknownFileFormat;
+        return FileFormat == FileFormat.UnknownFileFormat &&
+               RomFormat != RomFormat.UnknownRomFormat;
     }
 
     public static CheatDb FromFile(string filePath)
@@ -73,27 +79,23 @@ public abstract class CheatDb : IDataSource
             .ToArray();
     }
 
-    public void PrintSummary(InfoCmdParams @params)
+    public virtual void PrintSummary(InfoCmdParams @params)
     {
         throw new NotImplementedException();
     }
-    public void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        throw new NotImplementedException();
-    }
-
-    public void PrintGames(TerminalPrinter printer, InfoCmdParams @params)
-    {
-        throw new NotImplementedException();
     }
 
-    public void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
+    public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params)
     {
-        throw new NotImplementedException();
     }
 
-    public void AddFileProps(Table table)
+    public virtual void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
     {
-        throw new NotImplementedException();
+    }
+
+    public virtual void AddFileProps(Table table)
+    {
     }
 }

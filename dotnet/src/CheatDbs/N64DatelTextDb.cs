@@ -18,9 +18,10 @@ public class N64DatelTextDb : CheatDb
 {
     private const GameConsole ThisConsole = GameConsole.Nintendo64;
     private const FileFormat ThisFileFormat = FileFormat.N64DatelText;
+    private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
 
     public N64DatelTextDb(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, ThisConsole, ThisFileFormat)
+        : base(filePath, rawInput, ThisConsole, ThisFileFormat, ThisRomFormat)
     {
     }
 
@@ -134,6 +135,7 @@ public class N64DatelTextDb : CheatDb
         string[] lines = GetAllNonEmptyLines(buffer);
         return lines
             .Select(line => Regex.Replace(line, ";.*$", "").Trim())
+            .Where(line => !string.IsNullOrWhiteSpace(line))
             .All(s =>
             {
                 bool isName = Regex.IsMatch(s, "^\"[^\"]*\"(?: \\.off)?$");

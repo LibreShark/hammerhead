@@ -298,8 +298,8 @@ public sealed class GbcSharkMxRom : Rom
         {
             TimeSpan modernUtcOffset = GetModernTz(tz).GetUtcOffset(DateTimeOffset.UtcNow);
 
-            string originalOffsetStr = tz.OriginalUtcOffset.ToUtcString();
-            string modernOffsetStr = modernUtcOffset.ToUtcString();
+            string originalOffsetStr = tz.OriginalUtcOffset.ToUtcOffsetString();
+            string modernOffsetStr = modernUtcOffset.ToUtcOffsetString();
 
             table.AddRow(tz.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernTzId);
         }

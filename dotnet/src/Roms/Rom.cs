@@ -43,20 +43,13 @@ public abstract class Rom : IDataSource
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        Checksum checksum = Checksum.From(RawInput);
         Games = new List<Game>();
         Metadata = new RomMetadata
         {
             FilePath = filePath,
             Console = console,
             Format = format,
-            FileChecksum = new ChecksumResult()
-            {
-                Crc32Hex = checksum.Crc32Hex,
-                Crc32CHex = checksum.Crc32CHex,
-                Md5Hex = checksum.Md5Hex,
-                Sha1Hex = checksum.Sha1Hex,
-            },
+            FileChecksum = RawInput.ComputeChecksums(),
         };
     }
 
@@ -138,6 +131,26 @@ public abstract class Rom : IDataSource
     public virtual bool HasUserPrefs()
     {
         return false;
+    }
+
+    public virtual u8[] Encrypt()
+    {
+        return Buffer;
+    }
+
+    public u8[] Decrypt()
+    {
+        return Buffer;
+    }
+
+    public virtual u8[] Scramble()
+    {
+        return Buffer;
+    }
+
+    public u8[] Unscramble()
+    {
+        return Buffer;
     }
 
     public static Rom FromFile(string romFilePath)

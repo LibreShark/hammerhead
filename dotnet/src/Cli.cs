@@ -30,12 +30,14 @@ public class RomCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
+    public bool OverwriteExistingFiles { get; init; }
 }
 
 public class DumpCheatsCmdParams : CmdParams
 {
     public FileInfo[] InputFiles { get; init; }
     public DirectoryInfo? OutputDir { get; set; }
+    public bool OverwriteExistingFiles { get; init; }
 
     public DumpCheatsCmdParams()
     {
@@ -47,6 +49,7 @@ public class CopyCheatsCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
+    public bool OverwriteExistingFiles { get; init; }
 }
 
 public class Cli
@@ -54,7 +57,7 @@ public class Cli
     #region Options and arguments
 
     private static readonly Option<bool> HideBannerOption = new Option<bool>(
-        aliases: new string[] { "--hide-banner" },
+        aliases: new string[] { "--no-banner" },
         description: "Disable the decorative ASCII art banner."
     );
 
@@ -119,17 +122,17 @@ public class Cli
     );
 
     private static readonly Option<bool> HideGamesOption = new Option<bool>(
-        aliases: new string[] { "--hide-games" },
+        aliases: new string[] { "--no-games" },
         description: "Do not print games to the console."
     );
 
     private static readonly Option<bool> HideCheatsOption = new Option<bool>(
-        aliases: new string[] { "--hide-cheats" },
+        aliases: new string[] { "--no-cheats" },
         description: "Do not print cheats to the console."
     );
 
     private static readonly Option<bool> HideCodesOption = new Option<bool>(
-        aliases: new string[] { "--hide-codes" },
+        aliases: new string[] { "--no-codes" },
         description: "Do not print codes to the console."
     );
 
@@ -311,10 +314,10 @@ public class Cli
 
     public Cli()
     {
-        _rootCmd.AddGlobalOption(PrintFormatOption);
         _rootCmd.AddGlobalOption(HideBannerOption);
         _rootCmd.AddGlobalOption(NoColorOption);
         _rootCmd.AddGlobalOption(ColorOption);
+        _rootCmd.AddGlobalOption(PrintFormatOption);
         _rootCmd.AddGlobalOption(CleanOption);
 
         _rootCmd.AddCommand(_infoCmd);
@@ -365,6 +368,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnEncryptRom?.Invoke(this, cmdParams);
@@ -382,6 +386,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnDecryptRom?.Invoke(this, cmdParams);
@@ -399,6 +404,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnScrambleRom?.Invoke(this, cmdParams);
@@ -416,6 +422,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnUnscrambleRom?.Invoke(this, cmdParams);
@@ -433,6 +440,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnSplitRom?.Invoke(this, cmdParams);
@@ -450,6 +458,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnCombineRom?.Invoke(this, cmdParams);
@@ -467,6 +476,7 @@ public class Cli
                 // Command-specific arguments
                 InputFiles = InputFilesArgument.GetValue(ctx)!,
                 OutputDir = OutputDirOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnDumpCheats?.Invoke(this, cmdParams);
@@ -484,6 +494,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
             OnCopyCheats?.Invoke(this, cmdParams);
