@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
+using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead;
 
@@ -449,18 +450,17 @@ public class Cli
     private static PrintFormat GetPrintFormat(InvocationContext ctx)
     {
         PrintFormat printFormat = PrintFormatOption.GetValue(ctx);
-        if (printFormat != default)
+        if (printFormat == PrintFormat.Detect)
         {
-            return printFormat;
+            if (NoColorOption.GetValue(ctx) == true)
+            {
+                printFormat = PrintFormat.Plain;
+            }
+            else if (ColorOption.GetValue(ctx) == true)
+            {
+                printFormat = PrintFormat.Color;
+            }
         }
-        if (NoColorOption.GetValue(ctx) == true)
-        {
-            printFormat = PrintFormat.Plain;
-        }
-        else if (ColorOption.GetValue(ctx) == true)
-        {
-            printFormat = PrintFormat.Color;
-        }
-        return printFormat;
+        return TerminalPrinter.GetEffectivePrintFormat(printFormat);
     }
 }

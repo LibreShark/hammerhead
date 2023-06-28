@@ -57,7 +57,7 @@ public class TerminalPrinter
     public TerminalPrinter(IDataProvider file, PrintFormat printFormat)
     {
         _file = file;
-        _printFormat = DetectPrintFormat(printFormat);
+        _printFormat = GetEffectivePrintFormat(printFormat);
     }
 
     public Table BuildTable(Action<TableBuilder> addColumns)
@@ -389,12 +389,7 @@ public class TerminalPrinter
         }
     }
 
-    public static PrintFormat DetectPrintFormat(CmdParams @params)
-    {
-        return DetectPrintFormat(@params.PrintFormat);
-    }
-
-    public static PrintFormat DetectPrintFormat(PrintFormat printFormat)
+    public static PrintFormat GetEffectivePrintFormat(PrintFormat printFormat)
     {
         switch (printFormat)
         {

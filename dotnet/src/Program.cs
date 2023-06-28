@@ -54,7 +54,7 @@ internal static class Program
 
     private static void PrintBanner(CmdParams cmdParams)
     {
-        bool isColor = TerminalPrinter.DetectPrintFormat(cmdParams) == PrintFormat.Color;
+        bool isColor = cmdParams.PrintFormat == PrintFormat.Color;
         if (cmdParams.HideBanner)
         {
             return;
