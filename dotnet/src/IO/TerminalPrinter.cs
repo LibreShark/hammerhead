@@ -89,6 +89,51 @@ public class TerminalPrinter
         return table;
     }
 
+    public CellFormat KeyCell(
+        Alignment alignment = default,
+        FontStyleExt fontStyle = default,
+        bool innerFormatting = true
+    )
+    {
+        return new CellFormat(
+            alignment: alignment,
+            foregroundColor: IsColor ? TableKeyColor : default,
+            fontStyle: IsColor ? fontStyle : default,
+            innerFormatting: IsColor && innerFormatting
+        );
+    }
+
+    public CellFormat ValueCell(
+        Alignment alignment = default,
+        FontStyleExt fontStyle = default,
+        bool innerFormatting = true
+    )
+    {
+        return new CellFormat(
+            alignment: alignment,
+            foregroundColor: IsColor ? TableValueColor : default,
+            fontStyle: IsColor ? fontStyle : default,
+            innerFormatting: IsColor && innerFormatting
+        );
+    }
+
+    public CellFormat TableCell(
+        Alignment alignment = default,
+        Color foregroundColor = default,
+        Color backgroundColor = default,
+        FontStyleExt fontStyle = default,
+        bool innerFormatting = default
+    )
+    {
+        return new CellFormat(
+            alignment: alignment,
+            foregroundColor: IsColor ? foregroundColor : default,
+            backgroundColor: IsColor ? backgroundColor : default,
+            fontStyle: IsColor ? fontStyle : default,
+            innerFormatting: IsColor ? innerFormatting : default
+        );
+    }
+
     public void PrintDetails(FileInfo inputFile, InfoCmdParams @params)
     {
         string homeDir = Environment.GetEnvironmentVariable("userdir") ?? // Windows
@@ -136,19 +181,8 @@ public class TerminalPrinter
         Table table = BuildTable(builder =>
         {
             builder
-                .AddColumn("Property",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Value",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: TableValueColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                );
+                .AddColumn("Property", rowsFormat: KeyCell())
+                .AddColumn("Value", rowsFormat: ValueCell());
         });
 
         string fileSize = $"{PrettySize.Format(_file.Buffer.Length)} " +
@@ -178,19 +212,8 @@ public class TerminalPrinter
     public void PrintChecksums(InfoCmdParams @params)
     {
         Table filePropTable = new TableBuilder(HeaderCellFormat)
-            .AddColumn("Algorithm",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
-                )
-            )
-            .AddColumn("Checksum",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
+            .AddColumn("Algorithm", rowsFormat: KeyCell())
+            .AddColumn("Checksum", rowsFormat: ValueCell())
             .Build();
 
         filePropTable.AddRow("CRC-32 (standard)", _file.Metadata.FileChecksum.Crc32Hex);
@@ -243,35 +266,10 @@ public class TerminalPrinter
                           $"{allCodes.Length:N0} {codeCountPlural}:");
         Console.WriteLine();
 
-        var headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table gameTable = new TableBuilder(headerFormat)
-            .AddColumn("Name",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
-            .AddColumn("# Games/Cheats",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Right,
-                    innerFormatting: true
-                )
-            )
-            .AddColumn("Warnings",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
+        Table gameTable = new TableBuilder(HeaderCellFormat)
+            .AddColumn("Name", rowsFormat: KeyCell())
+            .AddColumn("# Games/Cheats", rowsFormat: ValueCell(Alignment.Right))
+            .AddColumn("Warnings", rowsFormat: ValueCell())
             .Build();
 
         gameTable.Config = TableConfig;

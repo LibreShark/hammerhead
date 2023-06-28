@@ -214,17 +214,17 @@ public sealed class GbcSharkMxRom : Rom
         Scribe.Seek(MessagesAddr);
         while (!Scribe.IsPadding())
         {
-            RomString subject = Scribe.ReadCStringUntil(0, '\f');
+            RomString subject = Scribe.ReadCStringUntil(0, '\f').Trim();
             Scribe.ReadU8();
-            RomString recipientEmail = Scribe.ReadCStringUntil(0, '\f');
+            RomString recipientEmail = Scribe.ReadCStringUntil(0, '\f').Trim();
             Scribe.ReadU8();
-            RomString unknownField1 = Scribe.ReadCStringUntil(0, '\f');
+            RomString unknownField1 = Scribe.ReadCStringUntil(0, '\f').Trim();
             Scribe.ReadU8();
-            RomString rawDate = Scribe.ReadCStringUntil(0, '\f');
+            RomString rawDate = Scribe.ReadCStringUntil(0, '\f').Trim();
             Scribe.ReadU8();
-            RomString message = Scribe.ReadCStringUntil(0, '\f');
+            RomString message = Scribe.ReadCStringUntil(0, '\x04').Trim();
             Scribe.ReadU8();
-            RomString unknownField2 = Scribe.ReadCStringUntilNull();
+            RomString unknownField2 = Scribe.ReadCStringUntilNull().Trim();
 
             _messages.Add(new GbcSmxMessage()
             {
@@ -287,30 +287,10 @@ public sealed class GbcSharkMxRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Original name",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Original offset",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Today's offset",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Modern ID",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
+                .AddColumn("Original name", rowsFormat: printer.KeyCell())
+                .AddColumn("Original offset", rowsFormat: printer.KeyCell())
+                .AddColumn("Today's offset", rowsFormat: printer.ValueCell())
+                .AddColumn("Modern ID", rowsFormat: printer.ValueCell())
                 ;
         });
 
@@ -332,18 +312,8 @@ public sealed class GbcSharkMxRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Key",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Value",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
+                .AddColumn("Key", rowsFormat: printer.KeyCell())
+                .AddColumn("Value", rowsFormat: printer.ValueCell())
                 ;
         });
 
@@ -359,50 +329,13 @@ public sealed class GbcSharkMxRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("#",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Name",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
-                .AddColumn("Email address",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
-                .AddColumn("Unknown field #1",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Unknown field #2",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Phone number",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Street address",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
+                .AddColumn("#", rowsFormat: printer.KeyCell())
+                .AddColumn("Name", rowsFormat: printer.ValueCell())
+                .AddColumn("Email address", rowsFormat: printer.ValueCell())
+                .AddColumn("Unknown field #1", rowsFormat: printer.ValueCell())
+                .AddColumn("Unknown field #2", rowsFormat: printer.ValueCell())
+                .AddColumn("Phone number", rowsFormat: printer.ValueCell())
+                .AddColumn("Street address", rowsFormat: printer.ValueCell())
                 ;
         });
 
@@ -427,48 +360,13 @@ public sealed class GbcSharkMxRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Subject",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Recipient",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Unknown field #1",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Raw date",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("ISO date",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Message",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Unknown field #2",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
+                .AddColumn("Subject", rowsFormat: printer.ValueCell())
+                .AddColumn("Recipient", rowsFormat: printer.ValueCell())
+                .AddColumn("Unknown field #1", rowsFormat: printer.ValueCell())
+                .AddColumn("Raw date", rowsFormat: printer.ValueCell())
+                .AddColumn("ISO date", rowsFormat: printer.ValueCell())
+                .AddColumn("Message", rowsFormat: printer.ValueCell())
+                .AddColumn("Unknown field #2", rowsFormat: printer.ValueCell())
                 ;
         });
 
@@ -484,8 +382,6 @@ public sealed class GbcSharkMxRom : Rom
                 message.UnknownField2.Value
             );
         }
-
-        table.Config = TableConfig.Unicode();
 
         return $"{table}";
     }

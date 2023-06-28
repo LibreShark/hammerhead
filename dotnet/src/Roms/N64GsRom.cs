@@ -376,18 +376,8 @@ public sealed class N64GsRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Section",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Address",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
+                .AddColumn("Section", rowsFormat: printer.KeyCell())
+                .AddColumn("Address", rowsFormat: printer.ValueCell())
                 ;
         });
 
@@ -409,27 +399,9 @@ public sealed class N64GsRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Games (CIC chip)",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
-                .AddColumn("Key code",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
-                .AddColumn("Active?",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
+                .AddColumn("Games (CIC chip)", rowsFormat: printer.ValueCell())
+                .AddColumn("Key code", rowsFormat: printer.KeyCell())
+                .AddColumn("Active?", rowsFormat: printer.ValueCell())
                 ;
         });
 

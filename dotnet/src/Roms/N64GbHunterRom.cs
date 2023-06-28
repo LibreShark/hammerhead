@@ -83,20 +83,8 @@ public sealed class N64GbHunterRom : Rom
         Table table = printer.BuildTable(builder =>
         {
             builder
-                .AddColumn("Address",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableValueColor,
-                        alignment: Alignment.Left
-                    )
-                )
-                .AddColumn("Length",
-                    rowsFormat: new CellFormat(
-                        foregroundColor: printer.TableKeyColor,
-                        alignment: Alignment.Left,
-                        innerFormatting: true
-                    )
-                )
-                ;
+                .AddColumn("Address", rowsFormat: printer.ValueCell())
+                .AddColumn("Length", rowsFormat: printer.KeyCell());
         });
 
         foreach (s32 rle01Address in _rle01Addresses)
