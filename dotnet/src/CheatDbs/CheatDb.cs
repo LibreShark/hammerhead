@@ -1,4 +1,7 @@
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using BetterConsoles.Tables;
+using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.CheatDbs;
 
@@ -13,35 +16,41 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class CheatDb
+public abstract class CheatDb : IDataProvider
 {
-    protected readonly u8[] Bytes;
+    public ImmutableArray<byte> RawInput { get; }
+    public u8[] Buffer { get; }
+    public RomMetadata Metadata { get; }
+    public List<Game> Games { get; }
 
-    public readonly string FilePath;
-    public readonly GameConsole Console;
-    public readonly FileFormat Format;
+    public readonly FileFormat FileFormat;
 
-    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat format)
+    protected CheatDb(string filePath, u8[] rawInput, GameConsole console, FileFormat fileFormat)
     {
-        Bytes = rawInput;
-        FilePath = filePath;
-        Console = console;
-        Format = format;
+        RawInput = RawInput.ToImmutableArray();
+        Buffer = rawInput;
+        Games = new List<Game>();
+        FileFormat = fileFormat;
+        Metadata = new RomMetadata()
+        {
+            FilePath = filePath,
+            Console = console,
+        };
     }
 
-    public bool IsKnown()
+    protected abstract List<Game> ReadGames();
+
+    protected abstract void WriteGames(IEnumerable<Game> games);
+
+    public bool IsValidFormat()
     {
-        return Format != FileFormat.UnknownFileFormat;
+        return FileFormat != FileFormat.UnknownFileFormat;
     }
 
-    public bool IsUnknown()
+    public bool IsInvalidFormat()
     {
-        return Format == FileFormat.UnknownFileFormat;
+        return FileFormat == FileFormat.UnknownFileFormat;
     }
-
-    public abstract List<Game> ReadGames();
-
-    public abstract void WriteGames(IEnumerable<Game> games);
 
     public static CheatDb FromFile(string filePath)
     {
@@ -62,5 +71,29 @@ public abstract class CheatDb
             .Select(line => line.Trim())
             .Where(line => !string.IsNullOrWhiteSpace(line))
             .ToArray();
+    }
+
+    public void PrintSummary(InfoCmdParams @params)
+    {
+        throw new NotImplementedException();
+    }
+    public void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void PrintGames(TerminalPrinter printer, InfoCmdParams @params)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddFileProps(Table table)
+    {
+        throw new NotImplementedException();
     }
 }

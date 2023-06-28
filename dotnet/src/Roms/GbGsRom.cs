@@ -182,9 +182,9 @@ public sealed class GbGsRom : Rom
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    protected override void PrintCustomHeader()
+    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        PrintHeading("Cheat names");
+        printer.PrintHeading("Cheat names");
         for (int i = 0; i < _cheatNames.Count; i++)
         {
             RomString cheatName = _cheatNames[i];

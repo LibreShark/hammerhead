@@ -266,57 +266,53 @@ public sealed class GbcSharkMxRom : Rom
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    protected override void PrintCustomHeader()
+    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        PrintHeading($"Registration");
-        Console.WriteLine(BuildRegistrationTable());
+        printer.PrintHeading("Registration");
+        Console.WriteLine(BuildRegistrationTable(printer, @params));
     }
 
-    protected override void PrintCustomBody()
+    public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
     {
-        PrintHeading($"Time zones ({_tzs.Count})");
-        Console.WriteLine(BuildTimeZoneTable());
-        PrintHeading($"Contacts ({_contacts.Count})");
-        Console.WriteLine(BuildContactsTable());
-        PrintHeading($"Messages ({_messages.Count})");
-        Console.WriteLine(BuildMessagesTable());
+        printer.PrintHeading($"Time zones ({_tzs.Count})");
+        Console.WriteLine(BuildTimeZoneTable(printer, @params));
+        printer.PrintHeading($"Contacts ({_contacts.Count})");
+        Console.WriteLine(BuildContactsTable(printer, @params));
+        printer.PrintHeading($"Messages ({_messages.Count})");
+        Console.WriteLine(BuildMessagesTable(printer, @params));
     }
 
-    private string BuildTimeZoneTable()
+    private string BuildTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Original name",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("Original name",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Original offset",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
+                .AddColumn("Original offset",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Today's offset",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Today's offset",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Modern ID",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Modern ID",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         foreach (GbcSmxTimeZone tz in _tzs)
         {
@@ -328,99 +324,87 @@ public sealed class GbcSharkMxRom : Rom
             table.AddRow(tz.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernTzId);
         }
 
-        table.Config = TableConfig.Unicode();
-
         return $"{table}";
     }
 
-    private string BuildRegistrationTable()
+    private string BuildRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Key",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("Key",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Value",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Value",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         table.AddRow("Reg code copy #1", _regCodeCopy1.Value);
         table.AddRow("Reg code copy #2", _regCodeCopy2.Value);
         table.AddRow("Secret PIN", _secretPin.Value);
 
-        table.Config = TableConfig.Unicode();
-
         return $"{table}";
     }
 
-    private string BuildContactsTable()
+    private string BuildContactsTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("#",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("#",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Name",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+                .AddColumn("Name",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .AddColumn("Email address",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+                .AddColumn("Email address",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .AddColumn("Unknown field #1",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Unknown field #1",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Unknown field #2",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Unknown field #2",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Phone number",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Phone number",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Street address",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Street address",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         foreach (GbcSmxContact contact in _contacts)
         {
@@ -435,64 +419,58 @@ public sealed class GbcSharkMxRom : Rom
             );
         }
 
-        table.Config = TableConfig.Unicode();
-
         return $"{table}";
     }
 
-    private string BuildMessagesTable()
+    private string BuildMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Subject",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("Subject",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Recipient",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Recipient",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Unknown field #1",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Unknown field #1",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Raw date",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Raw date",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("ISO date",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("ISO date",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Message",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Message",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Unknown field #2",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Unknown field #2",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         foreach (GbcSmxMessage message in _messages)
         {

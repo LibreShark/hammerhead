@@ -1,15 +1,7 @@
 using System.Collections.Immutable;
-using System.Drawing;
-using System.Globalization;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
 using BetterConsoles.Tables;
-using BetterConsoles.Tables.Builders;
-using BetterConsoles.Tables.Configuration;
-using BetterConsoles.Tables.Models;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
-using NeoSmart.PrettySize;
 
 namespace LibreShark.Hammerhead.Roms;
 
@@ -24,26 +16,21 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class Rom
+public abstract class Rom : IDataProvider
 {
-    protected static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    protected static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    protected static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-    protected static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
-    protected static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
-
-    public readonly ImmutableArray<u8> RawInput;
+    public ImmutableArray<u8> RawInput { get; }
 
     /// <summary>
-    /// Plain, unencrypted, unobfuscated bytes.
+    /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
     /// If the input file is encrypted/scrambled, it must be
     /// decrypted/unscrambled immediately in the subclass constructor.
     /// </summary>
-    protected byte[] Buffer => Scribe.GetBufferCopy();
+    public byte[] Buffer => Scribe.GetBufferCopy();
 
-    public readonly RomMetadata Metadata;
+    public RomMetadata Metadata { get; }
 
-    protected readonly List<Game> Games = new();
+    public List<Game> Games { get; }
+
     protected readonly BinaryScribe Scribe;
 
     protected Rom(
@@ -54,9 +41,10 @@ public abstract class Rom
         RomFormat format
     )
     {
+        Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
         Checksum checksum = Checksum.From(RawInput);
-        Scribe = scribe;
+        Games = new List<Game>();
         Metadata = new RomMetadata
         {
             FilePath = filePath,
@@ -72,9 +60,40 @@ public abstract class Rom
         };
     }
 
-    protected virtual void PrintCustomHeader() {}
+    public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
 
-    protected virtual void PrintCustomBody() {}
+    public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params) {
+        if (FormatSupportsCustomCheatCodes() && !@params.HideGames)
+        {
+            printer.PrintGames(@params);
+            Console.WriteLine();
+        }
+    }
+
+    public virtual void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params) {}
+
+    public void AddFileProps(Table table)
+    {
+        if (FormatSupportsFileEncryption())
+        {
+            table.AddRow("File encrypted", IsFileEncrypted());
+        }
+
+        if (FormatSupportsFileScrambling())
+        {
+            table.AddRow("File scrambled", IsFileScrambled());
+        }
+
+        if (FormatSupportsFirmwareCompression())
+        {
+            table.AddRow("Firmware compressed", IsFirmwareCompressed());
+        }
+
+        if (FormatSupportsUserPrefs())
+        {
+            table.AddRow("Pristine user prefs", !HasUserPrefs());
+        }
+    }
 
     public virtual bool FormatSupportsCustomCheatCodes()
     {
@@ -203,278 +222,13 @@ public abstract class Rom
         };
     }
 
-    private static string Bold(string str)
+    public bool IsValidFormat()
     {
-        return str.SetStyle(FontStyleExt.Bold);
+        return Metadata.Format != RomFormat.UnknownRomFormat;
     }
 
-    public void PrintSummary(InfoCmdParams @params)
+    public bool IsInvalidFormat()
     {
-        PrintHeading("File properties");
-        PrintFilePropTable();
-        PrintHeading("File checksums");
-        PrintChecksums();
-        PrintHeading("Identifiers");
-        PrintIdentifiers();
-        Console.WriteLine();
-        PrintCustomHeader();
-        Console.WriteLine();
-        if (FormatSupportsCustomCheatCodes() && !@params.HideGames)
-        {
-            PrintGames(@params);
-            Console.WriteLine();
-        }
-        PrintCustomBody();
-        Console.WriteLine();
-        Console.WriteLine();
-        // --------------------------------------------------------------------------------
-        Console.WriteLine(Bold("".PadRight(160, '-')));
-        Console.WriteLine();
-        Console.WriteLine();
-    }
-
-    private void PrintChecksums()
-    {
-        var headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table filePropTable = new TableBuilder(headerFormat)
-            .AddColumn("Algorithm",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
-                )
-            )
-            .AddColumn("Checksum",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
-            .Build();
-
-        filePropTable.AddRow("CRC-32 (standard)", Metadata.FileChecksum.Crc32Hex);
-        filePropTable.AddRow("CRC-32C (Castagnoli)", Metadata.FileChecksum.Crc32CHex);
-        filePropTable.AddRow("MD5", Metadata.FileChecksum.Md5Hex);
-        filePropTable.AddRow("SHA-1", Metadata.FileChecksum.Sha1Hex);
-
-        filePropTable.Config = TableConfig.Unicode();
-
-        Console.WriteLine(filePropTable);
-    }
-
-    protected static void PrintHeading(string heading)
-    {
-        string horizontalLine = "".PadRight(80, '=');
-        Console.WriteLine();
-        Console.WriteLine(horizontalLine);
-        Console.WriteLine($"= {heading,-76} =");
-        Console.WriteLine(horizontalLine);
-        Console.WriteLine();
-    }
-
-    private void PrintIdentifiers()
-    {
-        if (Metadata.Identifiers.Count == 0)
-        {
-            Console.WriteLine("No identifiers found".SetStyle(FontStyleExt.Italic));
-            return;
-        }
-        foreach (RomString id in Metadata.Identifiers)
-        {
-            Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
-        }
-    }
-
-    private void PrintGames(InfoCmdParams @params)
-    {
-        PrintHeading("Games and cheat codes");
-
-        if (Games.Count == 0)
-        {
-            Console.WriteLine("No games/cheats found.".ForegroundColor(Color.Red));
-            return;
-        }
-
-        Game? activeGame = Games.FirstOrDefault(game => game.IsGameActive);
-        if (activeGame != null)
-        {
-            Console.WriteLine($"Active game: '{activeGame.GameName.Value}'");
-            Console.WriteLine();
-        }
-
-        Cheat[] allCheats = Games.SelectMany(game => game.Cheats).ToArray();
-        Code[] allCodes = Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
-        string gamePlural = Games.Count == 1 ? "game" : "games";
-        string cheatCountPlural = allCheats.Length == 1 ? "cheat" : "cheats";
-        string codeCountPlural = allCodes.Length == 1 ? "code" : "codes";
-        Console.WriteLine($"{Games.Count} {gamePlural}, " +
-                          $"{allCheats.Length:N0} {cheatCountPlural}, " +
-                          $"{allCodes.Length:N0} {codeCountPlural}:");
-        Console.WriteLine();
-
-        var headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table gameTable = new TableBuilder(headerFormat)
-            .AddColumn("Name",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
-            .AddColumn("# Games/Cheats",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Right,
-                    innerFormatting: true
-                )
-            )
-            .AddColumn("Warnings",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
-            .Build();
-
-        gameTable.Config = TableConfig.Unicode();
-
-        List<Game> sortedGames = Games.ToList();
-        sortedGames.Sort((g1, g2) =>
-            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.InvariantCulture));
-
-        foreach (Game game in sortedGames)
-        {
-            string gameName = game.GameName.Value;
-            if (game.IsGameActive)
-            {
-                gameName = $"{gameName}".ForegroundColor(SelectedColor).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline);
-            }
-            else
-            {
-                gameName = gameName.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold);
-            }
-            gameTable.AddRow(gameName, $"{game.Cheats.Count}".ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
-
-            if (@params.HideCheats)
-            {
-                continue;
-            }
-
-            foreach (Cheat cheat in game.Cheats)
-            {
-                int codeCount = cheat.Codes.Count;
-                gameTable.AddRow($"  - {cheat.CheatName.Value.ForegroundColor(Color.White)}", codeCount, "");
-                if (@params.HideCodes)
-                {
-                    continue;
-                }
-                foreach (Code code in cheat.Codes)
-                {
-                    gameTable.AddRow($"    {code.Bytes.ToCodeString(Metadata.Console).SetStyle(FontStyleExt.None)}", "", "");
-                }
-            }
-        }
-
-        Console.WriteLine(gameTable);
-    }
-
-    private void PrintFilePropTable()
-    {
-        var headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table filePropTable = new TableBuilder(headerFormat)
-            .AddColumn("Property",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
-                )
-            )
-            .AddColumn("Value",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
-                )
-            )
-            .Build();
-
-        string fileSize = $"{PrettySize.Format(Buffer.Length)} " +
-                          $"(0x{Buffer.Length:X8} = {Buffer.Length} bytes)";
-
-        filePropTable.AddRow("Binary format", Metadata.Format.ToDisplayString());
-        filePropTable.AddRow("Platform", Metadata.Console.ToDisplayString());
-        filePropTable.AddRow("Brand", GetDisplayBrand());
-        filePropTable.AddRow("Locale", GetDisplayLocale());
-        filePropTable.AddRow("", "");
-        filePropTable.AddRow("Version", Metadata.DisplayVersion.OrUnknown());
-        filePropTable.AddRow("Build date", Metadata.BuildDateIso.OrUnknown());
-        filePropTable.AddRow("Known ROM version", Metadata.IsKnownVersion);
-        filePropTable.AddRow("", "");
-        filePropTable.AddRow("File size", fileSize);
-
-        if (FormatSupportsFileEncryption())
-        {
-            filePropTable.AddRow("File encrypted", IsFileEncrypted());
-        }
-
-        if (FormatSupportsFileScrambling())
-        {
-            filePropTable.AddRow("File scrambled", IsFileScrambled());
-        }
-
-        if (FormatSupportsFirmwareCompression())
-        {
-            filePropTable.AddRow("Firmware compressed", IsFirmwareCompressed());
-        }
-
-        if (FormatSupportsUserPrefs())
-        {
-            filePropTable.AddRow("Pristine user prefs", !HasUserPrefs());
-        }
-
-        filePropTable.Config = TableConfig.Unicode();
-
-        Console.WriteLine(filePropTable);
-    }
-
-    private string GetDisplayBrand()
-    {
-        return Metadata.Brand == RomBrand.UnknownBrand
-            ? Metadata.Brand.ToDisplayString().ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
-            : Metadata.Brand.ToDisplayString();
-    }
-
-    private string GetDisplayLocale()
-    {
-        string ietf = Metadata.LanguageIetfCode;
-        string locale;
-        if (String.IsNullOrWhiteSpace(ietf))
-        {
-            locale = ietf.OrUnknown();
-        }
-        else
-        {
-            var culture = CultureInfo.GetCultureInfo(ietf);
-            locale = $"{ietf} - {culture.DisplayName}";
-        }
-        return locale;
+        return Metadata.Format == RomFormat.UnknownRomFormat;
     }
 }

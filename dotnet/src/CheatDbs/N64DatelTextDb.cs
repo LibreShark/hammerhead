@@ -31,13 +31,13 @@ public class N64DatelTextDb : CheatDb
         InCheat,
     }
 
-    public override List<Game> ReadGames()
+    protected override List<Game> ReadGames()
     {
         var games = new List<Game>();
         var curGame = new Game();
         var curCheat = new Cheat();
         var state = ParserState.InList;
-        string[] lines = Bytes.SplitLines()
+        string[] lines = Buffer.SplitLines()
             .Select((line) => line.Trim())
             .Where((line) => !string.IsNullOrWhiteSpace(line))
             .ToArray();
@@ -124,7 +124,7 @@ public class N64DatelTextDb : CheatDb
         return games;
     }
 
-    public override void WriteGames(IEnumerable<Game> games)
+    protected override void WriteGames(IEnumerable<Game> games)
     {
         throw new NotImplementedException();
     }

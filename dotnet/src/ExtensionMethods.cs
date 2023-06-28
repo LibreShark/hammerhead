@@ -440,10 +440,20 @@ public static class ExtensionMethods
 
     public static string OrUnknown(this string str, string noun = "")
     {
-        noun = string.IsNullOrWhiteSpace(noun) ? "" : $" {noun}";
-        return string.IsNullOrWhiteSpace(str)
-            ? $"UNKNOWN{noun}".ForegroundColor(UnknownColor).SetStyle(FontStyleExt.Italic)
+        bool isUnknown = string.IsNullOrWhiteSpace(str) ||
+                         str.ToUpper().Contains("UNKNOWN");
+        if (!isUnknown)
+        {
+            return str;
+        }
+
+        str = string.IsNullOrWhiteSpace(str)
+            ? "UNKNOWN"
             : str;
+        noun = string.IsNullOrWhiteSpace(noun)
+            ? ""
+            : $" {noun}";
+        return $"{str}{noun}";
     }
 
     #endregion

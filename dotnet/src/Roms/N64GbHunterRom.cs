@@ -71,44 +71,38 @@ public sealed class N64GbHunterRom : Rom
         return type == ThisRomFormat;
     }
 
-    protected override void PrintCustomHeader()
+    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        PrintHeading("RLE01 addresses");
-        PrintRLE01Addrs();
+        printer.PrintHeading("RLE01 addresses");
+        PrintRLE01Addrs(printer);
     }
 
     // ReSharper disable once InconsistentNaming
-    private void PrintRLE01Addrs()
+    private void PrintRLE01Addrs(TerminalPrinter printer)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Address",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("Address",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Length",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+                .AddColumn("Length",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         foreach (s32 rle01Address in _rle01Addresses)
         {
             table.AddRow($"0x{rle01Address:X8}", "".OrUnknown());
         }
-
-        table.Config = TableConfig.Unicode();
 
         Console.WriteLine(table);
     }

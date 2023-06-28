@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Drawing;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
+using LibreShark.Hammerhead.CheatDbs;
+using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 using LibreShark.Hammerhead.Roms;
 
@@ -69,22 +71,17 @@ internal static class Program
     public static async Task<int> Main(string[] args)
     {
         var cli = new Cli();
-        cli.Always += (_, @params) =>
-        {
-            if (!@params.HideBanner)
-            {
-                PrintBanner();
-            }
-        };
-        cli.OnInfo += (sender, @params) =>
-        {
-            PrintRomInfo(@params);
-        };
+        cli.Always += (_, @params) => PrintBanner(@params);
+        cli.OnInfo += (_, @params) => PrintFileInfo(@params);
         return await cli.RootCommand.InvokeAsync(args);
     }
 
-    private static void PrintBanner()
+    private static void PrintBanner(CmdParams cmdParams)
     {
+        if (cmdParams.HideBanner)
+        {
+            return;
+        }
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
@@ -92,21 +89,23 @@ internal static class Program
         Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
     }
 
-    private static int PrintRomInfo(InfoCmdParams @params)
+    private static void PrintFileInfo(InfoCmdParams @params)
     {
-        string homeDir = Environment.GetEnvironmentVariable("userdir") ?? // Windows
-                         Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
-                         "~";
         foreach (FileInfo romFile in @params.InputFiles)
         {
-            Console.WriteLine(
-                romFile.FullName.Replace(homeDir, "~")
-                    .ForegroundColor(Color.LimeGreen).SetStyle(FontStyleExt.Bold));
-            Console.WriteLine();
             var rom = Rom.FromFile(romFile.FullName);
-            rom.PrintSummary(@params);
+            var cheatDb = CheatDb.FromFile(romFile.FullName);
+            TerminalPrinter? printer = null;
+            if (rom.IsValidFormat())
+            {
+                printer = new TerminalPrinter(rom, @params.PrintFormat);
+            }
+            else if (cheatDb.IsValidFormat())
+            {
+                printer = new TerminalPrinter(cheatDb, @params.PrintFormat);
+            }
+            printer?.PrintDetails(romFile, @params);
         }
-        return 0;
     }
 
     private static int ScrambleXp64(IEnumerable<string> inputRomFilePaths)

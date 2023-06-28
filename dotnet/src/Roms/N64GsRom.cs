@@ -352,18 +352,18 @@ public sealed class N64GsRom : Rom
         return new BigEndianScribe(output);
     }
 
-    protected override void PrintCustomHeader()
+    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        PrintHeading("Addresses");
-        Console.WriteLine(BuildAddressTable());
+        printer.PrintHeading("Addresses");
+        Console.WriteLine(BuildAddressTable(printer));
 
-        PrintHeading("Key codes");
+        printer.PrintHeading("Key codes");
         Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
         Console.WriteLine();
 
         if (_supportsKeyCodes)
         {
-            Console.WriteLine(BuildKeyCodesTable());
+            Console.WriteLine(BuildKeyCodesTable(printer));
         }
         else
         {
@@ -371,76 +371,67 @@ public sealed class N64GsRom : Rom
         }
     }
 
-    private Table BuildAddressTable()
+    private Table BuildAddressTable(TerminalPrinter printer)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Section",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left
+            builder
+                .AddColumn("Section",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .AddColumn("Address",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left
+                .AddColumn("Address",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
         string gameListAddr = $"0x{_gameListAddr:X8}";
         string keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
         string userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
-        table.AddRow("Firmware addr", firmwareAddr);
-        table.AddRow("User prefs addr", userPrefsAddr);
-        table.AddRow("Key code list addr", keyCodeListAddr);
-        table.AddRow("Game list addr", gameListAddr);
 
-        table.Config = TableConfig.Unicode();
+        table.AddRow("Firmware", firmwareAddr);
+        table.AddRow("User prefs", userPrefsAddr);
+        table.AddRow("Key code list", keyCodeListAddr);
+        table.AddRow("Game list", gameListAddr);
 
         return table;
     }
 
-    private Table BuildKeyCodesTable()
+    private Table BuildKeyCodesTable(TerminalPrinter printer)
     {
-        var headerFormat = new CellFormat()
+        Table table = printer.BuildTable(builder =>
         {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor,
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Games (CIC chip)",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+            builder
+                .AddColumn("Games (CIC chip)",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .AddColumn("Key code",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+                .AddColumn("Key code",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableKeyColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .AddColumn("Active?",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    alignment: Alignment.Left,
-                    innerFormatting: true
+                .AddColumn("Active?",
+                    rowsFormat: new CellFormat(
+                        foregroundColor: printer.TableValueColor,
+                        alignment: Alignment.Left,
+                        innerFormatting: true
+                    )
                 )
-            )
-            .Build();
+                ;
+        });
 
         foreach (N64KeyCode keyCode in _keyCodes)
         {
@@ -457,8 +448,6 @@ public sealed class N64GsRom : Rom
                     : ""
             );
         }
-
-        table.Config = TableConfig.Unicode();
 
         return table;
     }

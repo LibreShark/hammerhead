@@ -8,12 +8,12 @@ public abstract class CmdParams : EventArgs
 {
     public bool HideBanner { get; set; }
     public bool Clean { get; set; }
+    public PrintFormat PrintFormat { get; set; }
 }
 
 public class InfoCmdParams : CmdParams
 {
     public FileFormat InputFormat { get; set; }
-    public PrintFormat PrintFormat { get; set; }
     public bool HideGames { get; set; }
     public bool HideCheats { get; set; }
     public bool HideCodes { get; set; }
@@ -34,7 +34,13 @@ public class RomCmdParams : CmdParams
 public class CheatsCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; set; }
+    public FileInfo[] InputFiles { get; set; }
     public FileInfo? OutputFile { get; set; }
+
+    public CheatsCmdParams()
+    {
+        InputFiles = new FileInfo[] { };
+    }
 }
 
 public class Cli
@@ -60,19 +66,40 @@ public class Cli
         aliases: new string[] { "--input-format" },
         description: "Force Hammerhead to use a specific file format when reading input files.",
         getDefaultValue: () => FileFormat.Auto
-    ) { IsHidden = true };
+    )
+    {
+        ArgumentHelpName = "auto|rom|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+    };
 
-    private static readonly Option<FileFormat> OutputFormatOption = new Option<FileFormat>(
+    private static readonly Option<FileFormat> DumpCheatsOutputFormatOption = new Option<FileFormat>(
         aliases: new string[] { "--output-format" },
         description: "Force Hammerhead to use a specific file format when writing output files.",
         getDefaultValue: () => FileFormat.Auto
-    ) { IsHidden = true };
+    )
+    {
+        ArgumentHelpName = "auto|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+    };
 
-    private static readonly Option<PrintFormat> PrintFormatOption = new Option<PrintFormat>(
-        aliases: new string[] { "--print-format" },
-        description: "Force Hammerhead to use a specific format when printing to the terminal (stdout).",
-        getDefaultValue: () => PrintFormat.Detect
-    ) { IsHidden = true };
+    private static readonly Option<FileFormat> CopyCheatsOutputFormatOption = new Option<FileFormat>(
+        aliases: new string[] { "--output-format" },
+        description: "Force Hammerhead to use a specific file format when writing output files.",
+        getDefaultValue: () => FileFormat.Auto
+    )
+    {
+        ArgumentHelpName = "auto|rom|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+    };
+
+    private static readonly Option<bool?> ColorOption = new Option<bool?>(
+        aliases: new string[] { "--color" },
+        description: "Force Hammerhead to output ANSI color code escape sequences when printing to stdout.",
+        getDefaultValue: () => null
+    );
+
+    private static readonly Option<bool?> NoColorOption = new Option<bool?>(
+        aliases: new string[] { "--no-color" },
+        description: "Force Hammerhead to disable ANSI color code escape sequences when printing to stdout.",
+        getDefaultValue: () => null
+    );
 
     private static readonly Option<bool> HideGamesOption = new Option<bool>(
         aliases: new string[] { "--hide-games" },
@@ -98,16 +125,27 @@ public class Cli
 
     private static readonly Argument<FileInfo> InputFileArgument = new Argument<FileInfo>(
         "input_file",
-        "Path to a ROM file to read")
+        "Path to a ROM file to read.")
     {
         Arity = ArgumentArity.ExactlyOne,
     };
 
     private static readonly Option<FileInfo> OutputFileOption = new Option<FileInfo>(
-        "--output-file",
-        "Path to a ROM file to write")
+        aliases: new string[] { "-o", "--output-file" },
+        "Optional path to the output file to write.\n" +
+        "If not specified, a reasonable default filename will be auto-generated.")
     {
         Arity = ArgumentArity.ZeroOrOne,
+        ArgumentHelpName = "output_file",
+    };
+
+    private static readonly Option<DirectoryInfo> OutputDirOption = new Option<DirectoryInfo>(
+        aliases: new string[] { "-o", "--output-dir" },
+        "Optional path to a directory to write output files in.\n" +
+        "If not specified, output files will be written to the same directory as the corresponding input file.")
+    {
+        Arity = ArgumentArity.ZeroOrOne,
+        ArgumentHelpName = "output_dir",
     };
 
     #endregion
@@ -131,7 +169,6 @@ public class Cli
         "Display detailed information about ROM and cheat list files.")
     {
         InputFormatOption,
-        PrintFormatOption,
         HideGamesOption,
         HideCheatsOption,
         HideCodesOption,
@@ -160,7 +197,7 @@ public class Cli
 
     private readonly Command _decryptRomCmd = new Command(
         "decrypt",
-        "Decrypt a ROM file.\n" +
+        "Decrypt a ROM file so that it may be edited directly.\n" +
         "If the ROM format does not support encryption, " +
         "the output file will be a 1:1 copy of the input.")
     {
@@ -204,11 +241,11 @@ public class Cli
 
     private readonly Command _combineRomCmd = new Command(
         "combine",
-        "Combine split ROM sections into a single ROM file.")
+        "Combine ROM sections into a single ROM file.")
     {
         OutputFileOption,
         OverwriteOption,
-        InputFileArgument,
+        InputFilesArgument,
     };
 
     #endregion
@@ -221,17 +258,23 @@ public class Cli
 
     private readonly Command _dumpCheatsCmd = new Command(
         "dump",
-        "Split a ROM file into sections (e.g., header, firmware, key codes, user prefs, and cheat list) " +
-        "and write each section to a separate output file.")
+        "Read and decrypt all cheats from one or more ROM files, and write them to formatted text files on disk.")
     {
+        OutputDirOption,
+        DumpCheatsOutputFormatOption,
         OverwriteOption,
+        InputFilesArgument,
     };
 
     private readonly Command _copyCheatsCmd = new Command(
         "copy",
-        "Combine split ROM sections into a single ROM file.")
+        "Import/export all cheats from one ROM file or cheat list to another.")
     {
+        OutputFileOption,
+        InputFormatOption,
+        CopyCheatsOutputFormatOption,
         OverwriteOption,
+        InputFileArgument,
     };
 
     #endregion
@@ -251,6 +294,8 @@ public class Cli
     public Cli()
     {
         _rootCmd.AddGlobalOption(HideBannerOption);
+        _rootCmd.AddGlobalOption(NoColorOption);
+        _rootCmd.AddGlobalOption(ColorOption);
         _rootCmd.AddGlobalOption(CleanOption);
 
         _rootCmd.AddCommand(_infoCmd);
@@ -261,8 +306,9 @@ public class Cli
         _romCmd.AddCommand(_decryptRomCmd);
         _romCmd.AddCommand(_scrambleRomCmd);
         _romCmd.AddCommand(_unscrambleRomCmd);
-        _romCmd.AddCommand(_splitRomCmd);
-        _romCmd.AddCommand(_combineRomCmd);
+        // TODO(CheatoBaggins): Implement
+        // _romCmd.AddCommand(_splitRomCmd);
+        // _romCmd.AddCommand(_combineRomCmd);
 
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
@@ -272,12 +318,12 @@ public class Cli
             var cmdParams = new InfoCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
                 // Command-specific options
                 InputFormat = InputFormatOption.GetValue(ctx),
-                PrintFormat = PrintFormatOption.GetValue(ctx),
                 HideGames = HideGamesOption.GetValue(ctx),
                 HideCheats = HideCheatsOption.GetValue(ctx),
                 HideCodes = HideCodesOption.GetValue(ctx),
@@ -294,6 +340,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -310,6 +357,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -326,6 +374,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -342,6 +391,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -358,6 +408,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -374,6 +425,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
+                PrintFormat = GetPrintFormat(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -384,5 +436,20 @@ public class Cli
             Always?.Invoke(this, cmdParams);
             OnCombineRom?.Invoke(this, cmdParams);
         });
+    }
+
+    private static PrintFormat GetPrintFormat(InvocationContext ctx)
+    {
+        var printFormat = PrintFormat.Detect;
+        if (NoColorOption.GetValue(ctx) == true)
+        {
+            printFormat = PrintFormat.Plain;
+        }
+        else if (ColorOption.GetValue(ctx) == true)
+        {
+            printFormat = PrintFormat.Color;
+        }
+
+        return printFormat;
     }
 }

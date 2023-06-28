@@ -21,12 +21,12 @@ public class UnknownCheatDb : CheatDb
     {
     }
 
-    public override List<Game> ReadGames()
+    protected override List<Game> ReadGames()
     {
         return new List<Game>();
     }
 
-    public override void WriteGames(IEnumerable<Game> games)
+    protected override void WriteGames(IEnumerable<Game> games)
     {
     }
 }
