@@ -51,6 +51,12 @@ namespace LibreShark.Hammerhead {
             }
         }
         
+        internal static string GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT {
+            get {
+                return ResourceManager.GetString("GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT", resourceCulture);
+            }
+        }
+        
         internal static string LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT {
             get {
                 return ResourceManager.GetString("LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT", resourceCulture);

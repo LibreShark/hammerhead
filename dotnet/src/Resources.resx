@@ -21,6 +21,9 @@
     <data name="GAMESHARK_LOGO_ASCII_ART_ANSI_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>Assets/AsciiArt/gameshark-logo-ascii-art-ansi.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
+    <data name="GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/gameshark-logo-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
     <data name="LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>Assets/AsciiArt/libreshark-wordmark-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>

@@ -54,6 +54,7 @@ internal static class Program
 
     private static void PrintBanner(CmdParams cmdParams)
     {
+        bool isColor = TerminalPrinter.DetectPrintFormat(cmdParams) == PrintFormat.Color;
         if (cmdParams.HideBanner)
         {
             return;
@@ -61,7 +62,10 @@ internal static class Program
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
-        Console.WriteLine(Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.Trim());
+        Console.WriteLine(
+            isColor
+                ? Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.TrimEnd()
+                : Resources.GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT);
         Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
     }
 

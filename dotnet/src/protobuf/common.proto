@@ -196,7 +196,9 @@ enum PrintFormat {
   DETECT = 0x01;
   COLOR = 0x02;
   PLAIN = 0x03;
-  MARKDOWN = 0x04;
+  JSON = 0x04;
+  PROTO = 0x05;
+  MARKDOWN = 0x06;
 }
 
 enum FileFormat {

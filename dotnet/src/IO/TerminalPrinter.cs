@@ -43,6 +43,10 @@ public class TerminalPrinter
         }
     }
 
+    public bool IsColor => _printFormat == PrintFormat.Color;
+    public bool IsMarkdown => _printFormat == PrintFormat.Markdown;
+    public bool IsPlain => !IsColor && !IsMarkdown;
+
     private TableConfig TableConfig =>
         IsColor
             ? TableConfig.Unicode()
@@ -50,34 +54,10 @@ public class TerminalPrinter
                 ? TableConfig.Markdown()
                 : TableConfig.Simple();
 
-    public bool IsColor => _printFormat == PrintFormat.Color;
-    public bool IsMarkdown => _printFormat != PrintFormat.Markdown;
-
     public TerminalPrinter(IDataProvider file, PrintFormat printFormat)
     {
         _file = file;
-        _printFormat = printFormat;
-
-        if (_printFormat == PrintFormat.Detect)
-        {
-            bool disableColor = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR"));
-            if (disableColor || IsOutputRedirected)
-            {
-                _printFormat = PrintFormat.Plain;
-            }
-            else
-            {
-                _printFormat = PrintFormat.Color;
-            }
-        }
-        else if (_printFormat == PrintFormat.Color)
-        {
-            // Do nothing
-        }
-        else
-        {
-            _printFormat = PrintFormat.Plain;
-        }
+        _printFormat = DetectPrintFormat(printFormat);
     }
 
     public Table BuildTable(Action<TableBuilder> addColumns)
@@ -406,6 +386,36 @@ public class TerminalPrinter
             {
                 return true;
             }
+        }
+    }
+
+    public static PrintFormat DetectPrintFormat(CmdParams @params)
+    {
+        return DetectPrintFormat(@params.PrintFormat);
+    }
+
+    public static PrintFormat DetectPrintFormat(PrintFormat printFormat)
+    {
+        switch (printFormat)
+        {
+            case PrintFormat.Plain:
+            case PrintFormat.Color:
+            case PrintFormat.Markdown:
+            case PrintFormat.Json:
+            case PrintFormat.Proto:
+                return printFormat;
+            case PrintFormat.Detect:
+            {
+                // https://no-color.org/
+                bool isColorDisabled = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR"));
+                bool isDumbTerminal = Environment.GetEnvironmentVariable("TERM") is "dumb" or "xterm";
+                return isColorDisabled || isDumbTerminal || IsOutputRedirected
+                    ? PrintFormat.Plain
+                    : PrintFormat.Color;
+            }
+            case PrintFormat.UnknownPrintFormat:
+            default:
+                return PrintFormat.Plain;
         }
     }
 
