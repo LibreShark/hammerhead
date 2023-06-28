@@ -6,18 +6,18 @@ namespace LibreShark.Hammerhead;
 
 public abstract class CmdParams : EventArgs
 {
-    public bool HideBanner { get; set; }
-    public bool Clean { get; set; }
     public PrintFormat PrintFormat { get; set; }
+    public bool HideBanner { get; init; }
+    public bool Clean { get; init; }
 }
 
 public class InfoCmdParams : CmdParams
 {
-    public FileFormat InputFormat { get; set; }
-    public bool HideGames { get; set; }
-    public bool HideCheats { get; set; }
-    public bool HideCodes { get; set; }
-    public FileInfo[] InputFiles { get; set; }
+    public FileFormat InputFormat { get; init; }
+    public bool HideGames { get; init; }
+    public bool HideCheats { get; init; }
+    public bool HideCodes { get; init; }
+    public FileInfo[] InputFiles { get; init; }
 
     public InfoCmdParams()
     {
@@ -87,6 +87,15 @@ public class Cli
     )
     {
         ArgumentHelpName = "auto|rom|json|proto|n64_datel_text|n64_edx7|n64_pj64_v3",
+    };
+
+    private static readonly Option<PrintFormat> PrintFormatOption = new Option<PrintFormat>(
+        aliases: new string[] { "--print-format" },
+        description: "Force Hammerhead to print to stdout using the specified format.",
+        getDefaultValue: () => PrintFormat.Detect
+    )
+    {
+        ArgumentHelpName = "detect|color|plain|json|proto|markdown",
     };
 
     private static readonly Option<bool?> ColorOption = new Option<bool?>(
@@ -291,6 +300,7 @@ public class Cli
 
     public Cli()
     {
+        _rootCmd.AddGlobalOption(PrintFormatOption);
         _rootCmd.AddGlobalOption(HideBannerOption);
         _rootCmd.AddGlobalOption(NoColorOption);
         _rootCmd.AddGlobalOption(ColorOption);
@@ -438,6 +448,12 @@ public class Cli
 
     private static PrintFormat GetPrintFormat(InvocationContext ctx)
     {
+        PrintFormat optionValue = PrintFormatOption.GetValue(ctx);
+        if (optionValue != default)
+        {
+            return optionValue;
+        }
+
         var printFormat = PrintFormat.Detect;
         if (NoColorOption.GetValue(ctx) == true)
         {
@@ -447,7 +463,6 @@ public class Cli
         {
             printFormat = PrintFormat.Color;
         }
-
         return printFormat;
     }
 }
