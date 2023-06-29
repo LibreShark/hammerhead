@@ -514,7 +514,7 @@ public static class ExtensionMethods
 
     public static string[] SplitLines(this u8[] s)
     {
-        return Regex.Split(s.ToAsciiString(), @"\r\f|\n");
+        return Regex.Split(s.ToAsciiString(), @"\n\r|\r\f|\n");
     }
 
     public static string[] SplitLines(this string s)

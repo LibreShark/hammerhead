@@ -205,6 +205,7 @@ public abstract class AbstractCodec
             new(N64GsRom.Is, () => new N64GsRom(romFilePath, bytes)),
             new(N64GsText.Is, () => new N64GsText(romFilePath, bytes)),
             new(N64XpRom.Is, () => new N64XpRom(romFilePath, bytes)),
+            new(N64XpText.Is, () => new N64XpText(romFilePath, bytes)),
             new(_ => true, () => new UnknownCodec(romFilePath, bytes)),
         };
 
@@ -217,6 +218,7 @@ public abstract class AbstractCodec
         NewCodecFileFactory[] codecFactories =
         {
             new(N64GsText.Is, () => new N64GsText(outputFilePath, bytes)),
+            new(N64XpText.Is, () => new N64XpText(outputFilePath, bytes)),
             new(_ => true, () => throw new InvalidOperationException(
                 $"{codecId.ToDisplayString()} files cannot be created from scratch.")),
         };

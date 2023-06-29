@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead;
@@ -66,6 +67,7 @@ public class Cli
         description: "Force Hammerhead to use a specific file format when reading input files.\n" +
                      "<input_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
         getDefaultValue: () => CodecId.Auto
+        // parseArgument: (x) => x
     )
     {
         ArgumentHelpName = "input_format",
@@ -75,6 +77,7 @@ public class Cli
         aliases: new string[] { "--output-format" },
         description: "Force Hammerhead to use a specific file format when writing output files.\n" +
                      "<output_format>: auto|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
+        // parseArgument: (x) => x,
         getDefaultValue: () => CodecId.Auto
     )
     {
@@ -85,6 +88,7 @@ public class Cli
         aliases: new string[] { "--output-format" },
         description: "Force Hammerhead to use a specific file format when writing output files.\n" +
                      "<output_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
+        // parseArgument: (x) => x,
         getDefaultValue: () => CodecId.Auto
     )
     {

@@ -28,7 +28,7 @@ public sealed class N64GsText : AbstractCodec
         InCheat,
     }
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
+    public override CodecId DefaultCheatOutputCodec => ThisCodecId;
 
     public N64GsText(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
