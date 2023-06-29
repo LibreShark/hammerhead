@@ -1,9 +1,10 @@
 using System.Collections.Immutable;
 using BetterConsoles.Tables;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -16,7 +17,19 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class Rom : IDataSource
+internal class CodecFactory
+{
+    public Func<byte[], bool> IsMatch { get; }
+    public Func<AbstractCodec> Create { get; }
+
+    public CodecFactory(Func<u8[], bool> isMatch, Func<AbstractCodec> create)
+    {
+        IsMatch = isMatch;
+        Create = create;
+    }
+}
+
+public abstract class AbstractCodec
 {
     public ImmutableArray<u8> RawInput { get; }
 
@@ -27,28 +40,28 @@ public abstract class Rom : IDataSource
     /// </summary>
     public byte[] Buffer => Scribe.GetBufferCopy();
 
-    public RomMetadata Metadata { get; }
+    public VgeMetadata Metadata { get; }
 
     public List<Game> Games { get; }
 
-    protected readonly BinaryScribe Scribe;
+    protected readonly AbstractBinaryScribe Scribe;
 
-    protected Rom(
+    protected AbstractCodec(
         string filePath,
         IEnumerable<byte> rawInput,
-        BinaryScribe scribe,
-        GameConsole console,
-        RomFormat romFormat
+        AbstractBinaryScribe scribe,
+        ConsoleId consoleId,
+        CodecId codecId
     )
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
         Games = new List<Game>();
-        Metadata = new RomMetadata
+        Metadata = new VgeMetadata
         {
             FilePath = filePath,
-            Console = console,
-            RomFormat = romFormat,
+            ConsoleId = consoleId,
+            CodecId = codecId,
             FileChecksum = RawInput.ComputeChecksums(),
         };
     }
@@ -153,71 +166,28 @@ public abstract class Rom : IDataSource
         return Buffer;
     }
 
-    public static Rom FromFile(string romFilePath)
+    public static AbstractCodec FromFile(string romFilePath)
     {
-        byte[] bytes = File.ReadAllBytes(romFilePath);
+        u8[] bytes = File.ReadAllBytes(romFilePath);
 
-        if (N64GsRom.Is(bytes))
+        CodecFactory[] codecFactories =
         {
-            return new N64GsRom(romFilePath, bytes);
-        }
+            new(GbGsRom.Is, () => new GbGsRom(romFilePath, bytes)),
+            new(GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
+            new(GbaGsFcdRom.Is, () => new GbaGsFcdRom(romFilePath, bytes)),
+            new(GbaTvTunerRom.Is, () => new GbaTvTunerRom(romFilePath, bytes)),
+            new(GbcCbRom.Is, () => new GbcCbRom(romFilePath, bytes)),
+            new(GbcGsRom.Is, () => new GbcGsRom(romFilePath, bytes)),
+            new(GbcMonsterBrainRom.Is, () => new GbcMonsterBrainRom(romFilePath, bytes)),
+            new(GbcSharkMxRom.Is, () => new GbcSharkMxRom(romFilePath, bytes)),
+            new(GbcXpRom.Is, () => new GbcXpRom(romFilePath, bytes)),
+            new(N64GsRom.Is, () => new N64GsRom(romFilePath, bytes)),
+            new(N64GsText.Is, () => new N64GsText(romFilePath, bytes)),
+            new(N64XpRom.Is, () => new N64XpRom(romFilePath, bytes)),
+            new(_ => true, () => new UnknownCodec(romFilePath, bytes)),
+        };
 
-        if (N64XpRom.Is(bytes))
-        {
-            return new N64XpRom(romFilePath, bytes);
-        }
-
-        if (N64GbHunterRom.Is(bytes))
-        {
-            return new N64GbHunterRom(romFilePath, bytes);
-        }
-
-        if (GbGsRom.Is(bytes))
-        {
-            return new GbGsRom(romFilePath, bytes);
-        }
-
-        if (GbcCbRom.Is(bytes))
-        {
-            return new GbcCbRom(romFilePath, bytes);
-        }
-
-        if (GbcXpRom.Is(bytes))
-        {
-            return new GbcXpRom(romFilePath, bytes);
-        }
-
-        if (GbcGsRom.Is(bytes))
-        {
-            return new GbcGsRom(romFilePath, bytes);
-        }
-
-        if (GbcSharkMxRom.Is(bytes))
-        {
-            return new GbcSharkMxRom(romFilePath, bytes);
-        }
-
-        if (GbaGsDatelRom.Is(bytes))
-        {
-            return new GbaGsDatelRom(romFilePath, bytes);
-        }
-
-        if (GbaGsFcdRom.Is(bytes))
-        {
-            return new GbaGsFcdRom(romFilePath, bytes);
-        }
-
-        if (GbaTvTunerRom.Is(bytes))
-        {
-            return new GbaTvTunerRom(romFilePath, bytes);
-        }
-
-        if (GbcMonsterBrainRom.Is(bytes))
-        {
-            return new GbcMonsterBrainRom(romFilePath, bytes);
-        }
-
-        return new UnknownRom(romFilePath, bytes);
+        return codecFactories.First(factory => factory.IsMatch(bytes)).Create();
     }
 
     protected static RomString EmptyRomStr()
@@ -237,11 +207,12 @@ public abstract class Rom : IDataSource
 
     public bool IsValidFormat()
     {
-        return Metadata.RomFormat != RomFormat.UnknownRomFormat;
+        return Metadata.CodecId != CodecId.UnspecifiedCodecId &&
+               Metadata.CodecId != CodecId.UnsupportedCodecId;
     }
 
     public bool IsInvalidFormat()
     {
-        return Metadata.RomFormat == RomFormat.UnknownRomFormat;
+        return !IsValidFormat();
     }
 }

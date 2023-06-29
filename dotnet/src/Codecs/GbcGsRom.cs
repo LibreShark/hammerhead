@@ -1,7 +1,7 @@
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -18,10 +18,10 @@ using f64 = Double;
 /// GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbcGsRom : Rom
+public sealed class GbcGsRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
-    private const RomFormat ThisRomFormat = RomFormat.GbcGameshark;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
+    private const CodecId ThisCodecId = CodecId.GbcGamesharkRom;
 
     private const u32 TitleAddr = 0x00000134;
     private const u32 VerNumAddr = 0x00000143;
@@ -38,15 +38,15 @@ public sealed class GbcGsRom : Rom
     };
 
     public GbcGsRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
-        Metadata.Brand = IsGs(Buffer) ? RomBrand.Gameshark : IsAr(Buffer) ? RomBrand.ActionReplay : RomBrand.UnknownBrand;
+        Metadata.BrandId = IsGs(Buffer) ? BrandId.Gameshark : IsAr(Buffer) ? BrandId.ActionReplay : BrandId.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2}";
-        Metadata.LanguageIetfCode = Metadata.Brand switch
+        Metadata.LanguageIetfCode = Metadata.BrandId switch
         {
-            RomBrand.Gameshark => "en-US",
-            RomBrand.ActionReplay => "en-GB",
+            BrandId.Gameshark => "en-US",
+            BrandId.ActionReplay => "en-GB",
             _ => "und",
         };
 
@@ -178,17 +178,17 @@ public sealed class GbcGsRom : Rom
         return -1;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }

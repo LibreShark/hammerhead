@@ -1,7 +1,7 @@
 using System.Globalization;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -18,10 +18,10 @@ using f64 = Double;
 /// GameShark and Action Replay for Game Boy Advance,
 /// made by Future Console Design (FCD).
 /// </summary>
-public sealed class GbaGsFcdRom : Rom
+public sealed class GbaGsFcdRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
-    private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkFcd;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
+    private const CodecId ThisCodecId = CodecId.GbaGamesharkFcdRom;
 
     private static readonly string[] KnownRawBuildDates =
     {
@@ -32,7 +32,7 @@ public sealed class GbaGsFcdRom : Rom
     };
 
     public GbaGsFcdRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         ParseVersion();
     }
@@ -46,17 +46,17 @@ public sealed class GbaGsFcdRom : Rom
         if (gsAddr > -1)
         {
             brandAddr = (u32)gsAddr;
-            Metadata.Brand = RomBrand.Gameshark;
+            Metadata.BrandId = BrandId.Gameshark;
         }
         else if (cbAddr > -1)
         {
             brandAddr = (u32)cbAddr;
-            Metadata.Brand = RomBrand.CodeBreaker;
+            Metadata.BrandId = BrandId.CodeBreaker;
         }
         else if (xpAddr > -1)
         {
             brandAddr = (u32)xpAddr;
-            Metadata.Brand = RomBrand.Xploder;
+            Metadata.BrandId = BrandId.Xploder;
         }
         else
         {
@@ -123,17 +123,17 @@ public sealed class GbaGsFcdRom : Rom
         return isMagicNumberMatch && isCopyrightMatch && isFcdFcdFcdMatch;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] bytes)
+    private static AbstractBinaryScribe MakeScribe(u8[] bytes)
     {
         return new LittleEndianScribe(bytes);
     }

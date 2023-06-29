@@ -15,11 +15,11 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class BinaryScribe
+public abstract class AbstractBinaryScribe
 {
     protected readonly u8[] BufferRef;
 
-    protected BinaryScribe(byte[] bufferRef)
+    protected AbstractBinaryScribe(byte[] bufferRef)
     {
         BufferRef = bufferRef;
     }
@@ -34,31 +34,31 @@ public abstract class BinaryScribe
     public u32 Position { get; protected set; }
     public bool EndReached => Position >= BufferRef.Length;
 
-    public BinaryScribe Seek(u32 addr)
+    public AbstractBinaryScribe Seek(u32 addr)
     {
         Position = addr;
         CheckBounds();
         return this;
     }
 
-    public BinaryScribe Seek(s32 addr)
+    public AbstractBinaryScribe Seek(s32 addr)
     {
         return Seek((u32)addr);
     }
 
-    public BinaryScribe Skip(u32 count)
+    public AbstractBinaryScribe Skip(u32 count)
     {
         Position += count;
         CheckBounds();
         return this;
     }
 
-    public BinaryScribe Skip(s32 count)
+    public AbstractBinaryScribe Skip(s32 count)
     {
         return Skip((u32)count);
     }
 
-    public BinaryScribe Next()
+    public AbstractBinaryScribe Next()
     {
         return Skip(1);
     }
@@ -192,13 +192,13 @@ public abstract class BinaryScribe
         return (s8)ReadU8();
     }
 
-    public BinaryScribe WriteU8(u8 value)
+    public AbstractBinaryScribe WriteU8(u8 value)
     {
         BufferRef[Position++] = value;
         return this;
     }
 
-    public BinaryScribe WriteS8(s8 value)
+    public AbstractBinaryScribe WriteS8(s8 value)
     {
         return WriteU8((u8)value);
     }
@@ -208,14 +208,14 @@ public abstract class BinaryScribe
     #region Integers: 16-bit
 
     public abstract u16 ReadU16();
-    public abstract BinaryScribe WriteU16(u16 value);
+    public abstract AbstractBinaryScribe WriteU16(u16 value);
 
     public s16 ReadS16()
     {
         return (s16)ReadU16();
     }
 
-    public BinaryScribe WriteS16(s16 value)
+    public AbstractBinaryScribe WriteS16(s16 value)
     {
         return WriteU16((u16)value);
     }
@@ -225,14 +225,14 @@ public abstract class BinaryScribe
     #region Integers: 32-bit
 
     public abstract u32 ReadU32();
-    public abstract BinaryScribe WriteU32(u32 value);
+    public abstract AbstractBinaryScribe WriteU32(u32 value);
 
     public s32 ReadS32()
     {
         return (s32)ReadU32();
     }
 
-    public BinaryScribe WriteS32(s32 value)
+    public AbstractBinaryScribe WriteS32(s32 value)
     {
         return WriteU32((u32)value);
     }

@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -18,10 +18,10 @@ using f64 = Double;
 /// Monster Brain and Brain Boy for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
 /// </summary>
-public sealed class GbcMonsterBrainRom : Rom
+public sealed class GbcMonsterBrainRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
-    private const RomFormat ThisRomFormat = RomFormat.GbcMonsterbrain;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
+    private const CodecId ThisCodecId = CodecId.GbcMonsterbrainRom;
 
     private static readonly string[] KnownTitles =
     {
@@ -31,9 +31,9 @@ public sealed class GbcMonsterBrainRom : Rom
     };
 
     public GbcMonsterBrainRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
-        Metadata.Brand = DetectBrand(rawInput);
+        Metadata.BrandId = DetectBrand(rawInput);
 
         RomString id = Scribe.Seek(0).ReadPrintableCString(0x20).Trim();
         Metadata.Identifiers.Add(id);
@@ -74,34 +74,34 @@ public sealed class GbcMonsterBrainRom : Rom
 
     private static bool Detect(u8[] bytes)
     {
-        return DetectBrand(bytes) != RomBrand.UnknownBrand;
+        return DetectBrand(bytes) != BrandId.UnknownBrand;
     }
 
-    private static RomBrand DetectBrand(u8[] bytes)
+    private static BrandId DetectBrand(u8[] bytes)
     {
         string id = bytes[..0x20].ToAsciiString();
         if (id.Contains("BrainBoy"))
         {
-            return RomBrand.Brainboy;
+            return BrandId.Brainboy;
         }
         if (id.Contains("Monster Brain"))
         {
-            return RomBrand.MonsterBrain;
+            return BrandId.MonsterBrain;
         }
-        return RomBrand.UnknownBrand;
+        return BrandId.UnknownBrand;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }

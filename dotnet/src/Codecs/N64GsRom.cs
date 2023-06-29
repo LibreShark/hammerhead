@@ -9,7 +9,7 @@ using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -26,10 +26,10 @@ using f64 = Double;
 /// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
 /// Nintendo 64, made by Datel/InterAct.
 /// </summary>
-public sealed class N64GsRom : Rom
+public sealed class N64GsRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.Nintendo64;
-    private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
+    private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
+    private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
     private readonly bool _isEncrypted;
     private readonly bool _isCompressed;
@@ -55,7 +55,7 @@ public sealed class N64GsRom : Rom
     private const u32 BuildTimestampAddr = 0x00000030;
 
     public N64GsRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, Decrypt(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
@@ -67,7 +67,7 @@ public sealed class N64GsRom : Rom
 
         _version = ReadVersion();
 
-        Metadata.Brand = _version.Brand;
+        Metadata.BrandId = _version.Brand;
         Metadata.BuildDateRaw = _rawTimestamp;
         Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
         Metadata.DisplayVersion = _version.DisplayNumber;
@@ -312,14 +312,14 @@ public sealed class N64GsRom : Rom
         return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
     private static bool DetectPlain(u8[] bytes)
@@ -349,7 +349,7 @@ public sealed class N64GsRom : Rom
         return N64GsCrypter.Encrypt(Buffer);
     }
 
-    private static BinaryScribe Decrypt(u8[] input)
+    private static AbstractBinaryScribe Decrypt(u8[] input)
     {
         u8[] output = DetectEncrypted(input)
             ? N64GsCrypter.Decrypt(input)

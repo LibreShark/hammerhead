@@ -7,143 +7,20 @@ import "google/protobuf/timestamp.proto";
 package libreshark.hammerhead;
 option csharp_namespace = "LibreShark.Hammerhead";
 
-message RomRange {
-  uint32 start_index = 1;
-  uint32 end_index = 2;
-  uint32 length = 3;
-  bytes raw_bytes = 4;
+// Video game enhancer file (firmware dump or cheat list)
+message VgeFile {
+  VgeMetadata metadata = 1;
+  repeated Game games = 2;
+  bytes raw_input = 3;
+  bytes buffer = 4;
 }
 
-// TODO(CheatoBaggins): Create ranges for parsed values to aid debugging.
-message RomString {
-  RomRange addr = 1;
-  string value = 2;
-}
-message RomU8 {
-  RomRange addr = 1;
-  uint32 value = 2;
-}
-message RomU16 {
-  RomRange addr = 1;
-  uint32 value = 2;
-}
-message RomU32 {
-  RomRange addr = 1;
-  uint32 value = 2;
-}
-message RomU64 {
-  RomRange addr = 1;
-  uint64 value = 2;
-}
-message RomF32 {
-  RomRange addr = 1;
-  uint32 value = 2;
-}
-message RomF64 {
-  RomRange addr = 1;
-  uint64 value = 2;
-}
-
-enum GameConsole {
-  UNKNOWN_GAME_CONSOLE = 0x00;
-
-  GAME_BOY = 0x01;
-  GAME_BOY_COLOR = 0x02;
-  GAME_BOY_ADVANCE = 0x04;
-
-  GAME_GEAR = 0x20;
-
-  PLAYSTATION_1 = 0x30;
-  NINTENDO_64 = 0x40;
-
-  DREAMCAST = 0x41;
-  GAMECUBE = 0x42;
-}
-
-enum RomFormat {
-  UNKNOWN_ROM_FORMAT = 0x00;
-
-  // GameShark, Action Replay, Equalizer, and Game Buster all use the same
-  // ROM format.
-  N64_GAMESHARK = 0x01;
-
-  // AKA "Xploder 64"
-  N64_XPLORER64 = 0x02;
-
-  // GB Hunter and Game Booster use the same ROM format.
-  N64_GBHUNTER = 0x03;
-
-  GBC_CODEBREAKER = 0x41;
-
-  // BrainBoy is a fork of Code Breaker that was specifically designed for
-  // cheating in Pokemon games. It does not allow the user to edit or even see
-  // any cheat codes, and it only supports specific Pokemon games.
-  // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
-  // the same.
-  GBC_MONSTERBRAIN = 0x42;
-
-  // Action Replay too
-  GBC_GAMESHARK = 0x51;
-
-  // AKA "Xplorer GB"
-  GBC_XPLODER = 0x6A;
-
-  // Email client
-  GBC_SHARK_MX = 0x6F;
-
-  // GBA GameShark made by Datel/InterAct (earlier generations).
-  GBA_GAMESHARK_DATEL = 0x81;
-
-  // GBA GameShark made by Blaze/FCD (later generations).
-  //
-  // - GBA Code Breaker Lite: R1 prototype (2001-10-19)
-  // - GBA Code Breaker Lite: R1 prototype (2002-11-15)
-  // - GBA GameShark Pro SP: MadCatz (2003-08-21)
-  // - GBA GameShark Pro SP: karabiner (2006-06-14)
-  GBA_GAMESHARK_FCD = 0x82;
-
-  GBA_TV_TUNER = 0x8A;
-}
-
-enum RomBrand {
-  UNKNOWN_BRAND = 0x00;
-  GAMESHARK     = 0x01;
-  ACTION_REPLAY = 0x02;
-  EQUALIZER     = 0x03;
-  GAME_BUSTER   = 0x04;
-  GB_HUNTER     = 0x05;
-  GAME_BOOSTER  = 0x06;
-  CODE_BREAKER  = 0x07;
-  BRAINBOY      = 0x08;
-  MONSTER_BRAIN = 0x09;
-  XPLODER       = 0x0A;
-  XPLORER       = 0x0B;
-  GAME_GENIE    = 0x0C;
-  SHARK_MX      = 0x0D;
-}
-
-message ChecksumResult {
-  string crc32_hex = 1;
-  string crc32c_hex = 2;
-  string md5_hex = 3;
-  string sha1_hex = 4;
-}
-
-message FeatureSet {
-  bool cheats = 1;
-  bool firmware = 2;
-  bool user_prefs = 3;
-  bool file_encryption = 4;
-  bool file_scrambling = 5;
-  bool file_compression = 6;
-}
-
-message RomMetadata {
+message VgeMetadata {
   string file_path = 1;
-  GameConsole console = 2;
-  RomFormat rom_format = 3;
-  RomBrand brand = 4;
-  FeatureSet features = 5;
+  ConsoleId console_id = 2;
+  CodecId codec_id = 3;
+  BrandId brand_id = 4;
+  CodecFeatureSet codec_features = 5;
 
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
@@ -174,34 +51,170 @@ message RomMetadata {
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
   bool is_known_version = 15;
+
+  repeated FileProperty file_properties = 16;
+  repeated RomRange file_sections = 17;
+}
+
+message FileProperty {
+  string key = 1;
+  string value = 2;
+  bool is_visual_spacer = 3;
+}
+
+enum ConsoleId {
+  UNKNOWN_CONSOLE = 0x00;
+
+  GAME_BOY = 0x01;
+  GAME_BOY_COLOR = 0x02;
+  GAME_BOY_ADVANCE = 0x04;
+
+  GAME_GEAR = 0x20;
+
+  PLAYSTATION_1 = 0x30;
+  NINTENDO_64 = 0x40;
+
+  DREAMCAST = 0x41;
+  GAMECUBE = 0x42;
+}
+
+enum CodecId {
+  UNSPECIFIED_CODEC_ID = 0;
+  UNSUPPORTED_CODEC_ID = 1;
+
+  // Auto-detect by sniffing the input file
+  AUTO = 2;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Generic cheat containers (platform-agnostic)
+  //////////////////////////////////////////////////////////////////////////////
+
+  JSONPROTO = 3;
+  TEXTPROTO = 4;
+
+  // XML cheat file format for OpenEmu (all consoles).
+  OPENEMU_XML = 5;
+
+  // RetroArch
+  LIBRETRO_TEXT = 6;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy & Game Boy Pocket
+  //////////////////////////////////////////////////////////////////////////////
+
+  GB_GAMESHARK_ROM = 20;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy Color
+  //////////////////////////////////////////////////////////////////////////////
+
+  GBC_CODEBREAKER_ROM = 40;
+
+  // BrainBoy is a fork of Code Breaker that was specifically designed for
+  // cheating in Pokemon games. It does not allow the user to edit or even see
+  // any cheat codes, and it only supports specific Pokemon games.
+  // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
+  // the same.
+  GBC_MONSTERBRAIN_ROM = 41;
+
+  // Action Replay too
+  GBC_GAMESHARK_ROM = 42;
+
+  // AKA "Xplorer GB"
+  GBC_XPLODER_ROM = 43;
+
+  // Email client
+  GBC_SHARK_MX_ROM = 44;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy Advance
+  //////////////////////////////////////////////////////////////////////////////
+
+  // GBA GameShark made by Datel/InterAct (earlier generations).
+  GBA_GAMESHARK_DATEL_ROM = 60;
+
+  // GBA GameShark made by Blaze/FCD (later generations).
+  //
+  // - GBA Code Breaker Lite: R1 prototype (2001-10-19)
+  // - GBA Code Breaker Lite: R1 prototype (2002-11-15)
+  // - GBA GameShark Pro SP: MadCatz (2003-08-21)
+  // - GBA GameShark Pro SP: karabiner (2006-06-14)
+  GBA_GAMESHARK_FCD_ROM = 61;
+
+  GBA_TV_TUNER_ROM = 62;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Nintendo 64
+  //////////////////////////////////////////////////////////////////////////////
+
+  // GameShark, Action Replay, Equalizer, and Game Buster all use the same
+  // ROM format.
+  N64_GAMESHARK_ROM = 80;
+
+  // Official PC utils for GameShark, Action Replay, Equalizer, and Game Buster.
+  N64_GAMESHARK_TEXT = 81;
+
+  // Binary file from a memory card (Controller Pak) cheat list written by a
+  // GameShark, Action Replay, Equalizer, or Game Buster.
+  N64_GAMESHARK_MEMCARD = 82;
+
+  // AKA "Xploder 64"
+  N64_XPLORER64_ROM = 83;
+
+  // Official PC utils for Xplorer 64.
+  N64_XPLORER64_TEXT = 84;
+
+  // GB Hunter and Game Booster use the same ROM format.
+  N64_GBHUNTER_ROM = 85;
+
+  // EverDrive-64 X7 cheat file format.
+  N64_EDX7_TEXT = 86;
+
+  // Project 64 v1.6 cheat file format.
+  N64_PJ64_V1_TEXT = 87;
+
+  // Project 64 v3.0.0 cheat file format.
+  N64_PJ64_V3_TEXT = 88;
+}
+
+message CodecFeatureSet {
+  bool cheats = 1;
+  bool firmware = 2;
+  bool user_prefs = 3;
+  bool file_encryption = 4;
+  bool file_scrambling = 5;
+  bool file_compression = 6;
+}
+
+enum BrandId {
+  UNKNOWN_BRAND = 0x00;
+  GAMESHARK     = 0x01;
+  ACTION_REPLAY = 0x02;
+  EQUALIZER     = 0x03;
+  GAME_BUSTER   = 0x04;
+  GB_HUNTER     = 0x05;
+  GAME_BOOSTER  = 0x06;
+  CODE_BREAKER  = 0x07;
+  BRAINBOY      = 0x08;
+  MONSTER_BRAIN = 0x09;
+  XPLODER       = 0x0A;
+  XPLORER       = 0x0B;
+  GAME_GENIE    = 0x0C;
+  SHARK_MX      = 0x0D;
+}
+
+message ChecksumResult {
+  string crc32_hex = 1;
+  string crc32c_hex = 2;
+  string md5_hex = 3;
+  string sha1_hex = 4;
 }
 
 message Warning {
   string message = 1;
 }
 
-message Code {
-  uint32 code_index = 1;
-  bytes bytes = 2;
-  string comment = 3;
-}
-
-message Cheat {
-  uint32 cheat_index = 1;
-  RomString cheat_name = 2;
-  repeated Code codes = 3;
-  bool is_cheat_active = 4;
-}
-
-message Game {
-  uint32 game_index = 1;
-  RomString game_name = 2;
-  repeated Cheat cheats = 3;
-  bool is_game_active = 4;
-  repeated Warning warnings = 5;
-}
-
-enum PrintFormat {
+enum PrintFormatId {
   UNKNOWN_PRINT_FORMAT = 0x00;
   DETECT = 0x01;
   COLOR = 0x02;
@@ -211,62 +224,54 @@ enum PrintFormat {
   MARKDOWN = 0x06;
 }
 
-enum FileFormat {
-  UNKNOWN_FILE_FORMAT = 0x00;
-
-  AUTO = 0x01;
-  ROM = 0x02;
-
-  JSONPROTO = 0x03;
-  TEXTPROTO = 0x04;
-
-  // XML cheat file format for OpenEmu (all consoles).
-  // TODO(CheatoBaggins): Implement
-  OPENEMU = 0x11;
-
-  // TODO(CheatoBaggins): Add Libretro/RetroArch cheat format
-
-  //
-  // Nintendo 64
-  //
-
-  // Official PC utils for GameShark, Action Replay, Equalizer, and Game Buster.
-  N64_DATEL_TEXT = 0x21;
-
-  // Binary file from a memory card (Controller Pak) cheat list written by a
-  // GameShark, Action Replay, Equalizer, or Game Buster.
-  // TODO(CheatoBaggins): Implement
-  N64_DATEL_MEMCARD = 0x22;
-
-  // Official PC utils for Xplorer 64.
-  // TODO(CheatoBaggins): Implement
-  N64_FCD_TEXT = 0x23;
-
-  // EverDrive-64 X7 cheat file format.
-  // TODO(CheatoBaggins): Implement
-  N64_EDX7 = 0x24;
-
-  // Project 64 v1.6 cheat file format.
-  // TODO(CheatoBaggins): Implement
-  N64_PJ64_V1 = 0x25;
-
-  // Project 64 v3.0.0 cheat file format.
-  // TODO(CheatoBaggins): Implement
-  N64_PJ64_V3 = 0x26;
+message Game {
+  uint32 game_index = 1;
+  RomString game_name = 2;
+  repeated Cheat cheats = 3;
+  bool is_game_active = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
 }
 
+message Cheat {
+  uint32 cheat_index = 1;
+  RomString cheat_name = 2;
+  repeated Code codes = 3;
+  bool is_cheat_active = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
+}
 
+message Code {
+  uint32 code_index = 1;
+  bytes bytes = 2;
+  string comment = 3;
+  repeated Warning warnings = 4;
+}
+
+message RomRange {
+  uint32 start_index = 1;
+  uint32 end_index = 2;
+  uint32 length = 3;
+  bytes raw_bytes = 4;
+  string name = 5;
+}
+
+message RomString {
+  RomRange addr = 1;
+  string value = 2;
+}
 
 // TODO(CheatoBaggins): Move this to gbc.proto
 
 message GbcSmxContact {
-  RomString entryNumber = 1;
-  RomString personName = 2;
-  RomString emailAddress = 3;
-  RomString unknownField1 = 4;
-  RomString unknownField2 = 5;
-  RomString phoneNumber = 6;
-  RomString streetAddress = 7;
+  RomString entry_number = 1;
+  RomString person_name = 2;
+  RomString email_address = 3;
+  RomString unknown_field_1 = 4;
+  RomString unknown_field_2 = 5;
+  RomString phone_number = 6;
+  RomString street_address = 7;
 }
 
 message GbcSmxTimeZone {

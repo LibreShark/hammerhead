@@ -1,9 +1,7 @@
 ﻿using System.CommandLine;
 using System.Text.RegularExpressions;
-using LibreShark.Hammerhead.CheatDbs;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.Roms;
-using NUnit.Framework;
+using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead;
 
@@ -51,11 +49,12 @@ internal static class Program
 
     private static void PrintBanner(CmdParams cmdParams)
     {
-        bool isColor = cmdParams.PrintFormat == PrintFormat.Color;
+        bool isColor = cmdParams.PrintFormatId == PrintFormatId.Color;
         if (cmdParams.HideBanner)
         {
             return;
         }
+
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
         Console.WriteLine();
@@ -70,11 +69,8 @@ internal static class Program
     {
         foreach (FileInfo romFile in @params.InputFiles)
         {
-            var rom = Rom.FromFile(romFile.FullName);
-            var cheatDb = CheatDb.FromFile(romFile.FullName);
-            TerminalPrinter printer = rom.IsValidFormat() || !cheatDb.IsValidFormat()
-                ? new TerminalPrinter(rom, @params.PrintFormat)
-                : new TerminalPrinter(cheatDb, @params.PrintFormat);
+            var codec = AbstractCodec.FromFile(romFile.FullName);
+            var printer = new TerminalPrinter(codec, @params.PrintFormatId);
             printer.PrintDetails(romFile, @params);
         }
     }
@@ -82,11 +78,11 @@ internal static class Program
     private static void EncryptRom(RomCmdParams @params)
     {
         FileInfo inputFile = @params.InputFile!;
-        var rom = Rom.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(rom, @params.PrintFormat);
-        if (!rom.FormatSupportsFileEncryption())
+        var codec = AbstractCodec.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+        if (!codec.FormatSupportsFileEncryption())
         {
-            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "encrypted");
@@ -97,18 +93,18 @@ internal static class Program
         }
         printer.PrintRomCommand("Encrypting ROM file", inputFile, outputFile, () =>
         {
-            File.WriteAllBytes(outputFile.FullName, rom.Encrypt());
+            File.WriteAllBytes(outputFile.FullName, codec.Encrypt());
         });
     }
 
     private static void DecryptRom(RomCmdParams @params)
     {
         FileInfo inputFile = @params.InputFile!;
-        var rom = Rom.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(rom, @params.PrintFormat);
-        if (!rom.FormatSupportsFileEncryption())
+        var codec = AbstractCodec.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+        if (!codec.FormatSupportsFileEncryption())
         {
-            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "decrypted");
@@ -119,18 +115,18 @@ internal static class Program
         }
         printer.PrintRomCommand("Decrypting ROM file", inputFile, outputFile, () =>
         {
-            File.WriteAllBytes(outputFile.FullName, rom.Buffer);
+            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
         });
     }
 
     private static void ScrambleRom(RomCmdParams @params)
     {
         FileInfo inputFile = @params.InputFile!;
-        var rom = Rom.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(rom, @params.PrintFormat);
-        if (!rom.FormatSupportsFileScrambling())
+        var codec = AbstractCodec.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+        if (!codec.FormatSupportsFileScrambling())
         {
-            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "scrambled");
@@ -142,18 +138,18 @@ internal static class Program
 
         printer.PrintRomCommand("Scrambling ROM file", inputFile, outputFile, () =>
         {
-            File.WriteAllBytes(outputFile.FullName, rom.Scramble());
+            File.WriteAllBytes(outputFile.FullName, codec.Scramble());
         });
     }
 
     private static void UnscrambleRom(RomCmdParams @params)
     {
         FileInfo inputFile = @params.InputFile!;
-        var rom = Rom.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(rom, @params.PrintFormat);
-        if (!rom.FormatSupportsFileScrambling())
+        var codec = AbstractCodec.FromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+        if (!codec.FormatSupportsFileScrambling())
         {
-            printer.PrintError($"{rom.Metadata.RomFormat.ToDisplayString()} ROM files do not support scrambling. Aborting.");
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
         }
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "unscrambled");
@@ -164,7 +160,7 @@ internal static class Program
         }
         printer.PrintRomCommand("Unscrambling ROM file", inputFile, outputFile, () =>
         {
-            File.WriteAllBytes(outputFile.FullName, rom.Buffer);
+            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
         });
     }
 
@@ -172,14 +168,10 @@ internal static class Program
     {
         foreach (FileInfo inputFile in @params.InputFiles)
         {
-            var rom = Rom.FromFile(inputFile.FullName);
-            var cheatDb = CheatDb.FromFile(inputFile.FullName);
-            TerminalPrinter printer = rom.IsValidFormat() || !cheatDb.IsValidFormat()
-                ? new TerminalPrinter(rom, @params.PrintFormat)
-                : new TerminalPrinter(cheatDb, @params.PrintFormat);
+            var codec = AbstractCodec.FromFile(inputFile.FullName);
+            var printer = new TerminalPrinter(codec, @params.PrintFormatId);
 
-            IDataSource dataSource = rom.IsValidFormat() ? rom : cheatDb;
-            List<Game> games = dataSource.Games;
+            List<Game> games = codec.Games;
 
             // TODO(CheatoBaggins): Auto-detect output file type!
 

@@ -6,7 +6,7 @@ using BetterConsoles.Tables;
 using BetterConsoles.Tables.Builders;
 using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
-using LibreShark.Hammerhead.Roms;
+using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 
 namespace LibreShark.Hammerhead.IO;
@@ -19,8 +19,8 @@ public class TerminalPrinter
     public readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
     public readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
 
-    private readonly IDataSource _file;
-    private readonly PrintFormat _printFormat;
+    private readonly AbstractCodec _codec;
+    private readonly PrintFormatId _printFormat;
 
     private CellFormat HeaderCellFormat
     {
@@ -43,8 +43,8 @@ public class TerminalPrinter
         }
     }
 
-    public bool IsColor => _printFormat == PrintFormat.Color;
-    public bool IsMarkdown => _printFormat == PrintFormat.Markdown;
+    public bool IsColor => _printFormat == PrintFormatId.Color;
+    public bool IsMarkdown => _printFormat == PrintFormatId.Markdown;
     public bool IsPlain => !IsColor && !IsMarkdown;
 
     private TableConfig TableConfig =>
@@ -54,10 +54,10 @@ public class TerminalPrinter
                 ? TableConfig.Markdown()
                 : TableConfig.Simple();
 
-    public TerminalPrinter(IDataSource file, PrintFormat printFormat)
+    public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat)
     {
-        _file = file;
-        _printFormat = GetEffectivePrintFormat(printFormat);
+        _codec = codec;
+        _printFormat = GetEffectivePrintFormatId(printFormat);
     }
 
     public Table BuildTable(Action<TableBuilder> addColumns)
@@ -124,9 +124,9 @@ public class TerminalPrinter
         PrintChecksums(@params);
         PrintHeading("Identifiers");
         PrintIdentifiers(@params);
-        _file.PrintCustomHeader(this, @params);
-        _file.PrintGames(this, @params);
-        _file.PrintCustomBody(this, @params);
+        _codec.PrintCustomHeader(this, @params);
+        _codec.PrintGames(this, @params);
+        _codec.PrintCustomBody(this, @params);
         Console.WriteLine();
         Console.WriteLine();
         // --------------------------------------------------------------------------------
@@ -168,21 +168,21 @@ public class TerminalPrinter
                 .AddColumn("Value", rowsFormat: ValueCell());
         });
 
-        string fileSize = $"{PrettySize.Format(_file.Buffer.Length)} " +
-                          $"(0x{_file.Buffer.Length:X8} = {_file.Buffer.Length} bytes)";
+        string fileSize = $"{PrettySize.Format(_codec.Buffer.Length)} " +
+                          $"(0x{_codec.Buffer.Length:X8} = {_codec.Buffer.Length} bytes)";
 
-        table.AddRow("File format", OrUnknown(_file.Metadata.RomFormat.ToDisplayString()));
-        table.AddRow("Platform", OrUnknown(_file.Metadata.Console.ToDisplayString()));
+        table.AddRow("File format", OrUnknown(_codec.Metadata.CodecId.ToDisplayString()));
+        table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString()));
         table.AddRow("Brand", OrUnknown(GetDisplayBrand()));
         table.AddRow("Locale", OrUnknown(GetDisplayLocale()));
         table.AddRow("", "");
-        table.AddRow("Version", OrUnknown(_file.Metadata.DisplayVersion));
-        table.AddRow("Build date", OrUnknown(_file.Metadata.BuildDateIso));
-        table.AddRow("Known ROM version", _file.Metadata.IsKnownVersion);
+        table.AddRow("Version", OrUnknown(_codec.Metadata.DisplayVersion));
+        table.AddRow("Build date", OrUnknown(_codec.Metadata.BuildDateIso));
+        table.AddRow("Known ROM version", _codec.Metadata.IsKnownVersion);
         table.AddRow("", "");
         table.AddRow("File size", fileSize);
 
-        _file.AddFileProps(table);
+        _codec.AddFileProps(table);
 
         Console.WriteLine(table);
     }
@@ -194,7 +194,7 @@ public class TerminalPrinter
             .AddColumn("Checksum", rowsFormat: ValueCell())
             .Build();
 
-        ChecksumResult? checksums = _file.Metadata.FileChecksum;
+        ChecksumResult? checksums = _codec.Metadata.FileChecksum;
         filePropTable.AddRow("CRC-32 (standard)", OrUnknown(checksums?.Crc32Hex));
         filePropTable.AddRow("CRC-32C (Castagnoli)", OrUnknown(checksums?.Crc32CHex));
         filePropTable.AddRow("MD5", OrUnknown(checksums?.Md5Hex));
@@ -207,12 +207,12 @@ public class TerminalPrinter
 
     public void PrintIdentifiers(InfoCmdParams @params)
     {
-        if (_file.Metadata.Identifiers.Count == 0)
+        if (_codec.Metadata.Identifiers.Count == 0)
         {
             Console.WriteLine(Italic("No identifiers found."));
             return;
         }
-        foreach (RomString id in _file.Metadata.Identifiers)
+        foreach (RomString id in _codec.Metadata.Identifiers)
         {
             Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
         }
@@ -222,25 +222,25 @@ public class TerminalPrinter
     {
         PrintHeading("Games and cheat codes");
 
-        if (_file.Games.Count == 0)
+        if (_codec.Games.Count == 0)
         {
             Console.WriteLine(Error("No games/cheats found."));
             return;
         }
 
-        Game? activeGame = _file.Games.FirstOrDefault(game => game.IsGameActive);
+        Game? activeGame = _codec.Games.FirstOrDefault(game => game.IsGameActive);
         if (activeGame != null)
         {
             Console.WriteLine($"Active game: '{activeGame.GameName.Value}'");
             Console.WriteLine();
         }
 
-        Cheat[] allCheats = _file.Games.SelectMany(game => game.Cheats).ToArray();
-        Code[] allCodes = _file.Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
-        string gamePlural = _file.Games.Count == 1 ? "game" : "games";
+        Cheat[] allCheats = _codec.Games.SelectMany(game => game.Cheats).ToArray();
+        Code[] allCodes = _codec.Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
+        string gamePlural = _codec.Games.Count == 1 ? "game" : "games";
         string cheatCountPlural = allCheats.Length == 1 ? "cheat" : "cheats";
         string codeCountPlural = allCodes.Length == 1 ? "code" : "codes";
-        Console.WriteLine($"{_file.Games.Count} {gamePlural}, " +
+        Console.WriteLine($"{_codec.Games.Count} {gamePlural}, " +
                           $"{allCheats.Length:N0} {cheatCountPlural}, " +
                           $"{allCodes.Length:N0} {codeCountPlural}:");
         Console.WriteLine();
@@ -253,7 +253,7 @@ public class TerminalPrinter
 
         gameTable.Config = TableConfig;
 
-        List<Game> sortedGames = _file.Games.ToList();
+        List<Game> sortedGames = _codec.Games.ToList();
         sortedGames.Sort((g1, g2) =>
             string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.InvariantCulture));
 
@@ -285,7 +285,7 @@ public class TerminalPrinter
                 }
                 foreach (Code code in cheat.Codes)
                 {
-                    gameTable.AddRow($"    {code.Bytes.ToCodeString(_file.Metadata.Console).SetStyle(FontStyleExt.None)}", "", "");
+                    gameTable.AddRow($"    {code.Bytes.ToCodeString(_codec.Metadata.ConsoleId).SetStyle(FontStyleExt.None)}", "", "");
                 }
             }
         }
@@ -295,12 +295,12 @@ public class TerminalPrinter
 
     public string GetDisplayBrand()
     {
-        return _file.Metadata.Brand.ToDisplayString();
+        return _codec.Metadata.BrandId.ToDisplayString();
     }
 
     public string GetDisplayLocale()
     {
-        string ietf = _file.Metadata.LanguageIetfCode;
+        string ietf = _codec.Metadata.LanguageIetfCode;
         string locale;
         if (String.IsNullOrWhiteSpace(ietf))
         {
@@ -401,28 +401,28 @@ public class TerminalPrinter
         }
     }
 
-    public static PrintFormat GetEffectivePrintFormat(PrintFormat printFormat)
+    public static PrintFormatId GetEffectivePrintFormatId(PrintFormatId printFormat)
     {
         switch (printFormat)
         {
-            case PrintFormat.Plain:
-            case PrintFormat.Color:
-            case PrintFormat.Markdown:
-            case PrintFormat.Json:
-            case PrintFormat.Proto:
+            case PrintFormatId.Plain:
+            case PrintFormatId.Color:
+            case PrintFormatId.Markdown:
+            case PrintFormatId.Json:
+            case PrintFormatId.Proto:
                 return printFormat;
-            case PrintFormat.Detect:
+            case PrintFormatId.Detect:
             {
                 // https://no-color.org/
                 bool isColorDisabled = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR"));
                 bool isDumbTerminal = Environment.GetEnvironmentVariable("TERM") is "dumb" or "xterm";
                 return isColorDisabled || isDumbTerminal || IsOutputRedirected
-                    ? PrintFormat.Plain
-                    : PrintFormat.Color;
+                    ? PrintFormatId.Plain
+                    : PrintFormatId.Color;
             }
-            case PrintFormat.UnknownPrintFormat:
+            case PrintFormatId.UnknownPrintFormat:
             default:
-                return PrintFormat.Plain;
+                return PrintFormatId.Plain;
         }
     }
 

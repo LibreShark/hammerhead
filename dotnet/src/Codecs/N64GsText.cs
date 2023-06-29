@@ -1,8 +1,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.CheatDbs;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -15,14 +16,13 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public sealed class N64DatelTextDb : CheatDb
+public sealed class N64GsText : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.Nintendo64;
-    private const FileFormat ThisFileFormat = FileFormat.N64DatelText;
-    private const RomFormat ThisRomFormat = RomFormat.N64Gameshark;
+    private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
+    private const CodecId ThisCodecId = CodecId.N64GamesharkText;
 
-    public N64DatelTextDb(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, ThisConsole, ThisFileFormat, ThisRomFormat)
+    public N64GsText(string filePath, u8[] rawInput)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Games.AddRange(ReadGames());
     }
@@ -34,7 +34,7 @@ public sealed class N64DatelTextDb : CheatDb
         InCheat,
     }
 
-    protected override List<Game> ReadGames()
+    private List<Game> ReadGames()
     {
         var games = new List<Game>();
         var curGame = new Game();
@@ -115,7 +115,7 @@ public sealed class N64DatelTextDb : CheatDb
         return games;
     }
 
-    protected override u8[] WriteGames(IEnumerable<Game> games)
+    public u8[] WriteGames(IEnumerable<Game> games)
     {
         Game[] gamesArray = games.ToArray();
         var sb = new StringBuilder();
@@ -137,7 +137,7 @@ public sealed class N64DatelTextDb : CheatDb
                 sb.AppendLine(Quote(cheat.CheatName.Value) + cheatOff);
                 foreach (Code code in cheat.Codes)
                 {
-                    sb.Append(code.Bytes.ToCodeString(Metadata.Console));
+                    sb.Append(code.Bytes.ToCodeString(Metadata.ConsoleId));
                     if (!string.IsNullOrWhiteSpace(code.Comment))
                     {
                         sb.Append(" ; ");
@@ -170,5 +170,19 @@ public sealed class N64DatelTextDb : CheatDb
                 bool isEnd = Regex.IsMatch(s, "^\\.end$");
                 return isName || isCode || isEnd;
             });
+    }
+
+    private static string[] GetAllNonEmptyLines(u8[] buffer)
+    {
+        string[] lines = buffer.SplitLines();
+        return lines
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray();
+    }
+
+    private static BigEndianScribe MakeScribe(byte[] rawInput)
+    {
+        return new BigEndianScribe(rawInput);
     }
 }

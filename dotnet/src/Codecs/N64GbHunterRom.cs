@@ -10,7 +10,7 @@ using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -28,20 +28,20 @@ using f64 = Double;
 /// made by Datel.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public sealed class N64GbHunterRom : Rom
+public sealed class N64GbHunterRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.Nintendo64;
-    private const RomFormat ThisRomFormat = RomFormat.N64Gbhunter;
+    private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
+    private const CodecId ThisCodecId = CodecId.N64GbhunterRom;
 
     private readonly s32[] _rle01Addresses;
 
     public N64GbHunterRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         _rle01Addresses = rawInput.FindAll("RLE01");
 
         // TODO(CheatoBaggins): Detect Game Booster
-        // Metadata.Brand = RomBrand.GbHunter;
+        // Metadata.BrandId = BrandId.GbHunter;
     }
 
     public override bool FormatSupportsCustomCheatCodes()
@@ -49,7 +49,7 @@ public sealed class N64GbHunterRom : Rom
         return false;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         u8[] output = rawInput.ToArray();
         return new BigEndianScribe(output);
@@ -61,14 +61,14 @@ public sealed class N64GbHunterRom : Rom
         return is256KiB && bytes.FindAll("RLE01").Length == 6;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
     public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)

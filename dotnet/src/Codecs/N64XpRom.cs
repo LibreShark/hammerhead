@@ -5,7 +5,7 @@ using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -22,10 +22,10 @@ using f64 = Double;
 /// Xplorer 64 for Nintendo 64,
 /// made by Blaze and Future Console Design (FCD).
 /// </summary>
-public sealed class N64XpRom : Rom
+public sealed class N64XpRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.Nintendo64;
-    private const RomFormat ThisRomFormat = RomFormat.N64Xplorer64;
+    private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
+    private const CodecId ThisCodecId = CodecId.N64Xplorer64Text;
 
     private const u32 GameListAddr = 0x00030000;
     private const u32 UserPrefsAddr = 0x0003F000;
@@ -44,12 +44,12 @@ public sealed class N64XpRom : Rom
     private readonly bool _hasUserPrefs;
 
     public N64XpRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
         _isScrambled = DetectScrambled(rawInput);
         _hasUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
 
-        Metadata.Brand = RomBrand.Xplorer;
+        Metadata.BrandId = BrandId.Xplorer;
 
         // TODO(CheatoBaggins): Implement
         Metadata.IsKnownVersion = false;
@@ -97,7 +97,7 @@ public sealed class N64XpRom : Rom
         ReadUserPrefs();
     }
 
-    private static BinaryScribe Unobfuscate(u8[] rawInput)
+    private static AbstractBinaryScribe Unobfuscate(u8[] rawInput)
     {
         u8[] output =
             DetectScrambled(rawInput)
@@ -191,11 +191,11 @@ public sealed class N64XpRom : Rom
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
                     u8[] codeBytes = Scribe.ReadBytes(6);
-                    string codeStrOld = codeBytes.ToCodeString(GameConsole.Nintendo64);
+                    string codeStrOld = codeBytes.ToCodeString(ConsoleId.Nintendo64);
                     if (IsCodeEncrypted(codeBytes))
                     {
-                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToCodeString(GameConsole.Nintendo64);
-                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToCodeString(GameConsole.Nintendo64);
+                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToCodeString(ConsoleId.Nintendo64);
+                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToCodeString(ConsoleId.Nintendo64);
                         // if (codeStrNew1 != codeStrNew2)
                         // {
                         //     Console.WriteLine("-------------------");
@@ -388,13 +388,13 @@ public sealed class N64XpRom : Rom
         return is256KiB && (DetectPlain(bytes) || DetectScrambled(bytes));
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 }

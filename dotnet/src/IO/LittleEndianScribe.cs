@@ -18,7 +18,7 @@ using f64 = Double;
 ///
 /// TODO(CheatoBaggins): Add transformer lambdas for replacing GS chars (e.g., "Infinite ")
 /// </summary>
-internal class LittleEndianScribe : BinaryScribe
+internal class LittleEndianScribe : AbstractBinaryScribe
 {
     public LittleEndianScribe(u8[] bufferRef) : base(bufferRef)
     {
@@ -32,7 +32,7 @@ internal class LittleEndianScribe : BinaryScribe
         return (u16) value;
     }
 
-    public override BinaryScribe WriteU16(u16 value)
+    public override AbstractBinaryScribe WriteU16(u16 value)
     {
         u8 hi = (u8)((value >> 8) & 0xFF);
         u8 lo = (u8)(value & 0xFF);
@@ -49,7 +49,7 @@ internal class LittleEndianScribe : BinaryScribe
         return (hi << 16) + lo;
     }
 
-    public override BinaryScribe WriteU32(u32 value)
+    public override AbstractBinaryScribe WriteU32(u32 value)
     {
         u16 hi = (u16)(value >> 16);
         u16 lo = (u16)(value & 0xFFFF);

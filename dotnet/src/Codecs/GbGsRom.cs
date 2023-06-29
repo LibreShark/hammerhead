@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -19,15 +19,15 @@ using f64 = Double;
 /// GameShark and Action Replay for Game Boy and Game Boy Pocket,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbGsRom : Rom
+public sealed class GbGsRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoy;
-    private const RomFormat ThisRomFormat = RomFormat.GbcGameshark;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoy;
+    private const CodecId ThisCodecId = CodecId.GbcGamesharkRom;
 
     private readonly List<RomString> _cheatNames = new();
 
     public GbGsRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         ReadVersion();
         ReadGames();
@@ -167,17 +167,17 @@ public sealed class GbGsRom : Rom
                hasVerAddr;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }

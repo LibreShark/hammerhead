@@ -75,11 +75,11 @@ public static class ExtensionMethods
         return string.Join(delimiter, eBytes.Select((b) => $"{b:X2}"));
     }
 
-    public static string ToCodeString(this IEnumerable<byte> eBytes, GameConsole console)
+    public static string ToCodeString(this IEnumerable<byte> eBytes, ConsoleId consoleId)
     {
         u8[] bytes = eBytes.ToArray();
 
-        if (console is GameConsole.Nintendo64 or GameConsole.GameBoyAdvance)
+        if (consoleId is ConsoleId.Nintendo64 or ConsoleId.GameBoyAdvance)
         {
             return $"{bytes[..4].ToHexString()} {bytes[4..].ToHexString()}";
         }
@@ -338,62 +338,74 @@ public static class ExtensionMethods
         return $"[0x{range.StartIndex:X8}, 0x{range.EndIndex - 1:X8}]";
     }
 
-    public static string ToDisplayString(this RomFormat format)
+    public static string ToDisplayString(this CodecId codecId)
     {
-        return format switch
+        return codecId switch
         {
-            RomFormat.GbaGamesharkDatel => "GBA - Datel GameShark",
-            RomFormat.GbaGamesharkFcd => "GBA - FCD GameShark",
-            RomFormat.GbaTvTuner => "GBA - TV Tuner",
-            RomFormat.GbcCodebreaker => "GBC - Code Breaker",
-            RomFormat.GbcGameshark => "GBC - GameShark",
-            RomFormat.GbcMonsterbrain => "GBC - Monster Brain",
-            RomFormat.GbcSharkMx => "GBC - Shark MX",
-            RomFormat.GbcXploder => "GBC - Xploder/Xplorer",
-            RomFormat.N64Gameshark => "N64 - GameShark",
-            RomFormat.N64Gbhunter => "N64 - GB Hunter",
-            RomFormat.N64Xplorer64 => "N64 - Xplorer 64",
-            RomFormat.UnknownRomFormat => "UNKNOWN ROM format",
-            _ => throw new NotSupportedException($"RomFormat {format} is missing from ToDisplayString()!"),
+            CodecId.GbGamesharkRom => "GB - GameShark ROM",
+            CodecId.GbaGamesharkDatelRom => "GBA - Datel GameShark ROM",
+            CodecId.GbaGamesharkFcdRom => "GBA - FCD GameShark ROM",
+            CodecId.GbaTvTunerRom => "GBA - TV Tuner ROM",
+            CodecId.GbcCodebreakerRom => "GBC - Code Breaker ROM",
+            CodecId.GbcGamesharkRom => "GBC - GameShark ROM",
+            CodecId.GbcMonsterbrainRom => "GBC - Monster Brain ROM",
+            CodecId.GbcSharkMxRom => "GBC - Shark MX ROM",
+            CodecId.GbcXploderRom => "GBC - Xploder/Xplorer ROM",
+            CodecId.Jsonproto => "Hammerhead protobuf JSON",
+            CodecId.LibretroText => "Libretro/RetroArch cheat list",
+            CodecId.N64Edx7Text => "N64 - EverDrive-64 X7 cheat list",
+            CodecId.N64GamesharkMemcard => "N64 - GameShark cheats (mempak note)",
+            CodecId.N64GamesharkRom => "N64 - GameShark ROM",
+            CodecId.N64GamesharkText => "N64 - Datel-formatted cheat list",
+            CodecId.N64GbhunterRom => "N64 - GB Hunter ROM",
+            CodecId.N64Pj64V1Text => "N64 - Project 64 v1.6 cheat list",
+            CodecId.N64Pj64V3Text => "N64 - Project 64 v3.0 cheat list",
+            CodecId.N64Xplorer64Rom => "N64 - Xplorer 64 ROM",
+            CodecId.N64Xplorer64Text => "N64 - FCD-formatted cheat list",
+            CodecId.OpenemuXml => "OpenEmu XML cheat list",
+            CodecId.Textproto => "Hammerhead protobuf text",
+            CodecId.UnspecifiedCodecId => "UNSPECIFIED ROM format",
+            CodecId.UnsupportedCodecId => "UNSUPPORTED ROM format",
+            _ => throw new NotSupportedException($"CodecId {codecId} is missing from ToDisplayString()!"),
         };
     }
 
-    public static string ToDisplayString(this RomBrand brand)
+    public static string ToDisplayString(this BrandId brandId)
     {
-        return brand switch
+        return brandId switch
         {
-            RomBrand.ActionReplay => "Action Replay",
-            RomBrand.Brainboy => "BrainBoy",
-            RomBrand.CodeBreaker => "Code Breaker",
-            RomBrand.Equalizer => "Equalizer",
-            RomBrand.GameBooster => "Game Booster",
-            RomBrand.GameBuster => "Game Buster",
-            RomBrand.GameGenie => "Game Genie",
-            RomBrand.Gameshark => "GameShark",
-            RomBrand.GbHunter => "GB Hunter",
-            RomBrand.MonsterBrain => "Monster Brain",
-            RomBrand.SharkMx => "Shark MX",
-            RomBrand.Xploder => "Xploder",
-            RomBrand.Xplorer => "Xplorer",
-            RomBrand.UnknownBrand => "UNKNOWN brand",
-            _ => throw new NotSupportedException($"RomBrand {brand} is missing from ToDisplayString()!"),
+            BrandId.ActionReplay => "Action Replay",
+            BrandId.Brainboy => "BrainBoy",
+            BrandId.CodeBreaker => "Code Breaker",
+            BrandId.Equalizer => "Equalizer",
+            BrandId.GameBooster => "Game Booster",
+            BrandId.GameBuster => "Game Buster",
+            BrandId.GameGenie => "Game Genie",
+            BrandId.Gameshark => "GameShark",
+            BrandId.GbHunter => "GB Hunter",
+            BrandId.MonsterBrain => "Monster Brain",
+            BrandId.SharkMx => "Shark MX",
+            BrandId.Xploder => "Xploder",
+            BrandId.Xplorer => "Xplorer",
+            BrandId.UnknownBrand => "UNKNOWN brand",
+            _ => throw new NotSupportedException($"BrandId {brandId} is missing from ToDisplayString()!"),
         };
     }
 
-    public static string ToDisplayString(this GameConsole console)
+    public static string ToDisplayString(this ConsoleId consoleId)
     {
-        return console switch
+        return consoleId switch
         {
-            GameConsole.GameBoy => "Game Boy (GB)",
-            GameConsole.GameBoyColor => "Game Boy Color (GBC)",
-            GameConsole.GameBoyAdvance => "Game Boy Advance (GBA)",
-            GameConsole.GameGear => "Game Gear (GG)",
-            GameConsole.Nintendo64 => "Nintendo 64 (N64)",
-            GameConsole.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
-            GameConsole.Dreamcast => "Dreamcast",
-            GameConsole.Gamecube => "GameCube",
-            GameConsole.UnknownGameConsole => "UNKNOWN game console",
-            _ => throw new NotSupportedException($"GameConsole {console} is missing from ToDisplayString()!"),
+            ConsoleId.GameBoy => "Game Boy (GB)",
+            ConsoleId.GameBoyColor => "Game Boy Color (GBC)",
+            ConsoleId.GameBoyAdvance => "Game Boy Advance (GBA)",
+            ConsoleId.GameGear => "Game Gear (GG)",
+            ConsoleId.Nintendo64 => "Nintendo 64 (N64)",
+            ConsoleId.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
+            ConsoleId.Dreamcast => "Dreamcast",
+            ConsoleId.Gamecube => "GameCube",
+            ConsoleId.UnknownConsole => "UNKNOWN game console",
+            _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
         };
     }
 

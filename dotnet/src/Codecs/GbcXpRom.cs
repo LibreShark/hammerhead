@@ -1,7 +1,7 @@
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -18,20 +18,20 @@ using f64 = Double;
 /// Xploder GB (aka "Xplorer GB") for Game Boy Color and Game Boy Pocket,
 /// made by Blaze and Future Console Design (FCD).
 /// </summary>
-public sealed class GbcXpRom : Rom
+public sealed class GbcXpRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
-    private const RomFormat ThisRomFormat = RomFormat.GbcXploder;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
+    private const CodecId ThisCodecId = CodecId.GbcXploderRom;
 
     private const u32 ProductIdAddr    = 0x00000000;
     private const u32 ManufacturerAddr = 0x00000104;
     private const u32 GameListAddr     = 0x00020000;
 
     public GbcXpRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         u32 productNameAddr = (u32)Scribe.Find("Xploder GB");
-        Metadata.Brand = RomBrand.Xploder;
+        Metadata.BrandId = BrandId.Xploder;
 
         RomString productId = Scribe.Seek(ProductIdAddr).ReadPrintableCString();
         RomString productName = Scribe.Seek(productNameAddr).ReadPrintableCString();
@@ -106,17 +106,17 @@ public sealed class GbcXpRom : Rom
                bytes.Contains("Future Console Design!");
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         return new LittleEndianScribe(rawInput.ToArray());
     }

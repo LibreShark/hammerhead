@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -24,10 +24,10 @@ using f64 = Double;
 /// specifically for Pokemon games. They had hard-coded cheats that were not
 /// user-editable.
 /// </summary>
-public sealed class GbcCbRom : Rom
+public sealed class GbcCbRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyColor;
-    private const RomFormat ThisRomFormat = RomFormat.GbcCodebreaker;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
+    private const CodecId ThisCodecId = CodecId.GbcCodebreakerRom;
 
     private const u32 CheatNameListAddr    = 0x000067F0;
     private const u32 GameListAddr         = 0x00022000;
@@ -37,9 +37,9 @@ public sealed class GbcCbRom : Rom
     private readonly RomString _selectedGameName;
 
     public GbcCbRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
-        Metadata.Brand = DetectBrand(rawInput);
+        Metadata.BrandId = DetectBrand(rawInput);
 
         RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();
         _selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
@@ -147,30 +147,30 @@ public sealed class GbcCbRom : Rom
 
     private static bool Detect(u8[] bytes)
     {
-        return DetectBrand(bytes) != RomBrand.UnknownBrand;
+        return DetectBrand(bytes) != BrandId.UnknownBrand;
     }
 
-    private static RomBrand DetectBrand(u8[] bytes)
+    private static BrandId DetectBrand(u8[] bytes)
     {
         string id = bytes[..0x20].ToAsciiString();
         if (id.Contains("CodeBreaker / GB"))
         {
-            return RomBrand.CodeBreaker;
+            return BrandId.CodeBreaker;
         }
-        return RomBrand.UnknownBrand;
+        return BrandId.UnknownBrand;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] bytes)
+    private static AbstractBinaryScribe MakeScribe(u8[] bytes)
     {
         return new LittleEndianScribe(bytes);
     }

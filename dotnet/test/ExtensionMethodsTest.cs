@@ -46,8 +46,9 @@ public class ExtensionMethodsTest
     {
         Assert.Multiple(() =>
         {
-            Assert.That(new u8[] { 0x81, 0x25, 0x59, 0x9C, 0x46, 0x1F }.ToCodeString(GameConsole.Nintendo64), Is.EqualTo("8125599C 461F"));
-            Assert.That(new u8[] { 0x81, 0x25, 0x59, 0x9C, 0x46, 0x1F }.ToCodeString(GameConsole.UnknownGameConsole), Is.EqualTo("8125599C461F"));
+            Assert.That(new u8[] { 0x81, 0x25, 0x59, 0x9C, 0x46, 0x1F }.ToCodeString(ConsoleId.Nintendo64), Is.EqualTo("8125599C 461F"));
+            Assert.That(new u8[] { 0x81, 0x25, 0x59, 0x9C, 0x46, 0x1F }.ToCodeString(ConsoleId.UnknownConsole), Is.EqualTo("8125599C461F"));
+            Assert.That(new u8[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 }.ToCodeString(ConsoleId.GameBoyAdvance), Is.EqualTo("01020304 05060708"));
         });
     }
 

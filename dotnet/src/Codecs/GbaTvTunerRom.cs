@@ -1,6 +1,6 @@
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -17,13 +17,13 @@ using f64 = Double;
 /// TV Tuner for Game Boy Advance, made by Blaze and Pelican Accessories.
 /// There are NTSC and PAL variants.
 /// </summary>
-public sealed class GbaTvTunerRom : Rom
+public sealed class GbaTvTunerRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
-    private const RomFormat ThisRomFormat = RomFormat.GbaTvTuner;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
+    private const CodecId ThisCodecId = CodecId.GbaTvTunerRom;
 
     public GbaTvTunerRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
     }
 
@@ -46,17 +46,17 @@ public sealed class GbaTvTunerRom : Rom
         return idStr == "GBA_Capture";
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] bytes)
+    private static AbstractBinaryScribe MakeScribe(u8[] bytes)
     {
         return new LittleEndianScribe(bytes);
     }

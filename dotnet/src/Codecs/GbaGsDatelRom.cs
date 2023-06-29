@@ -1,27 +1,22 @@
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Codecs;
 
-namespace LibreShark.Hammerhead.Roms;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
 using u16 = UInt16;
-using s32 = Int32;
 using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
 
 /// <summary>
 /// GameShark and Action Replay for Game Boy Advance,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbaGsDatelRom : Rom
+public sealed class GbaGsDatelRom : AbstractCodec
 {
-    private const GameConsole ThisConsole = GameConsole.GameBoyAdvance;
-    private const RomFormat ThisRomFormat = RomFormat.GbaGamesharkDatel;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
+    private const CodecId ThisCodecId = CodecId.GbaGamesharkDatelRom;
 
     private const u32 GbaMagicStrAddr = 0x21000;
     private const u32 MinorVersionNumberAddr = 0x21004;
@@ -35,10 +30,10 @@ public sealed class GbaGsDatelRom : Rom
         "v5.8",
     };
 
-    private readonly BinaryScribe _beScribe = new BigEndianScribe(new byte[8]);
+    private readonly AbstractBinaryScribe _beScribe = new BigEndianScribe(new byte[8]);
 
     public GbaGsDatelRom(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsole, ThisRomFormat)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         ParseVersion();
         ParseGames();
@@ -129,17 +124,17 @@ public sealed class GbaGsDatelRom : Rom
         return hasMagicNumber && hasMagicText;
     }
 
-    public static bool Is(Rom rom)
+    public static bool Is(AbstractCodec codec)
     {
-        return rom.Metadata.RomFormat == ThisRomFormat;
+        return codec.Metadata.CodecId == ThisCodecId;
     }
 
-    public static bool Is(RomFormat type)
+    public static bool Is(CodecId type)
     {
-        return type == ThisRomFormat;
+        return type == ThisCodecId;
     }
 
-    private static BinaryScribe MakeScribe(u8[] rawInput)
+    private static AbstractBinaryScribe MakeScribe(u8[] rawInput)
     {
         return new LittleEndianScribe(rawInput);
     }

@@ -7,14 +7,14 @@ namespace LibreShark.Hammerhead;
 
 public abstract class CmdParams : EventArgs
 {
-    public PrintFormat PrintFormat { get; set; }
+    public PrintFormatId PrintFormatId { get; set; }
     public bool HideBanner { get; init; }
     public bool Clean { get; init; }
 }
 
 public class InfoCmdParams : CmdParams
 {
-    public FileFormat InputFormat { get; init; }
+    public CodecId InputCodecId { get; init; }
     public bool HideGames { get; init; }
     public bool HideCheats { get; init; }
     public bool HideCodes { get; init; }
@@ -71,41 +71,41 @@ public class Cli
         description: "Overwrite existing output files without prompting."
     );
 
-    private static readonly Option<FileFormat> InputFormatOption = new Option<FileFormat>(
+    private static readonly Option<CodecId> InputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--input-format" },
         description: "Force Hammerhead to use a specific file format when reading input files.\n" +
                      "<input_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
-        getDefaultValue: () => FileFormat.Auto
+        getDefaultValue: () => CodecId.Auto
     )
     {
         ArgumentHelpName = "input_format",
     };
 
-    private static readonly Option<FileFormat> DumpCheatsOutputFormatOption = new Option<FileFormat>(
+    private static readonly Option<CodecId> DumpCheatsOutputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--output-format" },
         description: "Force Hammerhead to use a specific file format when writing output files.\n" +
                      "<output_format>: auto|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
-        getDefaultValue: () => FileFormat.Auto
+        getDefaultValue: () => CodecId.Auto
     )
     {
         ArgumentHelpName = "output_format",
     };
 
-    private static readonly Option<FileFormat> CopyCheatsOutputFormatOption = new Option<FileFormat>(
+    private static readonly Option<CodecId> CopyCheatsOutputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--output-format" },
         description: "Force Hammerhead to use a specific file format when writing output files.\n" +
                      "<output_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
-        getDefaultValue: () => FileFormat.Auto
+        getDefaultValue: () => CodecId.Auto
     )
     {
         ArgumentHelpName = "output_format",
     };
 
-    private static readonly Option<PrintFormat> PrintFormatOption = new Option<PrintFormat>(
+    private static readonly Option<PrintFormatId> PrintFormatIdOption = new Option<PrintFormatId>(
         aliases: new string[] { "--print-format" },
         description: "Force Hammerhead to print to stdout using the specified format.\n" +
                      "<print_format>: detect|color|plain|json|proto|markdown",
-        getDefaultValue: () => PrintFormat.Detect
+        getDefaultValue: () => PrintFormatId.Detect
     )
     {
         ArgumentHelpName = "print_format",
@@ -317,7 +317,7 @@ public class Cli
         _rootCmd.AddGlobalOption(HideBannerOption);
         _rootCmd.AddGlobalOption(NoColorOption);
         _rootCmd.AddGlobalOption(ColorOption);
-        _rootCmd.AddGlobalOption(PrintFormatOption);
+        _rootCmd.AddGlobalOption(PrintFormatIdOption);
         _rootCmd.AddGlobalOption(CleanOption);
 
         _rootCmd.AddCommand(_infoCmd);
@@ -339,12 +339,12 @@ public class Cli
             var cmdParams = new InfoCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
                 // Command-specific options
-                InputFormat = InputFormatOption.GetValue(ctx),
+                InputCodecId = InputFormatOption.GetValue(ctx),
                 HideGames = HideGamesOption.GetValue(ctx),
                 HideCheats = HideCheatsOption.GetValue(ctx),
                 HideCodes = HideCodesOption.GetValue(ctx),
@@ -361,7 +361,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -379,7 +379,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -397,7 +397,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -415,7 +415,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -433,7 +433,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -451,7 +451,7 @@ public class Cli
             var cmdParams = new RomCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -469,7 +469,7 @@ public class Cli
             var cmdParams = new DumpCheatsCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -487,7 +487,7 @@ public class Cli
             var cmdParams = new CopyCheatsCmdParams()
             {
                 // Global options
-                PrintFormat = GetPrintFormat(ctx),
+                PrintFormatId = GetPrintFormatId(ctx),
                 HideBanner = HideBannerOption.GetValue(ctx),
                 Clean = CleanOption.GetValue(ctx),
 
@@ -501,20 +501,20 @@ public class Cli
         });
     }
 
-    private static PrintFormat GetPrintFormat(InvocationContext ctx)
+    private static PrintFormatId GetPrintFormatId(InvocationContext ctx)
     {
-        PrintFormat printFormat = PrintFormatOption.GetValue(ctx);
-        if (printFormat == PrintFormat.Detect)
+        PrintFormatId printFormat = PrintFormatIdOption.GetValue(ctx);
+        if (printFormat == PrintFormatId.Detect)
         {
             if (NoColorOption.GetValue(ctx) == true)
             {
-                printFormat = PrintFormat.Plain;
+                printFormat = PrintFormatId.Plain;
             }
             else if (ColorOption.GetValue(ctx) == true)
             {
-                printFormat = PrintFormat.Color;
+                printFormat = PrintFormatId.Color;
             }
         }
-        return TerminalPrinter.GetEffectivePrintFormat(printFormat);
+        return TerminalPrinter.GetEffectivePrintFormatId(printFormat);
     }
 }
