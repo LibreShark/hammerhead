@@ -101,14 +101,14 @@ public sealed class N64XpRom : AbstractCodec
     {
         u8[] output =
             DetectScrambled(rawInput)
-                ? N64XpScrambler.UnscrambleXpRom(rawInput)
+                ? N64XpScrambler.UnscrambleRom(rawInput)
                 : rawInput.ToArray();
         return new BigEndianScribe(output);
     }
 
     public override u8[] Scramble()
     {
-        return N64XpScrambler.ScrambleXpRom(Buffer);
+        return N64XpScrambler.ScrambleRom(Buffer);
     }
 
     public override bool FormatSupportsFileScrambling()
@@ -346,7 +346,7 @@ public sealed class N64XpRom : AbstractCodec
 
     public u8[] GetScrambled()
     {
-        return N64XpScrambler.ScrambleXpRom(Buffer);
+        return N64XpScrambler.ScrambleRom(Buffer);
     }
 
     private static bool DetectPlain(u8[] bytes)
