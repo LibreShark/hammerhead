@@ -37,6 +37,8 @@ public sealed class GbcGsRom : AbstractCodec
         "Gameshark     V4.2",
     };
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbcGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -150,6 +152,11 @@ public sealed class GbcGsRom : AbstractCodec
                                         $"Bitmask (BE) = 0x{bitMask:X4}.");
             }
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

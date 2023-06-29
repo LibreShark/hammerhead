@@ -70,7 +70,7 @@ internal static class Program
     {
         foreach (FileInfo romFile in @params.InputFiles)
         {
-            var codec = AbstractCodec.FromFile(romFile.FullName);
+            var codec = AbstractCodec.ReadFromFile(romFile.FullName);
             var printer = new TerminalPrinter(codec, @params.PrintFormatId);
             printer.PrintDetails(romFile, @params);
         }
@@ -101,7 +101,7 @@ internal static class Program
     {
         FileInfo inputFile = @params.InputFile!;
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, fileSuffix);
-        var codec = AbstractCodec.FromFile(inputFile.FullName);
+        var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
 
         var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
@@ -170,7 +170,7 @@ internal static class Program
     {
         foreach (FileInfo inputFile in @params.InputFiles!)
         {
-            FileInfo outputFile = GenerateOutputFileName(inputFile, "cheats");
+            FileInfo outputFile = GenerateOutputFileName(inputFile, "cheats", "txt");
 
             TransformOneFile(
                 "Dumping cheats",
@@ -187,8 +187,28 @@ internal static class Program
                 t => t.Codec.SupportsCheats(),
                 t =>
                 {
-                    // TODO(CheatoBaggins): Implement
-                    // File.WriteAllBytes(t.OutputFile.FullName, TEXT);
+                    AbstractCodec inputCodec = t.Codec;
+                    CodecId outputCodecId =
+                        @params.OutputFormat == CodecId.Auto
+                            ? inputCodec.DefaultCheatOutputCodec
+                            : @params.OutputFormat;
+                    if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
+                    {
+                        throw new InvalidOperationException(
+                            $"Output codec {@params.OutputFormat} ({@params.OutputFormat.ToDisplayString()}) " +
+                            "does not support writing cheats yet.");
+                    }
+
+                    AbstractCodec outputCodec =
+                        outputFile.Exists
+                            ? AbstractCodec.ReadFromFile(outputFile.FullName)
+                            : AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+
+                    outputCodec.Games.RemoveAll(_ => true);
+                    outputCodec.Games.AddRange(inputCodec.Games);
+                    outputCodec.WriteChangesToBuffer();
+
+                    File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
                 }
             );
         }
@@ -212,11 +232,16 @@ internal static class Program
         );
     }
 
-    private static FileInfo GenerateOutputFileName(FileInfo inputFile, string suffix)
+    private static FileInfo GenerateOutputFileName(FileInfo inputFile, string suffix, string? extension = null)
     {
         string inFileName = inputFile.Name;
         string inFileDir = inputFile.DirectoryName!;
-        string oldExt = inputFile.Extension;
+        string oldExt = extension ?? inputFile.Extension;
+
+        if (!oldExt.StartsWith("."))
+        {
+            oldExt = $".{oldExt}";
+        }
 
         string newExt = $".{DateTime.Now.ToFilenameString()}.{suffix}{oldExt}";
         string outFileName;

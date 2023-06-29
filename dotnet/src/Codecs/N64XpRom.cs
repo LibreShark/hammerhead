@@ -49,6 +49,8 @@ public sealed class N64XpRom : AbstractCodec
         "2000-05-06T04:42:59+00:00",
     };
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
+
     public N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -331,16 +333,9 @@ public sealed class N64XpRom : AbstractCodec
         buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
-    public u8[] GetPlain()
+    public override AbstractCodec WriteChangesToBuffer()
     {
-        // Return a copy of the array to prevent the caller from mutating
-        // internal state.
-        return Buffer.ToArray();
-    }
-
-    public u8[] GetScrambled()
-    {
-        return N64XpScrambler.ScrambleRom(Buffer);
+        throw new NotImplementedException();
     }
 
     private static bool DetectPlain(u8[] bytes)

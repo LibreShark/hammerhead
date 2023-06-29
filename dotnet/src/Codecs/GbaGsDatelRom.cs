@@ -32,6 +32,8 @@ public sealed class GbaGsDatelRom : AbstractCodec
 
     private readonly AbstractBinaryScribe _beScribe = new BigEndianScribe(new byte[8]);
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbaGsDatelRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -117,6 +119,11 @@ public sealed class GbaGsDatelRom : AbstractCodec
                 }
             }
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

@@ -18,9 +18,16 @@ public sealed class UnknownCodec : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.UnknownConsole;
     private const CodecId ThisCodecId = CodecId.UnsupportedCodecId;
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public UnknownCodec(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     private static AbstractBinaryScribe MakeScribe(u8[] rawInput)

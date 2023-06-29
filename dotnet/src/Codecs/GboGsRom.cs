@@ -26,6 +26,8 @@ public sealed class GboGsRom : AbstractCodec
 
     private readonly List<RomString> _cheatNames = new();
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GboGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -152,6 +154,11 @@ public sealed class GboGsRom : AbstractCodec
                 cheat.Codes.Add(code);
             }
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

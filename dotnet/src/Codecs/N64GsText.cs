@@ -28,6 +28,8 @@ public sealed class N64GsText : AbstractCodec
         InCheat,
     }
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
+
     public N64GsText(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -118,21 +120,22 @@ public sealed class N64GsText : AbstractCodec
         return games;
     }
 
-    public u8[] WriteGames(IEnumerable<Game> games)
+    public override AbstractCodec WriteChangesToBuffer()
     {
-        Game[] gamesArray = games.ToArray();
         var sb = new StringBuilder();
-        sb.Append($"""
+        sb.AppendLine($"""
 ;------------------------------------
-;{gamesArray.Length} Games in list
+;{Games.Count} Games in list
 ;------------------------------------
+
 """);
-        foreach (Game game in gamesArray)
+        foreach (Game game in Games)
         {
-            sb.Append($"""
+            sb.AppendLine($"""
 ;------------------------------------
 {Quote(game.GameName.Value)}
 ;------------------------------------
+
 """);
             foreach (Cheat cheat in game.Cheats)
             {
@@ -148,11 +151,16 @@ public sealed class N64GsText : AbstractCodec
                     }
                     sb.AppendLine();
                 }
+                sb.AppendLine();
             }
 
             sb.AppendLine(".end");
+            sb.AppendLine();
         }
-        return sb.ToAsciiBytes();
+
+        Buffer = sb.ToAsciiBytes();
+
+        return this;
     }
 
     private static string Quote(string s)
@@ -173,6 +181,11 @@ public sealed class N64GsText : AbstractCodec
                 bool isEnd = Regex.IsMatch(s, "^\\.end$");
                 return isName || isCode || isEnd;
             });
+    }
+
+    public static bool Is(CodecId codecId)
+    {
+        return codecId == ThisCodecId;
     }
 
     private static string[] GetAllNonEmptyLines(u8[] buffer)

@@ -45,6 +45,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private RomString _regCodeCopy2 = EmptyRomStr();
     private RomString _secretPin = EmptyRomStr();
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -246,6 +248,11 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
             Support.HasSmxMessages = true;
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

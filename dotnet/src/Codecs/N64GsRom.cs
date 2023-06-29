@@ -50,6 +50,8 @@ public sealed class N64GsRom : AbstractCodec
     private const u32 HeaderIdAddr       = 0x00000020;
     private const u32 BuildTimestampAddr = 0x00000030;
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
+
     public N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -285,6 +287,11 @@ public sealed class N64GsRom : AbstractCodec
         // titleVersionPos += needle.Length;
 
         return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

@@ -31,6 +31,8 @@ public sealed class GbaGsFcdRom : AbstractCodec
         "Wed Jun 14 11:49:42 2006", // GameShark PRO SP karabiner (USA)
     };
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbaGsFcdRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -110,6 +112,11 @@ public sealed class GbaGsFcdRom : AbstractCodec
         // Metadata.BuildDateProto = Timestamp.FromDateTime(dateTime);
 
         Metadata.IsKnownVersion = KnownRawBuildDates.Contains(Metadata.BuildDateRaw.Value);
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

@@ -36,6 +36,8 @@ public sealed class GbcCbRom : AbstractCodec
     private readonly RomString[] _cheatNames = new RomString[16];
     private readonly RomString _selectedGameName;
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -145,6 +147,11 @@ public sealed class GbcCbRom : AbstractCodec
             // E.g., "v1.0c" -> "v1.03"
             Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

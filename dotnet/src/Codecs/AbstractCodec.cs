@@ -17,12 +17,24 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-internal class CodecFactory
+internal class ExistingCodecFileFactory
 {
     public Func<byte[], bool> IsMatch { get; }
     public Func<AbstractCodec> Create { get; }
 
-    public CodecFactory(Func<u8[], bool> isMatch, Func<AbstractCodec> create)
+    public ExistingCodecFileFactory(Func<u8[], bool> isMatch, Func<AbstractCodec> create)
+    {
+        IsMatch = isMatch;
+        Create = create;
+    }
+}
+
+internal class NewCodecFileFactory
+{
+    public Func<CodecId, bool> IsMatch { get; }
+    public Func<AbstractCodec> Create { get; }
+
+    public NewCodecFileFactory(Func<CodecId, bool> isMatch, Func<AbstractCodec> create)
     {
         IsMatch = isMatch;
         Create = create;
@@ -38,7 +50,11 @@ public abstract class AbstractCodec
     /// If the input file is encrypted/scrambled, it must be
     /// decrypted/unscrambled immediately in the subclass constructor.
     /// </summary>
-    public byte[] Buffer => Scribe.GetBufferCopy();
+    public byte[] Buffer
+    {
+        get => Scribe.GetBufferCopy();
+        protected set => Scribe.ResetBuffer(value);
+    }
 
     public VgeMetadata Metadata { get; }
 
@@ -47,6 +63,8 @@ public abstract class AbstractCodec
     protected readonly AbstractBinaryScribe Scribe;
 
     public CodecFeatureSupport Support => Metadata.CodecFeatureSupport;
+
+    public abstract CodecId DefaultCheatOutputCodec { get; }
 
     protected AbstractCodec(
         string filePath,
@@ -169,11 +187,11 @@ public abstract class AbstractCodec
         return Buffer;
     }
 
-    public static AbstractCodec FromFile(string romFilePath)
+    public static AbstractCodec ReadFromFile(string romFilePath)
     {
         u8[] bytes = File.ReadAllBytes(romFilePath);
 
-        CodecFactory[] codecFactories =
+        ExistingCodecFileFactory[] codecFactories =
         {
             new(GboGsRom.Is, () => new GboGsRom(romFilePath, bytes)),
             new(GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
@@ -192,6 +210,21 @@ public abstract class AbstractCodec
 
         return codecFactories.First(factory => factory.IsMatch(bytes)).Create();
     }
+
+    public static AbstractCodec CreateFromId(string outputFilePath, CodecId codecId)
+    {
+        u8[] bytes = Array.Empty<byte>();
+        NewCodecFileFactory[] codecFactories =
+        {
+            new(N64GsText.Is, () => new N64GsText(outputFilePath, bytes)),
+            new(_ => true, () => throw new InvalidOperationException(
+                $"{codecId.ToDisplayString()} files cannot be created from scratch.")),
+        };
+
+        return codecFactories.First(factory => factory.IsMatch(codecId)).Create();
+    }
+
+    public abstract AbstractCodec WriteChangesToBuffer();
 
     protected static RomString EmptyRomStr()
     {

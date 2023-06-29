@@ -30,6 +30,8 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
         "Monster Brain v3.6 Platinum",
     };
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public GbcMonsterBrainRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -61,6 +63,11 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
                 Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
             }
         }
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     public static bool Is(u8[] bytes)

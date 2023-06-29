@@ -17,9 +17,9 @@ using f64 = Double;
 
 public abstract class AbstractBinaryScribe
 {
-    protected readonly u8[] BufferRef;
+    protected u8[] BufferRef;
 
-    protected AbstractBinaryScribe(byte[] bufferRef)
+    protected AbstractBinaryScribe(u8[] bufferRef)
     {
         BufferRef = bufferRef;
     }
@@ -27,6 +27,12 @@ public abstract class AbstractBinaryScribe
     public u8[] GetBufferCopy()
     {
         return BufferRef.ToArray();
+    }
+
+    public void ResetBuffer(u8[] bufferRef)
+    {
+        BufferRef = bufferRef;
+        Position = 0;
     }
 
     #region Seeking
@@ -92,7 +98,7 @@ public abstract class AbstractBinaryScribe
         return BufferRef.Find(needle);
     }
 
-    public s32 Find(byte[] needle)
+    public s32 Find(u8[] needle)
     {
         return BufferRef.Find(needle);
     }
@@ -102,7 +108,7 @@ public abstract class AbstractBinaryScribe
         return BufferRef.Contains(needle);
     }
 
-    public bool Contains(byte[] needle)
+    public bool Contains(u8[] needle)
     {
         return BufferRef.Contains(needle);
     }
@@ -164,7 +170,7 @@ public abstract class AbstractBinaryScribe
 
     public u8[] ReadBytes(u32 count)
     {
-        byte[] bytes = PeekBytes(count);
+        u8[] bytes = PeekBytes(count);
         Position += count;
         return bytes;
     }
@@ -354,7 +360,7 @@ public abstract class AbstractBinaryScribe
         }
         else
         {
-            return new byte[] { b }.ToAsciiString();
+            return new u8[] { b }.ToAsciiString();
         }
     }
 

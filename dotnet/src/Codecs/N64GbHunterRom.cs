@@ -35,6 +35,8 @@ public sealed class N64GbHunterRom : AbstractCodec
 
     private readonly s32[] _rle01Addresses;
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+
     public N64GbHunterRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -48,6 +50,11 @@ public sealed class N64GbHunterRom : AbstractCodec
 
         // TODO(CheatoBaggins): Detect Game Booster
         // Metadata.BrandId = BrandId.GbHunter;
+    }
+
+    public override AbstractCodec WriteChangesToBuffer()
+    {
+        throw new NotImplementedException();
     }
 
     private static AbstractBinaryScribe MakeScribe(u8[] rawInput)

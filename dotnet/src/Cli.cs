@@ -31,6 +31,7 @@ public class RomCmdParams : CmdParams
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
     public bool OverwriteExistingFiles { get; init; }
+    public CodecId OutputFormat { get; init; }
 }
 
 public class DumpCheatsCmdParams : CmdParams
@@ -38,6 +39,7 @@ public class DumpCheatsCmdParams : CmdParams
     public FileInfo[]? InputFiles { get; init; }
     public DirectoryInfo? OutputDir { get; set; }
     public bool OverwriteExistingFiles { get; init; }
+    public CodecId OutputFormat { get; init; }
 }
 
 public class Cli
@@ -464,6 +466,7 @@ public class Cli
                 // Command-specific arguments
                 InputFiles = InputFilesArgument.GetValue(ctx)!,
                 OutputDir = OutputDirOption.GetValue(ctx),
+                OutputFormat = DumpCheatsOutputFormatOption.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -482,6 +485,7 @@ public class Cli
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
                 OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFormat = CopyCheatsOutputFormatOption.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
