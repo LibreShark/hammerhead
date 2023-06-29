@@ -33,10 +33,19 @@ public sealed class N64XpRom : AbstractCodec
     private const u32 LastGameCartIdAddr = 0x0003F43C;
 
     private static readonly string[] KnownIsoBuildDates = {
+        // v1.000E build 1772 (England)
         "1999-05-07T21:34:19+00:00",
+
+        // v1.000E build 1834 (England)
         "1999-08-16T17:10:59+00:00",
+
+        // v1.067E build 2510 (England)
         "1999-11-24T00:13:18+00:00",
+
+        // v1.067G build 1930 (Germany)
         "1999-11-24T21:25:52+00:00",
+
+        // v1.067E build 2515 (England)
         "2000-05-06T04:42:59+00:00",
     };
 
@@ -58,9 +67,6 @@ public sealed class N64XpRom : AbstractCodec
         Support.HasKeyCodes = false;
 
         Metadata.BrandId = BrandId.Xplorer;
-
-        // TODO(CheatoBaggins): Implement
-        Metadata.IsKnownVersion = false;
 
         RomString firstLine = Scribe.Seek(0x0).ReadCStringUntilNull();
         RomString versionRaw = Scribe.Seek(0x17).ReadCStringUntilNull(5);
