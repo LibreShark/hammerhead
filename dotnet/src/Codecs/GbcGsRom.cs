@@ -169,13 +169,16 @@ public sealed class GbcGsRom : AbstractCodec
     {
         bool hasMagicNumber = bytes[..4].SequenceEqual(new u8[] { 0xC3, 0x50, 0x01, 0x78 });
         bool hasIdentifier = IsGs(bytes) || IsAr(bytes);
-        return hasMagicNumber && hasIdentifier;
+        // TODO(CheatoBaggins): Determine whether the magic number is identical in all ROMs
+        return /*hasMagicNumber &&*/ hasIdentifier;
     }
 
     private static bool IsGs(u8[] bytes)
     {
         string identifier = bytes[(int)TitleAddr..(int)(TitleAddr + 18)].ToAsciiString();
-        return identifier.StartsWith("Gameshark     V");
+        return identifier.StartsWith("Gameshark     V") ||
+               // TODO(CheatoBaggins): Determine whether this string also appears in Action Replay ROMs
+               identifier.StartsWith("DAMON BARWIN");
     }
 
     private static bool IsAr(u8[] bytes)

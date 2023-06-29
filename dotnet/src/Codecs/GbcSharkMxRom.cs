@@ -263,8 +263,10 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private static bool Detect(u8[] bytes)
     {
-        return bytes.Contains("Shark MX") &&
-               bytes.Contains("Datel Design LTD");
+        // TODO(CheatoBaggins): Determine whether these strings are present in all ROMs
+        // bytes.Contains("Shark MX")
+        // bytes.Contains("Datel Design LTD")
+        return bytes.Contains("GBMail");
     }
 
     public static bool Is(AbstractCodec codec)

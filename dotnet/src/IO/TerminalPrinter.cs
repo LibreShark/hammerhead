@@ -172,13 +172,21 @@ public class TerminalPrinter
         string fileSize = $"{PrettySize.Format(_codec.Buffer.Length)} " +
                           $"(0x{_codec.Buffer.Length:X8} = {_codec.Buffer.Length} bytes)";
 
+        string buildDateDisplay = !string.IsNullOrWhiteSpace(_codec.Metadata.BuildDateIso)
+            ? _codec.Metadata.BuildDateIso
+            : _codec.Metadata.BuildDateRaw?.Value ?? "";
+        if (buildDateDisplay.Length == 2)
+        {
+            buildDateDisplay = "19" + buildDateDisplay;
+        }
+
         table.AddRow("File format", OrUnknown(_codec.Metadata.CodecId.ToDisplayString()));
         table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString()));
         table.AddRow("Brand", OrUnknown(GetDisplayBrand()));
         table.AddRow("Locale", OrUnknown(GetDisplayLocale()));
         table.AddRow("", "");
-        table.AddRow("Version", OrUnknown(_codec.Metadata.DisplayVersion));
-        table.AddRow("Build date", OrUnknown(_codec.Metadata.BuildDateIso));
+        table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion));
+        table.AddRow("Build date", OrUnknown(buildDateDisplay));
         table.AddRow("Known ROM version", _codec.Metadata.IsKnownVersion);
         table.AddRow("", "");
         table.AddRow("File size", fileSize);

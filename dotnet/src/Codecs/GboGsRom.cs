@@ -46,28 +46,56 @@ public sealed class GboGsRom : AbstractCodec
 
     private void ReadVersion()
     {
-        s32 arAddr1 = Buffer.Find("ACTION REPLAY");
-        s32 gsAddr1 = Buffer.Find("GameShark");
-        s32 arAddr2 = Buffer.Find("Action Replay");
+        s32 arUpperAddr = Buffer.Find("ACTION REPLAY");
+        s32 arTitleAddr = Buffer.Find("Action Replay");
+        s32 gsUpperAddr = Buffer.Find("GAMESHARK");
+        s32 gsTitleAddr = Buffer.Find("GameShark");
         s32 thanksAddr = Buffer.Find("Thanks for ");
         s32 datelAddr = Buffer.Find("Datel Design");
         s32 verAddr = Buffer.Find("Ver. ");
         s32 proAddrOffset = Buffer[datelAddr..(datelAddr + 0xFF)].Find("PRO");
-        s32 arAddr3Offset = Buffer[datelAddr..(datelAddr + 0xFF)].Find("ACTION REPLAY");
+        s32 arUpperAddrOffset = Buffer[datelAddr..(datelAddr + 0xFF)].Find("ACTION REPLAY");
         s32 damonAddr = Buffer.Find("Damon Barwin");
 
-        RomString arCaps1 = Scribe.Seek(arAddr1).ReadPrintableCString();
-        RomString gsTitle = Scribe.Seek(gsAddr1).ReadPrintableCString();
-        RomString arTitle = Scribe.Seek(arAddr2).ReadPrintableCString();
-        RomString thanksStr = Scribe.Seek(thanksAddr).ReadPrintableCString();
-        RomString datelDesign = Scribe.Seek(datelAddr).ReadPrintableCString();
-        RomString versionStr = Scribe.Seek(verAddr).ReadPrintableCString();
+        if (gsUpperAddr > -1 || gsTitleAddr > -1)
+        {
+            Metadata.BrandId = BrandId.Gameshark;
+        }
+        else if (arUpperAddr > -1 || arTitleAddr > -1)
+        {
+            Metadata.BrandId = BrandId.ActionReplay;
+        }
 
-        Metadata.Identifiers.Add(arCaps1);
-        Metadata.Identifiers.Add(gsTitle);
-        Metadata.Identifiers.Add(arTitle);
-        Metadata.Identifiers.Add(thanksStr);
-        Metadata.Identifiers.Add(datelDesign);
+        if (arUpperAddr != -1)
+        {
+            RomString arUpperStr = Scribe.Seek(arUpperAddr).ReadPrintableCString();
+            Metadata.Identifiers.Add(arUpperStr);
+        }
+        if (arTitleAddr != -1)
+        {
+            RomString arTitleStr = Scribe.Seek(arTitleAddr).ReadPrintableCString();
+            Metadata.Identifiers.Add(arTitleStr);
+        }
+        if (gsUpperAddr != -1)
+        {
+            RomString gsUpperStr = Scribe.Seek(gsUpperAddr).ReadPrintableCString();
+            Metadata.Identifiers.Add(gsUpperStr);
+        }
+        if (gsTitleAddr != -1)
+        {
+            RomString gsTitleStr = Scribe.Seek(gsTitleAddr).ReadPrintableCString();
+            Metadata.Identifiers.Add(gsTitleStr);
+        }
+        if (thanksAddr != -1)
+        {
+            RomString thanksStr = Scribe.Seek(thanksAddr).ReadPrintableCString();
+            Metadata.Identifiers.Add(thanksStr);
+        }
+
+        RomString datelStr = Scribe.Seek(datelAddr).ReadPrintableCString();
+        Metadata.Identifiers.Add(datelStr);
+
+        RomString versionStr = Scribe.Seek(verAddr).ReadPrintableCString();
         Metadata.Identifiers.Add(versionStr);
 
         if (proAddrOffset != -1)
@@ -76,9 +104,9 @@ public sealed class GboGsRom : AbstractCodec
             Metadata.Identifiers.Add(pro);
         }
 
-        if (arAddr3Offset != -1)
+        if (arUpperAddrOffset != -1)
         {
-            RomString arCaps2 = Scribe.Seek(datelAddr + arAddr3Offset).ReadPrintableCString();
+            RomString arCaps2 = Scribe.Seek(datelAddr + arUpperAddrOffset).ReadPrintableCString();
             Metadata.Identifiers.Add(arCaps2);
         }
 
@@ -88,10 +116,7 @@ public sealed class GboGsRom : AbstractCodec
             Metadata.Identifiers.Add(damonBarwin1);
         }
 
-        s32 copySearchStart = datelAddr + datelDesign.Value.Length;
-        s32 copySearchEnd = copySearchStart + 0xFF;
-        s32 copyAddrOffset = Buffer[copySearchStart..copySearchEnd].Find("Copy");
-        s32 copyAddr = copySearchStart + copyAddrOffset;
+        s32 copyAddr = Buffer.Find("Copyright");
         Scribe.Seek(copyAddr);
         while (!Scribe.IsIntegerDigit())
         {
@@ -169,18 +194,17 @@ public sealed class GboGsRom : AbstractCodec
 
     private static bool Detect(u8[] bytes)
     {
-        bool hasArUpperAddr = bytes.Contains("ACTION REPLAY");
-        bool hasArTitleAddr = bytes.Contains("Action Replay");
-        bool hasGsAddr = bytes.Contains("GameShark");
-        bool hasThanksAddr = bytes.Contains("Thanks for ");
-        bool hasDatelAddr = bytes.Contains("Datel Design");
-        bool hasVerAddr = bytes.Contains("Ver. ");
-        return hasArUpperAddr &&
-               hasArTitleAddr &&
-               hasGsAddr &&
-               hasThanksAddr &&
-               hasDatelAddr &&
-               hasVerAddr;
+        bool hasArUpper = bytes.Contains("ACTION REPLAY");
+        bool hasArTitle = bytes.Contains("Action Replay");
+        bool hasGsUpper = bytes.Contains("GAMESHARK");
+        bool hasGsTitle = bytes.Contains("GameShark");
+        // bool hasThanks = bytes.Contains("Thanks for ");
+        bool hasDatel = bytes.Contains("Datel Design");
+        bool hasVer = bytes.Contains("Ver. ");
+        return (hasArUpper || hasArTitle) &&
+               (hasGsUpper || hasGsTitle) &&
+               hasDatel &&
+               hasVer;
     }
 
     public static bool Is(AbstractCodec codec)
