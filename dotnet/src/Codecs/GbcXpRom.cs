@@ -30,6 +30,15 @@ public sealed class GbcXpRom : AbstractCodec
     public GbcXpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+        // TODO(CheatoBaggins): Detect
+        Support.HasDirtyUserPrefs = false;
+
         u32 productNameAddr = (u32)Scribe.Find("Xploder GB");
         Metadata.BrandId = BrandId.Xploder;
 

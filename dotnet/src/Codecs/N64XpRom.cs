@@ -40,14 +40,22 @@ public sealed class N64XpRom : AbstractCodec
         "2000-05-06T04:42:59+00:00",
     };
 
-    private readonly bool _isScrambled;
-    private readonly bool _hasUserPrefs;
-
     public N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
-        _isScrambled = DetectScrambled(rawInput);
-        _hasUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
+        Support.SupportsCheats = true;
+        Support.SupportsKeyCodes = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsFileScrambling = true;
+        Support.SupportsUserPrefs = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+        Support.IsFileScrambled = DetectScrambled(rawInput);
+        Support.HasDirtyUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
+
+        // TODO(CheatoBaggins): Detect
+        Support.HasKeyCodes = false;
 
         Metadata.BrandId = BrandId.Xplorer;
 
@@ -111,41 +119,21 @@ public sealed class N64XpRom : AbstractCodec
         return N64XpScrambler.ScrambleRom(Buffer);
     }
 
-    public override bool FormatSupportsFileScrambling()
-    {
-        return true;
-    }
-
-    public override bool FormatSupportsUserPrefs()
-    {
-        return true;
-    }
-
-    public override bool IsFileScrambled()
-    {
-        return _isScrambled;
-    }
-
-    public override bool HasUserPrefs()
-    {
-        return _hasUserPrefs;
-    }
-
     private void ReadUserPrefs()
     {
-        Scribe.Seek(UserPrefsAddr);
+        RomString lastGameName = Scribe.Seek(LastGameNameAddr).ReadCStringUntilNull(20).Trim();
+        RomString lastGameCartId = Scribe.Seek(LastGameCartIdAddr).ReadCStringUntilNull(2);
+        Metadata.Identifiers.Add(lastGameName);
+        Metadata.Identifiers.Add(lastGameCartId);
 
-        if (!HasUserPrefs())
+        if (!Support.HasDirtyUserPrefs)
         {
             return;
         }
 
         // TODO(CheatoBaggins): Decode user preferences
 
-        RomString lastGameName = Scribe.Seek(LastGameNameAddr).ReadCStringUntilNull(20).Trim();
-        RomString lastGameCartId = Scribe.Seek(LastGameCartIdAddr).ReadCStringUntilNull(2);
-        Metadata.Identifiers.Add(lastGameName);
-        Metadata.Identifiers.Add(lastGameCartId);
+        Scribe.Seek(UserPrefsAddr);
     }
 
     private void ReadGames()

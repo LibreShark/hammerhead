@@ -18,6 +18,7 @@ public class TerminalPrinter
     public readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
     public readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
     public readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+    public readonly Color HintColor = Color.FromArgb(160, 160, 160);
 
     private readonly AbstractCodec _codec;
     private readonly PrintFormatId _printFormat;
@@ -427,6 +428,14 @@ public class TerminalPrinter
     }
 
     #endregion
+
+    public void PrintHint(string message)
+    {
+        string styled = IsColor
+            ? Italic(message.ForegroundColor(HintColor))
+            : message;
+        Console.Error.WriteLine($"\n{styled}\n");
+    }
 
     public void PrintError(string message)
     {

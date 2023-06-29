@@ -21,17 +21,20 @@ public sealed class N64GsText : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkText;
 
-    public N64GsText(string filePath, u8[] rawInput)
-        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
-    {
-        Games.AddRange(ReadGames());
-    }
-
     private enum ParserState
     {
         InList,
         InGame,
         InCheat,
+    }
+
+    public N64GsText(string filePath, u8[] rawInput)
+        : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
+    {
+        Support.SupportsCheats = true;
+        Support.HasCheats = true;
+
+        Games.AddRange(ReadGames());
     }
 
     private List<Game> ReadGames()

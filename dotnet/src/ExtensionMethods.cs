@@ -342,7 +342,7 @@ public static class ExtensionMethods
     {
         return codecId switch
         {
-            CodecId.GbGamesharkRom => "GB - GameShark ROM",
+            CodecId.GboGamesharkRom => "GB - GameShark ROM",
             CodecId.GbaGamesharkDatelRom => "GBA - Datel GameShark ROM",
             CodecId.GbaGamesharkFcdRom => "GBA - FCD GameShark ROM",
             CodecId.GbaTvTunerRom => "GBA - TV Tuner ROM",
@@ -396,7 +396,7 @@ public static class ExtensionMethods
     {
         return consoleId switch
         {
-            ConsoleId.GameBoy => "Game Boy (GB)",
+            ConsoleId.GameBoyOriginal => "Game Boy original (GB)",
             ConsoleId.GameBoyColor => "Game Boy Color (GBC)",
             ConsoleId.GameBoyAdvance => "Game Boy Advance (GBA)",
             ConsoleId.GameGear => "Game Gear (GG)",

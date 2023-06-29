@@ -31,13 +31,9 @@ public sealed class N64GsRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
-    private readonly bool _isEncrypted;
-    private readonly bool _isCompressed;
     private readonly bool _isV3Firmware;
     private readonly bool _isV1GameList;
     private readonly bool _isV3KeyCodeListAddr;
-    private readonly bool _supportsUserPrefs;
-    private readonly bool _supportsKeyCodes;
 
     private readonly u32 _firmwareAddr;
     private readonly u32 _gameListAddr;
@@ -57,6 +53,14 @@ public sealed class N64GsRom : AbstractCodec
     public N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsKeyCodes = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsFileEncryption = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+
         // TODO(CheatoBaggins): Decompress v3.x ROM files
 
         _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
@@ -67,6 +71,8 @@ public sealed class N64GsRom : AbstractCodec
 
         _version = ReadVersion();
 
+        Support.SupportsFirmwareCompression = _version.Number >= 2.5;
+
         Metadata.BrandId = _version.Brand;
         Metadata.BuildDateRaw = _rawTimestamp;
         Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
@@ -75,59 +81,34 @@ public sealed class N64GsRom : AbstractCodec
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
 
-        _isEncrypted         = DetectEncrypted(rawInput);
-        _isCompressed        = DetectCompressed(rawInput);
         _isV3Firmware        = Scribe.Seek(0x00001000).ReadU32() == 0x00000000;
         _isV1GameList        = Scribe.Seek(0x0002DFF0).ReadU32() == 0x00000000;
         _isV3KeyCodeListAddr = Scribe.Seek(0x0002FBF0).ReadU32() == 0xFFFFFFFF;
         _keyCodeListAddr     = (u32)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
-        _supportsKeyCodes    = Scribe.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
-        _supportsUserPrefs   = Scribe.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
-        _firmwareAddr        = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
-        _gameListAddr        = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
-        _userPrefsAddr       = _supportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
+
+        Support.SupportsUserPrefs = Scribe.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
+        Support.HasKeyCodes       = Scribe.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
+
+        _firmwareAddr  = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
+        _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
+        _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
         List<N64KeyCode> keyCodes = ReadKeyCodes();
         _activeKeyCode = ReadActiveKeyCode(keyCodes);
         _keyCodes = keyCodes;
 
+        Support.IsFileEncrypted      = DetectEncrypted(rawInput);
+        Support.IsFirmwareCompressed = DetectCompressed(rawInput);
+        Support.HasDirtyUserPrefs    = Support.SupportsUserPrefs &&
+                                       !Scribe.Seek(_userPrefsAddr).IsPadding();
+
         Games.AddRange(ReadGames());
-    }
-
-    public override bool IsFileEncrypted()
-    {
-        return _isEncrypted;
-    }
-
-    public override bool IsFirmwareCompressed()
-    {
-        return _isCompressed;
-    }
-
-    public override bool FormatSupportsFileEncryption()
-    {
-        return true;
-    }
-
-    public override bool FormatSupportsFirmwareCompression()
-    {
-        return true;
-    }
-
-    public override bool FormatSupportsUserPrefs()
-    {
-        return _supportsUserPrefs;
-    }
-
-    public override bool HasUserPrefs()
-    {
-        return _supportsUserPrefs && Scribe.MaintainPosition(() => !Scribe.Seek(_userPrefsAddr).IsPadding());
     }
 
     private List<Game> ReadGames()
     {
-        List<Game> games = new List<Game>();
         Scribe.Seek(_gameListAddr);
+        List<Game> games = new List<Game>();
         u32 gamesCount = Scribe.ReadU32();
         for (u32 gameIdx = 0; gameIdx < gamesCount; gameIdx++)
         {
@@ -366,13 +347,13 @@ public sealed class N64GsRom : AbstractCodec
         Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
         Console.WriteLine();
 
-        if (_supportsKeyCodes)
+        if (Support.SupportsKeyCodes && Support.HasKeyCodes)
         {
             Console.WriteLine(BuildKeyCodesTable(printer));
         }
         else
         {
-            Console.WriteLine("This firmware version does not support additional key codes.".SetStyle(FontStyleExt.Italic));
+            printer.PrintHint("This firmware version does not support additional key codes.");
         }
     }
 
@@ -388,8 +369,8 @@ public sealed class N64GsRom : AbstractCodec
 
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
         string gameListAddr = $"0x{_gameListAddr:X8}";
-        string keyCodeListAddr = _supportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
-        string userPrefsAddr = (_supportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported");
+        string keyCodeListAddr = Support.SupportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
+        string userPrefsAddr = Support.SupportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported";
 
         table.AddRow("Firmware", firmwareAddr);
         table.AddRow("User prefs", userPrefsAddr);

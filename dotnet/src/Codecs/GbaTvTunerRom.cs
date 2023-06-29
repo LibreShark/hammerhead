@@ -25,11 +25,12 @@ public sealed class GbaTvTunerRom : AbstractCodec
     public GbaTvTunerRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
-    }
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
 
-    public override bool FormatSupportsCustomCheatCodes()
-    {
-        return false;
+        Support.HasFirmware = true;
+        // TODO(CheatoBaggins): Detect
+        Support.HasDirtyUserPrefs = false;
     }
 
     public static bool Is(u8[] bytes)

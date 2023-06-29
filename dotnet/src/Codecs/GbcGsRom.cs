@@ -40,6 +40,15 @@ public sealed class GbcGsRom : AbstractCodec
     public GbcGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+        // TODO(CheatoBaggins): Detect
+        Support.HasDirtyUserPrefs = false;
+
         Metadata.BrandId = IsGs(Buffer) ? BrandId.Gameshark : IsAr(Buffer) ? BrandId.ActionReplay : BrandId.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();
         Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2}";

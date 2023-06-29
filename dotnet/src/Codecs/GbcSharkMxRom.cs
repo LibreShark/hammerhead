@@ -48,6 +48,12 @@ public sealed class GbcSharkMxRom : AbstractCodec
     public GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
+        Support.SupportsSmxMessages = true;
+
+        Support.HasFirmware = true;
+
         Metadata.BrandId = BrandId.SharkMx;
 
         ParseVersion();
@@ -56,16 +62,6 @@ public sealed class GbcSharkMxRom : AbstractCodec
         ParseTimeZones();
         ParseContacts();
         ParseMessages();
-    }
-
-    public override bool FormatSupportsCustomCheatCodes()
-    {
-        return false;
-    }
-
-    public override bool FormatSupportsUserPrefs()
-    {
-        return true;
     }
 
     private void ParseVersion()
@@ -102,20 +98,31 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private void ParseRegistrationCode()
     {
-        Scribe.Seek(RegCodeAddr);
-        _regCodeCopy1 = Scribe.ReadCStringUntilNull(16, false);
-        Scribe.Seek(RegCodeAddr + 16);
-        _regCodeCopy2 = Scribe.ReadCStringUntilNull(16, false);
+        _regCodeCopy1 = Scribe.Seek(RegCodeAddr).ReadCStringUntilNull(16, false);
+        _regCodeCopy2 = Scribe.Seek(RegCodeAddr + 16).ReadCStringUntilNull(16, false);
 
-        Metadata.Identifiers.Add(_regCodeCopy1);
-        Metadata.Identifiers.Add(_regCodeCopy2);
+        if (_regCodeCopy1.Value.Length > 0)
+        {
+            Metadata.Identifiers.Add(_regCodeCopy1);
+            Support.HasDirtyUserPrefs = true;
+        }
+        if (_regCodeCopy2.Value.Length > 0)
+        {
+            Metadata.Identifiers.Add(_regCodeCopy2);
+            Support.HasDirtyUserPrefs = true;
+        }
     }
 
     private void ParseSecretPin()
     {
         Scribe.Seek(SecretPinAddr);
         _secretPin = Scribe.ReadPrintableCString();
-        Metadata.Identifiers.Add(_secretPin);
+
+        if (_secretPin.Value.Length > 0)
+        {
+            Metadata.Identifiers.Add(_secretPin);
+            Support.HasDirtyUserPrefs = true;
+        }
     }
 
     private void ParseContacts()
@@ -236,6 +243,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 Message = message,
                 UnknownField2 = unknownField2,
             });
+
+            Support.HasSmxMessages = true;
         }
     }
 

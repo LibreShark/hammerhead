@@ -16,19 +16,28 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// GameShark and Action Replay for Game Boy and Game Boy Pocket,
+/// GameShark and Action Replay for the original Game Boy and Game Boy Pocket,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbGsRom : AbstractCodec
+public sealed class GboGsRom : AbstractCodec
 {
-    private const ConsoleId ThisConsoleId = ConsoleId.GameBoy;
-    private const CodecId ThisCodecId = CodecId.GbcGamesharkRom;
+    private const ConsoleId ThisConsoleId = ConsoleId.GameBoyOriginal;
+    private const CodecId ThisCodecId = CodecId.GboGamesharkRom;
 
     private readonly List<RomString> _cheatNames = new();
 
-    public GbGsRom(string filePath, u8[] rawInput)
+    public GboGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+        // TODO(CheatoBaggins): Detect
+        Support.HasDirtyUserPrefs = false;
+
         ReadVersion();
         ReadGames();
     }

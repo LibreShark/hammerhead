@@ -33,6 +33,9 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
     public GbcMonsterBrainRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsFirmware = true;
+        Support.HasFirmware = true;
+
         Metadata.BrandId = DetectBrand(rawInput);
 
         RomString id = Scribe.Seek(0).ReadPrintableCString(0x20).Trim();
@@ -58,11 +61,6 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
                 Metadata.SortableVersion = Double.Parse($"{numberStr}{d}");
             }
         }
-    }
-
-    public override bool FormatSupportsCustomCheatCodes()
-    {
-        return false;
     }
 
     public static bool Is(u8[] bytes)

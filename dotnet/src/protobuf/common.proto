@@ -7,12 +7,32 @@ import "google/protobuf/timestamp.proto";
 package libreshark.hammerhead;
 option csharp_namespace = "LibreShark.Hammerhead";
 
-// Video game enhancer file (firmware dump or cheat list)
+/*******************************************************************************
+ * Input/output files
+ ******************************************************************************/
+
+// Video game enhancer file (firmware dump or cheat list).
 message VgeFile {
   VgeMetadata metadata = 1;
-  repeated Game games = 2;
-  bytes raw_input = 3;
-  bytes buffer = 4;
+  bytes raw_input = 2;
+  bytes buffer = 3;
+  repeated Game games = 4;
+
+  // N64 only
+  repeated Code key_codes = 101;
+
+  // GBC Shark MX only
+  repeated GbcSmxMessage smx_messages = 201;
+  // GBC Shark MX only
+  repeated GbcSmxContact smx_contacts = 202;
+  // GBC Shark MX only
+  repeated GbcSmxTimeZone smx_timezones = 203;
+}
+
+message VgeFileProp {
+  string key = 1;
+  string value = 2;
+  bool is_visual_spacer = 3;
 }
 
 message VgeMetadata {
@@ -20,7 +40,7 @@ message VgeMetadata {
   ConsoleId console_id = 2;
   CodecId codec_id = 3;
   BrandId brand_id = 4;
-  CodecFeatureSet codec_features = 5;
+  CodecFeatureSupport codec_feature_support = 5;
 
   // Human-friendly version number displayed to users in a UI, including a
   // "v" prefix if applicable.
@@ -52,32 +72,38 @@ message VgeMetadata {
   // database of known versions.
   bool is_known_version = 15;
 
-  repeated FileProperty file_properties = 16;
+  repeated VgeFileProp file_properties = 16;
   repeated RomRange file_sections = 17;
 }
 
-message FileProperty {
-  string key = 1;
-  string value = 2;
-  bool is_visual_spacer = 3;
+message CodecFeatureSupport {
+  bool supports_cheats = 1;
+  bool supports_firmware = 2;
+  bool supports_user_prefs = 3;
+  bool supports_file_encryption = 4;
+  bool supports_file_scrambling = 5;
+  bool supports_firmware_compression = 6;
+  bool supports_key_codes = 7;
+  bool supports_smx_messages = 8;
+
+  bool has_cheats = 101;
+  bool has_firmware = 102;
+  bool has_dirty_user_prefs = 103;
+  bool is_file_encrypted = 104;
+  bool is_file_scrambled = 105;
+  bool is_firmware_compressed = 106;
+  bool has_key_codes = 107;
+  bool has_smx_messages = 108;
 }
 
-enum ConsoleId {
-  UNKNOWN_CONSOLE = 0x00;
-
-  GAME_BOY = 0x01;
-  GAME_BOY_COLOR = 0x02;
-  GAME_BOY_ADVANCE = 0x04;
-
-  GAME_GEAR = 0x20;
-
-  PLAYSTATION_1 = 0x30;
-  NINTENDO_64 = 0x40;
-
-  DREAMCAST = 0x41;
-  GAMECUBE = 0x42;
+message ChecksumResult {
+  string crc32_hex = 1;
+  string crc32c_hex = 2;
+  string md5_hex = 3;
+  string sha1_hex = 4;
 }
 
+// Unique ID for each input/output file format supported by Hammerhead.
 enum CodecId {
   UNSPECIFIED_CODEC_ID = 0;
   UNSUPPORTED_CODEC_ID = 1;
@@ -102,7 +128,7 @@ enum CodecId {
   // Game Boy & Game Boy Pocket
   //////////////////////////////////////////////////////////////////////////////
 
-  GB_GAMESHARK_ROM = 20;
+  GBO_GAMESHARK_ROM = 20;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy Color
@@ -177,15 +203,30 @@ enum CodecId {
   N64_PJ64_V3_TEXT = 88;
 }
 
-message CodecFeatureSet {
-  bool cheats = 1;
-  bool firmware = 2;
-  bool user_prefs = 3;
-  bool file_encryption = 4;
-  bool file_scrambling = 5;
-  bool file_compression = 6;
+// Newest platform that the device supports.
+// E.g., GameShark Pro for GBC is also backward compatible with GB/GBP,
+// but its ConsoleId is GBC because that's the newest of the 3.
+enum ConsoleId {
+  UNKNOWN_CONSOLE = 0x00;
+
+  GAME_BOY_ORIGINAL = 0x01;
+  GAME_BOY_COLOR = 0x02;
+  GAME_BOY_ADVANCE = 0x04;
+
+  GAME_GEAR = 0x20;
+
+  PLAYSTATION_1 = 0x30;
+  NINTENDO_64 = 0x40;
+
+  DREAMCAST = 0x41;
+  GAMECUBE = 0x42;
 }
 
+// Official marketing brand name of the device,
+// as seen on the device's external packaging (box, label, manual, etc.).
+// May differ from the internal codename of the firmware.
+// E.g., "Xploder GB" is the official brand name of the product,
+// even though the internal ROM ID is listed as "Xplorer-GB".
 enum BrandId {
   UNKNOWN_BRAND = 0x00;
   GAMESHARK     = 0x01;
@@ -203,17 +244,7 @@ enum BrandId {
   SHARK_MX      = 0x0D;
 }
 
-message ChecksumResult {
-  string crc32_hex = 1;
-  string crc32c_hex = 2;
-  string md5_hex = 3;
-  string sha1_hex = 4;
-}
-
-message Warning {
-  string message = 1;
-}
-
+// Output format for printing to the terminal (stdout).
 enum PrintFormatId {
   UNKNOWN_PRINT_FORMAT = 0x00;
   DETECT = 0x01;
@@ -223,6 +254,10 @@ enum PrintFormatId {
   PROTO = 0x05;
   MARKDOWN = 0x06;
 }
+
+/*******************************************************************************
+ * Game & cheat code list
+ ******************************************************************************/
 
 message Game {
   uint32 game_index = 1;
@@ -249,18 +284,30 @@ message Code {
   repeated Warning warnings = 4;
 }
 
-message RomRange {
-  uint32 start_index = 1;
-  uint32 end_index = 2;
-  uint32 length = 3;
-  bytes raw_bytes = 4;
-  string name = 5;
+message Warning {
+  string message = 1;
 }
 
+/*******************************************************************************
+ * Binary file tokens
+ ******************************************************************************/
+
 message RomString {
-  RomRange addr = 1;
-  string value = 2;
+  string value = 1;
+  RomRange addr = 2;
 }
+
+message RomRange {
+  string name = 1;
+  uint32 start_index = 2;
+  uint32 end_index = 3;
+  uint32 length = 4;
+  bytes raw_bytes = 5;
+}
+
+/*******************************************************************************
+ * Game Boy Color
+ ******************************************************************************/
 
 // TODO(CheatoBaggins): Move this to gbc.proto
 

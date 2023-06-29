@@ -38,15 +38,16 @@ public sealed class N64GbHunterRom : AbstractCodec
     public N64GbHunterRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsFirmware = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+
         _rle01Addresses = rawInput.FindAll("RLE01");
 
         // TODO(CheatoBaggins): Detect Game Booster
         // Metadata.BrandId = BrandId.GbHunter;
-    }
-
-    public override bool FormatSupportsCustomCheatCodes()
-    {
-        return false;
     }
 
     private static AbstractBinaryScribe MakeScribe(u8[] rawInput)

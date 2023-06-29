@@ -46,6 +46,8 @@ public abstract class AbstractCodec
 
     protected readonly AbstractBinaryScribe Scribe;
 
+    public CodecFeatureSupport Support => Metadata.CodecFeatureSupport;
+
     protected AbstractCodec(
         string filePath,
         IEnumerable<byte> rawInput,
@@ -63,13 +65,14 @@ public abstract class AbstractCodec
             ConsoleId = consoleId,
             CodecId = codecId,
             FileChecksum = RawInput.ComputeChecksums(),
+            CodecFeatureSupport = new CodecFeatureSupport(),
         };
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
 
     public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params) {
-        if (FormatSupportsCustomCheatCodes() && !@params.HideGames)
+        if (SupportsCustomCheatCodes() && !@params.HideGames)
         {
             printer.PrintGames(@params);
             Console.WriteLine();
@@ -80,70 +83,70 @@ public abstract class AbstractCodec
 
     public void AddFileProps(Table table)
     {
-        if (FormatSupportsFileEncryption())
+        if (SupportsFileEncryption())
         {
             table.AddRow("File encrypted", IsFileEncrypted());
         }
 
-        if (FormatSupportsFileScrambling())
+        if (SupportsFileScrambling())
         {
             table.AddRow("File scrambled", IsFileScrambled());
         }
 
-        if (FormatSupportsFirmwareCompression())
+        if (SupportsFirmwareCompression())
         {
             table.AddRow("Firmware compressed", IsFirmwareCompressed());
         }
 
-        if (FormatSupportsUserPrefs())
+        if (SupportsUserPrefs())
         {
-            table.AddRow("Pristine user prefs", !HasUserPrefs());
+            table.AddRow("Pristine user prefs", !HasDirtyUserPrefs());
         }
     }
 
-    public virtual bool FormatSupportsCustomCheatCodes()
+    public bool SupportsCustomCheatCodes()
     {
-        return true;
+        return Metadata.CodecFeatureSupport.SupportsCheats;
     }
 
-    public virtual bool FormatSupportsFileEncryption()
+    public bool SupportsFileEncryption()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.SupportsFileEncryption;
     }
 
-    public virtual bool FormatSupportsFileScrambling()
+    public bool SupportsFileScrambling()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.SupportsFileScrambling;
     }
 
-    public virtual bool FormatSupportsFirmwareCompression()
+    public bool SupportsFirmwareCompression()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.SupportsFirmwareCompression;
     }
 
-    public virtual bool FormatSupportsUserPrefs()
+    public bool SupportsUserPrefs()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.SupportsUserPrefs;
     }
 
-    public virtual bool IsFileEncrypted()
+    public bool IsFileEncrypted()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.IsFileEncrypted;
     }
 
-    public virtual bool IsFileScrambled()
+    public bool IsFileScrambled()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.IsFileScrambled;
     }
 
-    public virtual bool IsFirmwareCompressed()
+    public bool IsFirmwareCompressed()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.IsFirmwareCompressed;
     }
 
-    public virtual bool HasUserPrefs()
+    public bool HasDirtyUserPrefs()
     {
-        return false;
+        return Metadata.CodecFeatureSupport.HasDirtyUserPrefs;
     }
 
     public virtual u8[] Encrypt()
@@ -172,7 +175,7 @@ public abstract class AbstractCodec
 
         CodecFactory[] codecFactories =
         {
-            new(GbGsRom.Is, () => new GbGsRom(romFilePath, bytes)),
+            new(GboGsRom.Is, () => new GboGsRom(romFilePath, bytes)),
             new(GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
             new(GbaGsFcdRom.Is, () => new GbaGsFcdRom(romFilePath, bytes)),
             new(GbaTvTunerRom.Is, () => new GbaTvTunerRom(romFilePath, bytes)),

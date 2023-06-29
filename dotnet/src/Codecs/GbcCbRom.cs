@@ -39,6 +39,15 @@ public sealed class GbcCbRom : AbstractCodec
     public GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsFirmware = true;
+        Support.SupportsUserPrefs = true;
+
+        Support.HasCheats = true;
+        Support.HasFirmware = true;
+        // TODO(CheatoBaggins): Detect
+        Support.HasDirtyUserPrefs = false;
+
         Metadata.BrandId = DetectBrand(rawInput);
 
         RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();

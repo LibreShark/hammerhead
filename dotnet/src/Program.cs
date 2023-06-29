@@ -80,7 +80,7 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         var codec = AbstractCodec.FromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.FormatSupportsFileEncryption())
+        if (!codec.SupportsFileEncryption())
         {
             printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
@@ -102,7 +102,7 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         var codec = AbstractCodec.FromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.FormatSupportsFileEncryption())
+        if (!codec.SupportsFileEncryption())
         {
             printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
             return;
@@ -124,7 +124,7 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         var codec = AbstractCodec.FromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.FormatSupportsFileScrambling())
+        if (!codec.SupportsFileScrambling())
         {
             printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
@@ -147,7 +147,7 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         var codec = AbstractCodec.FromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.FormatSupportsFileScrambling())
+        if (!codec.SupportsFileScrambling())
         {
             printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
             return;
