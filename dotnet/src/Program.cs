@@ -44,6 +44,7 @@ internal static class Program
         cli.OnScrambleRom += (_, @params) => ScrambleRom(@params);
         cli.OnUnscrambleRom += (_, @params) => UnscrambleRom(@params);
         cli.OnDumpCheats += (_, @params) => DumpCheats(@params);
+        cli.OnCopyCheats += (_, @params) => CopyCheats(@params);
         return await cli.RootCommand.InvokeAsync(args);
     }
 
@@ -75,117 +76,140 @@ internal static class Program
         }
     }
 
-    private static void EncryptRom(RomCmdParams @params)
+    private class FileTransformParams
+    {
+        public FileInfo InputFile { get; init; }
+        public FileInfo OutputFile { get; init; }
+        public AbstractCodec Codec { get; init; }
+        public TerminalPrinter Printer { get; init; }
+
+        public FileTransformParams(FileInfo inputFile, FileInfo outputFile, AbstractCodec codec, TerminalPrinter printer)
+        {
+            InputFile = inputFile;
+            OutputFile = outputFile;
+            Codec = codec;
+            Printer = printer;
+        }
+    }
+
+    private static void TransformOneFile(
+        string status,
+        string fileSuffix,
+        RomCmdParams @params,
+        Func<FileTransformParams, bool> isSupported,
+        Action<FileTransformParams> transform)
     {
         FileInfo inputFile = @params.InputFile!;
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, fileSuffix);
         var codec = AbstractCodec.FromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.SupportsFileEncryption())
+
+        var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+        if (!isSupported(ftp))
         {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
             return;
         }
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "encrypted");
         if (outputFile.Exists && !@params.OverwriteExistingFiles)
         {
             printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
             return;
         }
-        printer.PrintRomCommand("Encrypting ROM file", inputFile, outputFile, () =>
+        printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
-            File.WriteAllBytes(outputFile.FullName, codec.Encrypt());
+            transform(ftp);
         });
+    }
+
+    private static void EncryptRom(RomCmdParams @params)
+    {
+        TransformOneFile(
+            "Encrypting ROM file",
+            "encrypted",
+            @params,
+            t => t.Codec.SupportsFileEncryption(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Encrypt())
+            );
     }
 
     private static void DecryptRom(RomCmdParams @params)
     {
-        FileInfo inputFile = @params.InputFile!;
-        var codec = AbstractCodec.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.SupportsFileEncryption())
-        {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support encryption. Aborting.");
-            return;
-        }
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "decrypted");
-        if (outputFile.Exists && !@params.OverwriteExistingFiles)
-        {
-            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
-            return;
-        }
-        printer.PrintRomCommand("Decrypting ROM file", inputFile, outputFile, () =>
-        {
-            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
-        });
+        TransformOneFile(
+            "Decrypting ROM file",
+            "decrypted",
+            @params,
+            t => t.Codec.SupportsFileEncryption(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Decrypt())
+        );
     }
 
     private static void ScrambleRom(RomCmdParams @params)
     {
-        FileInfo inputFile = @params.InputFile!;
-        var codec = AbstractCodec.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.SupportsFileScrambling())
-        {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
-            return;
-        }
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "scrambled");
-        if (outputFile.Exists && !@params.OverwriteExistingFiles)
-        {
-            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
-            return;
-        }
-
-        printer.PrintRomCommand("Scrambling ROM file", inputFile, outputFile, () =>
-        {
-            File.WriteAllBytes(outputFile.FullName, codec.Scramble());
-        });
+        TransformOneFile(
+            "Scrambling ROM file",
+            "scrambled",
+            @params,
+            t => t.Codec.SupportsFileScrambling(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Scramble())
+        );
     }
 
     private static void UnscrambleRom(RomCmdParams @params)
     {
-        FileInfo inputFile = @params.InputFile!;
-        var codec = AbstractCodec.FromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        if (!codec.SupportsFileScrambling())
-        {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} ROM files do not support scrambling. Aborting.");
-            return;
-        }
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFileName(inputFile, "unscrambled");
-        if (outputFile.Exists && !@params.OverwriteExistingFiles)
-        {
-            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
-            return;
-        }
-        printer.PrintRomCommand("Unscrambling ROM file", inputFile, outputFile, () =>
-        {
-            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
-        });
+        TransformOneFile(
+            "Unscrambling ROM file",
+            "unscrambled",
+            @params,
+            t => t.Codec.SupportsFileScrambling(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Unscramble())
+        );
     }
 
     private static void DumpCheats(DumpCheatsCmdParams @params)
     {
-        foreach (FileInfo inputFile in @params.InputFiles)
+        foreach (FileInfo inputFile in @params.InputFiles!)
         {
-            var codec = AbstractCodec.FromFile(inputFile.FullName);
-            var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-
-            List<Game> games = codec.Games;
-
-            // TODO(CheatoBaggins): Auto-detect output file type!
-
             FileInfo outputFile = GenerateOutputFileName(inputFile, "cheats");
-            if (outputFile.Exists && !@params.OverwriteExistingFiles)
-            {
-                printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
-                continue;
-            }
-            printer.PrintRomCommand("Dumping cheat file", inputFile, outputFile, () =>
-            {
-                // File.WriteAllBytes(outputFile.FullName, ...);
-            });
+
+            TransformOneFile(
+                "Dumping cheats",
+                "cheats",
+                new RomCmdParams()
+                {
+                    InputFile = inputFile,
+                    OutputFile = outputFile,
+                    OverwriteExistingFiles = @params.OverwriteExistingFiles,
+                    PrintFormatId = @params.PrintFormatId,
+                    HideBanner = @params.HideBanner,
+                    Clean = @params.Clean,
+                },
+                t => t.Codec.SupportsCheats(),
+                t =>
+                {
+                    // TODO(CheatoBaggins): Implement
+                    // File.WriteAllBytes(t.OutputFile.FullName, TEXT);
+                }
+            );
         }
+    }
+
+    private static void CopyCheats(RomCmdParams @params)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        FileInfo outputFile = GenerateOutputFileName(inputFile, "cheats");
+
+        TransformOneFile(
+            "Dumping cheats",
+            "cheats",
+            @params,
+            t => t.Codec.SupportsCheats(),
+            t =>
+            {
+                // TODO(CheatoBaggins): Implement
+                // File.WriteAllBytes(t.OutputFile.FullName, TEXT);
+            }
+        );
     }
 
     private static FileInfo GenerateOutputFileName(FileInfo inputFile, string suffix)

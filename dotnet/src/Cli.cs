@@ -35,20 +35,8 @@ public class RomCmdParams : CmdParams
 
 public class DumpCheatsCmdParams : CmdParams
 {
-    public FileInfo[] InputFiles { get; init; }
+    public FileInfo[]? InputFiles { get; init; }
     public DirectoryInfo? OutputDir { get; set; }
-    public bool OverwriteExistingFiles { get; init; }
-
-    public DumpCheatsCmdParams()
-    {
-        InputFiles = new FileInfo[] { };
-    }
-}
-
-public class CopyCheatsCmdParams : CmdParams
-{
-    public FileInfo? InputFile { get; init; }
-    public FileInfo? OutputFile { get; set; }
     public bool OverwriteExistingFiles { get; init; }
 }
 
@@ -308,7 +296,7 @@ public class Cli
     public event EventHandler<RomCmdParams>? OnSplitRom;
     public event EventHandler<RomCmdParams>? OnCombineRom;
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
-    public event EventHandler<CopyCheatsCmdParams>? OnCopyCheats;
+    public event EventHandler<RomCmdParams>? OnCopyCheats;
 
     public RootCommand RootCommand => _rootCmd;
 
@@ -484,7 +472,7 @@ public class Cli
 
         _copyCheatsCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
         {
-            var cmdParams = new CopyCheatsCmdParams()
+            var cmdParams = new RomCmdParams()
             {
                 // Global options
                 PrintFormatId = GetPrintFormatId(ctx),

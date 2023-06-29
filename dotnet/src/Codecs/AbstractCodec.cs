@@ -72,7 +72,7 @@ public abstract class AbstractCodec
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
 
     public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params) {
-        if (SupportsCustomCheatCodes() && !@params.HideGames)
+        if (SupportsCheats() && !@params.HideGames)
         {
             printer.PrintGames(@params);
             Console.WriteLine();
@@ -104,7 +104,7 @@ public abstract class AbstractCodec
         }
     }
 
-    public bool SupportsCustomCheatCodes()
+    public bool SupportsCheats()
     {
         return Metadata.CodecFeatureSupport.SupportsCheats;
     }
