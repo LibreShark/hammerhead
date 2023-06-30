@@ -13,15 +13,14 @@ namespace LibreShark.Hammerhead.IO;
 
 public class TerminalPrinter
 {
-    public readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    public readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    public readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-    public readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
-    public readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
-    public readonly Color HintColor = Color.FromArgb(160, 160, 160);
+    #region Fields
 
-    private readonly AbstractCodec _codec;
-    private readonly PrintFormatId _printFormat;
+    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
+    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
+    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
+    private static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
+    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+    private static readonly Color HintColor = Color.FromArgb(160, 160, 160);
 
     private CellFormat HeaderCellFormat
     {
@@ -55,11 +54,18 @@ public class TerminalPrinter
                 ? TableConfig.Markdown()
                 : TableConfig.Simple();
 
+    private readonly AbstractCodec _codec;
+    private readonly PrintFormatId _printFormat;
+
+    #endregion
+
     public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat)
     {
         _codec = codec;
         _printFormat = GetEffectivePrintFormatId(printFormat);
     }
+
+    #region Tables
 
     public Table BuildTable(Action<TableBuilder> addColumns)
     {
@@ -76,12 +82,15 @@ public class TerminalPrinter
         bool innerFormatting = true
     )
     {
-        return new CellFormat(
-            alignment: alignment,
-            foregroundColor: IsColor ? TableKeyColor : default,
-            fontStyle: IsColor ? fontStyle : default,
-            innerFormatting: IsColor && innerFormatting
-        );
+        return
+            IsColor
+                ? new CellFormat(
+                    alignment: alignment,
+                    foregroundColor: TableKeyColor,
+                    fontStyle: fontStyle,
+                    innerFormatting: innerFormatting
+                )
+                : new CellFormat(alignment: alignment);
     }
 
     public CellFormat ValueCell(
@@ -90,32 +99,88 @@ public class TerminalPrinter
         bool innerFormatting = true
     )
     {
-        return new CellFormat(
-            alignment: alignment,
-            foregroundColor: IsColor ? TableValueColor : default,
-            fontStyle: IsColor ? fontStyle : default,
-            innerFormatting: IsColor && innerFormatting
-        );
+        return
+            IsColor
+                ? new CellFormat(
+                    alignment: alignment,
+                    foregroundColor: TableValueColor,
+                    fontStyle: fontStyle,
+                    innerFormatting: innerFormatting
+                )
+                : new CellFormat(alignment: alignment);
     }
 
-    public CellFormat TableCell(
-        Alignment alignment = default,
-        Color foregroundColor = default,
-        Color backgroundColor = default,
-        FontStyleExt fontStyle = default,
-        bool innerFormatting = default
-    )
+    #endregion
+
+    #region String formatting
+
+    private string GetDisplayBrand()
     {
-        return new CellFormat(
-            alignment: alignment,
-            foregroundColor: IsColor ? foregroundColor : default,
-            backgroundColor: IsColor ? backgroundColor : default,
-            fontStyle: IsColor ? fontStyle : default,
-            innerFormatting: IsColor ? innerFormatting : default
-        );
+        return _codec.Metadata.BrandId.ToDisplayString();
     }
 
-    public void PrintDetails(FileInfo inputFile, InfoCmdParams @params)
+    private string GetDisplayLocale()
+    {
+        string ietf = _codec.Metadata.LanguageIetfCode;
+        string locale;
+        if (String.IsNullOrWhiteSpace(ietf))
+        {
+            locale = "";
+        }
+        else
+        {
+            var culture = CultureInfo.GetCultureInfo(ietf);
+            locale = $"{ietf} - {culture.DisplayName}";
+        }
+        return locale;
+    }
+
+    #endregion
+
+    #region Printing text
+
+    public void PrintHint(string message)
+    {
+        string styled = IsColor
+            ? Italic(message.ForegroundColor(HintColor))
+            : message;
+        Console.Error.WriteLine($"\n{styled}\n");
+    }
+
+    public void PrintError(string message)
+    {
+        if (!message.ToUpperInvariant().Contains("ERROR"))
+        {
+            message = $"ERROR: {message}";
+        }
+        string styled = IsColor
+            ? Italic(message.ForegroundColor(Color.Red))
+            : message;
+        Console.Error.WriteLine($"\n{styled}\n");
+    }
+
+    #endregion
+
+    #region Printing sections
+
+    public void PrintHeading(string title)
+    {
+        if (IsMarkdown)
+        {
+            Console.WriteLine($"## {title}");
+        }
+        else
+        {
+            string horizontalLine = "".PadRight(80, '=');
+            Console.WriteLine();
+            Console.WriteLine(horizontalLine);
+            Console.WriteLine($"= {title,-76} =");
+            Console.WriteLine(horizontalLine);
+            Console.WriteLine();
+        }
+    }
+
+    public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
     {
         Console.WriteLine(InputFilePathStyle(inputFile.ShortName()));
         Console.WriteLine();
@@ -136,31 +201,7 @@ public class TerminalPrinter
         Console.WriteLine();
     }
 
-    private string InputFilePathStyle(string filePath)
-    {
-        return IsColor
-            ? BoldUnderline(filePath.ForegroundColor(Color.LimeGreen))
-            : filePath;
-    }
-
-    public void PrintHeading(string title)
-    {
-        if (IsMarkdown)
-        {
-            Console.WriteLine($"## {title}");
-        }
-        else
-        {
-            string horizontalLine = "".PadRight(80, '=');
-            Console.WriteLine();
-            Console.WriteLine(horizontalLine);
-            Console.WriteLine($"= {title,-76} =");
-            Console.WriteLine(horizontalLine);
-            Console.WriteLine();
-        }
-    }
-
-    public void PrintFilePropTable(InfoCmdParams @params)
+    private void PrintFilePropTable(InfoCmdParams @params)
     {
         Table table = BuildTable(builder =>
         {
@@ -196,7 +237,7 @@ public class TerminalPrinter
         Console.WriteLine(table);
     }
 
-    public void PrintChecksums(InfoCmdParams @params)
+    private void PrintChecksums(InfoCmdParams @params)
     {
         Table filePropTable = new TableBuilder(HeaderCellFormat)
             .AddColumn("Algorithm", rowsFormat: KeyCell())
@@ -214,7 +255,7 @@ public class TerminalPrinter
         Console.WriteLine(filePropTable);
     }
 
-    public void PrintIdentifiers(InfoCmdParams @params)
+    private void PrintIdentifiers(InfoCmdParams @params)
     {
         if (_codec.Metadata.Identifiers.Count == 0)
         {
@@ -302,28 +343,16 @@ public class TerminalPrinter
         Console.WriteLine(gameTable);
     }
 
-    public string GetDisplayBrand()
-    {
-        return _codec.Metadata.BrandId.ToDisplayString();
-    }
-
-    public string GetDisplayLocale()
-    {
-        string ietf = _codec.Metadata.LanguageIetfCode;
-        string locale;
-        if (String.IsNullOrWhiteSpace(ietf))
-        {
-            locale = ietf;
-        }
-        else
-        {
-            var culture = CultureInfo.GetCultureInfo(ietf);
-            locale = $"{ietf} - {culture.DisplayName}";
-        }
-        return locale;
-    }
+    #endregion
 
     #region Styles
+
+    private string InputFilePathStyle(string filePath)
+    {
+        return IsColor
+            ? BoldUnderline(filePath.ForegroundColor(Color.LimeGreen))
+            : filePath;
+    }
 
     private string Bold(string str)
     {
@@ -436,26 +465,6 @@ public class TerminalPrinter
     }
 
     #endregion
-
-    public void PrintHint(string message)
-    {
-        string styled = IsColor
-            ? Italic(message.ForegroundColor(HintColor))
-            : message;
-        Console.Error.WriteLine($"\n{styled}\n");
-    }
-
-    public void PrintError(string message)
-    {
-        if (!message.ToUpperInvariant().Contains("ERROR"))
-        {
-            message = $"ERROR: {message}";
-        }
-        string styled = IsColor
-            ? Italic(message.ForegroundColor(Color.Red))
-            : message;
-        Console.Error.WriteLine($"\n{styled}\n");
-    }
 
     public void PrintRomCommand(string heading, FileInfo inputFile, FileInfo outputFile, Action action)
     {

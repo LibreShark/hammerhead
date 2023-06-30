@@ -5,33 +5,6 @@ using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead;
 
-/*
-
-# Global options
---clean
---hide-banner
---overwrite
-
-# Display detailed information about ROM files and cheat list files.
-hh info n64-*.bin \
-    --input-format=auto|n64_cheats_datel_memcard|... \
-    --print-format=auto|color|plain|markdown|jsonproto|textproto|none
-
-# ROMs are automatically decrypted and unscrambled every time they're read in.
-hh rom encrypt    ar3.dec               [-o ar3.enc]
-hh rom decrypt    ar3.enc               [-o ar3.dec]
-hh rom scramble   xplorer64.dec         [-o xplorer64.enc]
-hh rom unscramble xplorer64.enc         [-o xplorer64.dec]
-hh rom split      n64-gs-v2.0.bin       [-o n64-gs-v2.0.part] [--clean]
-hh rom combine    n64-gs-v2.0.part*.bin [-o n64-gs-v2.0.bin]
-
-# Cheat management
-hh cheats dump *.rom [--output-format=auto]
-hh cheats copy [--input-format=auto] [--output-format=auto] FROM.bin [-o TO.txt]
-hh cheats copy [--input-format=auto] [--output-format=auto] FROM.txt [-o TO.bin] [--clean]
-
-*/
-
 internal static class Program
 {
     public static async Task<int> Main(string[] args)
@@ -72,7 +45,7 @@ internal static class Program
         {
             AbstractCodec codec = AbstractCodec.ReadFromFile(romFile.FullName, @params.InputCodecId);
             var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-            printer.PrintDetails(romFile, @params);
+            printer.PrintFileInfo(romFile, @params);
         }
     }
 
