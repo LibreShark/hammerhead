@@ -63,93 +63,108 @@ namespace LibreShark.Hammerhead {
             }
         }
         
-        internal static string ASCII_BRAND_NAME_ACTION_REPLAY {
+        internal static byte[] ASCII_BRAND_NAME_ACTION_REPLAY {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_ACTION_REPLAY", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_ACTION_REPLAY", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_BLAZE {
+        internal static byte[] ASCII_BRAND_NAME_BLAZE {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_BLAZE", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_BLAZE", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_BRAINBOY {
+        internal static byte[] ASCII_BRAND_NAME_BRAINBOY {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_BRAINBOY", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_BRAINBOY", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_CODE_BREAKER {
+        internal static byte[] ASCII_BRAND_NAME_CODE_BREAKER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_CODE_BREAKER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_CODE_BREAKER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_EQUALIZER {
+        internal static byte[] ASCII_BRAND_NAME_EQUALIZER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_EQUALIZER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_EQUALIZER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_GAME_BOOSTER {
+        internal static byte[] ASCII_BRAND_NAME_GAME_BOOSTER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_BOOSTER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_GAME_BOOSTER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_GAME_BUSTER {
+        internal static byte[] ASCII_BRAND_NAME_GAME_BUSTER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_BUSTER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_GAME_BUSTER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_GAME_GENIE {
+        internal static byte[] ASCII_BRAND_NAME_GAME_GENIE {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_GENIE", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_GAME_GENIE", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_GAMESHARK {
+        internal static byte[] ASCII_BRAND_NAME_GAMESHARK {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_GAMESHARK", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_GAMESHARK", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_GB_HUNTER {
+        internal static byte[] ASCII_BRAND_NAME_GB_HUNTER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_GB_HUNTER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_GB_HUNTER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_MONSTER_BRAIN {
+        internal static byte[] ASCII_BRAND_NAME_MONSTER_BRAIN {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_MONSTER_BRAIN", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_MONSTER_BRAIN", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_SHARK_MX {
+        internal static byte[] ASCII_BRAND_NAME_SHARK_MX {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_SHARK_MX", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_SHARK_MX", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_UNKNOWN {
+        internal static byte[] ASCII_BRAND_NAME_UNKNOWN {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_UNKNOWN", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_UNKNOWN", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_XPLODER {
+        internal static byte[] ASCII_BRAND_NAME_XPLODER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_XPLODER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_XPLODER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
-        internal static string ASCII_BRAND_NAME_XPLORER {
+        internal static byte[] ASCII_BRAND_NAME_XPLORER {
             get {
-                return ResourceManager.GetString("ASCII_BRAND_NAME_XPLORER", resourceCulture);
+                object obj = ResourceManager.GetObject("ASCII_BRAND_NAME_XPLORER", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
