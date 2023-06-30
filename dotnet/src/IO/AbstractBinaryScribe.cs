@@ -398,4 +398,16 @@ public abstract class AbstractBinaryScribe
         }
         WriteBytes(bytes);
     }
+
+    public override string ToString()
+    {
+        if (EndReached)
+        {
+            return $"AT 0x{Position:X8}: N/A (length = 0x{BufferRef.Length:X8})";
+        }
+
+        u8 b = BufferRef[Position];
+        char c = (char)b;
+        return $"AT 0x{Position:X8}: 0x{b:X2} = '{c}' (length = 0x{BufferRef.Length:X8})";
+    }
 }
