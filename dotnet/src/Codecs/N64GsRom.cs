@@ -166,8 +166,8 @@ public sealed class N64GsRom : AbstractCodec
     {
         u32 startPos = Scribe.Position;
 
-        // Firmware does not support names longer than 30 chars.
-        RomString name = Scribe.ReadCStringUntilNull(30, true);
+        // Firmware and official Datel GS Utils do not support names longer than 30 chars.
+        RomString name = Scribe.ReadPrintableCString();
 
         if (name.Value.Length < 1)
         {
@@ -295,11 +295,11 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.WriteU32((u32)Games.Count);
         foreach (Game game in Games)
         {
-            Scribe.WriteCString(game.GameName.Value);
+            Scribe.WriteCString(game.GameName.Value, 30);
             Scribe.WriteU8((u8)game.Cheats.Count);
             foreach (Cheat cheat in game.Cheats)
             {
-                Scribe.WriteCString(cheat.CheatName.Value);
+                Scribe.WriteCString(cheat.CheatName.Value, 30);
                 u8 codeCount = (u8)cheat.Codes.Count;
                 if (cheat.IsCheatActive)
                 {

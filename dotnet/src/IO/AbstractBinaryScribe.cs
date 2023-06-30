@@ -386,14 +386,14 @@ public abstract class AbstractBinaryScribe
 
     public void WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)
     {
-        if (maxLen > 0)
+        if (maxLen > 0 && str.Length > maxLen)
         {
             str = str[..maxLen];
         }
         var bytes = str.ToAsciiBytes();
-        if (bytes.Last() != 0)
+        if (isNullTerminated && bytes.Last() != 0)
         {
-            // Null-terminated for
+            // C strings must be null-terminated
             bytes = bytes.Concat(new u8[] { 0 }).ToArray();
         }
         WriteBytes(bytes);
