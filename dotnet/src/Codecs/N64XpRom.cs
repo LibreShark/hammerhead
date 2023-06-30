@@ -25,7 +25,7 @@ using f64 = Double;
 public sealed class N64XpRom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
-    private const CodecId ThisCodecId = CodecId.N64Xplorer64Text;
+    private const CodecId ThisCodecId = CodecId.N64Xplorer64Rom;
 
     private const u32 GameListAddr = 0x00030000;
     private const u32 UserPrefsAddr = 0x0003F000;

@@ -300,6 +300,11 @@ internal static class Program
                 printer.PrintError($"{outputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
                 return;
             }
+            if (inputCodec.Metadata.ConsoleId != outputCodec.Metadata.ConsoleId)
+            {
+                printer.PrintError($"Input and output formats must both be for the same game console. Aborting.");
+                return;
+            }
             if (outputFile.Exists && !@params.OverwriteExistingFiles)
             {
                 printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
