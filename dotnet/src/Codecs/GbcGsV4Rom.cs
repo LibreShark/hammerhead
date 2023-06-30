@@ -15,13 +15,13 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
+/// v4.x GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GbcGsRom : AbstractCodec
+public sealed class GbcGsV4Rom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
-    private const CodecId ThisCodecId = CodecId.GbcGamesharkRom;
+    private const CodecId ThisCodecId = CodecId.GbcGamesharkV4Rom;
 
     private const u32 TitleAddr = 0x00000134;
     private const u32 VerNumAddr = 0x00000143;
@@ -39,7 +39,7 @@ public sealed class GbcGsRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcGsRom(string filePath, u8[] rawInput)
+    public GbcGsV4Rom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

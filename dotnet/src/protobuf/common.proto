@@ -134,23 +134,26 @@ enum CodecId {
   // Game Boy Color
   //////////////////////////////////////////////////////////////////////////////
 
-  GBC_CODEBREAKER_ROM = 40;
+  // Action Replay too
+  GBC_GAMESHARK_V3_ROM = 40;
+
+  // Action Replay too
+  GBC_GAMESHARK_V4_ROM = 41;
+
+  GBC_CODEBREAKER_ROM = 42;
 
   // BrainBoy is a fork of Code Breaker that was specifically designed for
   // cheating in Pokemon games. It does not allow the user to edit or even see
   // any cheat codes, and it only supports specific Pokemon games.
   // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
   // the same.
-  GBC_MONSTERBRAIN_ROM = 41;
-
-  // Action Replay too
-  GBC_GAMESHARK_ROM = 42;
+  GBC_MONSTERBRAIN_ROM = 43;
 
   // AKA "Xplorer GB"
-  GBC_XPLODER_ROM = 43;
+  GBC_XPLODER_ROM = 44;
 
   // Email client
-  GBC_SHARK_MX_ROM = 44;
+  GBC_SHARK_MX_ROM = 45;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy Advance

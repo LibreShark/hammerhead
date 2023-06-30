@@ -358,16 +358,22 @@ public abstract class AbstractBinaryScribe
         };
     }
 
-    private static string ByteToStr(byte b)
+    private static string ByteToStr(u8 b)
     {
         if (b > 127)
         {
             return string.Concat('`', b.ToString("X2"), '`');
         }
-        else
+        if (b == '\0') return @"\0";
+        if (b == '\t') return @"\t";
+        if (b == '\n') return @"\n";
+        if (b == '\r') return @"\r";
+        if (b == '\f') return @"\f";
+        if (b < ' ')
         {
-            return new u8[] { b }.ToAsciiString();
+            return $"[0x{b:X2}]";
         }
+        return new u8[] { b }.ToAsciiString();
     }
 
     #endregion
