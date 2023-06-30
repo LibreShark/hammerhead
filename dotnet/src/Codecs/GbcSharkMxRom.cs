@@ -51,9 +51,9 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
         Metadata.BrandId = BrandId.SharkMx;
 
-        ParseVersion();
         ParseRegistrationCode();
         ParseSecretPin();
+        ParseVersion();
         ParseTimeZones();
         ParseContacts();
         ParseMessages();
@@ -63,32 +63,59 @@ public sealed class GbcSharkMxRom : AbstractCodec
     {
         s32 welcomeAddr = Scribe.Find("Welcome to");
         s32 manufacturerAddr = Scribe.Find("Shark MX");
+        s32 main3GbiAddr = Scribe.Find("MAIN3.GBI");
 
-        RomString welcomeStr = Scribe.Seek(welcomeAddr).ReadCStringUntilNull().Readable();
-        RomString manufacturerStr = Scribe.Seek(manufacturerAddr).ReadCStringUntilNull().Readable();
-
-        Metadata.Identifiers.Add(welcomeStr);
-        Metadata.Identifiers.Add(manufacturerStr);
-
-        Match versionMatch = Regex.Match(welcomeStr.Value, @"(?<country>\w+) V(?<version>[\d.]+)");
-        if (!versionMatch.Success)
+        if (welcomeAddr > -1)
         {
-            throw new NotSupportedException("Unable to find version number in Shark MX ROM file!");
+            RomString welcomeStr = Scribe.Seek(welcomeAddr).ReadCStringUntilNull().Readable();
+            Metadata.Identifiers.Add(welcomeStr);
+
+            Match versionMatch = Regex.Match(welcomeStr.Value, @"(?<country>\w+) V(?<version>[\d.]+)");
+            if (!versionMatch.Success)
+            {
+                throw new NotSupportedException("Unable to find version number in Shark MX ROM file!");
+            }
+
+            string countryStr = versionMatch.Groups["country"].Value;
+            string versionStr = versionMatch.Groups["version"].Value;
+            if (countryStr == "US")
+            {
+                Metadata.LanguageIetfCode = "en-US";
+            }
+            else
+            {
+                Console.Error.WriteLine($"UNKNOWN LANGUAGE FOR COUNTRY '{countryStr}'");
+            }
+
+            Metadata.SortableVersion = Double.Parse(versionStr);
+            Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2} ({countryStr})";
         }
 
-        string countryStr = versionMatch.Groups["country"].Value;
-        string versionStr = versionMatch.Groups["version"].Value;
-        if (countryStr == "US")
+        if (manufacturerAddr > -1)
         {
-            Metadata.LanguageIetfCode = "en-US";
-        }
-        else
-        {
-            Console.Error.WriteLine($"UNKNOWN LANGUAGE FOR COUNTRY '{countryStr}'");
+            RomString manufacturerStr = Scribe.Seek(manufacturerAddr).ReadCStringUntilNull().Readable();
+            Metadata.Identifiers.Add(manufacturerStr);
         }
 
-        Metadata.SortableVersion = Double.Parse(versionStr);
-        Metadata.DisplayVersion = $"v{Metadata.SortableVersion:F2} ({countryStr})";
+        if (main3GbiAddr > -1)
+        {
+            Scribe.Seek(main3GbiAddr);
+            while (!Scribe.IsPadding())
+            {
+                RomString str = Scribe.ReadPrintableCString();
+                if (str.Value.Length > 2)
+                {
+                    str.Value = Regex.Replace(str.Value, "[^A-Z0-9.]+", "");
+                    Metadata.Identifiers.Add(str);
+                }
+                while (!Scribe.IsPadding() && !Scribe.IsPrintableChar())
+                {
+                    string pos = $"0x{Scribe.Position:X8}";
+                    char c = (char)Buffer[Scribe.Position];
+                    Scribe.Next();
+                }
+            }
+        }
     }
 
     private void ParseRegistrationCode()
@@ -183,7 +210,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
         s32 tzListPos = Scribe.Seek(0).Find("Anchorage");
         if (tzListPos < 0)
         {
-            Console.Error.WriteLine("Unable to find time zones!");
+            Console.Error.WriteLine("ERROR: Unable to find time zones!");
+            return;
         }
 
         u32 tzListAddr = (u32)tzListPos - 5;
@@ -217,16 +245,23 @@ public sealed class GbcSharkMxRom : AbstractCodec
         while (!Scribe.IsPadding())
         {
             RomString subject = Scribe.ReadCStringUntil(0, '\f').Trim();
-            Scribe.ReadU8();
+            Scribe.Skip(1);
             RomString recipientEmail = Scribe.ReadCStringUntil(0, '\f').Trim();
-            Scribe.ReadU8();
+            Scribe.Skip(1);
             RomString unknownField1 = Scribe.ReadCStringUntil(0, '\f').Trim();
-            Scribe.ReadU8();
+            Scribe.Skip(1);
             RomString rawDate = Scribe.ReadCStringUntil(0, '\f').Trim();
-            Scribe.ReadU8();
+            Scribe.Skip(1);
             RomString message = Scribe.ReadCStringUntil(0, '\x04').Trim();
-            Scribe.ReadU8();
+            Scribe.Skip(1);
             RomString unknownField2 = Scribe.ReadCStringUntilNull().Trim();
+
+            if (!DateTime.TryParse(rawDate.Value, out DateTime dateTime) ||
+                dateTime.Year < 1990)
+            {
+                // Corrupt ROM dump
+                return;
+            }
 
             _messages.Add(new GbcSmxMessage()
             {
@@ -234,7 +269,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 RecipientEmail = recipientEmail,
                 UnknownField1 = unknownField1,
                 RawDate = rawDate,
-                IsoDate = DateTime.Parse(rawDate.Value).ToIsoString(),
+                IsoDate = dateTime.ToIsoString(),
                 Message = message,
                 UnknownField2 = unknownField2,
             });
