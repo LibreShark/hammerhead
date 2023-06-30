@@ -64,46 +64,30 @@ public class Cli
 
     private static readonly Option<CodecId> InputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--input-format" },
-        description: "Force Hammerhead to use a specific file format when reading input files.\n" +
-                     "<input_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
+        description: "Force Hammerhead to use a specific file format when reading input files.",
         getDefaultValue: () => CodecId.Auto
         // parseArgument: (x) => x
-    )
-    {
-        ArgumentHelpName = "input_format",
-    };
+    );
 
     private static readonly Option<CodecId> DumpCheatsOutputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--output-format" },
-        description: "Force Hammerhead to use a specific file format when writing output files.\n" +
-                     "<output_format>: auto|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
+        description: "Force Hammerhead to use a specific file format when writing output files.",
         // parseArgument: (x) => x,
         getDefaultValue: () => CodecId.Auto
-    )
-    {
-        ArgumentHelpName = "output_format",
-    };
+    );
 
     private static readonly Option<CodecId> CopyCheatsOutputFormatOption = new Option<CodecId>(
         aliases: new string[] { "--output-format" },
-        description: "Force Hammerhead to use a specific file format when writing output files.\n" +
-                     "<output_format>: auto|rom|jsonproto|textproto|openemu|n64_datel_text|n64_fcd_text|n64_edx7|n64_pj64_v1|n64_pj64_v3",
+        description: "Force Hammerhead to use a specific file format when writing output files.",
         // parseArgument: (x) => x,
         getDefaultValue: () => CodecId.Auto
-    )
-    {
-        ArgumentHelpName = "output_format",
-    };
+    );
 
     private static readonly Option<PrintFormatId> PrintFormatIdOption = new Option<PrintFormatId>(
         aliases: new string[] { "--print-format" },
-        description: "Force Hammerhead to print to stdout using the specified format.\n" +
-                     "<print_format>: detect|color|plain|json|proto|markdown",
+        description: "Force Hammerhead to print to stdout using the specified format.",
         getDefaultValue: () => PrintFormatId.Detect
-    )
-    {
-        ArgumentHelpName = "print_format",
-    };
+    );
 
     private static readonly Option<bool?> ColorOption = new Option<bool?>(
         aliases: new string[] { "--color" },
@@ -130,6 +114,13 @@ public class Cli
         description: "Do not print codes to the console."
     );
 
+    private static readonly Argument<FileInfo> InputFileArgument = new Argument<FileInfo>(
+        "input_file",
+        "Path to an input file to read.")
+    {
+        Arity = ArgumentArity.ExactlyOne,
+    };
+
     private static readonly Argument<FileInfo[]> InputFilesArgument = new Argument<FileInfo[]>(
         "input_files",
         "One or more input files to read.")
@@ -137,11 +128,12 @@ public class Cli
         Arity = ArgumentArity.OneOrMore,
     };
 
-    private static readonly Argument<FileInfo> InputFileArgument = new Argument<FileInfo>(
-        "input_file",
-        "Path to an input file to read.")
+    private static readonly Argument<FileInfo> OutputFileArgument = new Argument<FileInfo>(
+        name: "output_file",
+        "Optional path to the output file to write.\n" +
+        "If not specified, a reasonable default filename will be auto-generated.")
     {
-        Arity = ArgumentArity.ExactlyOne,
+        Arity = ArgumentArity.ZeroOrOne,
     };
 
     private static readonly Option<FileInfo> OutputFileOption = new Option<FileInfo>(
@@ -150,16 +142,15 @@ public class Cli
         "If not specified, a reasonable default filename will be auto-generated.")
     {
         Arity = ArgumentArity.ZeroOrOne,
-        ArgumentHelpName = "output_file",
     };
 
     private static readonly Option<DirectoryInfo> OutputDirOption = new Option<DirectoryInfo>(
-        aliases: new string[] { "-o", "--output-dir" },
+        aliases: new string[] { "-d", "--output-dir" },
         "Optional path to a directory to write output files in.\n" +
-        "If not specified, output files will be written to the same directory as the corresponding input file.")
+        "If not specified, output files will be written to the same directory " +
+        "as the corresponding input file.")
     {
         Arity = ArgumentArity.ZeroOrOne,
-        ArgumentHelpName = "output_dir",
     };
 
     #endregion
@@ -204,9 +195,9 @@ public class Cli
         "If the ROM format does not support encryption, " +
         "the output file will be a 1:1 copy of the input.")
     {
-        OutputFileOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     private readonly Command _decryptRomCmd = new Command(
@@ -215,9 +206,9 @@ public class Cli
         "If the ROM format does not support encryption, " +
         "the output file will be a 1:1 copy of the input.")
     {
-        OutputFileOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     private readonly Command _scrambleRomCmd = new Command(
@@ -227,9 +218,9 @@ public class Cli
         "If the ROM format does not support scrambling, " +
         "the output file will be a 1:1 copy of the input.")
     {
-        OutputFileOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     private readonly Command _unscrambleRomCmd = new Command(
@@ -238,9 +229,9 @@ public class Cli
         "If the ROM format does not support scrambling, " +
         "the output file will be a 1:1 copy of the input.")
     {
-        OutputFileOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     private readonly Command _splitRomCmd = new Command(
@@ -248,9 +239,9 @@ public class Cli
         "Split a ROM file into sections (e.g., header, firmware, key codes, user prefs, and cheat list) " +
         "and write each section to a separate output file.")
     {
-        OutputFileOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     private readonly Command _combineRomCmd = new Command(
@@ -284,11 +275,11 @@ public class Cli
         "copy",
         "Import/export all cheats from one ROM file or cheat list to another.")
     {
-        OutputFileOption,
         InputFormatOption,
         CopyCheatsOutputFormatOption,
         OverwriteOption,
         InputFileArgument,
+        OutputFileArgument,
     };
 
     #endregion
@@ -361,7 +352,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -379,7 +370,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -397,7 +388,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -415,7 +406,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -433,7 +424,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
             Always?.Invoke(this, cmdParams);
@@ -488,7 +479,7 @@ public class Cli
 
                 // Command-specific arguments
                 InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
+                OutputFile = OutputFileArgument.GetValue(ctx),
                 OutputFormat = CopyCheatsOutputFormatOption.GetValue(ctx),
                 OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
             };
