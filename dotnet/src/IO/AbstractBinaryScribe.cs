@@ -134,6 +134,12 @@ public abstract class AbstractBinaryScribe
         return val is 0x00000000 or 0xFFFFFFFF;
     }
 
+    public bool IsPrintableChar()
+    {
+        char c = (char)BufferRef[Position];
+        return c is >= ' ' and <= '~';
+    }
+
     public bool IsIntegerDigit()
     {
         char c = (char)BufferRef[Position];

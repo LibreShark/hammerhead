@@ -1,12 +1,5 @@
-using System.Drawing;
 using System.Text.RegularExpressions;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
 using BetterConsoles.Tables;
-using BetterConsoles.Tables.Builders;
-using BetterConsoles.Tables.Configuration;
-using BetterConsoles.Tables.Models;
-using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.IO;
 
@@ -68,8 +61,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private void ParseVersion()
     {
-        u32 welcomeAddr = (u32)Scribe.Find("Welcome to");
-        u32 manufacturerAddr = (u32)Scribe.Find("Shark MX");
+        s32 welcomeAddr = Scribe.Find("Welcome to");
+        s32 manufacturerAddr = Scribe.Find("Shark MX");
 
         RomString welcomeStr = Scribe.Seek(welcomeAddr).ReadCStringUntilNull().Readable();
         RomString manufacturerStr = Scribe.Seek(manufacturerAddr).ReadCStringUntilNull().Readable();
