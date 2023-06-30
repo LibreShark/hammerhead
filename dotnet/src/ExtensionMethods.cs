@@ -1,13 +1,13 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
-using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.N64;
+using Color = System.Drawing.Color;
 
 namespace LibreShark.Hammerhead;
 
@@ -388,29 +388,6 @@ public static class ExtensionMethods
             BrandId.Xploder => "Xploder",
             BrandId.Xplorer => "Xplorer",
             BrandId.UnknownBrand => "UNKNOWN brand",
-            _ => throw new NotSupportedException($"BrandId {brandId} is missing from ToDisplayString()!"),
-        };
-    }
-
-    public static string ToAsciiArt(this BrandId brandId)
-    {
-        return brandId switch
-        {
-            BrandId.ActionReplay => Resources.ASCII_BRAND_NAME_ACTION_REPLAY.ToUtf8String(),
-            BrandId.Blaze => Resources.ASCII_BRAND_NAME_BLAZE.ToUtf8String(),
-            BrandId.Brainboy => Resources.ASCII_BRAND_NAME_BRAINBOY.ToUtf8String(),
-            BrandId.CodeBreaker => Resources.ASCII_BRAND_NAME_CODE_BREAKER.ToUtf8String(),
-            BrandId.Equalizer => Resources.ASCII_BRAND_NAME_EQUALIZER.ToUtf8String(),
-            BrandId.GameBooster => Resources.ASCII_BRAND_NAME_GAME_BOOSTER.ToUtf8String(),
-            BrandId.GameBuster => Resources.ASCII_BRAND_NAME_GAME_BUSTER.ToUtf8String(),
-            BrandId.GameGenie => Resources.ASCII_BRAND_NAME_GAME_GENIE.ToUtf8String(),
-            BrandId.Gameshark => Resources.ASCII_BRAND_NAME_GAMESHARK.ToUtf8String(),
-            BrandId.GbHunter => Resources.ASCII_BRAND_NAME_GB_HUNTER.ToUtf8String(),
-            BrandId.MonsterBrain => Resources.ASCII_BRAND_NAME_MONSTER_BRAIN.ToUtf8String(),
-            BrandId.SharkMx => Resources.ASCII_BRAND_NAME_SHARK_MX.ToUtf8String(),
-            BrandId.Xploder => Resources.ASCII_BRAND_NAME_XPLODER.ToUtf8String(),
-            BrandId.Xplorer => Resources.ASCII_BRAND_NAME_XPLORER.ToUtf8String(),
-            BrandId.UnknownBrand => Resources.ASCII_BRAND_NAME_UNKNOWN.ToUtf8String(),
             _ => throw new NotSupportedException($"BrandId {brandId} is missing from ToDisplayString()!"),
         };
     }

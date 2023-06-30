@@ -43,6 +43,12 @@
       <PackageReference Include="NeoSmart.PrettySize" Version="3.1.1" />
       <PackageReference Include="NUnit" Version="3.13.3" />
       <PackageReference Include="Protobuf.Text" Version="0.7.0" />
+      <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
+      <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
+      <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
+      <PackageReference Include="Spectre.Console.ImageSharp" Version="0.47.1-preview.0.8" />
+      <PackageReference Include="Spectre.Console.Json" Version="0.47.1-preview.0.8" />
+      <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
       <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
       <PackageReference Include="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1" />
     </ItemGroup>
@@ -66,7 +72,6 @@
       <None Remove="N64\gs-logo-ascii-art-ansi.txt" />
       <None Remove="libreshark-wordmark-ascii-art-plain.txt" />
       <Resource Include="Assets\AsciiArt\gameshark-logo-ascii-art-ansi.txt" />
-      <Resource Include="Assets\AsciiArt\libreshark-wordmark-ascii-art-plain.txt" />
     </ItemGroup>
 
     <ItemGroup>

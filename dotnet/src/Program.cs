@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.Codecs;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead;
 
@@ -39,7 +40,11 @@ internal static class Program
             isColor
                 ? Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.TrimEnd()
                 : Resources.GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT);
-        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
+
+        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_BIG_MONEY_NW));
+        string libreShark = AnsiConsole.Profile.Width >= 100 ? "LibreShark" : "Libre Shark";
+        FigletText brandAsciiArt = new FigletText(figletFont, libreShark).LeftJustified();
+        AnsiConsole.Write(brandAsciiArt);
     }
 
     private static void PrintFileInfo(InfoCmdParams @params)

@@ -25,8 +25,45 @@
     <data name="GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>Assets/AsciiArt/gameshark-logo-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
-    <data name="LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
-        <value>Assets/AsciiArt/libreshark-wordmark-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+
+    <data name="FIGLET_FONT_ANSI_REGULAR" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-ansi-regular.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_ANSI_SHADOW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-ansi-shadow.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_BIG_MONEY_NW" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-big-money-nw.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_BIG" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-big.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_COLOSSAL" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-colossal.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_CYBERLARGE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-cyberlarge.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_CYBERMEDIUM" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-cybermedium.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_DOOM" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-doom.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_NANCYJ_IMPROVED" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-nancyj-improved.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_NANCYJ_UNDERLINED" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-nancyj-underlined.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_NANCYJ" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-nancyj.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_SLANT" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-slant.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="FIGLET_FONT_STANDARD" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/figlet-font-standard.flf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
 
     <data name="ASCII_BRAND_NAME_ACTION_REPLAY" type="System.Resources.ResXFileRef, System.Windows.Forms">

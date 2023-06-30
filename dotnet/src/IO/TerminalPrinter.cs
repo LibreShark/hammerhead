@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Globalization;
 using BetterConsoles.Colors.Extensions;
 using BetterConsoles.Core;
@@ -8,6 +7,9 @@ using BetterConsoles.Tables.Configuration;
 using BetterConsoles.Tables.Models;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
+using Spectre.Console;
+using Color = System.Drawing.Color;
+using Table = BetterConsoles.Tables.Table;
 
 namespace LibreShark.Hammerhead.IO;
 
@@ -182,7 +184,11 @@ public class TerminalPrinter
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
     {
-        Console.WriteLine(_codec.Metadata.BrandId.ToAsciiArt());
+        string brandName = _codec.Metadata.BrandId.ToDisplayString();
+        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
+        FigletText brandAsciiArt = new FigletText(figletFont, brandName).LeftJustified();
+        AnsiConsole.Write(brandAsciiArt);
+
         Console.WriteLine();
         Console.WriteLine(InputFilePathStyle(inputFile.ShortName()));
         Console.WriteLine();
