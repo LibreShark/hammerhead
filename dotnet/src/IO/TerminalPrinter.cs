@@ -8,6 +8,7 @@ using BetterConsoles.Tables.Models;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 using Color = System.Drawing.Color;
 using Style = BetterConsoles.Tables.Style;
 using Table = BetterConsoles.Tables.Table;
@@ -174,11 +175,14 @@ public class TerminalPrinter
         }
         else
         {
-            string horizontalLine = "".PadRight(80, '=');
+            var panel = new Panel($"[b]{title}[/]")
+            {
+                Border = IsColor ? BoxBorder.Double : BoxBorder.Ascii,
+                Width = 80,
+                UseSafeBorder = IsPlain,
+            };
             Console.WriteLine();
-            Console.WriteLine(horizontalLine);
-            Console.WriteLine($"= {title,-76} =");
-            Console.WriteLine(horizontalLine);
+            AnsiConsole.Write(panel);
             Console.WriteLine();
         }
     }

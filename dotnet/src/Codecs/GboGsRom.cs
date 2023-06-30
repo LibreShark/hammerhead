@@ -231,7 +231,7 @@ public sealed class GboGsRom : AbstractCodec
 
     public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
-        printer.PrintHeading("Cheat names");
+        printer.PrintHeading("Cheat name lookup table");
         for (int i = 0; i < _cheatNames.Count; i++)
         {
             RomString cheatName = _cheatNames[i];
