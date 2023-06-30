@@ -472,4 +472,28 @@ public class TerminalPrinter
         Console.WriteLine("Done!");
         Console.WriteLine();
     }
+
+    public void PrintCheatsCommand(
+        string heading,
+        FileInfo inputFile, AbstractCodec inputCodec,
+        FileInfo outputFile, AbstractCodec outputCodec,
+        Action action)
+    {
+        Console.WriteLine();
+        Console.WriteLine(Bold($"{heading}:"));
+        Console.WriteLine();
+        string inputCodecName = inputCodec.Metadata.CodecId.ToDisplayString();
+        string outputCodecName = outputCodec.Metadata.CodecId.ToDisplayString();
+        string inputPath = InputFilePathStyle(inputFile.ShortName());
+        string outputPath = InputFilePathStyle(outputFile.ShortName());
+        Console.WriteLine($"Input:  {inputPath} ({inputCodecName})");
+        Console.WriteLine($"Output: {outputPath} ({outputCodecName})");
+        Console.WriteLine();
+        Console.WriteLine("...");
+        Console.WriteLine();
+        action();
+        Console.WriteLine();
+        Console.WriteLine("Done!");
+        Console.WriteLine();
+    }
 }

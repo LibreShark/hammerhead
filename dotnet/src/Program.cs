@@ -92,7 +92,7 @@ internal static class Program
         }
     }
 
-    private static void TransformOneFile(
+    private static void TransformOneRomFile(
         string status,
         string fileSuffix,
         RomCmdParams @params,
@@ -100,10 +100,10 @@ internal static class Program
         Action<FileTransformParams> transform)
     {
         FileInfo inputFile = @params.InputFile!;
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(inputFile, fileSuffix);
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
+
         var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
         var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-
         var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
 
         if (!isSupported(ftp))
@@ -116,6 +116,38 @@ internal static class Program
             printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
             return;
         }
+
+        printer.PrintRomCommand(status, inputFile, outputFile, () =>
+        {
+            transform(ftp);
+        });
+    }
+
+    private static void TransformOneCheatFile(
+        string status,
+        string fileSuffix,
+        RomCmdParams @params,
+        Func<FileTransformParams, bool> isSupported,
+        Action<FileTransformParams> transform)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
+
+        var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+        var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+        if (!isSupported(ftp))
+        {
+            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+            return;
+        }
+        if (outputFile.Exists && !@params.OverwriteExistingFiles)
+        {
+            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            return;
+        }
+
         printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
             transform(ftp);
@@ -124,7 +156,7 @@ internal static class Program
 
     private static void EncryptRom(RomCmdParams @params)
     {
-        TransformOneFile(
+        TransformOneRomFile(
             "Encrypting ROM file",
             "encrypted",
             @params,
@@ -135,7 +167,7 @@ internal static class Program
 
     private static void DecryptRom(RomCmdParams @params)
     {
-        TransformOneFile(
+        TransformOneRomFile(
             "Decrypting ROM file",
             "decrypted",
             @params,
@@ -146,7 +178,7 @@ internal static class Program
 
     private static void ScrambleRom(RomCmdParams @params)
     {
-        TransformOneFile(
+        TransformOneRomFile(
             "Scrambling ROM file",
             "scrambled",
             @params,
@@ -157,7 +189,7 @@ internal static class Program
 
     private static void UnscrambleRom(RomCmdParams @params)
     {
-        TransformOneFile(
+        TransformOneRomFile(
             "Unscrambling ROM file",
             "unscrambled",
             @params,
@@ -170,9 +202,9 @@ internal static class Program
     {
         foreach (FileInfo inputFile in @params.InputFiles!)
         {
-            FileInfo outputFile = GenerateOutputFile(inputFile, "cheats", "txt");
+            FileInfo outputFile = GenerateOutputFile(@params.OutputDir, inputFile, "cheats", "txt");
 
-            TransformOneFile(
+            TransformOneCheatFile(
                 "Dumping cheats",
                 "cheats",
                 new RomCmdParams()
@@ -187,6 +219,7 @@ internal static class Program
                 t => t.Codec.SupportsCheats(),
                 t =>
                 {
+                    TerminalPrinter printer = t.Printer;
                     AbstractCodec inputCodec = t.Codec;
                     CodecId outputCodecId =
                         @params.OutputFormat == CodecId.Auto
@@ -218,45 +251,79 @@ internal static class Program
     {
         // TODO(CheatoBaggins): Fix file extension
         FileInfo inputFile = @params.InputFile!;
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(inputFile, "cheats");
+        var inputCodec = AbstractCodec.ReadFromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(inputCodec, @params.PrintFormatId);
 
-        TransformOneFile(
-            "Dumping cheats",
-            "cheats",
-            @params,
-            t => t.Codec.SupportsCheats(),
-            t =>
+        FileInfo outputFile;
+        AbstractCodec outputCodec;
+
+        CodecId outputCodecId = @params.OutputFormat;
+        if (outputCodecId == CodecId.Auto)
+        {
+            outputCodecId = inputCodec.DefaultCheatOutputCodec;
+        }
+
+        if (@params.OutputFile == null)
+        {
+            // What extension?
+            outputFile = GenerateOutputFile(null, inputFile, "cheats", ".txt");
+            outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+        }
+        else if (@params.OutputFile.Exists)
+        {
+            outputFile = @params.OutputFile;
+            if (@params.OutputFormat == CodecId.Auto)
             {
-                AbstractCodec inputCodec = t.Codec;
-                CodecId outputCodecId =
-                    @params.OutputFormat == CodecId.Auto
-                        ? inputCodec.DefaultCheatOutputCodec
-                        : @params.OutputFormat;
-                if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
-                {
-                    throw new InvalidOperationException(
-                        $"Output codec {@params.OutputFormat} ({@params.OutputFormat.ToDisplayString()}) " +
-                        "does not support writing cheats yet.");
-                }
-
-                AbstractCodec outputCodec =
-                    outputFile.Exists
-                        ? AbstractCodec.ReadFromFile(outputFile.FullName)
-                        : AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
-
-                outputCodec.Games.RemoveAll(_ => true);
-                outputCodec.Games.AddRange(inputCodec.Games);
-                outputCodec.WriteChangesToBuffer();
-
-                File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
+                outputCodec = AbstractCodec.ReadFromFile(outputFile.FullName);
+                outputCodecId = outputCodec.Metadata.CodecId;
             }
-        );
+            else
+            {
+                outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+            }
+        }
+        else
+        {
+            outputFile = @params.OutputFile;
+            outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+        }
+
+        printer.PrintCheatsCommand("Copying cheats", inputFile, inputCodec, outputFile, outputCodec, () =>
+        {
+            if (!inputCodec.SupportsCheats())
+            {
+                printer.PrintError($"{inputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+                return;
+            }
+            if (!outputCodec.SupportsCheats())
+            {
+                printer.PrintError($"{outputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+                return;
+            }
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+                return;
+            }
+            if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
+            {
+                throw new InvalidOperationException(
+                    $"Output codec {outputCodecId} ({outputCodecId.ToDisplayString()}) " +
+                    "does not support writing cheats yet.");
+            }
+
+            outputCodec.Games.RemoveAll(_ => true);
+            outputCodec.Games.AddRange(inputCodec.Games);
+            outputCodec.WriteChangesToBuffer();
+
+            File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
+        });
     }
 
-    private static FileInfo GenerateOutputFile(FileInfo inputFile, string suffix, string? extension = null)
+    private static FileInfo GenerateOutputFile(DirectoryInfo? outputDir, FileInfo inputFile, string suffix, string? extension = null)
     {
         string inFileName = inputFile.Name;
-        string inFileDir = inputFile.DirectoryName!;
+        string inFileDirPath = inputFile.DirectoryName!;
         string oldExt = extension ?? inputFile.Extension;
 
         if (!oldExt.StartsWith("."))
@@ -277,19 +344,19 @@ internal static class Program
             outFileName = Path.ChangeExtension(inFileName, newExt);
         }
 
-        string outFileDir = inFileDir;
+        string outFileDirPath = outputDir?.FullName ?? inFileDirPath;
 
         try
         {
-            string testFilePath = Path.Join(inFileDir, Path.GetRandomFileName());
+            string testFilePath = Path.Join(outFileDirPath, Path.GetRandomFileName());
             File.WriteAllText(testFilePath, "test");
             File.Delete(testFilePath);
         }
         catch
         {
-            outFileDir = Directory.CreateTempSubdirectory("hammerhead-").FullName;
+            outFileDirPath = Directory.CreateTempSubdirectory("hammerhead-").FullName;
         }
 
-        return new FileInfo(Path.Join(outFileDir, outFileName));
+        return new FileInfo(Path.Join(outFileDirPath, outFileName));
     }
 }
