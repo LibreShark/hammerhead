@@ -291,7 +291,35 @@ public sealed class N64GsRom : AbstractCodec
 
     public override AbstractCodec WriteChangesToBuffer()
     {
-        throw new NotImplementedException();
+        Scribe.Seek(_gameListAddr);
+        Scribe.WriteU32((u32)Games.Count);
+        foreach (Game game in Games)
+        {
+            Scribe.WriteCString(game.GameName.Value);
+            Scribe.WriteU8((u8)game.Cheats.Count);
+            foreach (Cheat cheat in game.Cheats)
+            {
+                Scribe.WriteCString(cheat.CheatName.Value);
+                u8 codeCount = (u8)cheat.Codes.Count;
+                if (cheat.IsCheatActive)
+                {
+                    codeCount |= 0x80;
+                }
+                Scribe.WriteU8(codeCount);
+                foreach (Code code in cheat.Codes)
+                {
+                    Scribe.WriteBytes(code.Bytes.ToByteArray());
+                }
+            }
+        }
+
+        u8 pad = Buffer.Last();
+        while (!Scribe.EndReached)
+        {
+            Scribe.WriteU8(pad);
+        }
+
+        return this;
     }
 
     public static bool Is(u8[] bytes)

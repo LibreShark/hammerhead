@@ -377,4 +377,25 @@ public abstract class AbstractBinaryScribe
     }
 
     #endregion
+
+    public void WriteBytes(u8[] bytes)
+    {
+        Array.Copy(bytes, 0, BufferRef, (s32)Position, bytes.Length);
+        Position += (u32)bytes.Length;
+    }
+
+    public void WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)
+    {
+        if (maxLen > 0)
+        {
+            str = str[..maxLen];
+        }
+        var bytes = str.ToAsciiBytes();
+        if (bytes.Last() != 0)
+        {
+            // Null-terminated for
+            bytes = bytes.Concat(new u8[] { 0 }).ToArray();
+        }
+        WriteBytes(bytes);
+    }
 }
