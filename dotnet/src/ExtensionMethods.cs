@@ -409,6 +409,23 @@ public static class ExtensionMethods
         };
     }
 
+    public static string ToAbbreviation(this ConsoleId consoleId)
+    {
+        return consoleId switch
+        {
+            ConsoleId.GameBoyOriginal => "GB",
+            ConsoleId.GameBoyColor => "GBC",
+            ConsoleId.GameBoyAdvance => "GBA",
+            ConsoleId.GameGear => "GG",
+            ConsoleId.Nintendo64 => "N64",
+            ConsoleId.Playstation1 => "PSX",
+            ConsoleId.Dreamcast => "DC",
+            ConsoleId.Gamecube => "GC",
+            ConsoleId.UnknownConsole => "UNKNOWN",
+            _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
+        };
+    }
+
     public static string ToDisplayString(this N64KeyCode kc)
     {
         return $"{kc.Bytes.ToHexString(" ")}: {kc.Name.Value}" +

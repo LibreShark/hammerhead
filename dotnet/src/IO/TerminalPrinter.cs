@@ -9,6 +9,7 @@ using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
 using Color = System.Drawing.Color;
+using Style = BetterConsoles.Tables.Style;
 using Table = BetterConsoles.Tables.Table;
 
 namespace LibreShark.Hammerhead.IO;
@@ -184,13 +185,19 @@ public class TerminalPrinter
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
     {
+        string consoleName = _codec.Metadata.ConsoleId.ToAbbreviation();
         string brandName = _codec.Metadata.BrandId.ToDisplayString();
         FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
-        FigletText brandAsciiArt = new FigletText(figletFont, brandName).LeftJustified();
+        FigletText brandAsciiArt = new FigletText(figletFont, $"{consoleName} {brandName}").LeftJustified();
         AnsiConsole.Write(brandAsciiArt);
 
+        var ruleStart = new Rule($"[green]{inputFile.ShortName()}[/]")
+        {
+            Justification = Justify.Left,
+            Style = new Spectre.Console.Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
+        };
         Console.WriteLine();
-        Console.WriteLine(InputFilePathStyle(inputFile.ShortName()));
+        AnsiConsole.Write(ruleStart);
         Console.WriteLine();
         PrintHeading("File properties");
         PrintFilePropTable(@params);
@@ -204,7 +211,9 @@ public class TerminalPrinter
         Console.WriteLine();
         Console.WriteLine();
         // --------------------------------------------------------------------------------
-        Console.WriteLine(Bold("".PadRight(160, '-')));
+
+        var ruleEnd = new Rule();
+        AnsiConsole.Write(ruleEnd);
         Console.WriteLine();
         Console.WriteLine();
     }
