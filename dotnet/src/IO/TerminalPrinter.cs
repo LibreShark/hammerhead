@@ -182,6 +182,8 @@ public class TerminalPrinter
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
     {
+        Console.WriteLine(_codec.Metadata.BrandId.ToAsciiArt());
+        Console.WriteLine();
         Console.WriteLine(InputFilePathStyle(inputFile.ShortName()));
         Console.WriteLine();
         PrintHeading("File properties");

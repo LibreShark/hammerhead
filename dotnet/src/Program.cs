@@ -31,6 +31,9 @@ internal static class Program
 
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
+        // TODO(CheatoBaggins):
+        // Smallest height for N64 GameShark shark logo: 20
+        // ascii-image-converter --height 20 --color --complex ~/dev/libreshark/assets/logos/n64-gameshark-logo-for-ascii-art.png
         Console.WriteLine();
         Console.WriteLine(
             isColor
@@ -194,6 +197,18 @@ internal static class Program
                 {
                     TerminalPrinter printer = t.Printer;
                     AbstractCodec inputCodec = t.Codec;
+                    // TODO(CheatoBaggins): Warn the user that --output-format is ignored
+                    // when writing to an existing ROM output file whose codec can be auto-detected.
+                    // If the existing file is EMPTY or not a supported codec, THEN we should
+                    // use --output-format.
+                    // Throw an error if the user tries to write to a different ROM format
+                    // than the existing output file.
+                    if (outputFile.Exists && @params.OutputFormat != CodecId.Auto)
+                    {
+                        // TODO(CheatoBaggins): What to do?
+                        // Check SupportsFirmware value
+                        Console.WriteLine();
+                    }
                     CodecId outputCodecId =
                         @params.OutputFormat == CodecId.Auto
                             ? inputCodec.DefaultCheatOutputCodec

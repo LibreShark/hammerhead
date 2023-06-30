@@ -18,6 +18,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+
     <data name="GAMESHARK_LOGO_ASCII_ART_ANSI_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>Assets/AsciiArt/gameshark-logo-ascii-art-ansi.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
@@ -27,4 +28,51 @@
     <data name="LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT" type="System.Resources.ResXFileRef, System.Windows.Forms">
         <value>Assets/AsciiArt/libreshark-wordmark-ascii-art-plain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
     </data>
+
+    <data name="ASCII_BRAND_NAME_ACTION_REPLAY" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-action-replay.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_BLAZE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-blaze.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_BRAINBOY" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-brainboy.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_CODE_BREAKER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-code-breaker.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_EQUALIZER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-equalizer.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_GAME_BOOSTER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-game-booster.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_GAME_BUSTER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-game-buster.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_GAME_GENIE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-game-genie.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_GAMESHARK" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-gameshark.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_GB_HUNTER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-gb-hunter.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_MONSTER_BRAIN" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-monster-brain.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_SHARK_MX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-shark-mx.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_UNKNOWN" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-unknown.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_XPLODER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-xploder.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+    <data name="ASCII_BRAND_NAME_XPLORER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+        <value>Assets/AsciiArt/brand-name-xplorer.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+    </data>
+
 </root>

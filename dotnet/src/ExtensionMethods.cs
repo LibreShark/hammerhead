@@ -374,6 +374,7 @@ public static class ExtensionMethods
         return brandId switch
         {
             BrandId.ActionReplay => "Action Replay",
+            BrandId.Blaze => "Blaze",
             BrandId.Brainboy => "BrainBoy",
             BrandId.CodeBreaker => "Code Breaker",
             BrandId.Equalizer => "Equalizer",
@@ -387,6 +388,29 @@ public static class ExtensionMethods
             BrandId.Xploder => "Xploder",
             BrandId.Xplorer => "Xplorer",
             BrandId.UnknownBrand => "UNKNOWN brand",
+            _ => throw new NotSupportedException($"BrandId {brandId} is missing from ToDisplayString()!"),
+        };
+    }
+
+    public static string ToAsciiArt(this BrandId brandId)
+    {
+        return brandId switch
+        {
+            BrandId.ActionReplay => Resources.ASCII_BRAND_NAME_ACTION_REPLAY,
+            BrandId.Blaze => Resources.ASCII_BRAND_NAME_BLAZE,
+            BrandId.Brainboy => Resources.ASCII_BRAND_NAME_BRAINBOY,
+            BrandId.CodeBreaker => Resources.ASCII_BRAND_NAME_CODE_BREAKER,
+            BrandId.Equalizer => Resources.ASCII_BRAND_NAME_EQUALIZER,
+            BrandId.GameBooster => Resources.ASCII_BRAND_NAME_GAME_BOOSTER,
+            BrandId.GameBuster => Resources.ASCII_BRAND_NAME_GAME_BUSTER,
+            BrandId.GameGenie => Resources.ASCII_BRAND_NAME_GAME_GENIE,
+            BrandId.Gameshark => Resources.ASCII_BRAND_NAME_GAMESHARK,
+            BrandId.GbHunter => Resources.ASCII_BRAND_NAME_GB_HUNTER,
+            BrandId.MonsterBrain => Resources.ASCII_BRAND_NAME_MONSTER_BRAIN,
+            BrandId.SharkMx => Resources.ASCII_BRAND_NAME_SHARK_MX,
+            BrandId.Xploder => Resources.ASCII_BRAND_NAME_XPLODER,
+            BrandId.Xplorer => Resources.ASCII_BRAND_NAME_XPLORER,
+            BrandId.UnknownBrand => Resources.ASCII_BRAND_NAME_UNKNOWN,
             _ => throw new NotSupportedException($"BrandId {brandId} is missing from ToDisplayString()!"),
         };
     }

@@ -62,5 +62,95 @@ namespace LibreShark.Hammerhead {
                 return ResourceManager.GetString("LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT", resourceCulture);
             }
         }
+        
+        internal static string ASCII_BRAND_NAME_ACTION_REPLAY {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_ACTION_REPLAY", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_BLAZE {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_BLAZE", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_BRAINBOY {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_BRAINBOY", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_CODE_BREAKER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_CODE_BREAKER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_EQUALIZER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_EQUALIZER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_GAME_BOOSTER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_BOOSTER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_GAME_BUSTER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_BUSTER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_GAME_GENIE {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_GAME_GENIE", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_GAMESHARK {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_GAMESHARK", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_GB_HUNTER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_GB_HUNTER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_MONSTER_BRAIN {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_MONSTER_BRAIN", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_SHARK_MX {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_SHARK_MX", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_UNKNOWN {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_UNKNOWN", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_XPLODER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_XPLODER", resourceCulture);
+            }
+        }
+        
+        internal static string ASCII_BRAND_NAME_XPLORER {
+            get {
+                return ResourceManager.GetString("ASCII_BRAND_NAME_XPLORER", resourceCulture);
+            }
+        }
     }
 }

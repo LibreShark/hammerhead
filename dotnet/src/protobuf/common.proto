@@ -245,6 +245,7 @@ enum BrandId {
   XPLORER       = 0x0B;
   GAME_GENIE    = 0x0C;
   SHARK_MX      = 0x0D;
+  BLAZE         = 0x0E;
 }
 
 // Output format for printing to the terminal (stdout).
