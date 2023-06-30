@@ -21,9 +21,16 @@ public sealed class N64XpText : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Xplorer64Text;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static N64XpText Create(string filePath, u8[] rawInput)
+    {
+        return new N64XpText(filePath, rawInput);
+    }
+
     public override CodecId DefaultCheatOutputCodec => ThisCodecId;
 
-    public N64XpText(string filePath, u8[] rawInput)
+    private N64XpText(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

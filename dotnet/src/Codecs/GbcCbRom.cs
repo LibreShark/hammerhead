@@ -29,6 +29,13 @@ public sealed class GbcCbRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcCodebreakerRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbcCbRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbcCbRom(filePath, rawInput);
+    }
+
     private const u32 CheatNameListAddr    = 0x000067F0;
     private const u32 GameListAddr         = 0x00022000;
     private const u32 SelectedGameNameAddr = 0x0003C680;
@@ -38,7 +45,7 @@ public sealed class GbcCbRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcCbRom(string filePath, u8[] rawInput)
+    private GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;
@@ -47,14 +54,13 @@ public sealed class GbcCbRom : AbstractCodec
 
         Support.HasCheats = true;
         Support.HasFirmware = true;
-        // TODO(CheatoBaggins): Detect
-        Support.HasDirtyUserPrefs = false;
+        _selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
+        // TODO(CheatoBaggins): Are there any other preferences we need to check?
+        Support.HasDirtyUserPrefs = _selectedGameName.Value.Length > 0;
 
         Metadata.BrandId = DetectBrand(rawInput);
 
         RomString romId = Scribe.Seek(0).ReadPrintableCString().Trim();
-        _selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
-
         Metadata.Identifiers.Add(romId);
         Metadata.Identifiers.Add(_selectedGameName);
 

@@ -23,13 +23,20 @@ public sealed class GbcXpRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcXploderRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbcXpRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbcXpRom(filePath, rawInput);
+    }
+
     private const u32 ProductIdAddr    = 0x00000000;
     private const u32 ManufacturerAddr = 0x00000104;
     private const u32 GameListAddr     = 0x00020000;
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcXpRom(string filePath, u8[] rawInput)
+    private GbcXpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

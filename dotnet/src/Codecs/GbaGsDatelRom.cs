@@ -18,6 +18,13 @@ public sealed class GbaGsDatelRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaGamesharkDatelRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbaGsDatelRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbaGsDatelRom(filePath, rawInput);
+    }
+
     private const u32 GbaMagicStrAddr = 0x21000;
     private const u32 MinorVersionNumberAddr = 0x21004;
     private const u32 MajorVersionNumberAddr = 0x21005;
@@ -34,7 +41,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbaGsDatelRom(string filePath, u8[] rawInput)
+    private GbaGsDatelRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

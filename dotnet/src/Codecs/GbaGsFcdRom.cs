@@ -23,6 +23,13 @@ public sealed class GbaGsFcdRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaGamesharkFcdRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbaGsFcdRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbaGsFcdRom(filePath, rawInput);
+    }
+
     private static readonly string[] KnownRawBuildDates =
     {
         "Fri Oct 19 15:38:32 2001", // CodeBreaker R1 LITE (USA)
@@ -33,7 +40,7 @@ public sealed class GbaGsFcdRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbaGsFcdRom(string filePath, u8[] rawInput)
+    private GbaGsFcdRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

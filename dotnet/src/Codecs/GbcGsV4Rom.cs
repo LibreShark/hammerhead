@@ -23,6 +23,13 @@ public sealed class GbcGsV4Rom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcGamesharkV4Rom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbcGsV4Rom Create(string filePath, u8[] rawInput)
+    {
+        return new GbcGsV4Rom(filePath, rawInput);
+    }
+
     private const u32 TitleAddr = 0x00000134;
     private const u32 VerNumAddr = 0x00000143;
     private const u32 GameListAddr = 0x00008000;
@@ -39,7 +46,7 @@ public sealed class GbcGsV4Rom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcGsV4Rom(string filePath, u8[] rawInput)
+    private GbcGsV4Rom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

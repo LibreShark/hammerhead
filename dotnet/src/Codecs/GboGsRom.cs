@@ -24,11 +24,18 @@ public sealed class GboGsRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyOriginal;
     private const CodecId ThisCodecId = CodecId.GboGamesharkRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GboGsRom Create(string filePath, u8[] rawInput)
+    {
+        return new GboGsRom(filePath, rawInput);
+    }
+
     private readonly List<RomString> _cheatNames = new();
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GboGsRom(string filePath, u8[] rawInput)
+    private GboGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

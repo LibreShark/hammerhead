@@ -21,6 +21,13 @@ public sealed class N64GsText : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkText;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static N64GsText Create(string filePath, u8[] rawInput)
+    {
+        return new N64GsText(filePath, rawInput);
+    }
+
     private enum ParserState
     {
         InList,
@@ -30,7 +37,7 @@ public sealed class N64GsText : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => ThisCodecId;
 
-    public N64GsText(string filePath, u8[] rawInput)
+    private N64GsText(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

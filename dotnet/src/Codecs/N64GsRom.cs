@@ -31,6 +31,13 @@ public sealed class N64GsRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static N64GsRom Create(string filePath, u8[] rawInput)
+    {
+        return new N64GsRom(filePath, rawInput);
+    }
+
     private readonly bool _isV3Firmware;
     private readonly bool _isV1GameList;
     private readonly bool _isV3KeyCodeListAddr;
@@ -52,7 +59,7 @@ public sealed class N64GsRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
-    public N64GsRom(string filePath, u8[] rawInput)
+    private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

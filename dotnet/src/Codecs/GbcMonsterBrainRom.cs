@@ -23,6 +23,13 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcMonsterbrainRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbcMonsterBrainRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbcMonsterBrainRom(filePath, rawInput);
+    }
+
     private static readonly string[] KnownTitles =
     {
         "BrainBoy version 1.1",
@@ -32,7 +39,7 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcMonsterBrainRom(string filePath, u8[] rawInput)
+    private GbcMonsterBrainRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsFirmware = true;

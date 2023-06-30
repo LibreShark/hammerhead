@@ -27,6 +27,13 @@ public sealed class N64XpRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Xplorer64Rom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static N64XpRom Create(string filePath, u8[] rawInput)
+    {
+        return new N64XpRom(filePath, rawInput);
+    }
+
     private const u32 GameListAddr = 0x00030000;
     private const u32 UserPrefsAddr = 0x0003F000;
     private const u32 LastGameNameAddr = 0x0003F420;
@@ -51,7 +58,7 @@ public sealed class N64XpRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
 
-    public N64XpRom(string filePath, u8[] rawInput)
+    private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

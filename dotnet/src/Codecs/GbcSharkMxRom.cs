@@ -25,6 +25,13 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcSharkMxRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbcSharkMxRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbcSharkMxRom(filePath, rawInput);
+    }
+
     private const u32 ContactsAddr  = 0x0000C060;
     private const u32 RegCodeAddr   = 0x00020000;
     private const u32 SecretPinAddr = 0x0002007C;
@@ -40,7 +47,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbcSharkMxRom(string filePath, u8[] rawInput)
+    private GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsFirmware = true;

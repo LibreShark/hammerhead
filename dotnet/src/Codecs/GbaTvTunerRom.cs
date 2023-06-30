@@ -22,9 +22,16 @@ public sealed class GbaTvTunerRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaTvTunerRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+
+    public static GbaTvTunerRom Create(string filePath, u8[] rawInput)
+    {
+        return new GbaTvTunerRom(filePath, rawInput);
+    }
+
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
-    public GbaTvTunerRom(string filePath, u8[] rawInput)
+    private GbaTvTunerRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsFirmware = true;

@@ -17,32 +17,23 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-internal class ExistingCodecFileFactory
+public class CodecFileFactory
 {
     public Func<u8[], bool> AutoDetect { get; }
-    public Func<CodecId, bool> IsCodecId { get; }
-    public Func<AbstractCodec> Create { get; }
+    public Func<CodecId, bool> IsCodec { get; }
+    public CodecId CodecId { get; }
+    public Func<string, u8[], AbstractCodec> Create { get; }
 
-    public ExistingCodecFileFactory(
+    public CodecFileFactory(
         Func<u8[], bool> autoDetect,
-        Func<CodecId, bool> isCodecId,
-        Func<AbstractCodec> create
+        Func<CodecId, bool> isCodec,
+        CodecId codecId,
+        Func<string, u8[], AbstractCodec> create
     )
     {
         AutoDetect = autoDetect;
-        IsCodecId = isCodecId;
-        Create = create;
-    }
-}
-
-internal class NewCodecFileFactory
-{
-    public Func<CodecId, bool> IsMatch { get; }
-    public Func<AbstractCodec> Create { get; }
-
-    public NewCodecFileFactory(Func<CodecId, bool> isMatch, Func<AbstractCodec> create)
-    {
-        IsMatch = isMatch;
+        IsCodec = isCodec;
+        CodecId = codecId;
         Create = create;
     }
 }
@@ -67,6 +58,24 @@ public abstract class AbstractCodec
     public List<Game> Games { get; }
 
     protected readonly AbstractBinaryScribe Scribe;
+
+    private static readonly CodecFileFactory[] CodecFactories = new[] {
+        GboGsRom.Factory,
+        GbaGsDatelRom.Factory,
+        GbaGsFcdRom.Factory,
+        GbaTvTunerRom.Factory,
+        GbcCbRom.Factory,
+        GbcGsV3Rom.Factory,
+        GbcGsV4Rom.Factory,
+        GbcMonsterBrainRom.Factory,
+        GbcSharkMxRom.Factory,
+        GbcXpRom.Factory,
+        N64GsRom.Factory,
+        N64GsText.Factory,
+        N64XpRom.Factory,
+        N64XpText.Factory,
+        UnknownCodec.Factory,
+    };
 
     public CodecFeatureSupport Support => Metadata.CodecFeatureSupport;
 
@@ -197,44 +206,27 @@ public abstract class AbstractCodec
     {
         u8[] bytes = File.ReadAllBytes(romFilePath);
 
-        ExistingCodecFileFactory[] codecFactories =
+        CodecFileFactory? factory =
+            CodecFactories.FirstOrDefault(factory => factory.IsCodec(codecId)) ??
+            CodecFactories.FirstOrDefault(factory => factory.AutoDetect(bytes));
+
+        if (factory == null)
         {
-            new(GboGsRom.Is, GboGsRom.Is, () => new GboGsRom(romFilePath, bytes)),
-            new(GbaGsDatelRom.Is, GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
-            new(GbaGsFcdRom.Is, GbaGsFcdRom.Is, () => new GbaGsFcdRom(romFilePath, bytes)),
-            new(GbaTvTunerRom.Is, GbaTvTunerRom.Is, () => new GbaTvTunerRom(romFilePath, bytes)),
-            new(GbcCbRom.Is, GbcCbRom.Is, () => new GbcCbRom(romFilePath, bytes)),
-            new(GbcGsV3Rom.Is, GbcGsV3Rom.Is, () => new GbcGsV3Rom(romFilePath, bytes)),
-            new(GbcGsV4Rom.Is, GbcGsV4Rom.Is, () => new GbcGsV4Rom(romFilePath, bytes)),
-            new(GbcMonsterBrainRom.Is, GbcMonsterBrainRom.Is, () => new GbcMonsterBrainRom(romFilePath, bytes)),
-            new(GbcSharkMxRom.Is, GbcSharkMxRom.Is, () => new GbcSharkMxRom(romFilePath, bytes)),
-            new(GbcXpRom.Is, GbcXpRom.Is, () => new GbcXpRom(romFilePath, bytes)),
-            new(N64GsRom.Is, N64GsRom.Is, () => new N64GsRom(romFilePath, bytes)),
-            new(N64GsText.Is, N64GsText.Is, () => new N64GsText(romFilePath, bytes)),
-            new(N64XpRom.Is, N64XpRom.Is, () => new N64XpRom(romFilePath, bytes)),
-            new(N64XpText.Is, N64XpText.Is, () => new N64XpText(romFilePath, bytes)),
-            new(_ => true, _ => false, () => new UnknownCodec(romFilePath, bytes)),
-        };
+            throw new NotImplementedException($"ERROR: Unable to find codec factory for codec ID {codecId} ({codecId.ToDisplayString()}).");
+        }
 
-        ExistingCodecFileFactory? factory =
-            codecFactories.FirstOrDefault(factory => factory.IsCodecId(codecId)) ??
-            codecFactories.First(factory => factory.IsCodecId(codecId) || factory.AutoDetect(bytes));
-
-        return factory.Create();
+        return factory.Create(romFilePath, bytes);
     }
 
     public static AbstractCodec CreateFromId(string outputFilePath, CodecId codecId)
     {
         u8[] bytes = Array.Empty<byte>();
-        NewCodecFileFactory[] codecFactories =
+        CodecFileFactory? factory = CodecFactories.FirstOrDefault(factory => factory.IsCodec(codecId));
+        if (factory == null)
         {
-            new(N64GsText.Is, () => new N64GsText(outputFilePath, bytes)),
-            new(N64XpText.Is, () => new N64XpText(outputFilePath, bytes)),
-            new(_ => true, () => throw new InvalidOperationException(
-                $"{codecId.ToDisplayString()} files cannot be created from scratch.")),
-        };
-
-        return codecFactories.First(factory => factory.IsMatch(codecId)).Create();
+            throw new NotImplementedException($"ERROR: Unable to find codec factory for codec ID {codecId} ({codecId.ToDisplayString()}).");
+        }
+        return factory.Create(outputFilePath, bytes);
     }
 
     public abstract AbstractCodec WriteChangesToBuffer();
