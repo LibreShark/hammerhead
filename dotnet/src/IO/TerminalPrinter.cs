@@ -8,9 +8,7 @@ using BetterConsoles.Tables.Models;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 using Color = System.Drawing.Color;
-using Style = BetterConsoles.Tables.Style;
 using Table = BetterConsoles.Tables.Table;
 
 namespace LibreShark.Hammerhead.IO;
@@ -169,6 +167,7 @@ public class TerminalPrinter
 
     public void PrintHeading(string title)
     {
+        Console.WriteLine();
         if (IsMarkdown)
         {
             Console.WriteLine($"## {title}");
@@ -181,21 +180,57 @@ public class TerminalPrinter
                 Width = 80,
                 UseSafeBorder = IsPlain,
             };
-            Console.WriteLine();
             AnsiConsole.Write(panel);
             Console.WriteLine();
         }
+        Console.WriteLine();
     }
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
     {
         string consoleName = _codec.Metadata.ConsoleId.ToAbbreviation();
         string brandName = _codec.Metadata.BrandId.ToDisplayString();
-        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
-        FigletText brandAsciiArt = new FigletText(figletFont, $"{consoleName} {brandName}").LeftJustified();
-        AnsiConsole.Write(brandAsciiArt);
+        string headingText = $"{consoleName} {brandName}";
 
-        var ruleStart = new Rule($"[green]{inputFile.ShortName()}[/]")
+        if (IsColor)
+        {
+            FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
+            FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
+            AnsiConsole.Write(brandAsciiArt);
+        }
+
+        PrintFilePath(inputFile);
+
+        if (!IsColor)
+        {
+            Console.WriteLine($"**{headingText}**");
+            Console.WriteLine();
+        }
+
+        PrintFilePropTable(@params);
+        PrintChecksums(@params);
+        PrintIdentifiers(@params);
+        _codec.PrintCustomHeader(this, @params);
+        _codec.PrintGames(this, @params);
+        _codec.PrintCustomBody(this, @params);
+        PrintFileDivider();
+    }
+
+    private void PrintFilePath(FileInfo inputFile)
+    {
+        string shortName = inputFile.ShortName();
+
+        if (IsMarkdown || IsPlain)
+        {
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine($"# {shortName}");
+            Console.WriteLine();
+            return;
+        }
+
+        var ruleStart = new Rule($"[green]{shortName}[/]")
         {
             Justification = Justify.Left,
             Style = new Spectre.Console.Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
@@ -203,27 +238,31 @@ public class TerminalPrinter
         Console.WriteLine();
         AnsiConsole.Write(ruleStart);
         Console.WriteLine();
-        PrintHeading("File properties");
-        PrintFilePropTable(@params);
-        PrintHeading("File checksums");
-        PrintChecksums(@params);
-        PrintHeading("Identifiers");
-        PrintIdentifiers(@params);
-        _codec.PrintCustomHeader(this, @params);
-        _codec.PrintGames(this, @params);
-        _codec.PrintCustomBody(this, @params);
-        Console.WriteLine();
-        Console.WriteLine();
-        // --------------------------------------------------------------------------------
+    }
 
-        var ruleEnd = new Rule();
-        AnsiConsole.Write(ruleEnd);
+    private void PrintFileDivider()
+    {
+        if (IsMarkdown || IsPlain)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine();
+            return;
+        }
+
+        Console.WriteLine();
+        Console.WriteLine();
+        AnsiConsole.Write(new Rule());
         Console.WriteLine();
         Console.WriteLine();
     }
 
     private void PrintFilePropTable(InfoCmdParams @params)
     {
+        PrintHeading("File properties");
+
         Table table = BuildTable(builder =>
         {
             builder
@@ -260,6 +299,8 @@ public class TerminalPrinter
 
     private void PrintChecksums(InfoCmdParams @params)
     {
+        PrintHeading("File checksums");
+
         Table filePropTable = new TableBuilder(HeaderCellFormat)
             .AddColumn("Algorithm", rowsFormat: KeyCell())
             .AddColumn("Checksum", rowsFormat: ValueCell())
@@ -278,15 +319,42 @@ public class TerminalPrinter
 
     private void PrintIdentifiers(InfoCmdParams @params)
     {
+        PrintHeading("Identifiers");
+
         if (_codec.Metadata.Identifiers.Count == 0)
         {
             Console.WriteLine(Italic("No identifiers found."));
             return;
         }
+
+        var table = new Spectre.Console.Table()
+        {
+            UseSafeBorder = IsPlain,
+            Border = IsColor
+                ? TableBorder.Rounded
+                : IsMarkdown
+                    ? TableBorder.Markdown
+                    : TableBorder.Ascii,
+        };
+        table
+            .AddColumn("Start")
+            .AddColumn("End")
+            .AddColumn(new TableColumn("Size") { Alignment = Justify.Right })
+            .AddColumn(new TableColumn("Len") { Alignment = Justify.Right })
+            .AddColumn("String")
+            ;
+
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
-            Console.WriteLine($"{id.Addr.ToDisplayString()} = '{id.Value}'");
+            table.AddRow(
+                $"0x{id.Addr.StartIndex:X8}",
+                $"0x{id.Addr.EndIndex:X8}",
+                $"0x{id.Addr.Length:X}",
+                $"{id.Addr.Length}",
+                id.Value);
         }
+
+        AnsiConsole.Write(table);
     }
 
     public void PrintGames(InfoCmdParams @params)
