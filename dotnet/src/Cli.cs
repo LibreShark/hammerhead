@@ -1,7 +1,5 @@
 using System.CommandLine;
-using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead;

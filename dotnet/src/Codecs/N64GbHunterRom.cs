@@ -1,14 +1,5 @@
-using System.Collections.Immutable;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using BetterConsoles.Core;
 using BetterConsoles.Tables;
-using BetterConsoles.Tables.Builders;
-using BetterConsoles.Tables.Configuration;
-using BetterConsoles.Tables.Models;
-using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 
 namespace LibreShark.Hammerhead.Codecs;
 

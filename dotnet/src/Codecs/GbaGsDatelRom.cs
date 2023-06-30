@@ -1,6 +1,5 @@
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead.Codecs;
 

@@ -4,8 +4,6 @@ using System.CommandLine.Invocation;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
 using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;

@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using BetterConsoles.Tables;
 using Google.Protobuf;
-using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Codecs;
