@@ -19,12 +19,18 @@ using f64 = Double;
 
 internal class ExistingCodecFileFactory
 {
-    public Func<byte[], bool> IsMatch { get; }
+    public Func<u8[], bool> AutoDetect { get; }
+    public Func<CodecId, bool> IsCodecId { get; }
     public Func<AbstractCodec> Create { get; }
 
-    public ExistingCodecFileFactory(Func<u8[], bool> isMatch, Func<AbstractCodec> create)
+    public ExistingCodecFileFactory(
+        Func<u8[], bool> autoDetect,
+        Func<CodecId, bool> isCodecId,
+        Func<AbstractCodec> create
+    )
     {
-        IsMatch = isMatch;
+        AutoDetect = autoDetect;
+        IsCodecId = isCodecId;
         Create = create;
     }
 }
@@ -50,7 +56,7 @@ public abstract class AbstractCodec
     /// If the input file is encrypted/scrambled, it must be
     /// decrypted/unscrambled immediately in the subclass constructor.
     /// </summary>
-    public byte[] Buffer
+    public u8[] Buffer
     {
         get => Scribe.GetBufferCopy();
         protected set => Scribe.ResetBuffer(value);
@@ -187,30 +193,34 @@ public abstract class AbstractCodec
         return Buffer;
     }
 
-    public static AbstractCodec ReadFromFile(string romFilePath)
+    public static AbstractCodec ReadFromFile(string romFilePath, CodecId codecId = CodecId.Auto)
     {
         u8[] bytes = File.ReadAllBytes(romFilePath);
 
         ExistingCodecFileFactory[] codecFactories =
         {
-            new(GboGsRom.Is, () => new GboGsRom(romFilePath, bytes)),
-            new(GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
-            new(GbaGsFcdRom.Is, () => new GbaGsFcdRom(romFilePath, bytes)),
-            new(GbaTvTunerRom.Is, () => new GbaTvTunerRom(romFilePath, bytes)),
-            new(GbcCbRom.Is, () => new GbcCbRom(romFilePath, bytes)),
-            new(GbcGsV3Rom.Is, () => new GbcGsV3Rom(romFilePath, bytes)),
-            new(GbcGsV4Rom.Is, () => new GbcGsV4Rom(romFilePath, bytes)),
-            new(GbcMonsterBrainRom.Is, () => new GbcMonsterBrainRom(romFilePath, bytes)),
-            new(GbcSharkMxRom.Is, () => new GbcSharkMxRom(romFilePath, bytes)),
-            new(GbcXpRom.Is, () => new GbcXpRom(romFilePath, bytes)),
-            new(N64GsRom.Is, () => new N64GsRom(romFilePath, bytes)),
-            new(N64GsText.Is, () => new N64GsText(romFilePath, bytes)),
-            new(N64XpRom.Is, () => new N64XpRom(romFilePath, bytes)),
-            new(N64XpText.Is, () => new N64XpText(romFilePath, bytes)),
-            new(_ => true, () => new UnknownCodec(romFilePath, bytes)),
+            new(GboGsRom.Is, GboGsRom.Is, () => new GboGsRom(romFilePath, bytes)),
+            new(GbaGsDatelRom.Is, GbaGsDatelRom.Is, () => new GbaGsDatelRom(romFilePath, bytes)),
+            new(GbaGsFcdRom.Is, GbaGsFcdRom.Is, () => new GbaGsFcdRom(romFilePath, bytes)),
+            new(GbaTvTunerRom.Is, GbaTvTunerRom.Is, () => new GbaTvTunerRom(romFilePath, bytes)),
+            new(GbcCbRom.Is, GbcCbRom.Is, () => new GbcCbRom(romFilePath, bytes)),
+            new(GbcGsV3Rom.Is, GbcGsV3Rom.Is, () => new GbcGsV3Rom(romFilePath, bytes)),
+            new(GbcGsV4Rom.Is, GbcGsV4Rom.Is, () => new GbcGsV4Rom(romFilePath, bytes)),
+            new(GbcMonsterBrainRom.Is, GbcMonsterBrainRom.Is, () => new GbcMonsterBrainRom(romFilePath, bytes)),
+            new(GbcSharkMxRom.Is, GbcSharkMxRom.Is, () => new GbcSharkMxRom(romFilePath, bytes)),
+            new(GbcXpRom.Is, GbcXpRom.Is, () => new GbcXpRom(romFilePath, bytes)),
+            new(N64GsRom.Is, N64GsRom.Is, () => new N64GsRom(romFilePath, bytes)),
+            new(N64GsText.Is, N64GsText.Is, () => new N64GsText(romFilePath, bytes)),
+            new(N64XpRom.Is, N64XpRom.Is, () => new N64XpRom(romFilePath, bytes)),
+            new(N64XpText.Is, N64XpText.Is, () => new N64XpText(romFilePath, bytes)),
+            new(_ => true, _ => false, () => new UnknownCodec(romFilePath, bytes)),
         };
 
-        return codecFactories.First(factory => factory.IsMatch(bytes)).Create();
+        ExistingCodecFileFactory? factory =
+            codecFactories.FirstOrDefault(factory => factory.IsCodecId(codecId)) ??
+            codecFactories.First(factory => factory.IsCodecId(codecId) || factory.AutoDetect(bytes));
+
+        return factory.Create();
     }
 
     public static AbstractCodec CreateFromId(string outputFilePath, CodecId codecId)

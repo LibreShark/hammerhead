@@ -70,7 +70,7 @@ internal static class Program
     {
         foreach (FileInfo romFile in @params.InputFiles)
         {
-            var codec = AbstractCodec.ReadFromFile(romFile.FullName);
+            AbstractCodec codec = AbstractCodec.ReadFromFile(romFile.FullName, @params.InputCodecId);
             var printer = new TerminalPrinter(codec, @params.PrintFormatId);
             printer.PrintDetails(romFile, @params);
         }
