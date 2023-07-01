@@ -362,11 +362,11 @@ public class TerminalPrinter
                     : TableBorder.Ascii,
         };
         table
-            .AddColumn("Start")
-            .AddColumn("End")
-            .AddColumn(new TableColumn("Size") { Alignment = Justify.Right })
-            .AddColumn(new TableColumn("Len") { Alignment = Justify.Right })
-            .AddColumn("String")
+            .AddColumn("[bold blue]Start[/]")
+            .AddColumn("[bold blue]End[/]")
+            .AddColumn(new TableColumn("[bold blue]Size[/]") { Alignment = Justify.Right })
+            .AddColumn(new TableColumn("[bold blue]Len[/]") { Alignment = Justify.Right })
+            .AddColumn("[bold blue]String[/]")
             ;
 
         foreach (RomString id in _codec.Metadata.Identifiers)
