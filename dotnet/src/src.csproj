@@ -20,6 +20,7 @@
         <Company>LibreShark project</Company>
         <Product>Hammerhead</Product>
         <NeutralLanguage>en-US</NeutralLanguage>
+        <Version>0.9.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
