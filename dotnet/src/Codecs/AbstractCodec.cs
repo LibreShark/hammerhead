@@ -107,7 +107,6 @@ public abstract class AbstractCodec
         if (SupportsCheats() && !@params.HideGames)
         {
             printer.PrintGames(@params);
-            Console.WriteLine();
         }
     }
 

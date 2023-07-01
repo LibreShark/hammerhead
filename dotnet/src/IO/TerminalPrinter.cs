@@ -61,9 +61,9 @@ public class TerminalPrinter
 
     #endregion
 
-    public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat)
+    public TerminalPrinter(AbstractCodec? codec = null, PrintFormatId printFormat = PrintFormatId.Detect)
     {
-        _codec = codec;
+        _codec = codec ?? UnknownCodec.Create("", Array.Empty<byte>());
         _printFormat = GetEffectivePrintFormatId(printFormat);
     }
 
@@ -348,6 +348,7 @@ public class TerminalPrinter
         if (_codec.Metadata.Identifiers.Count == 0)
         {
             Console.WriteLine(Italic("No identifiers found."));
+            Console.WriteLine();
             return;
         }
 
@@ -379,6 +380,7 @@ public class TerminalPrinter
         }
 
         AnsiConsole.Write(table);
+        Console.WriteLine();
     }
 
     public void PrintGames(InfoCmdParams @params)
@@ -388,6 +390,7 @@ public class TerminalPrinter
         if (_codec.Games.Count == 0)
         {
             Console.WriteLine(Error("No games/cheats found."));
+            Console.WriteLine();
             return;
         }
 
@@ -454,6 +457,7 @@ public class TerminalPrinter
         }
 
         Console.WriteLine(gameTable);
+        Console.WriteLine();
     }
 
     #endregion

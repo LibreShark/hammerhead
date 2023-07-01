@@ -23,7 +23,7 @@ internal static class Program
 
     private static void PrintBanner(CmdParams cmdParams)
     {
-        var printer = new TerminalPrinter(AbstractCodec.CreateFromId("", CodecId.UnspecifiedCodecId), cmdParams.PrintFormatId);
+        var printer = new TerminalPrinter(printFormat: cmdParams.PrintFormatId);
         printer.PrintBanner(cmdParams);
     }
 
