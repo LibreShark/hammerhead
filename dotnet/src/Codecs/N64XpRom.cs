@@ -194,30 +194,14 @@ public sealed class N64XpRom : AbstractCodec
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
                     u8[] codeBytes = Scribe.ReadBytes(6);
-                    string codeStrOld = codeBytes.ToCodeString(ConsoleId.Nintendo64);
                     if (IsCodeEncrypted(codeBytes))
                     {
-                        string codeStrNew1 = DecryptCodeMethod1(codeBytes).ToCodeString(ConsoleId.Nintendo64);
-                        string codeStrNew2 = DecryptCodeMethod2(codeBytes).ToCodeString(ConsoleId.Nintendo64);
-                        // if (codeStrNew1 != codeStrNew2)
-                        // {
-                        //     Console.WriteLine("-------------------");
-                        //     Console.WriteLine($"{cheatName.Value} ({cheatName.Addr})");
-                        //     Console.WriteLine("- encrypted: " + codeStrOld);
-                        //     Console.WriteLine("- method 1:  " + codeStrNew1);
-                        //     Console.WriteLine("- method 2:  " + codeStrNew2);
-                        //     Console.WriteLine("-------------------");
-                        // }
-                        codeBytes = DecryptCodeMethod2(codeBytes);
+                        codeBytes = DecryptCodeMethod1(codeBytes);
                     }
-
-                    // TODO(CheatoBaggins): Is this redundant?
-                    var codeScribe = new BigEndianScribe(codeBytes);
-                    u8[] bytes = codeScribe.ReadBytes(6);
                     cheat.Codes.Add(new Code()
                     {
                         CodeIndex = codeIdx,
-                        Bytes = ByteString.CopyFrom(bytes),
+                        Bytes = ByteString.CopyFrom(codeBytes),
                     });
                 }
 
@@ -229,62 +213,92 @@ public sealed class N64XpRom : AbstractCodec
         }
     }
 
-    private static bool IsCodeEncrypted(IReadOnlyList<byte> code)
+    private static bool IsCodeEncrypted(IReadOnlyList<u8> code)
     {
-        byte opcodeByte = code[0];
+        u8 opcodeByte = code[0];
         var opcodeEnum = (Xp64Opcode)opcodeByte;
         ImmutableArray<Xp64Opcode> knownOpcodes = Enum.GetValues<Xp64Opcode>().ToImmutableArray();
         bool isUnencrypted = knownOpcodes.Contains(opcodeEnum);
         return !isUnencrypted;
     }
 
-    // https://doc.kodewerx.org/hacking_n64.html#xp_encryption
-    private u8[] EncryptCode(u8[] code)
-    {
-        return new u8[] {};
-    }
-
     /// <summary>
-    /// This method does NOT appear to work correctly.
-    ///
     /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
     /// </summary>
-    private static u8[] DecryptCodeMethod1(IReadOnlyList<byte> code)
+    private u8[] EncryptCodeMethod1(u8[] code)
     {
-        byte a0 = code[0];
-        byte a1 = code[1];
-        byte a2 = code[2];
-        byte a3 = code[3];
-        byte d0 = code[4];
-        byte d1 = code[5];
-        a0 = (byte)((a0 ^ 0x68));
-        a1 = (byte)((a1 ^ 0x81) - 0x2B);
-        a2 = (byte)((a2 ^ 0x82) - 0x2B);
-        a3 = (byte)((a3 ^ 0x83) - 0x2B);
-        d0 = (byte)((d0 ^ 0x84) - 0x2B);
-        d1 = (byte)((d1 ^ 0x85) - 0x2B);
+        u8 a0 = code[0];
+        u8 a1 = code[1];
+        u8 a2 = code[2];
+        u8 a3 = code[3];
+        u8 d0 = code[4];
+        u8 d1 = code[5];
+        a0 = (u8)((a0 ^ 0x68));
+        a1 = (u8)((a1 ^ 0x81) - 0x2B);
+        a2 = (u8)((a2 ^ 0x82) - 0x2B);
+        a3 = (u8)((a3 ^ 0x83) - 0x2B);
+        d0 = (u8)((d0 ^ 0x84) - 0x2B);
+        d1 = (u8)((d1 ^ 0x85) - 0x2B);
         return new u8[] {a0, a1, a2, a3, d0, d1};
     }
 
     /// <summary>
-    /// This method appears to work correctly.
-    ///
     /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
     /// </summary>
-    private static u8[] DecryptCodeMethod2(IReadOnlyList<byte> code)
+    private u8[] EncryptCodeMethod2(u8[] code)
     {
-        byte a0 = code[0];
-        byte a1 = code[1];
-        byte a2 = code[2];
-        byte a3 = code[3];
-        byte d0 = code[4];
-        byte d1 = code[5];
-        a0 = (byte)((a0 ^ 0x68));
-        a1 = (byte)((a1 + 0xAB) ^ 0x01);
-        a2 = (byte)((a2 + 0xAB) ^ 0x02);
-        a3 = (byte)((a3 + 0xAB) ^ 0x03);
-        d0 = (byte)((d0 + 0xAB) ^ 0x04);
-        d1 = (byte)((d1 + 0xAB) ^ 0x05);
+        u8 a0 = code[0];
+        u8 a1 = code[1];
+        u8 a2 = code[2];
+        u8 a3 = code[3];
+        u8 d0 = code[4];
+        u8 d1 = code[5];
+        a0 = (u8)((a0 ^ 0x68));
+        a1 = (u8)((a1 ^ 0x01) - 0xAB);
+        a2 = (u8)((a2 ^ 0x02) - 0xAB);
+        a3 = (u8)((a3 ^ 0x03) - 0xAB);
+        d0 = (u8)((d0 ^ 0x04) - 0xAB);
+        d1 = (u8)((d1 ^ 0x05) - 0xAB);
+        return new u8[] {a0, a1, a2, a3, d0, d1};
+    }
+
+    /// <summary>
+    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
+    /// </summary>
+    private static u8[] DecryptCodeMethod1(IReadOnlyList<u8> code)
+    {
+        u8 a0 = code[0];
+        u8 a1 = code[1];
+        u8 a2 = code[2];
+        u8 a3 = code[3];
+        u8 d0 = code[4];
+        u8 d1 = code[5];
+        a0 = (u8)((a0 ^ 0x68));
+        a1 = (u8)((a1 + 0x2B) ^ 0x81);
+        a2 = (u8)((a2 + 0x2B) ^ 0x82);
+        a3 = (u8)((a3 + 0x2B) ^ 0x83);
+        d0 = (u8)((d0 + 0x2B) ^ 0x84);
+        d1 = (u8)((d1 + 0x2B) ^ 0x85);
+        return new u8[] {a0, a1, a2, a3, d0, d1};
+    }
+
+    /// <summary>
+    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
+    /// </summary>
+    private static u8[] DecryptCodeMethod2(IReadOnlyList<u8> code)
+    {
+        u8 a0 = code[0];
+        u8 a1 = code[1];
+        u8 a2 = code[2];
+        u8 a3 = code[3];
+        u8 d0 = code[4];
+        u8 d1 = code[5];
+        a0 = (u8)((a0 ^ 0x68));
+        a1 = (u8)((a1 + 0xAB) ^ 0x01);
+        a2 = (u8)((a2 + 0xAB) ^ 0x02);
+        a3 = (u8)((a3 + 0xAB) ^ 0x03);
+        d0 = (u8)((d0 + 0xAB) ^ 0x04);
+        d1 = (u8)((d1 + 0xAB) ^ 0x05);
         return new u8[] {a0, a1, a2, a3, d0, d1};
     }
 
