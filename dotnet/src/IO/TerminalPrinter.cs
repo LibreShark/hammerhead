@@ -125,8 +125,8 @@ public class TerminalPrinter
 
         string libreShark = AnsiConsole.Profile.Width >= 100 ? "LibreShark" : "Libre Shark";
         FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_BIG_MONEY_NW));
-        FigletText brandAsciiArt = new FigletText(figletFont, libreShark).LeftJustified();
-        AnsiConsole.Write(brandAsciiArt);
+        FigletText asciiArt = new FigletText(figletFont, libreShark).LeftJustified();
+        AnsiConsole.Write(asciiArt);
     }
 
     public void PrintHeading(string title)
@@ -152,9 +152,15 @@ public class TerminalPrinter
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams)
     {
-        string consoleName = _codec.Metadata.ConsoleId.ToAbbreviation();
-        string brandName = _codec.Metadata.BrandId.ToDisplayString();
-        string headingText = $"{consoleName} {brandName}";
+        ConsoleId consoleId = _codec.Metadata.ConsoleId;
+        BrandId brandId = _codec.Metadata.BrandId;
+        string consoleName = consoleId.ToAbbreviation();
+        string brandName = brandId.ToDisplayString();
+        string headingText = $"{consoleName} {brandName}";;
+        if (consoleId == ConsoleId.UnknownConsole && brandId == BrandId.UnknownBrand)
+        {
+            headingText = brandName;
+        }
 
         PrintFilePath(inputFile);
 
@@ -162,15 +168,15 @@ public class TerminalPrinter
         {
             Console.WriteLine($"**{headingText}**");
         }
-        else
+        else if (!infoParams.HideBanner)
         {
             Console.WriteLine();
             Console.WriteLine();
             FigletFont figletFont = FigletFont.Load(new MemoryStream(
                 IsColor ? Resources.FIGLET_FONT_ANSI_SHADOW : Resources.FIGLET_FONT_STANDARD
             ));
-            FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
-            AnsiConsole.Write(brandAsciiArt);
+            FigletText asciiArt = new FigletText(figletFont, headingText).LeftJustified();
+            AnsiConsole.Write(asciiArt);
         }
 
         PrintFilePropTable(infoParams);
@@ -293,7 +299,7 @@ public class TerminalPrinter
 
         if (_codec.Metadata.Identifiers.Count == 0)
         {
-            Console.WriteLine(Italic("No identifiers found."));
+            AnsiConsole.Markup(Italic("No identifiers found."));
             Console.WriteLine();
             return;
         }

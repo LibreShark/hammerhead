@@ -35,6 +35,7 @@ public sealed class N64XpText : AbstractCodec
     {
         Support.SupportsCheats = true;
         Support.HasCheats = true;
+        Metadata.BrandId = BrandId.Xplorer;
 
         Games.AddRange(ReadGames());
     }

@@ -42,6 +42,7 @@ public sealed class N64GsText : AbstractCodec
     {
         Support.SupportsCheats = true;
         Support.HasCheats = true;
+        Metadata.BrandId = BrandId.Gameshark;
 
         Games.AddRange(ReadGames());
     }
