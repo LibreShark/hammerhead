@@ -450,7 +450,7 @@ public class TerminalPrinter
     private string InputFilePathStyle(string filePath)
     {
         if (!IsColor) return filePath;
-        return $"[b i green]{filePath}[/]";
+        return $"[b u green]{filePath}[/]";
     }
 
     public string White(string str)
@@ -630,10 +630,10 @@ public class TerminalPrinter
     public void PrintRomCommand(string heading, FileInfo inputFile, FileInfo outputFile, Action action)
     {
         Console.WriteLine();
-        Console.WriteLine(Bold($"{heading}:"));
+        AnsiConsole.Markup(Bold($"{heading.EscapeMarkup()}:\n"));
         Console.WriteLine();
-        Console.WriteLine($"Input:  {InputFilePathStyle(inputFile.ShortName())}");
-        Console.WriteLine($"Output: {InputFilePathStyle(outputFile.ShortName())}");
+        AnsiConsole.Markup($"Input:  {InputFilePathStyle(inputFile.ShortName().EscapeMarkup())}\n");
+        AnsiConsole.Markup($"Output: {InputFilePathStyle(outputFile.ShortName().EscapeMarkup())}\n");
         Console.WriteLine();
         Console.WriteLine("...");
         Console.WriteLine();
@@ -650,14 +650,14 @@ public class TerminalPrinter
         Action action)
     {
         Console.WriteLine();
-        Console.WriteLine(Bold($"{heading}:"));
+        AnsiConsole.Markup(Bold($"{heading.EscapeMarkup()}:\n"));
         Console.WriteLine();
-        string inputCodecName = inputCodec.Metadata.CodecId.ToDisplayString();
-        string outputCodecName = outputCodec.Metadata.CodecId.ToDisplayString();
-        string inputPath = InputFilePathStyle(inputFile.ShortName());
-        string outputPath = InputFilePathStyle(outputFile.ShortName());
-        Console.WriteLine($"Input:  {inputPath} ({inputCodecName})");
-        Console.WriteLine($"Output: {outputPath} ({outputCodecName})");
+        string inputCodecName = inputCodec.Metadata.CodecId.ToDisplayString().EscapeMarkup();
+        string outputCodecName = outputCodec.Metadata.CodecId.ToDisplayString().EscapeMarkup();
+        string inputPath = InputFilePathStyle(inputFile.ShortName().EscapeMarkup());
+        string outputPath = InputFilePathStyle(outputFile.ShortName().EscapeMarkup());
+        AnsiConsole.Markup($"Input:  {inputPath} ({inputCodecName})\n");
+        AnsiConsole.Markup($"Output: {outputPath} ({outputCodecName})\n");
         Console.WriteLine();
         Console.WriteLine("...");
         Console.WriteLine();
