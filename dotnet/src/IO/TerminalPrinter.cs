@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.RegularExpressions;
+using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
@@ -148,7 +150,7 @@ public class TerminalPrinter
         Console.WriteLine();
     }
 
-    public void PrintFileInfo(FileInfo inputFile, InfoCmdParams @params)
+    public void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams)
     {
         string consoleName = _codec.Metadata.ConsoleId.ToAbbreviation();
         string brandName = _codec.Metadata.BrandId.ToDisplayString();
@@ -164,17 +166,20 @@ public class TerminalPrinter
         {
             Console.WriteLine();
             Console.WriteLine();
-            FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
+            FigletFont figletFont = FigletFont.Load(new MemoryStream(
+                IsColor ? Resources.FIGLET_FONT_ANSI_SHADOW : Resources.FIGLET_FONT_STANDARD
+            ));
             FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
             AnsiConsole.Write(brandAsciiArt);
         }
 
-        PrintFilePropTable(@params);
-        PrintChecksums(@params);
-        PrintIdentifiers(@params);
-        _codec.PrintCustomHeader(this, @params);
-        _codec.PrintGames(this, @params);
-        _codec.PrintCustomBody(this, @params);
+        PrintFilePropTable(infoParams);
+        PrintChecksums(infoParams);
+        PrintIdentifiers(infoParams);
+        PrintFileNameRefs(infoParams);
+        _codec.PrintCustomHeader(this, infoParams);
+        _codec.PrintGames(this, infoParams);
+        _codec.PrintCustomBody(this, infoParams);
         PrintFileDivider();
     }
 
@@ -226,8 +231,8 @@ public class TerminalPrinter
         PrintHeading("File properties");
 
         Table table = BuildTable()
-                .AddColumn(HeaderText("Property"))
-                .AddColumn(HeaderText("Value"))
+                .AddColumn(HeaderCell("Property"))
+                .AddColumn(HeaderCell("Value"))
             ;
 
         string fileSize = $"{PrettySize.Format(_codec.Buffer.Length)} " +
@@ -248,16 +253,16 @@ public class TerminalPrinter
             isKnownVersionStr = isKnownVersion ? Green(isKnownVersionStr) : Red(isKnownVersionStr);
         }
 
-        table.AddRow("File format", OrUnknown(_codec.Metadata.CodecId.ToDisplayString()));
-        table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString()));
-        table.AddRow("Brand", OrUnknown(GetDisplayBrand()));
-        table.AddRow("Locale", OrUnknown(GetDisplayLocale()));
+        table.AddRow("File format", OrUnknown(_codec.Metadata.CodecId.ToDisplayString().EscapeMarkup()));
+        table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString().EscapeMarkup()));
+        table.AddRow("Brand", OrUnknown(GetDisplayBrand().EscapeMarkup()));
+        table.AddRow("Locale", OrUnknown(GetDisplayLocale().EscapeMarkup()));
         table.AddRow("", "");
-        table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion));
-        table.AddRow("Build date", OrUnknown(buildDateDisplay));
+        table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion.EscapeMarkup()));
+        table.AddRow("Build date", OrUnknown(buildDateDisplay.EscapeMarkup()));
         table.AddRow("Known ROM version", isKnownVersionStr);
         table.AddRow("", "");
-        table.AddRow("File size", fileSize);
+        table.AddRow("File size", fileSize.EscapeMarkup());
 
         _codec.AddFileProps(table);
 
@@ -269,8 +274,8 @@ public class TerminalPrinter
         PrintHeading("File checksums");
 
         Table table = BuildTable()
-                .AddColumn(HeaderText("Algorithm"))
-                .AddColumn(HeaderText("Checksum"))
+                .AddColumn(HeaderCell("Algorithm"))
+                .AddColumn(HeaderCell("Checksum"))
             ;
 
         ChecksumResult? checksums = _codec.Metadata.FileChecksum;
@@ -295,11 +300,11 @@ public class TerminalPrinter
 
         Table table = BuildTable(TableBorder.Rounded);
         table
-            .AddColumn(HeaderText("Start"))
-            .AddColumn(HeaderText("End"))
-            .AddColumn(new TableColumn(HeaderText("Size")) { Alignment = Justify.Right })
-            .AddColumn(new TableColumn(HeaderText("Len")) { Alignment = Justify.Right })
-            .AddColumn(HeaderText("String"))
+            .AddColumn(HeaderCell("Start"))
+            .AddColumn(HeaderCell("End"))
+            .AddColumn(new TableColumn(HeaderCell("Size")) { Alignment = Justify.Right })
+            .AddColumn(new TableColumn(HeaderCell("Len")) { Alignment = Justify.Right })
+            .AddColumn(HeaderCell("String"))
             ;
 
         foreach (RomString id in _codec.Metadata.Identifiers)
@@ -309,7 +314,40 @@ public class TerminalPrinter
                 KeyCell($"0x{id.Addr.EndIndex:X8}"),
                 KeyCell($"0x{id.Addr.Length:X}"),
                 KeyCell($"{id.Addr.Length}"),
-                id.Value
+                id.Value.EscapeMarkup()
+            );
+        }
+
+        AnsiConsole.Write(table);
+    }
+
+    private void PrintFileNameRefs(InfoCmdParams @params)
+    {
+        RepeatedField<RomString> fileNameRefs = _codec.Metadata.FileNameRefs;
+        if (fileNameRefs.Count == 0)
+        {
+            return;
+        }
+
+        PrintHeading("File name references");
+
+        Table table = BuildTable(TableBorder.Rounded);
+        table
+            .AddColumn(HeaderCell("Start"))
+            .AddColumn(HeaderCell("End"))
+            .AddColumn(new TableColumn(HeaderCell("Size")) { Alignment = Justify.Right })
+            .AddColumn(new TableColumn(HeaderCell("Len")) { Alignment = Justify.Right })
+            .AddColumn(HeaderCell("String"))
+            ;
+
+        foreach (RomString filename in fileNameRefs)
+        {
+            table.AddRow(
+                KeyCell($"0x{filename.Addr.StartIndex:X8}"),
+                KeyCell($"0x{filename.Addr.EndIndex:X8}"),
+                KeyCell($"0x{filename.Addr.Length:X}"),
+                KeyCell($"{filename.Addr.Length}"),
+                filename.Value.EscapeMarkup()
             );
         }
 
@@ -357,9 +395,9 @@ public class TerminalPrinter
         Console.WriteLine();
 
         Table table = BuildTable()
-                .AddColumn(HeaderText("Name"))
-                .AddColumn(HeaderText("# Games/Cheats"), column => column.Alignment = Justify.Right)
-                .AddColumn(HeaderText("Warnings"))
+                .AddColumn(HeaderCell("Name"))
+                .AddColumn(HeaderCell("# Games/Cheats"), column => column.Alignment = Justify.Right)
+                .AddColumn(HeaderCell("Warnings"))
             ;
 
         List<Game> sortedGames = _codec.Games.ToList();
@@ -368,7 +406,7 @@ public class TerminalPrinter
 
         foreach (Game game in sortedGames)
         {
-            string gameName = game.GameName.Value;
+            string gameName = game.GameName.Value.EscapeMarkup();
             if (game.IsGameActive)
             {
                 gameName = BoldUnderline(gameName);
@@ -387,7 +425,8 @@ public class TerminalPrinter
             foreach (Cheat cheat in game.Cheats)
             {
                 int codeCount = cheat.Codes.Count;
-                table.AddRow($"  - {cheat.CheatName.Value}", codeCount.ToString(), "");
+                string cheatName = cheat.CheatName.Value.EscapeMarkup();
+                table.AddRow($"  - {cheatName}", codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
                     continue;
@@ -498,7 +537,7 @@ public class TerminalPrinter
         return $"[b u]{str}[/]";
     }
 
-    public string HeaderText(string str)
+    public string HeaderCell(string str)
     {
         return Bold(str);
     }

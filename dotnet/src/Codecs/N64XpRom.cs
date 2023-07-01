@@ -70,7 +70,7 @@ public sealed class N64XpRom : AbstractCodec
         Support.HasCheats = true;
         Support.HasFirmware = true;
         Support.IsFileScrambled = DetectScrambled(rawInput);
-        Support.HasDirtyUserPrefs = Scribe.MaintainPosition(() => !Scribe.Seek(UserPrefsAddr).IsPadding());
+        Support.HasPristineUserPrefs = Scribe.MaintainPosition(() => Scribe.Seek(UserPrefsAddr).IsPadding());
 
         // TODO(CheatoBaggins): Detect
         Support.HasKeyCodes = false;
@@ -141,7 +141,7 @@ public sealed class N64XpRom : AbstractCodec
         Metadata.Identifiers.Add(lastGameName);
         Metadata.Identifiers.Add(lastGameCartId);
 
-        if (!Support.HasDirtyUserPrefs)
+        if (Support.HasPristineUserPrefs)
         {
             return;
         }

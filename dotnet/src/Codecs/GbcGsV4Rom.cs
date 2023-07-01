@@ -51,12 +51,13 @@ public sealed class GbcGsV4Rom : AbstractCodec
     {
         Support.SupportsCheats = true;
         Support.SupportsFirmware = true;
-        Support.SupportsUserPrefs = true;
 
         Support.HasCheats = true;
         Support.HasFirmware = true;
+
         // TODO(CheatoBaggins): Detect
-        Support.HasDirtyUserPrefs = false;
+        Support.SupportsUserPrefs = true;
+        Support.HasPristineUserPrefs = false;
 
         Metadata.BrandId = IsGs(Buffer) ? BrandId.Gameshark : IsAr(Buffer) ? BrandId.ActionReplay : BrandId.UnknownBrand;
         Metadata.SortableVersion = ReadVersionNumber();

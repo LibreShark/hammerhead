@@ -102,8 +102,8 @@ public sealed class N64GsRom : AbstractCodec
 
         Support.IsFileEncrypted      = DetectEncrypted(rawInput);
         Support.IsFirmwareCompressed = DetectCompressed(rawInput);
-        Support.HasDirtyUserPrefs    = Support.SupportsUserPrefs &&
-                                       !Scribe.Seek(_userPrefsAddr).IsPadding();
+        Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
+                                       Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
     }
@@ -377,7 +377,7 @@ public sealed class N64GsRom : AbstractCodec
     public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Addresses");
-        Console.WriteLine(BuildAddressTable(printer));
+        PrintAddressTable(printer);
 
         printer.PrintHeading("Key codes");
         Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
@@ -385,7 +385,7 @@ public sealed class N64GsRom : AbstractCodec
 
         if (Support.SupportsKeyCodes && Support.HasKeyCodes)
         {
-            Console.WriteLine(BuildKeyCodesTable(printer));
+            PrintKeyCodesTable(printer);
         }
         else
         {
@@ -393,11 +393,11 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
-    private Table BuildAddressTable(TerminalPrinter printer)
+    private void PrintAddressTable(TerminalPrinter printer)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Section")
-                .AddColumn("Address")
+                .AddColumn(printer.HeaderCell("Section"))
+                .AddColumn(printer.HeaderCell("Address"))
             ;
 
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
@@ -410,24 +410,24 @@ public sealed class N64GsRom : AbstractCodec
         table.AddRow("Key code list", keyCodeListAddr);
         table.AddRow("Game list", gameListAddr);
 
-        return table;
+        AnsiConsole.Write(table);
     }
 
-    private Table BuildKeyCodesTable(TerminalPrinter printer)
+    private void PrintKeyCodesTable(TerminalPrinter printer)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Games (CIC chip)")
-                .AddColumn("Key code")
-                .AddColumn("Active?")
+                .AddColumn(printer.HeaderCell("Games (CIC chip)"))
+                .AddColumn(printer.HeaderCell("Key code"))
+                .AddColumn(printer.HeaderCell("Active?"))
             ;
 
         foreach (N64KeyCode keyCode in _keyCodes)
         {
-            string keyCodeName = keyCode.Name.Value;
+            string keyCodeName = keyCode.Name.Value.EscapeMarkup();
             string hexString = keyCode.Bytes.ToHexString(" ");
             table.AddRow(
                 keyCode.IsKeyCodeActive
-                    ? $"> {keyCodeName} [ACTIVE]"
+                    ? $"> {keyCodeName} [ACTIVE]".EscapeMarkup()
                     : $"  {keyCodeName}",
                 keyCode.IsKeyCodeActive
                     ? hexString
@@ -435,6 +435,6 @@ public sealed class N64GsRom : AbstractCodec
             );
         }
 
-        return table;
+        AnsiConsole.Write(table);
     }
 }

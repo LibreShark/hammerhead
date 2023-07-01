@@ -67,13 +67,14 @@ message VgeMetadata {
   ChecksumResult firmware_checksum = 13;
 
   repeated RomString identifiers = 14;
+  repeated RomString file_name_refs = 15;
 
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
-  bool is_known_version = 15;
+  bool is_known_version = 16;
 
-  repeated VgeFileProp file_properties = 16;
-  repeated RomRange file_sections = 17;
+  repeated VgeFileProp file_properties = 17;
+  repeated RomRange file_sections = 18;
 }
 
 message CodecFeatureSupport {
@@ -88,7 +89,7 @@ message CodecFeatureSupport {
 
   bool has_cheats = 101;
   bool has_firmware = 102;
-  bool has_dirty_user_prefs = 103;
+  bool has_pristine_user_prefs = 103;
   bool is_file_encrypted = 104;
   bool is_file_scrambled = 105;
   bool is_firmware_compressed = 106;

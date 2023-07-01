@@ -41,12 +41,13 @@ public sealed class GbcXpRom : AbstractCodec
     {
         Support.SupportsCheats = true;
         Support.SupportsFirmware = true;
-        Support.SupportsUserPrefs = true;
 
         Support.HasCheats = true;
         Support.HasFirmware = true;
+
         // TODO(CheatoBaggins): Detect
-        Support.HasDirtyUserPrefs = false;
+        Support.SupportsUserPrefs = true;
+        Support.HasPristineUserPrefs = false;
 
         u32 productNameAddr = (u32)Scribe.Find("Xploder GB");
         Metadata.BrandId = BrandId.Xploder;

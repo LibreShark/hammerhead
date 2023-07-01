@@ -45,12 +45,13 @@ public sealed class GbaGsFcdRom : AbstractCodec
     {
         Support.SupportsCheats = true;
         Support.SupportsFirmware = true;
-        Support.SupportsUserPrefs = true;
 
         Support.HasCheats = true;
         Support.HasFirmware = true;
+
         // TODO(CheatoBaggins): Detect
-        Support.HasDirtyUserPrefs = false;
+        Support.SupportsUserPrefs = true;
+        Support.HasPristineUserPrefs = false;
 
         ParseVersion();
     }

@@ -131,7 +131,7 @@ public abstract class AbstractCodec
 
         if (SupportsUserPrefs())
         {
-            table.AddRow("Pristine user prefs", $"{!HasDirtyUserPrefs()}");
+            table.AddRow("Pristine user prefs", $"{HasPristineUserPrefs()}");
         }
     }
 
@@ -175,9 +175,9 @@ public abstract class AbstractCodec
         return Metadata.CodecFeatureSupport.IsFirmwareCompressed;
     }
 
-    public bool HasDirtyUserPrefs()
+    public bool HasPristineUserPrefs()
     {
-        return Metadata.CodecFeatureSupport.HasDirtyUserPrefs;
+        return Metadata.CodecFeatureSupport.HasPristineUserPrefs;
     }
 
     public virtual u8[] Encrypt()

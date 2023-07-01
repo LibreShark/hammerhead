@@ -56,6 +56,11 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
         Support.HasFirmware = true;
 
+        // Assume pristine settings until we start parsing below.
+        // If any non-default settings are found, this flag will be flipped
+        // to false.
+        Support.HasPristineUserPrefs = true;
+
         Metadata.BrandId = BrandId.SharkMx;
 
         ParseRegistrationCode();
@@ -113,7 +118,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 if (str.Value.Length > 2)
                 {
                     str.Value = Regex.Replace(str.Value, "[^A-Z0-9.]+", "");
-                    Metadata.Identifiers.Add(str);
+                    Metadata.FileNameRefs.Add(str);
                 }
                 while (!Scribe.IsPadding() && !Scribe.IsPrintableChar())
                 {
@@ -133,12 +138,12 @@ public sealed class GbcSharkMxRom : AbstractCodec
         if (_regCodeCopy1.Value.Length > 0)
         {
             Metadata.Identifiers.Add(_regCodeCopy1);
-            Support.HasDirtyUserPrefs = true;
+            Support.HasPristineUserPrefs = false;
         }
         if (_regCodeCopy2.Value.Length > 0)
         {
             Metadata.Identifiers.Add(_regCodeCopy2);
-            Support.HasDirtyUserPrefs = true;
+            Support.HasPristineUserPrefs = false;
         }
     }
 
@@ -150,7 +155,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         if (_secretPin.Value.Length > 0)
         {
             Metadata.Identifiers.Add(_secretPin);
-            Support.HasDirtyUserPrefs = true;
+            Support.HasPristineUserPrefs = false;
         }
     }
 
@@ -322,28 +327,28 @@ public sealed class GbcSharkMxRom : AbstractCodec
     public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Registration");
-        AnsiConsole.Write(BuildRegistrationTable(printer, @params));
+        PrintRegistrationTable(printer, @params);
     }
 
     public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading($"Time zones ({_tzs.Count})");
-        printer.PrintTable(BuildTimeZoneTable(printer, @params));
+        PrintTimeZoneTable(printer, @params);
 
         printer.PrintHeading($"Contacts ({_contacts.Count})");
-        printer.PrintTable(BuildContactsTable(printer, @params));
+        PrintContactsTable(printer, @params);
 
         printer.PrintHeading($"Messages ({_messages.Count})");
-        printer.PrintTable(BuildMessagesTable(printer, @params));
+        PrintMessagesTable(printer, @params);
     }
 
-    private Table BuildTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Original name")
-                .AddColumn("Original offset")
-                .AddColumn("Today's offset")
-                .AddColumn("Modern ID")
+                .AddColumn(printer.HeaderCell("Original name"))
+                .AddColumn(printer.HeaderCell("Original offset"))
+                .AddColumn(printer.HeaderCell("Today's offset"))
+                .AddColumn(printer.HeaderCell("Modern ID"))
             ;
 
         foreach (GbcSmxTimeZone tz in _tzs)
@@ -353,45 +358,61 @@ public sealed class GbcSharkMxRom : AbstractCodec
             string originalOffsetStr = tz.OriginalUtcOffset.ToUtcOffsetString();
             string modernOffsetStr = modernUtcOffset.ToUtcOffsetString();
 
-            table.AddRow(tz.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernTzId);
+            table.AddRow(
+                tz.OriginalTzId.Value,
+                originalOffsetStr,
+                modernOffsetStr,
+                tz.ModernTzId
+            );
         }
 
-        return table;
+        printer.PrintTable(table);
     }
 
-    private Table BuildRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Key")
-                .AddColumn("Value")
+                .AddColumn(printer.HeaderCell("Key"))
+                .AddColumn(printer.HeaderCell("Value"))
             ;
 
         table.AddRow("Reg code copy #1", _regCodeCopy1.Value);
         table.AddRow("Reg code copy #2", _regCodeCopy2.Value);
         table.AddRow("Secret PIN", _secretPin.Value);
 
-        return table;
+        printer.PrintTable(table);
     }
 
-    private Table BuildContactsTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintContactsTable(TerminalPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
-                .AddColumn("#")
-                .AddColumn("Name")
-                .AddColumn("Email address")
-                .AddColumn("Unknown field #1")
-                .AddColumn("Unknown field #2")
-                .AddColumn("Phone number")
-                .AddColumn("Street address")
+                .AddColumn(printer.HeaderCell("#"))
+                .AddColumn(printer.HeaderCell("Name"))
+                .AddColumn(printer.HeaderCell("Email address"))
+                .AddColumn(printer.HeaderCell("Unknown field #1"))
+                .AddColumn(printer.HeaderCell("Unknown field #2"))
+                .AddColumn(printer.HeaderCell("Phone number"))
+                .AddColumn(printer.HeaderCell("Street address"))
                 ;
 
         foreach (GbcSmxContact contact in _contacts)
         {
-            string entryNumberValue = contact.EntryNumber.Value;
+            string entryNumber = printer.Dim(contact.EntryNumber.Value);
+            string personName = contact.PersonName.Value;
+            string emailAddress = contact.EmailAddress.Value;
+            if (Regex.IsMatch(personName, "^Mem(?:[0-9]{2})?$"))
+            {
+                personName = printer.Dim(personName);
+            }
+            if (Regex.IsMatch(emailAddress, "^<Empty>$"))
+            {
+                emailAddress = printer.Dim(emailAddress);
+            }
+
             table.AddRow(
-                entryNumberValue,
-                contact.PersonName.Value,
-                contact.EmailAddress.Value,
+                entryNumber,
+                personName,
+                emailAddress,
                 contact.UnknownField1.Value,
                 contact.UnknownField2.Value,
                 contact.PhoneNumber.Value,
@@ -399,19 +420,19 @@ public sealed class GbcSharkMxRom : AbstractCodec
             );
         }
 
-        return table;
+        printer.PrintTable(table);
     }
 
-    private Table BuildMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Subject")
-                .AddColumn("Recipient")
-                .AddColumn("Unknown field #1")
-                .AddColumn("Raw date")
-                .AddColumn("ISO date")
-                .AddColumn("Message")
-                .AddColumn("Unknown field #2")
+                .AddColumn(printer.HeaderCell("Subject"))
+                .AddColumn(printer.HeaderCell("Recipient"))
+                .AddColumn(printer.HeaderCell("Unknown field #1"))
+                .AddColumn(printer.HeaderCell("Raw date"))
+                .AddColumn(printer.HeaderCell("ISO date"))
+                .AddColumn(printer.HeaderCell("Message"))
+                .AddColumn(printer.HeaderCell("Unknown field #2"))
                 ;
 
         foreach (GbcSmxMessage message in _messages)
@@ -427,7 +448,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
             );
         }
 
-        return table;
+        printer.PrintTable(table);
     }
 
     private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)

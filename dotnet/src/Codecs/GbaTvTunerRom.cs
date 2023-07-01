@@ -35,11 +35,11 @@ public sealed class GbaTvTunerRom : AbstractCodec
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsFirmware = true;
-        Support.SupportsUserPrefs = true;
-
         Support.HasFirmware = true;
+
         // TODO(CheatoBaggins): Detect
-        Support.HasDirtyUserPrefs = false;
+        Support.SupportsUserPrefs = true;
+        Support.HasPristineUserPrefs = false;
     }
 
     public override AbstractCodec WriteChangesToBuffer()

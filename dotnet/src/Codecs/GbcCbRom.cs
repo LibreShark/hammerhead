@@ -56,7 +56,7 @@ public sealed class GbcCbRom : AbstractCodec
         Support.HasFirmware = true;
         _selectedGameName = Scribe.Seek(SelectedGameNameAddr).ReadPrintableCString().Trim();
         // TODO(CheatoBaggins): Are there any other preferences we need to check?
-        Support.HasDirtyUserPrefs = _selectedGameName.Value.Length > 0;
+        Support.HasPristineUserPrefs = _selectedGameName.Value.Length == 0;
 
         Metadata.BrandId = DetectBrand(rawInput);
 
