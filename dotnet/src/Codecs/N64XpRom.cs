@@ -194,9 +194,9 @@ public sealed class N64XpRom : AbstractCodec
                 for (u16 codeIdx = 0; codeIdx < codeCount; codeIdx++)
                 {
                     u8[] codeBytes = Scribe.ReadBytes(6);
-                    if (IsCodeEncrypted(codeBytes))
+                    if (N64XpCrypter.IsCodeEncrypted(codeBytes))
                     {
-                        codeBytes = DecryptCodeMethod1(codeBytes);
+                        codeBytes = N64XpCrypter.DecryptCodeMethod1(codeBytes);
                     }
                     cheat.Codes.Add(new Code()
                     {
@@ -211,95 +211,6 @@ public sealed class N64XpRom : AbstractCodec
             Games.Add(game);
             gameIdx++;
         }
-    }
-
-    private static bool IsCodeEncrypted(IReadOnlyList<u8> code)
-    {
-        u8 opcodeByte = code[0];
-        var opcodeEnum = (Xp64Opcode)opcodeByte;
-        ImmutableArray<Xp64Opcode> knownOpcodes = Enum.GetValues<Xp64Opcode>().ToImmutableArray();
-        bool isUnencrypted = knownOpcodes.Contains(opcodeEnum);
-        return !isUnencrypted;
-    }
-
-    /// <summary>
-    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
-    /// </summary>
-    private u8[] EncryptCodeMethod1(u8[] code)
-    {
-        u8 a0 = code[0];
-        u8 a1 = code[1];
-        u8 a2 = code[2];
-        u8 a3 = code[3];
-        u8 d0 = code[4];
-        u8 d1 = code[5];
-        a0 = (u8)((a0 ^ 0x68));
-        a1 = (u8)((a1 ^ 0x81) - 0x2B);
-        a2 = (u8)((a2 ^ 0x82) - 0x2B);
-        a3 = (u8)((a3 ^ 0x83) - 0x2B);
-        d0 = (u8)((d0 ^ 0x84) - 0x2B);
-        d1 = (u8)((d1 ^ 0x85) - 0x2B);
-        return new u8[] {a0, a1, a2, a3, d0, d1};
-    }
-
-    /// <summary>
-    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
-    /// </summary>
-    private u8[] EncryptCodeMethod2(u8[] code)
-    {
-        u8 a0 = code[0];
-        u8 a1 = code[1];
-        u8 a2 = code[2];
-        u8 a3 = code[3];
-        u8 d0 = code[4];
-        u8 d1 = code[5];
-        a0 = (u8)((a0 ^ 0x68));
-        a1 = (u8)((a1 ^ 0x01) - 0xAB);
-        a2 = (u8)((a2 ^ 0x02) - 0xAB);
-        a3 = (u8)((a3 ^ 0x03) - 0xAB);
-        d0 = (u8)((d0 ^ 0x04) - 0xAB);
-        d1 = (u8)((d1 ^ 0x05) - 0xAB);
-        return new u8[] {a0, a1, a2, a3, d0, d1};
-    }
-
-    /// <summary>
-    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
-    /// </summary>
-    private static u8[] DecryptCodeMethod1(IReadOnlyList<u8> code)
-    {
-        u8 a0 = code[0];
-        u8 a1 = code[1];
-        u8 a2 = code[2];
-        u8 a3 = code[3];
-        u8 d0 = code[4];
-        u8 d1 = code[5];
-        a0 = (u8)((a0 ^ 0x68));
-        a1 = (u8)((a1 + 0x2B) ^ 0x81);
-        a2 = (u8)((a2 + 0x2B) ^ 0x82);
-        a3 = (u8)((a3 + 0x2B) ^ 0x83);
-        d0 = (u8)((d0 + 0x2B) ^ 0x84);
-        d1 = (u8)((d1 + 0x2B) ^ 0x85);
-        return new u8[] {a0, a1, a2, a3, d0, d1};
-    }
-
-    /// <summary>
-    /// From https://doc.kodewerx.org/hacking_n64.html#xp_encryption.
-    /// </summary>
-    private static u8[] DecryptCodeMethod2(IReadOnlyList<u8> code)
-    {
-        u8 a0 = code[0];
-        u8 a1 = code[1];
-        u8 a2 = code[2];
-        u8 a3 = code[3];
-        u8 d0 = code[4];
-        u8 d1 = code[5];
-        a0 = (u8)((a0 ^ 0x68));
-        a1 = (u8)((a1 + 0xAB) ^ 0x01);
-        a2 = (u8)((a2 + 0xAB) ^ 0x02);
-        a3 = (u8)((a3 + 0xAB) ^ 0x03);
-        d0 = (u8)((d0 + 0xAB) ^ 0x04);
-        d1 = (u8)((d1 + 0xAB) ^ 0x05);
-        return new u8[] {a0, a1, a2, a3, d0, d1};
     }
 
     private static string GetIetfCode(RomString oneLetterLangCode, RomString countryNameRaw)
