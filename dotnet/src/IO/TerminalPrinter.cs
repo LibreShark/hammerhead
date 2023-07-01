@@ -36,7 +36,7 @@ public class TerminalPrinter
         }
         else if (IsPlain)
         {
-            table.Border = TableBorder.Ascii;
+            table.Border = TableBorder.Simple;
             table.UseSafeBorder = true;
         }
         else if (colorBorderStyle != null)
@@ -121,8 +121,8 @@ public class TerminalPrinter
                 ? Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.TrimEnd()
                 : Resources.GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT);
 
-        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_BIG_MONEY_NW));
         string libreShark = AnsiConsole.Profile.Width >= 100 ? "LibreShark" : "Libre Shark";
+        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_BIG_MONEY_NW));
         FigletText brandAsciiArt = new FigletText(figletFont, libreShark).LeftJustified();
         AnsiConsole.Write(brandAsciiArt);
     }
@@ -156,17 +156,17 @@ public class TerminalPrinter
 
         PrintFilePath(inputFile);
 
-        if (IsColor)
+        if (IsMarkdown)
         {
-            FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
-            FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
-            Console.WriteLine();
-            Console.WriteLine();
-            AnsiConsole.Write(brandAsciiArt);
+            Console.WriteLine($"**{headingText}**");
         }
         else
         {
-            Console.WriteLine($"**{headingText}**");
+            Console.WriteLine();
+            Console.WriteLine();
+            FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
+            FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
+            AnsiConsole.Write(brandAsciiArt);
         }
 
         PrintFilePropTable(@params);
@@ -305,10 +305,10 @@ public class TerminalPrinter
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
             table.AddRow(
-                $"0x{id.Addr.StartIndex:X8}",
-                $"0x{id.Addr.EndIndex:X8}",
-                $"0x{id.Addr.Length:X}",
-                $"{id.Addr.Length}",
+                KeyCell($"0x{id.Addr.StartIndex:X8}"),
+                KeyCell($"0x{id.Addr.EndIndex:X8}"),
+                KeyCell($"0x{id.Addr.Length:X}"),
+                KeyCell($"{id.Addr.Length}"),
                 id.Value
             );
         }
@@ -394,7 +394,8 @@ public class TerminalPrinter
                 }
                 foreach (Code code in cheat.Codes)
                 {
-                    table.AddRow($"    {code.Bytes.ToCodeString(_codec.Metadata.ConsoleId)}", "", "");
+                    string codeString = code.Bytes.ToCodeString(_codec.Metadata.ConsoleId);
+                    table.AddRow($"    {(Dim(codeString))}", "", "");
                 }
             }
         }
@@ -413,79 +414,91 @@ public class TerminalPrinter
         return $"[b i green]{filePath}[/]";
     }
 
-    private string Red(string str)
+    public string White(string str)
+    {
+        if (!IsColor) return str;
+        return $"[white]{str}[/]";
+    }
+
+    public string Black(string str)
+    {
+        if (!IsColor) return str;
+        return $"[black]{str}[/]";
+    }
+
+    public string Red(string str)
     {
         if (!IsColor) return str;
         return $"[red]{str}[/]";
     }
 
-    private string Green(string str)
+    public string Green(string str)
     {
         if (!IsColor) return str;
         return $"[green]{str}[/]";
     }
 
-    private string Blue(string str)
+    public string Blue(string str)
     {
         if (!IsColor) return str;
         return $"[blue]{str}[/]";
     }
 
-    private string DarkBlue(string str)
+    public string DarkBlue(string str)
     {
         if (!IsColor) return str;
         return $"[darkblue]{str}[/]";
     }
 
-    private string DarkMagenta(string str)
+    public string DarkMagenta(string str)
     {
         if (!IsColor) return str;
         return $"[darkmagenta]{str}[/]";
     }
 
-    private string Gray(string str)
+    public string Gray(string str)
     {
         if (!IsColor) return str;
         return $"[gray]{str}[/]";
     }
 
-    private string Dim(string str)
+    public string Dim(string str)
     {
         if (!IsColor) return str;
         return $"[dim]{str}[/]";
     }
 
-    private string Bold(string str)
+    public string Bold(string str)
     {
         if (!IsColor) return str;
         return $"[b]{str}[/]";
     }
 
-    private string Italic(string str)
+    public string Italic(string str)
     {
         if (!IsColor) return str;
         return $"[i]{str}[/]";
     }
 
-    private string BoldItalic(string str)
+    public string BoldItalic(string str)
     {
         if (!IsColor) return str;
         return $"[b i]{str}[/]";
     }
 
-    private string Underline(string str)
+    public string Underline(string str)
     {
         if (!IsColor) return str;
         return $"[u]{str}[/]";
     }
 
-    private string BoldUnderline(string str)
+    public string BoldUnderline(string str)
     {
         if (!IsColor) return str;
         return $"[b u]{str}[/]";
     }
 
-    private string HeaderText(string str)
+    public string HeaderText(string str)
     {
         return Bold(str);
     }
@@ -503,16 +516,26 @@ public class TerminalPrinter
         return s;
     }
 
-    private string UnknownStyle(string str)
+    public string UnknownStyle(string str)
     {
         if (!IsColor) return str;
         return $"[i dim]{str}[/]";
     }
 
-    private string Error(string message)
+    public string Error(string message)
     {
         if (!IsColor) return message;
         return $"[red]{message}[/]";
+    }
+
+    public string KeyCell(string str)
+    {
+        return Dim(str);
+    }
+
+    public string ValueCell(string str)
+    {
+        return White(str);
     }
 
     #endregion
