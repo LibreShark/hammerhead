@@ -165,6 +165,30 @@ public class TerminalPrinter
 
     #region Printing sections
 
+    public void PrintBanner(CmdParams cmdParams)
+    {
+        if (cmdParams.HideBanner)
+        {
+            return;
+        }
+
+        // ANSI color ASCII art generated with
+        // https://github.com/TheZoraiz/ascii-image-converter
+        // TODO(CheatoBaggins):
+        // Smallest height for N64 GameShark shark logo: 20
+        // ascii-image-converter --height 20 --color --complex ~/dev/libreshark/assets/logos/n64-gameshark-logo-for-ascii-art.png
+        Console.WriteLine();
+        Console.WriteLine(
+            IsColor
+                ? Resources.GAMESHARK_LOGO_ASCII_ART_ANSI_TXT.TrimEnd()
+                : Resources.GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT);
+
+        FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_BIG_MONEY_NW));
+        string libreShark = AnsiConsole.Profile.Width >= 100 ? "LibreShark" : "Libre Shark";
+        FigletText brandAsciiArt = new FigletText(figletFont, libreShark).LeftJustified();
+        AnsiConsole.Write(brandAsciiArt);
+    }
+
     public void PrintHeading(string title)
     {
         Console.WriteLine();
