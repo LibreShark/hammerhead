@@ -45,6 +45,11 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private RomString _regCodeCopy2 = EmptyRomStr();
     private RomString _secretPin = EmptyRomStr();
 
+    private static readonly string[] KnownDisplayVersions =
+    {
+        "v1.02 (US)",
+    };
+
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
     private GbcSharkMxRom(string filePath, u8[] rawInput)
@@ -69,6 +74,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
         ParseTimeZones();
         ParseContacts();
         ParseMessages();
+
+        Metadata.IsKnownVersion = KnownDisplayVersions.Contains(Metadata.DisplayVersion);
     }
 
     private void ParseVersion()
@@ -376,8 +383,8 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Value"))
             ;
 
-        table.AddRow("Reg code copy #1", _regCodeCopy1.Value);
-        table.AddRow("Reg code copy #2", _regCodeCopy2.Value);
+        table.AddRow("Reg code, copy #1", _regCodeCopy1.Value);
+        table.AddRow("Reg code, copy #2", _regCodeCopy2.Value);
         table.AddRow("Secret PIN", _secretPin.Value);
 
         printer.PrintTable(table);
