@@ -319,7 +319,6 @@ public class TerminalPrinter
     public void PrintGames(InfoCmdParams @params)
     {
         PrintHeading("Games and cheat codes");
-        Console.WriteLine();
 
         int gameCount = _codec.Games.Count;
         if (gameCount == 0)
@@ -354,8 +353,7 @@ public class TerminalPrinter
 
         AnsiConsole.Markup($"{gameCountStr} {gamePlural}, " +
                            $"{cheatCountStr} {cheatCountPlural}, " +
-                           $"{codeCountStr} {codeCountPlural}:");
-        Console.WriteLine();
+                           $"{codeCountStr} {codeCountPlural}:\n");
         Console.WriteLine();
 
         Table table = BuildTable()
