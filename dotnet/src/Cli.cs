@@ -158,9 +158,9 @@ public class Cli
     private readonly RootCommand _rootCmd = new(
         description: string.Join(" ", new string[]
         {
-            "Swiss Army Knife for reading, writing, encrypting, and decrypting firmware dumps (ROM files)",
-            "and cheat code lists from 1990s-2000s video game enhancers (GameShark, Action Replay, Code Breaker,",
-            "Xplorer/Xploder, etc.).",
+            "Hammerhead is a Swiss Army Knife for reading, writing, encrypting, and decrypting firmware dumps",
+            "(ROM files) and cheat code lists from 1990s-2000s video game enhancers (GameShark, Action Replay,",
+            "Code Breaker, Xplorer/Xploder, etc.).",
         }));
 
     #endregion
