@@ -1,10 +1,7 @@
-using System.Drawing;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
-using BetterConsoles.Tables;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.N64;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
@@ -398,13 +395,10 @@ public sealed class N64GsRom : AbstractCodec
 
     private Table BuildAddressTable(TerminalPrinter printer)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Section", rowsFormat: printer.KeyCell())
-                .AddColumn("Address", rowsFormat: printer.ValueCell())
-                ;
-        });
+        Table table = printer.BuildTable()
+                .AddColumn("Section")
+                .AddColumn("Address")
+            ;
 
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
         string gameListAddr = $"0x{_gameListAddr:X8}";
@@ -421,27 +415,22 @@ public sealed class N64GsRom : AbstractCodec
 
     private Table BuildKeyCodesTable(TerminalPrinter printer)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Games (CIC chip)", rowsFormat: printer.ValueCell())
-                .AddColumn("Key code", rowsFormat: printer.KeyCell())
-                .AddColumn("Active?", rowsFormat: printer.ValueCell())
-                ;
-        });
+        Table table = printer.BuildTable()
+                .AddColumn("Games (CIC chip)")
+                .AddColumn("Key code")
+                .AddColumn("Active?")
+            ;
 
         foreach (N64KeyCode keyCode in _keyCodes)
         {
+            string keyCodeName = keyCode.Name.Value;
             string hexString = keyCode.Bytes.ToHexString(" ");
             table.AddRow(
                 keyCode.IsKeyCodeActive
-                    ? $"> {keyCode.Name.Value.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline)}"
-                    : $"  {keyCode.Name.Value}",
+                    ? $"> {keyCodeName} [ACTIVE]"
+                    : $"  {keyCodeName}",
                 keyCode.IsKeyCodeActive
-                    ? $"{hexString.ForegroundColor(Color.White).SetStyle(FontStyleExt.Bold | FontStyleExt.Underline)}"
-                    : $"{hexString}",
-                keyCode.IsKeyCodeActive
-                    ? "Active".ForegroundColor(Color.Green).SetStyle(FontStyleExt.Bold)
+                    ? hexString
                     : ""
             );
         }

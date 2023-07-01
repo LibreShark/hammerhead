@@ -69,12 +69,16 @@ internal static class Program
 
         if (!isSupported(ftp))
         {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+            printer.PrintError(new InvalidOperationException(
+                $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+            ));
             return;
         }
         if (outputFile.Exists && !@params.OverwriteExistingFiles)
         {
-            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            printer.PrintError(new InvalidOperationException(
+                $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+            ));
             return;
         }
 
@@ -100,12 +104,16 @@ internal static class Program
 
         if (!isSupported(ftp))
         {
-            printer.PrintError($"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+            printer.PrintError(new InvalidOperationException(
+                $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+            ));
             return;
         }
         if (outputFile.Exists && !@params.OverwriteExistingFiles)
         {
-            printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+            printer.PrintError(new InvalidOperationException(
+                $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+            ));
             return;
         }
 
@@ -265,29 +273,39 @@ internal static class Program
         {
             if (!inputCodec.SupportsCheats())
             {
-                printer.PrintError($"{inputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+                printer.PrintError(new InvalidOperationException(
+                    $"{inputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
                 return;
             }
             if (!outputCodec.SupportsCheats())
             {
-                printer.PrintError($"{outputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting.");
+                printer.PrintError(new InvalidOperationException(
+                    $"{outputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
                 return;
             }
             if (inputCodec.Metadata.ConsoleId != outputCodec.Metadata.ConsoleId)
             {
-                printer.PrintError($"Input and output formats must both be for the same game console. Aborting.");
+                printer.PrintError(new InvalidOperationException(
+                    $"Input and output formats must both be for the same game console. Aborting."
+                ));
                 return;
             }
             if (outputFile.Exists && !@params.OverwriteExistingFiles)
             {
-                printer.PrintError($"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check.");
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
                 return;
             }
             if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
             {
-                throw new InvalidOperationException(
+                printer.PrintError(new InvalidOperationException(
                     $"Output codec {outputCodecId} ({outputCodecId.ToDisplayString()}) " +
-                    "does not support writing cheats yet.");
+                    "does not support writing cheats yet."
+                ));
+                return;
             }
 
             outputCodec.Games.RemoveAll(_ => true);

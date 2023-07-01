@@ -1,5 +1,5 @@
-using BetterConsoles.Tables;
 using LibreShark.Hammerhead.IO;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
@@ -79,12 +79,10 @@ public sealed class N64GbHunterRom : AbstractCodec
     // ReSharper disable once InconsistentNaming
     private void PrintRLE01Addrs(TerminalPrinter printer)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Address", rowsFormat: printer.ValueCell())
-                .AddColumn("Length", rowsFormat: printer.KeyCell());
-        });
+        Table table = printer.BuildTable()
+                .AddColumn("Address")
+                .AddColumn("Length")
+            ;
 
         foreach (s32 rle01Address in _rle01Addresses)
         {

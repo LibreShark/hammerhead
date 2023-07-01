@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
-using BetterConsoles.Tables;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
@@ -116,22 +116,22 @@ public abstract class AbstractCodec
     {
         if (SupportsFileEncryption())
         {
-            table.AddRow("File encrypted", IsFileEncrypted());
+            table.AddRow("File encrypted", $"{IsFileEncrypted()}");
         }
 
         if (SupportsFileScrambling())
         {
-            table.AddRow("File scrambled", IsFileScrambled());
+            table.AddRow("File scrambled", $"{IsFileScrambled()}");
         }
 
         if (SupportsFirmwareCompression())
         {
-            table.AddRow("Firmware compressed", IsFirmwareCompressed());
+            table.AddRow("Firmware compressed", $"{IsFirmwareCompressed()}");
         }
 
         if (SupportsUserPrefs())
         {
-            table.AddRow("Pristine user prefs", !HasDirtyUserPrefs());
+            table.AddRow("Pristine user prefs", $"{!HasDirtyUserPrefs()}");
         }
     }
 

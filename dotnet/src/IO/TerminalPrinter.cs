@@ -1,15 +1,7 @@
 using System.Globalization;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
-using BetterConsoles.Tables;
-using BetterConsoles.Tables.Builders;
-using BetterConsoles.Tables.Configuration;
-using BetterConsoles.Tables.Models;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
-using Color = System.Drawing.Color;
-using Table = BetterConsoles.Tables.Table;
 
 namespace LibreShark.Hammerhead.IO;
 
@@ -17,44 +9,9 @@ public class TerminalPrinter
 {
     #region Fields
 
-    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-    private static readonly Color SelectedColor = Color.FromArgb(0, 153, 0);
-    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
-    private static readonly Color HintColor = Color.FromArgb(160, 160, 160);
-
-    private CellFormat HeaderCellFormat
-    {
-        get
-        {
-            if (IsColor)
-            {
-                return new CellFormat()
-                {
-                    Alignment = Alignment.Left,
-                    FontStyle = FontStyleExt.Bold,
-                    ForegroundColor = TableHeaderColor,
-                };
-            }
-
-            return new CellFormat()
-            {
-                Alignment = Alignment.Left,
-            };
-        }
-    }
-
     public bool IsColor => _printFormat == PrintFormatId.Color;
     public bool IsMarkdown => _printFormat == PrintFormatId.Markdown;
     public bool IsPlain => !IsColor && !IsMarkdown;
-
-    private TableConfig TableConfig =>
-        IsColor
-            ? TableConfig.Unicode()
-            : IsMarkdown
-                ? TableConfig.Markdown()
-                : TableConfig.Simple();
 
     private readonly AbstractCodec _codec;
     private readonly PrintFormatId _printFormat;
@@ -69,47 +26,25 @@ public class TerminalPrinter
 
     #region Tables
 
-    public Table BuildTable(Action<TableBuilder> addColumns)
+    public Table BuildTable(TableBorder? colorBorderStyle = null)
     {
-        var tableBuilder = new TableBuilder(HeaderCellFormat);
-        addColumns(tableBuilder);
-        Table table = tableBuilder.Build();
-        table.Config = TableConfig;
+        var table = new Table();
+
+        if (IsMarkdown)
+        {
+            table.Border = TableBorder.Markdown;
+        }
+        else if (IsPlain)
+        {
+            table.Border = TableBorder.Ascii;
+            table.UseSafeBorder = true;
+        }
+        else if (colorBorderStyle != null)
+        {
+            table.Border = colorBorderStyle;
+        }
+
         return table;
-    }
-
-    public CellFormat KeyCell(
-        Alignment alignment = default,
-        FontStyleExt fontStyle = default,
-        bool innerFormatting = true
-    )
-    {
-        return
-            IsColor
-                ? new CellFormat(
-                    alignment: alignment,
-                    foregroundColor: TableKeyColor,
-                    fontStyle: fontStyle,
-                    innerFormatting: innerFormatting
-                )
-                : new CellFormat(alignment: alignment);
-    }
-
-    public CellFormat ValueCell(
-        Alignment alignment = default,
-        FontStyleExt fontStyle = default,
-        bool innerFormatting = true
-    )
-    {
-        return
-            IsColor
-                ? new CellFormat(
-                    alignment: alignment,
-                    foregroundColor: TableValueColor,
-                    fontStyle: fontStyle,
-                    innerFormatting: innerFormatting
-                )
-                : new CellFormat(alignment: alignment);
     }
 
     #endregion
@@ -143,22 +78,28 @@ public class TerminalPrinter
 
     public void PrintHint(string message)
     {
-        string styled = IsColor
-            ? Italic(message.ForegroundColor(HintColor))
-            : message;
-        Console.Error.WriteLine($"\n{styled}\n");
+        if (IsColor)
+        {
+            AnsiConsole.Write($"\n[i dim]{message}[/]\n");
+            return;
+        }
+        Console.Error.WriteLine($"\n{message}\n");
     }
 
-    public void PrintError(string message)
+    public void PrintError(Exception e)
     {
+        string message = e.ToString();
         if (!message.ToUpperInvariant().Contains("ERROR"))
         {
             message = $"ERROR: {message}";
         }
-        string styled = IsColor
-            ? Italic(message.ForegroundColor(Color.Red))
-            : message;
-        Console.Error.WriteLine($"\n{styled}\n");
+        if (IsColor)
+        {
+            AnsiConsole.WriteException(e);
+            // AnsiConsole.Write($"\n[b red]{message}[/]\n");
+            return;
+        }
+        Console.Error.WriteLine($"\n{message}\n");
     }
 
     #endregion
@@ -174,9 +115,6 @@ public class TerminalPrinter
 
         // ANSI color ASCII art generated with
         // https://github.com/TheZoraiz/ascii-image-converter
-        // TODO(CheatoBaggins):
-        // Smallest height for N64 GameShark shark logo: 20
-        // ascii-image-converter --height 20 --color --complex ~/dev/libreshark/assets/logos/n64-gameshark-logo-for-ascii-art.png
         Console.WriteLine();
         Console.WriteLine(
             IsColor
@@ -198,14 +136,14 @@ public class TerminalPrinter
         }
         else
         {
-            var panel = new Panel($"[b]{title}[/]")
+            var panel = new Panel(Bold(title))
             {
                 Border = IsColor ? BoxBorder.Double : BoxBorder.Ascii,
-                Width = 80,
+                BorderStyle = IsColor ? new Style(foreground: ConsoleColor.DarkGray, decoration: Decoration.Bold) : Style.Plain,
                 UseSafeBorder = IsPlain,
+                Width = 80,
             };
             AnsiConsole.Write(panel);
-            Console.WriteLine();
         }
         Console.WriteLine();
     }
@@ -216,19 +154,19 @@ public class TerminalPrinter
         string brandName = _codec.Metadata.BrandId.ToDisplayString();
         string headingText = $"{consoleName} {brandName}";
 
+        PrintFilePath(inputFile);
+
         if (IsColor)
         {
             FigletFont figletFont = FigletFont.Load(new MemoryStream(Resources.FIGLET_FONT_ANSI_SHADOW));
             FigletText brandAsciiArt = new FigletText(figletFont, headingText).LeftJustified();
+            Console.WriteLine();
+            Console.WriteLine();
             AnsiConsole.Write(brandAsciiArt);
         }
-
-        PrintFilePath(inputFile);
-
-        if (!IsColor)
+        else
         {
             Console.WriteLine($"**{headingText}**");
-            Console.WriteLine();
         }
 
         PrintFilePropTable(@params);
@@ -254,10 +192,10 @@ public class TerminalPrinter
             return;
         }
 
-        var ruleStart = new Rule($"[green]{shortName}[/]")
+        var ruleStart = new Rule(Green(shortName))
         {
             Justification = Justify.Left,
-            Style = new Spectre.Console.Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
+            Style = new Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
         };
         Console.WriteLine();
         AnsiConsole.Write(ruleStart);
@@ -287,12 +225,10 @@ public class TerminalPrinter
     {
         PrintHeading("File properties");
 
-        Table table = BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Property", rowsFormat: KeyCell())
-                .AddColumn("Value", rowsFormat: ValueCell());
-        });
+        Table table = BuildTable()
+                .AddColumn(HeaderText("Property"))
+                .AddColumn(HeaderText("Value"))
+            ;
 
         string fileSize = $"{PrettySize.Format(_codec.Buffer.Length)} " +
                           $"(0x{_codec.Buffer.Length:X8} = {_codec.Buffer.Length} bytes)";
@@ -305,6 +241,13 @@ public class TerminalPrinter
             buildDateDisplay = "19" + buildDateDisplay;
         }
 
+        bool isKnownVersion = _codec.Metadata.IsKnownVersion;
+        string isKnownVersionStr = isKnownVersion.ToString();
+        if (IsColor)
+        {
+            isKnownVersionStr = isKnownVersion ? Green(isKnownVersionStr) : Red(isKnownVersionStr);
+        }
+
         table.AddRow("File format", OrUnknown(_codec.Metadata.CodecId.ToDisplayString()));
         table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString()));
         table.AddRow("Brand", OrUnknown(GetDisplayBrand()));
@@ -312,38 +255,36 @@ public class TerminalPrinter
         table.AddRow("", "");
         table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion));
         table.AddRow("Build date", OrUnknown(buildDateDisplay));
-        table.AddRow("Known ROM version", _codec.Metadata.IsKnownVersion);
+        table.AddRow("Known ROM version", isKnownVersionStr);
         table.AddRow("", "");
         table.AddRow("File size", fileSize);
 
         _codec.AddFileProps(table);
 
-        Console.WriteLine(table);
+        AnsiConsole.Write(table);
     }
 
     private void PrintChecksums(InfoCmdParams @params)
     {
         PrintHeading("File checksums");
 
-        Table filePropTable = new TableBuilder(HeaderCellFormat)
-            .AddColumn("Algorithm", rowsFormat: KeyCell())
-            .AddColumn("Checksum", rowsFormat: ValueCell())
-            .Build();
+        Table table = BuildTable()
+                .AddColumn(HeaderText("Algorithm"))
+                .AddColumn(HeaderText("Checksum"))
+            ;
 
         ChecksumResult? checksums = _codec.Metadata.FileChecksum;
-        filePropTable.AddRow("CRC-32 (standard)", OrUnknown(checksums?.Crc32Hex));
-        filePropTable.AddRow("CRC-32C (Castagnoli)", OrUnknown(checksums?.Crc32CHex));
-        filePropTable.AddRow("MD5", OrUnknown(checksums?.Md5Hex));
-        filePropTable.AddRow("SHA-1", OrUnknown(checksums?.Sha1Hex));
+        table.AddRow("CRC-32 (standard)", OrUnknown(checksums?.Crc32Hex));
+        table.AddRow("CRC-32C (Castagnoli)", OrUnknown(checksums?.Crc32CHex));
+        table.AddRow("MD5", OrUnknown(checksums?.Md5Hex));
+        table.AddRow("SHA-1", OrUnknown(checksums?.Sha1Hex));
 
-        filePropTable.Config = TableConfig;
-
-        Console.WriteLine(filePropTable);
+        AnsiConsole.Write(table);
     }
 
     private void PrintIdentifiers(InfoCmdParams @params)
     {
-        PrintHeading("Identifiers");
+        PrintHeading("Identifier strings");
 
         if (_codec.Metadata.Identifiers.Count == 0)
         {
@@ -352,21 +293,13 @@ public class TerminalPrinter
             return;
         }
 
-        var table = new Spectre.Console.Table()
-        {
-            UseSafeBorder = IsPlain,
-            Border = IsColor
-                ? TableBorder.Rounded
-                : IsMarkdown
-                    ? TableBorder.Markdown
-                    : TableBorder.Ascii,
-        };
+        Table table = BuildTable(TableBorder.Rounded);
         table
-            .AddColumn("[bold blue]Start[/]")
-            .AddColumn("[bold blue]End[/]")
-            .AddColumn(new TableColumn("[bold blue]Size[/]") { Alignment = Justify.Right })
-            .AddColumn(new TableColumn("[bold blue]Len[/]") { Alignment = Justify.Right })
-            .AddColumn("[bold blue]String[/]")
+            .AddColumn(HeaderText("Start"))
+            .AddColumn(HeaderText("End"))
+            .AddColumn(new TableColumn(HeaderText("Size")) { Alignment = Justify.Right })
+            .AddColumn(new TableColumn(HeaderText("Len")) { Alignment = Justify.Right })
+            .AddColumn(HeaderText("String"))
             ;
 
         foreach (RomString id in _codec.Metadata.Identifiers)
@@ -376,18 +309,20 @@ public class TerminalPrinter
                 $"0x{id.Addr.EndIndex:X8}",
                 $"0x{id.Addr.Length:X}",
                 $"{id.Addr.Length}",
-                id.Value);
+                id.Value
+            );
         }
 
         AnsiConsole.Write(table);
-        Console.WriteLine();
     }
 
     public void PrintGames(InfoCmdParams @params)
     {
         PrintHeading("Games and cheat codes");
+        Console.WriteLine();
 
-        if (_codec.Games.Count == 0)
+        int gameCount = _codec.Games.Count;
+        if (gameCount == 0)
         {
             Console.WriteLine(Error("No games/cheats found."));
             Console.WriteLine();
@@ -403,21 +338,31 @@ public class TerminalPrinter
 
         Cheat[] allCheats = _codec.Games.SelectMany(game => game.Cheats).ToArray();
         Code[] allCodes = _codec.Games.SelectMany(game => game.Cheats).SelectMany(cheat => cheat.Codes).ToArray();
-        string gamePlural = _codec.Games.Count == 1 ? "game" : "games";
+        string gameCountStr = $"{gameCount}";
+        string cheatCountStr = $"{allCheats.Length:N0}";
+        string codeCountStr = $"{allCodes.Length:N0}";
+        string gamePlural = gameCount == 1 ? "game" : "games";
         string cheatCountPlural = allCheats.Length == 1 ? "cheat" : "cheats";
         string codeCountPlural = allCodes.Length == 1 ? "code" : "codes";
-        Console.WriteLine($"{_codec.Games.Count} {gamePlural}, " +
-                          $"{allCheats.Length:N0} {cheatCountPlural}, " +
-                          $"{allCodes.Length:N0} {codeCountPlural}:");
+
+        if (IsColor)
+        {
+            gameCountStr = Bold(gameCountStr);
+            cheatCountStr = Bold(cheatCountStr);
+            codeCountStr = Bold(codeCountStr);
+        }
+
+        AnsiConsole.Markup($"{gameCountStr} {gamePlural}, " +
+                           $"{cheatCountStr} {cheatCountPlural}, " +
+                           $"{codeCountStr} {codeCountPlural}:");
+        Console.WriteLine();
         Console.WriteLine();
 
-        Table gameTable = new TableBuilder(HeaderCellFormat)
-            .AddColumn("Name", rowsFormat: KeyCell())
-            .AddColumn("# Games/Cheats", rowsFormat: ValueCell(Alignment.Right))
-            .AddColumn("Warnings", rowsFormat: ValueCell())
-            .Build();
-
-        gameTable.Config = TableConfig;
+        Table table = BuildTable()
+                .AddColumn(HeaderText("Name"))
+                .AddColumn(HeaderText("# Games/Cheats"), column => column.Alignment = Justify.Right)
+                .AddColumn(HeaderText("Warnings"))
+            ;
 
         List<Game> sortedGames = _codec.Games.ToList();
         sortedGames.Sort((g1, g2) =>
@@ -434,7 +379,7 @@ public class TerminalPrinter
             {
                 gameName = Bold(gameName);
             }
-            gameTable.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
+            table.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
 
             if (@params.HideCheats)
             {
@@ -444,19 +389,19 @@ public class TerminalPrinter
             foreach (Cheat cheat in game.Cheats)
             {
                 int codeCount = cheat.Codes.Count;
-                gameTable.AddRow($"  - {cheat.CheatName.Value}", codeCount, "");
+                table.AddRow($"  - {cheat.CheatName.Value}", codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
                     continue;
                 }
                 foreach (Code code in cheat.Codes)
                 {
-                    gameTable.AddRow($"    {code.Bytes.ToCodeString(_codec.Metadata.ConsoleId).SetStyle(FontStyleExt.None)}", "", "");
+                    table.AddRow($"    {code.Bytes.ToCodeString(_codec.Metadata.ConsoleId)}", "", "");
                 }
             }
         }
 
-        Console.WriteLine(gameTable);
+        AnsiConsole.Write(table);
         Console.WriteLine();
     }
 
@@ -466,44 +411,85 @@ public class TerminalPrinter
 
     private string InputFilePathStyle(string filePath)
     {
-        return IsColor
-            ? BoldUnderline(filePath.ForegroundColor(Color.LimeGreen))
-            : filePath;
+        if (!IsColor) return filePath;
+        return $"[b i green]{filePath}[/]";
+    }
+
+    private string Red(string str)
+    {
+        if (!IsColor) return str;
+        return $"[red]{str}[/]";
+    }
+
+    private string Green(string str)
+    {
+        if (!IsColor) return str;
+        return $"[green]{str}[/]";
+    }
+
+    private string Blue(string str)
+    {
+        if (!IsColor) return str;
+        return $"[blue]{str}[/]";
+    }
+
+    private string DarkBlue(string str)
+    {
+        if (!IsColor) return str;
+        return $"[darkblue]{str}[/]";
+    }
+
+    private string DarkMagenta(string str)
+    {
+        if (!IsColor) return str;
+        return $"[darkmagenta]{str}[/]";
+    }
+
+    private string Gray(string str)
+    {
+        if (!IsColor) return str;
+        return $"[gray]{str}[/]";
+    }
+
+    private string Dim(string str)
+    {
+        if (!IsColor) return str;
+        return $"[dim]{str}[/]";
     }
 
     private string Bold(string str)
     {
-        return IsColor
-            ? str.SetStyle(FontStyleExt.Bold)
-            : str;
+        if (!IsColor) return str;
+        return $"[b]{str}[/]";
     }
 
     private string Italic(string str)
     {
-        return IsColor
-            ? str.SetStyle(FontStyleExt.Italic)
-            : str;
+        if (!IsColor) return str;
+        return $"[i]{str}[/]";
     }
 
     private string BoldItalic(string str)
     {
-        return IsColor
-            ? str.SetStyle(FontStyleExt.Bold | FontStyleExt.Italic)
-            : str;
+        if (!IsColor) return str;
+        return $"[b i]{str}[/]";
     }
 
     private string Underline(string str)
     {
-        return IsColor
-            ? str.SetStyle(FontStyleExt.Underline)
-            : str;
+        if (!IsColor) return str;
+        return $"[u]{str}[/]";
     }
 
     private string BoldUnderline(string str)
     {
-        return IsColor
-            ? str.SetStyle(FontStyleExt.Bold | FontStyleExt.Underline)
-            : str;
+        if (!IsColor) return str;
+        return $"[b u]{str}[/]";
+    }
+
+    private string HeaderText(string str)
+    {
+        return Bold(str);
     }
 
     public string OrUnknown(string? s)
@@ -521,16 +507,14 @@ public class TerminalPrinter
 
     private string UnknownStyle(string str)
     {
-        return IsColor
-            ? Italic(str.ForegroundColor(UnknownColor))
-            : str;
+        if (!IsColor) return str;
+        return $"[i dim]{str}[/]";
     }
 
     private string Error(string message)
     {
-        return IsColor
-            ? message.ForegroundColor(Color.Red)
-            : message;
+        if (!IsColor) return message;
+        return $"[red]{message}[/]";
     }
 
     #endregion
@@ -621,5 +605,10 @@ public class TerminalPrinter
         Console.WriteLine();
         Console.WriteLine("Done!");
         Console.WriteLine();
+    }
+
+    public void PrintTable(Table table)
+    {
+        AnsiConsole.Write(table);
     }
 }

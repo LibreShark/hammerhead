@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
-using BetterConsoles.Tables;
 using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.IO;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
@@ -328,24 +328,23 @@ public sealed class GbcSharkMxRom : AbstractCodec
     public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading($"Time zones ({_tzs.Count})");
-        Console.WriteLine(BuildTimeZoneTable(printer, @params));
+        printer.PrintTable(BuildTimeZoneTable(printer, @params));
+
         printer.PrintHeading($"Contacts ({_contacts.Count})");
-        Console.WriteLine(BuildContactsTable(printer, @params));
+        printer.PrintTable(BuildContactsTable(printer, @params));
+
         printer.PrintHeading($"Messages ({_messages.Count})");
-        Console.WriteLine(BuildMessagesTable(printer, @params));
+        printer.PrintTable(BuildMessagesTable(printer, @params));
     }
 
-    private string BuildTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
+    private Table BuildTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Original name", rowsFormat: printer.KeyCell())
-                .AddColumn("Original offset", rowsFormat: printer.KeyCell())
-                .AddColumn("Today's offset", rowsFormat: printer.ValueCell())
-                .AddColumn("Modern ID", rowsFormat: printer.ValueCell())
-                ;
-        });
+        Table table = printer.BuildTable()
+                .AddColumn("Original name")
+                .AddColumn("Original offset")
+                .AddColumn("Today's offset")
+                .AddColumn("Modern ID")
+            ;
 
         foreach (GbcSmxTimeZone tz in _tzs)
         {
@@ -357,45 +356,40 @@ public sealed class GbcSharkMxRom : AbstractCodec
             table.AddRow(tz.OriginalTzId.Value, originalOffsetStr,  modernOffsetStr, tz.ModernTzId);
         }
 
-        return $"{table}";
+        return table;
     }
 
-    private string BuildRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
+    private Table BuildRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Key", rowsFormat: printer.KeyCell())
-                .AddColumn("Value", rowsFormat: printer.ValueCell())
-                ;
-        });
+        Table table = printer.BuildTable()
+                .AddColumn("Key")
+                .AddColumn("Value")
+            ;
 
         table.AddRow("Reg code copy #1", _regCodeCopy1.Value);
         table.AddRow("Reg code copy #2", _regCodeCopy2.Value);
         table.AddRow("Secret PIN", _secretPin.Value);
 
-        return $"{table}";
+        return table;
     }
 
-    private string BuildContactsTable(TerminalPrinter printer, InfoCmdParams @params)
+    private Table BuildContactsTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("#", rowsFormat: printer.KeyCell())
-                .AddColumn("Name", rowsFormat: printer.ValueCell())
-                .AddColumn("Email address", rowsFormat: printer.ValueCell())
-                .AddColumn("Unknown field #1", rowsFormat: printer.ValueCell())
-                .AddColumn("Unknown field #2", rowsFormat: printer.ValueCell())
-                .AddColumn("Phone number", rowsFormat: printer.ValueCell())
-                .AddColumn("Street address", rowsFormat: printer.ValueCell())
+        Table table = printer.BuildTable()
+                .AddColumn("#")
+                .AddColumn("Name")
+                .AddColumn("Email address")
+                .AddColumn("Unknown field #1")
+                .AddColumn("Unknown field #2")
+                .AddColumn("Phone number")
+                .AddColumn("Street address")
                 ;
-        });
 
         foreach (GbcSmxContact contact in _contacts)
         {
+            string entryNumberValue = contact.EntryNumber.Value;
             table.AddRow(
-                contact.EntryNumber.Value,
+                entryNumberValue,
                 contact.PersonName.Value,
                 contact.EmailAddress.Value,
                 contact.UnknownField1.Value,
@@ -405,23 +399,20 @@ public sealed class GbcSharkMxRom : AbstractCodec
             );
         }
 
-        return $"{table}";
+        return table;
     }
 
-    private string BuildMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
+    private Table BuildMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
     {
-        Table table = printer.BuildTable(builder =>
-        {
-            builder
-                .AddColumn("Subject", rowsFormat: printer.ValueCell())
-                .AddColumn("Recipient", rowsFormat: printer.ValueCell())
-                .AddColumn("Unknown field #1", rowsFormat: printer.ValueCell())
-                .AddColumn("Raw date", rowsFormat: printer.ValueCell())
-                .AddColumn("ISO date", rowsFormat: printer.ValueCell())
-                .AddColumn("Message", rowsFormat: printer.ValueCell())
-                .AddColumn("Unknown field #2", rowsFormat: printer.ValueCell())
+        Table table = printer.BuildTable()
+                .AddColumn("Subject")
+                .AddColumn("Recipient")
+                .AddColumn("Unknown field #1")
+                .AddColumn("Raw date")
+                .AddColumn("ISO date")
+                .AddColumn("Message")
+                .AddColumn("Unknown field #2")
                 ;
-        });
 
         foreach (GbcSmxMessage message in _messages)
         {
@@ -436,7 +427,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
             );
         }
 
-        return $"{table}";
+        return table;
     }
 
     private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)
