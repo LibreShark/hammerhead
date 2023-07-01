@@ -322,7 +322,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
     public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Registration");
-        Console.WriteLine(BuildRegistrationTable(printer, @params));
+        AnsiConsole.Write(BuildRegistrationTable(printer, @params));
     }
 
     public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
