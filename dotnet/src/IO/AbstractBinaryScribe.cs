@@ -292,6 +292,7 @@ public abstract class AbstractBinaryScribe
         return ReadCString(maxLen, (byte b, out string ch) =>
         {
             bool isPrintable = b >= ' ' && b <= '~';
+            // TODO(CheatoBaggins): Remove `b > 127` check; it's only for N64 GameShark
             if (isPrintable || b > 127)
             {
                 ch = ByteToStr(b);
