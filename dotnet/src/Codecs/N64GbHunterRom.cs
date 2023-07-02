@@ -80,8 +80,8 @@ public sealed class N64GbHunterRom : AbstractCodec
     private void PrintRLE01Addrs(TerminalPrinter printer)
     {
         Table table = printer.BuildTable()
-                .AddColumn("Address")
-                .AddColumn("Length")
+                .AddColumn(printer.HeaderCell("Address"))
+                .AddColumn(printer.HeaderCell("Length"))
             ;
 
         foreach (s32 rle01Address in _rle01Addresses)
