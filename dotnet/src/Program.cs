@@ -63,28 +63,29 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
 
-        var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
-
-        if (!isSupported(ftp))
-        {
-            printer.PrintError(new InvalidOperationException(
-                $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
-            ));
-            return;
-        }
-        if (outputFile.Exists && !@params.OverwriteExistingFiles)
-        {
-            printer.PrintError(new InvalidOperationException(
-                $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
-            ));
-            return;
-        }
-
+        var printer = new TerminalPrinter(@params.PrintFormatId);
         printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
-            transform(ftp);
+            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            var fileParams = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+            if (!isSupported(fileParams))
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
+            }
+
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
+                return;
+            }
+
+            transform(fileParams);
         });
     }
 
@@ -98,27 +99,28 @@ internal static class Program
         FileInfo inputFile = @params.InputFile!;
         FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
 
-        var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-        var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-        var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
-
-        if (!isSupported(ftp))
-        {
-            printer.PrintError(new InvalidOperationException(
-                $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
-            ));
-            return;
-        }
-        if (outputFile.Exists && !@params.OverwriteExistingFiles)
-        {
-            printer.PrintError(new InvalidOperationException(
-                $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
-            ));
-            return;
-        }
-
+        var printer = new TerminalPrinter(@params.PrintFormatId);
         printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
+            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+            if (!isSupported(ftp))
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
+            }
+
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
+                return;
+            }
+
             transform(ftp);
         });
     }

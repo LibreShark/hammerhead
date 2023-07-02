@@ -20,9 +20,15 @@ public class TerminalPrinter
 
     #endregion
 
-    public TerminalPrinter(AbstractCodec? codec = null, PrintFormatId printFormat = PrintFormatId.Detect)
+    public TerminalPrinter(PrintFormatId printFormat = PrintFormatId.Detect)
     {
-        _codec = codec ?? UnknownCodec.Create("", Array.Empty<byte>());
+        _codec = UnknownCodec.Create("", Array.Empty<byte>());
+        _printFormat = GetEffectivePrintFormatId(printFormat);
+    }
+
+    public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat = PrintFormatId.Detect)
+    {
+        _codec = codec;
         _printFormat = GetEffectivePrintFormatId(printFormat);
     }
 
