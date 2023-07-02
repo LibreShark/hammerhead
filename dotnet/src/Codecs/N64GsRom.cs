@@ -410,7 +410,7 @@ public sealed class N64GsRom : AbstractCodec
         table.AddRow("Key code list", keyCodeListAddr);
         table.AddRow("Game list", gameListAddr);
 
-        AnsiConsole.Write(table);
+        printer.PrintTable(table);
     }
 
     private void PrintKeyCodesTable(TerminalPrinter printer)
@@ -435,6 +435,6 @@ public sealed class N64GsRom : AbstractCodec
             );
         }
 
-        AnsiConsole.Write(table);
+        printer.PrintTable(table);
     }
 }

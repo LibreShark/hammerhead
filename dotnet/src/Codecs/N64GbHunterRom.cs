@@ -89,6 +89,6 @@ public sealed class N64GbHunterRom : AbstractCodec
             table.AddRow($"0x{rle01Address:X8}", "".OrUnknown());
         }
 
-        Console.WriteLine(table);
+        printer.PrintTable(table);
     }
 }
