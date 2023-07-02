@@ -378,10 +378,20 @@ public abstract class AbstractBinaryScribe
 
     #endregion
 
+    public void WriteBytes(ByteString byteString)
+    {
+        WriteBytes(byteString.ToByteArray());
+    }
+
     public void WriteBytes(u8[] bytes)
     {
         Array.Copy(bytes, 0, BufferRef, (s32)Position, bytes.Length);
         Position += (u32)bytes.Length;
+    }
+
+    public void WriteCString(RomString str, int maxLen = 0, bool isNullTerminated = true)
+    {
+        WriteCString(str.Value, maxLen, isNullTerminated);
     }
 
     public void WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)

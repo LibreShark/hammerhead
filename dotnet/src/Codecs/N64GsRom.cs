@@ -309,7 +309,7 @@ public sealed class N64GsRom : AbstractCodec
                 Scribe.WriteU8(codeCount);
                 foreach (Code code in cheat.Codes)
                 {
-                    Scribe.WriteBytes(code.Bytes.ToByteArray());
+                    Scribe.WriteBytes(code.Bytes);
                 }
             }
         }

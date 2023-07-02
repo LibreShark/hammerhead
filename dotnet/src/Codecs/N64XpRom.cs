@@ -267,7 +267,31 @@ public sealed class N64XpRom : AbstractCodec
 
     public override AbstractCodec WriteChangesToBuffer()
     {
-        throw new NotImplementedException();
+        Scribe.Seek(GameListAddr);
+
+        foreach (Game game in Games)
+        {
+            Scribe.WriteCString(game.GameName, 32);
+            Scribe.WriteU8((u8)game.Cheats.Count);
+
+            foreach (Cheat cheat in game.Cheats)
+            {
+                Scribe.WriteCString(cheat.CheatName, 32);
+                Scribe.WriteU8((u8)cheat.Codes.Count);
+
+                foreach (Code code in cheat.Codes)
+                {
+                    Scribe.WriteBytes(code.Bytes);
+                }
+            }
+        }
+
+        while (Scribe.Position < 0x3E000)
+        {
+            Scribe.WriteU8(0xFF);
+        }
+
+        return this;
     }
 
     private static bool DetectPlain(u8[] bytes)
