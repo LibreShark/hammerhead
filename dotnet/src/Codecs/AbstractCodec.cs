@@ -101,14 +101,19 @@ public abstract class AbstractCodec
         };
     }
 
-    public virtual ParsedFile ToProto()
+    protected virtual ParsedFile ToProtoImpl()
     {
-        var parsed = new ParsedFile()
+        return new ParsedFile();
+    }
+
+    public ParsedFile ToProto()
+    {
+        var parsed = new ParsedFile(ToProtoImpl())
         {
             Metadata = Metadata,
         };
         parsed.Games.AddRange(Games);
-        return parsed;
+        return NormalizeProto(parsed);
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
@@ -238,6 +243,35 @@ public abstract class AbstractCodec
     }
 
     public abstract AbstractCodec WriteChangesToBuffer();
+
+    private static ParsedFile NormalizeProto(ParsedFile parsedFile)
+    {
+        var ids = parsedFile.Metadata.Identifiers.Select(rs => rs.RemoveAddress()).ToArray();
+        parsedFile.Metadata.Identifiers.Clear();
+        parsedFile.Metadata.Identifiers.AddRange(ids);
+        var games = parsedFile.Games.Select(game =>
+        {
+            game.GameName = game.GameName.RemoveAddress();
+            var cheats = game.Cheats.Select(cheat =>
+            {
+                cheat.CheatName = cheat.CheatName.RemoveAddress();
+                var codes = cheat.Codes.Select(code =>
+                {
+                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
+                    return code;
+                }).ToArray();
+                cheat.Codes.Clear();
+                cheat.Codes.AddRange(codes);
+                return cheat;
+            }).ToArray();
+            game.Cheats.Clear();
+            game.Cheats.AddRange(cheats);
+            return game;
+        }).ToArray();
+        parsedFile.Games.Clear();
+        parsedFile.Games.AddRange(games);
+        return parsedFile;
+    }
 
     protected static RomString EmptyRomStr()
     {

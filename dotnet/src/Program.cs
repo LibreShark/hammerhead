@@ -44,8 +44,7 @@ internal static class Program
 
             if (@params.PrintFormatId is PrintFormatId.Json)
             {
-                ParsedFile parsedFile = GetNormalizedProto(codec);
-                parsedFiles.Add(parsedFile);
+                parsedFiles.Add(codec.ToProto());
             }
             else
             {
@@ -76,42 +75,6 @@ internal static class Program
             );
             Console.WriteLine(formatter.Format(dump));
         }
-    }
-
-    private static ParsedFile GetNormalizedProto(AbstractCodec codec)
-    {
-        ParsedFile parsedFile = codec.ToProto();
-
-        var ids = parsedFile.Metadata.Identifiers.Select(rs => rs.RemoveAddress()).ToArray();
-        parsedFile.Metadata.Identifiers.Clear();
-        parsedFile.Metadata.Identifiers.AddRange(ids);
-
-        var games = parsedFile.Games.Select(game =>
-        {
-            game.GameName = game.GameName.RemoveAddress();
-
-            var cheats = game.Cheats.Select(cheat =>
-            {
-                cheat.CheatName = cheat.CheatName.RemoveAddress();
-
-                var codes = cheat.Codes.Select(code =>
-                {
-                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
-                    return code;
-                }).ToArray();
-                cheat.Codes.Clear();
-                cheat.Codes.AddRange(codes);
-
-                return cheat;
-            }).ToArray();
-            game.Cheats.Clear();
-            game.Cheats.AddRange(cheats);
-
-            return game;
-        }).ToArray();
-        parsedFile.Games.Clear();
-        parsedFile.Games.AddRange(games);
-        return parsedFile;
     }
 
     private class FileTransformParams

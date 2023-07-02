@@ -78,7 +78,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         Metadata.IsKnownVersion = KnownDisplayVersions.Contains(Metadata.DisplayVersion);
     }
 
-    public override ParsedFile ToProto()
+    protected override ParsedFile ToProtoImpl()
     {
         var proto = base.ToProto();
         proto.SmxTimezones.AddRange(_tzs);

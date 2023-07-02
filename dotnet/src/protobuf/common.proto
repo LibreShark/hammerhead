@@ -17,12 +17,12 @@ message HammerheadDump {
 }
 
 message AppInfo {
+  // Plain SemVer format.
+  string semantic_version = 1;
+
   // Version of Hammerhead that wrote the protobuf file.
   // Includes git commit information.
-  string informational_version = 1;
-
-  // Plain SemVer format.
-  string semantic_version = 2;
+  string informational_version = 2;
 
   // Date and time that the Hammerhead binary was built.
   string build_date_iso = 3;

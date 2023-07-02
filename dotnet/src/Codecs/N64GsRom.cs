@@ -108,7 +108,7 @@ public sealed class N64GsRom : AbstractCodec
         Games.AddRange(ReadGames());
     }
 
-    public override ParsedFile ToProto()
+    protected override ParsedFile ToProtoImpl()
     {
         var proto = base.ToProto();
         proto.KeyCodes.AddRange(_keyCodes.Select(kc => new Code()
