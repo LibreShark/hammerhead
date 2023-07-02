@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Force.Crc32;
@@ -435,6 +436,12 @@ public static class ExtensionMethods
     #endregion
 
     #region Date/Time
+
+    public static DateTimeOffset GetBuildDate(this Assembly assembly)
+    {
+        var attribute = assembly.GetCustomAttribute<BuildDateAttribute>();
+        return attribute?.DateTimeOffset ?? default(DateTimeOffset);
+    }
 
     public static DateTimeOffset WithTimeZone(this DateTime dt, string tzName)
     {
