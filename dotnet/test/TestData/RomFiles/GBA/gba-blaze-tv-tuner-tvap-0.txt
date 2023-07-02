@@ -1,0 +1,32 @@
+﻿= FlashGBX Dump Report =
+
+== File Information ==
+* File Name:       GBA_Capture_tvap-0.gba
+* File Size:       32.00 MiB (33554432 bytes)
+* CRC32:           3a845b1c
+* MD5:             d07b01a88ac3b4e1bb17f79d83e1c66d
+* SHA-1:           99ce28a676baf35e1fcadd7b0514c5f374fd9756
+* SHA-256:         c54279ff36382abbd791a5330320f92df4e4e61d5c5dd8d0ab244dc8dbbc830f
+
+== General Information ==
+* Hardware:        GBxCart RW v1.4a – Firmware R39+L8
+* Software:        FlashGBX v3.22
+* OS Platform:     Windows-10-10.0.19041-SP0
+* Baud Rate:       1700000
+* Dump Time:       2023-02-16T21:29:55+01:00
+* Time Elapsed:    3 minutes, 48 seconds (143.40 KiB/s)
+* Transfer Buffer: 8192 bytes
+* Retries:         0
+
+== Dumping Settings ==
+* Mode:            Game Boy Advance
+* ROM Size:        32 MiB
+* Cartridge Type:  Generic ROM Cartridge
+
+== Parsed Data ==
+* Game Title:      GBA_Capture␀
+* Game Code:       tvap
+* Revision:        0
+* Nintendo Logo:   Invalid
+* Header Checksum: OK (0x99)
+* Save Type:       None

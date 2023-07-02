@@ -1,0 +1,346 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+package libreshark.hammerhead;
+option csharp_namespace = "LibreShark.Hammerhead";
+
+/*******************************************************************************
+ * Input/output files
+ ******************************************************************************/
+
+// Video game enhancer file (firmware dump or cheat list).
+message VgeFile {
+  VgeMetadata metadata = 1;
+  bytes raw_input = 2;
+  bytes buffer = 3;
+  repeated Game games = 4;
+
+  // N64 only
+  repeated Code key_codes = 101;
+
+  // GBC Shark MX only
+  repeated GbcSmxMessage smx_messages = 201;
+  // GBC Shark MX only
+  repeated GbcSmxContact smx_contacts = 202;
+  // GBC Shark MX only
+  repeated GbcSmxTimeZone smx_timezones = 203;
+}
+
+message VgeFileProp {
+  string key = 1;
+  string value = 2;
+  bool is_visual_spacer = 3;
+}
+
+message VgeMetadata {
+  string file_path = 1;
+  ConsoleId console_id = 2;
+  CodecId codec_id = 3;
+  BrandId brand_id = 4;
+  CodecFeatureSupport codec_feature_support = 5;
+
+  // Human-friendly version number displayed to users in a UI, including a
+  // "v" prefix if applicable.
+  // E.g., "v1.0b", "v3.3 Lite", "R1 Prototype", "v2.0 Platinum".
+  string display_version = 6;
+
+  // Machine-readable version number for sorting purposes.
+  double sortable_version = 7;
+
+  // Raw, unprocessed build date found in the ROM file.
+  RomString build_date_raw = 8;
+
+  // ISO 8601 date/time stamp of when the ROM was built.
+  // E.g., "1997-08-01T12:50:00+0100".
+  string build_date_iso = 9;
+  .google.protobuf.Timestamp build_date_proto = 10;
+
+  // Case-insensitive IETF BCP 47 language and region tag.
+  // E.g., "en-US", "en-GB", "fr-CA", "de-DE".
+  // See RFC 5646 (obsoletes RFC 4646).
+  string language_ietf_code = 11;
+
+  ChecksumResult file_checksum = 12;
+  ChecksumResult firmware_checksum = 13;
+
+  repeated RomString identifiers = 14;
+  repeated RomString file_name_refs = 15;
+
+  // Whether the ROM's firmware version is found in Hammerhead's internal
+  // database of known versions.
+  bool is_known_version = 16;
+
+  repeated VgeFileProp file_properties = 17;
+  repeated RomRange file_sections = 18;
+}
+
+message CodecFeatureSupport {
+  bool supports_cheats = 1;
+  bool supports_firmware = 2;
+  bool supports_user_prefs = 3;
+  bool supports_file_encryption = 4;
+  bool supports_file_scrambling = 5;
+  bool supports_firmware_compression = 6;
+  bool supports_key_codes = 7;
+  bool supports_smx_messages = 8;
+
+  bool has_cheats = 101;
+  bool has_firmware = 102;
+  bool has_pristine_user_prefs = 103;
+  bool is_file_encrypted = 104;
+  bool is_file_scrambled = 105;
+  bool is_firmware_compressed = 106;
+  bool has_key_codes = 107;
+  bool has_smx_messages = 108;
+}
+
+message ChecksumResult {
+  string crc32_hex = 1;
+  string crc32c_hex = 2;
+  string md5_hex = 3;
+  string sha1_hex = 4;
+}
+
+// Unique ID for each input/output file format supported by Hammerhead.
+enum CodecId {
+  UNSPECIFIED_CODEC_ID = 0;
+  UNSUPPORTED_CODEC_ID = 1;
+
+  // Auto-detect by sniffing the input file
+  AUTO = 2;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Generic cheat containers (platform-agnostic)
+  //////////////////////////////////////////////////////////////////////////////
+
+  JSONPROTO = 3;
+  TEXTPROTO = 4;
+
+  // XML cheat file format for OpenEmu (all consoles).
+  OPENEMU_XML = 5;
+
+  // RetroArch
+  LIBRETRO_TEXT = 6;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy & Game Boy Pocket
+  //////////////////////////////////////////////////////////////////////////////
+
+  GBO_GAMESHARK_ROM = 20;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy Color
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Action Replay too
+  GBC_GAMESHARK_V3_ROM = 40;
+
+  // Action Replay too
+  GBC_GAMESHARK_V4_ROM = 41;
+
+  GBC_CODEBREAKER_ROM = 42;
+
+  // BrainBoy is a fork of Code Breaker that was specifically designed for
+  // cheating in Pokemon games. It does not allow the user to edit or even see
+  // any cheat codes, and it only supports specific Pokemon games.
+  // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
+  // the same.
+  GBC_MONSTERBRAIN_ROM = 43;
+
+  // AKA "Xplorer GB"
+  GBC_XPLODER_ROM = 44;
+
+  // Email client
+  GBC_SHARK_MX_ROM = 45;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Game Boy Advance
+  //////////////////////////////////////////////////////////////////////////////
+
+  // GBA GameShark made by Datel/InterAct (earlier generations).
+  GBA_GAMESHARK_DATEL_ROM = 60;
+
+  // GBA GameShark made by Blaze/FCD (later generations).
+  //
+  // - GBA Code Breaker Lite: R1 prototype (2001-10-19)
+  // - GBA Code Breaker Lite: R1 prototype (2002-11-15)
+  // - GBA GameShark Pro SP: MadCatz (2003-08-21)
+  // - GBA GameShark Pro SP: karabiner (2006-06-14)
+  GBA_GAMESHARK_FCD_ROM = 61;
+
+  GBA_TV_TUNER_ROM = 62;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Nintendo 64
+  //////////////////////////////////////////////////////////////////////////////
+
+  // GameShark, Action Replay, Equalizer, and Game Buster all use the same
+  // ROM format.
+  N64_GAMESHARK_ROM = 80;
+
+  // Official PC utils for GameShark, Action Replay, Equalizer, and Game Buster.
+  N64_GAMESHARK_TEXT = 81;
+
+  // Binary file from a memory card (Controller Pak) cheat list written by a
+  // GameShark, Action Replay, Equalizer, or Game Buster.
+  N64_GAMESHARK_MEMCARD = 82;
+
+  // AKA "Xploder 64"
+  N64_XPLORER64_ROM = 83;
+
+  // Official PC utils for Xplorer 64.
+  N64_XPLORER64_TEXT = 84;
+
+  // GB Hunter and Game Booster use the same ROM format.
+  N64_GBHUNTER_ROM = 85;
+
+  // EverDrive-64 X7 cheat file format.
+  N64_EDX7_TEXT = 86;
+
+  // Project 64 v1.6 cheat file format.
+  N64_PJ64_V1_TEXT = 87;
+
+  // Project 64 v3.0.0 cheat file format.
+  N64_PJ64_V3_TEXT = 88;
+}
+
+// Newest platform that the device supports.
+// E.g., GameShark Pro for GBC is also backward compatible with GB/GBP,
+// but its ConsoleId is GBC because that's the newest of the 3.
+enum ConsoleId {
+  UNKNOWN_CONSOLE = 0x00;
+
+  GAME_BOY_ORIGINAL = 0x01;
+  GAME_BOY_COLOR = 0x02;
+  GAME_BOY_ADVANCE = 0x04;
+
+  GAME_GEAR = 0x20;
+
+  PLAYSTATION_1 = 0x30;
+  NINTENDO_64 = 0x40;
+
+  DREAMCAST = 0x41;
+  GAMECUBE = 0x42;
+}
+
+// Official marketing brand name of the device,
+// as seen on the device's external packaging (box, label, manual, etc.).
+// May differ from the internal codename of the firmware.
+// E.g., "Xploder GB" is the official brand name of the product,
+// even though the internal ROM ID is listed as "Xplorer-GB".
+enum BrandId {
+  UNKNOWN_BRAND = 0x00;
+  ACTION_REPLAY = 0x01;
+  BLAZE         = 0x02;
+  BRAINBOY      = 0x03;
+  CODE_BREAKER  = 0x04;
+  EQUALIZER     = 0x05;
+  GAMESHARK     = 0x06;
+  GAME_BOOSTER  = 0x07;
+  GAME_BUSTER   = 0x08;
+  GAME_GENIE    = 0x09;
+  GB_HUNTER     = 0x0A;
+  MONSTER_BRAIN = 0x0B;
+  SHARK_MX      = 0x0C;
+  XPLODER       = 0x0D;
+  XPLORER       = 0x0E;
+}
+
+// Output format for printing to the terminal (stdout).
+enum PrintFormatId {
+  UNKNOWN_PRINT_FORMAT = 0x00;
+  DETECT = 0x01;
+  COLOR = 0x02;
+  PLAIN = 0x03;
+  JSON = 0x04;
+  PROTO = 0x05;
+  MARKDOWN = 0x06;
+}
+
+/*******************************************************************************
+ * Game & cheat code list
+ ******************************************************************************/
+
+message Game {
+  uint32 game_index = 1;
+  RomString game_name = 2;
+  repeated Cheat cheats = 3;
+  bool is_game_active = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
+}
+
+message Cheat {
+  uint32 cheat_index = 1;
+  RomString cheat_name = 2;
+  repeated Code codes = 3;
+  bool is_cheat_active = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
+}
+
+message Code {
+  uint32 code_index = 1;
+  bytes bytes = 2;
+  string comment = 3;
+  repeated Warning warnings = 4;
+}
+
+message Warning {
+  string message = 1;
+}
+
+/*******************************************************************************
+ * Binary file tokens
+ ******************************************************************************/
+
+message RomString {
+  string value = 1;
+  RomRange addr = 2;
+}
+
+message RomRange {
+  string name = 1;
+  uint32 start_index = 2;
+  uint32 end_index = 3;
+  uint32 length = 4;
+  bytes raw_bytes = 5;
+}
+
+/*******************************************************************************
+ * Game Boy Color
+ ******************************************************************************/
+
+// TODO(CheatoBaggins): Move this to gbc.proto
+
+message GbcSmxContact {
+  RomString entry_number = 1;
+  RomString person_name = 2;
+  RomString email_address = 3;
+  RomString unknown_field_1 = 4;
+  RomString unknown_field_2 = 5;
+  RomString phone_number = 6;
+  RomString street_address = 7;
+}
+
+message GbcSmxTimeZone {
+  uint32 list_index = 1;
+  RomString original_offset_str = 2;
+  RomString original_tz_id = 3;
+  string modern_tz_id = 4;
+  .google.protobuf.Duration original_utc_offset = 5;
+  .google.protobuf.Duration today_utc_offset = 6;
+}
+
+message GbcSmxMessage {
+  RomString subject = 1;
+  RomString recipient_email = 2;
+  RomString unknown_field_1 = 3;
+  RomString raw_date = 4;
+  string iso_date = 5;
+  RomString message = 6;
+  RomString unknown_field_2 = 7;
+}

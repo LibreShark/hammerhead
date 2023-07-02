@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<systems>
+	<system id="openemu.system.gb">
+		<game title="Pokemon - Crystal Version (USA, Europe)">
+			<hashes>
+				<hash md5="9f2922b235a5eeb78d65594e82ef5dde" />
+				<hash md5="301899b8087289a6436b0a241fbbb474" />
+			</hashes>
+			<cheats>
+				<cheat code="010F4ED8+01424FD8+013F50D8" type="GameShark" description="Infinite money" />
+			</cheats>
+		</game>
+		<game title="Super Mario Bros. Deluxe (USA, Europe)">
+			<hashes>
+				<hash md5="ec764e03228d212ca794ac0b9df62857" />
+				<hash md5="1fd75c2b798c04acd4b99ad2f1006280" />
+				<hash md5="b5a71128227f5bc953fd55cb0025807f" />
+			</hashes>
+			<cheats>
+				<cheat code="0101CEC1" type="GameShark" description="Always Have Fire Power" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.gba">
+		<game title="Super Mario Advance (USA, Europe)">
+			<hashes>
+				<hash md5="ff6b0c48065389b888c7a78731d4b58d" />
+			</hashes>
+			<cheats>
+				<cheat code="42D8DCB716E09D2C" type="Action Replay" description="Max Hearts" />
+				<cheat code="ADF2A0EE94504FB2" type="Action Replay" description="Always Big Mario" />
+				<cheat code="CD93194F089CE0B4" type="GameShark" description="Always Invincible" />
+				<cheat code="029326227E30E217" type="GameShark" description="Infinite Float" />
+				<cheat code="46B6AAC300BA6B6C" type="GameShark" description="Invincible/Walk Thru Enemies" />
+				<cheat code="9005744C362C+034BBC9BD418+F5AC01A7E2B9" type="GameShark" description="Master Code (Must Be On)" />
+				<cheat code="A62B1D67EB2D" type="GameShark" description="Infinite Health" />
+				<cheat code="712E29965C2A+DD96A6BE81CB" type="GameShark" description="Moon Jump" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.gg">
+		<game title="Sonic The Hedgehog - Triple Trouble (USA, Europe)">
+			<hashes>
+				<hash md5="f0f7e4dfe2908f0030e64fd9ed843422" />
+			</hashes>
+			<cheats>
+				<cheat code="00D1-4009" type="Action Replay" description="Infinite Lives" />
+				<cheat code="00D1-5998" type="Action Replay" description="Infinite Rings" />
+				<cheat code="00D1-5D00" type="Action Replay" description="Infinite Time" />
+				<cheat code="00D3-C280" type="Action Replay" description="Invincible" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.n64">
+		<game title="007 - GoldenEye (USA)">
+			<hashes>
+				<hash md5="2a56a06a05a9dbf9e693325b503ab5b1" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="80036FCF0001" description="Global &gt; Fast Bond" />
+				<cheat type="GameShark" code="80036FB70001" description="Global &gt; Unlock All Levels" />
+				<cheat type="GameShark" code="800364CB0000" description="Global &gt; Walk through doors &amp; objects" />
+
+				<cheat type="GameShark" code="80036FD30001" description="Solo &gt; All Levels &gt; Have All Objectives Completed" />
+				<cheat type="GameShark" code="80079E3B0001" description="Solo &gt; All Levels &gt; Infinite Ammo" />
+				<cheat type="GameShark" code="8100C0F40801+8100C0F68090+8100C0F8AFA4+8100C0FA0000+810602400004+810602427600+810602443C02+810602468008+810602488C42+8106024A9EE0+8106024C3401+8106024E3F80+81060250A441+8106025200DC+810602540800+81060256303F" description="Solo &gt; All Levels &gt; Infinite Health" />
+				<cheat type="GameShark" code="8002CE440030+80030B200030" description="Solo &gt; All Levels &gt; Bulletproof" />
+				<cheat type="GameShark" code="800364C70000" description="Solo &gt; All Levels &gt; Invisible [USAGE: Only works when enabled _before_ an enemy sees you]" />
+				<cheat type="GameShark" code="8004837E0000+8004838E0000+800483960000+80079A220000+80079F260000" description="Solo &gt; All Levels &gt; Always Have 00:00 Time" />
+
+				<cheat type="GameShark" code="8002CE400030+80030B1C0030" description="Solo &gt; All Levels &gt; Enemies &gt; Cannot Aim" />
+				<cheat type="GameShark" code="8002CE480048" description="Solo &gt; All Levels &gt; Enemies &gt; Are Weak" />
+
+				<cheat type="GameShark" code="810D303C3F80+810D304E0000" description="Solo &gt; Dam &gt; Infinite Health" />
+				<cheat type="GameShark" code="800D37FF0007" description="Solo &gt; Dam &gt; Infinite Ammo" />
+
+				<!-- USAGE: For the Secret Island code to work, Get to the 2nd guard tower & go down the ladder on the left hand side & to the end of the Dock, Press L & F9 and you will be transfered in the water. Just keep walking straight & you will get to it. Obviously you can't actually climb ladders or anything, you will simply walkthrough anything on that Part, if you want to walk back to the Dock, when you come near it click the cheat back on & keep pressing  L & F9 untill you are back on it. -->
+				<cheat type="GameShark" code="D0064F310020+800D33ED0050+880D33ED0000" description="Solo &gt; Dam &gt; Secret Island" />
+
+				<cheat type="GameShark" code="810B643C3F80+810B644E0000" description="Solo &gt; Facility &gt; Infinite Health" />
+				<cheat type="GameShark" code="800B6BFF0007" description="Solo &gt; Facility &gt; Infinite Ammo" />
+				<cheat type="GameShark" code="801B3F87000E+801B3F9400FF" description="Solo &gt; Facility &gt; Able To Go Through The Grate In The Vent" />
+
+				<cheat type="GameShark" code="D0064F310020+8003097A0019" description="Solo &gt; Runway &gt; Press L to Make The Plane Take Off" />
+				<cheat type="GameShark" code="810D943C3F80+810D944E0000" description="Solo &gt; Runway, Surface 1 &amp; Depot &gt; Infinite Health" />
+				<cheat type="GameShark" code="800D9BFF0007" description="Solo &gt; Runway, Surface 1 &amp; Depot &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810B3C3C3F80+810B3C4E0000" description="Solo &gt; Bunker 1 &amp; Silo &gt; Infinite Health" />
+				<cheat type="GameShark" code="800B43FF0007" description="Solo &gt; Bunker 1 &amp; Silo &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810C683C3F80+810C684E0000" description="Solo &gt; Frigate &gt; Infinite Health" />
+				<cheat type="GameShark" code="800C6FFF0007" description="Solo &gt; Frigate &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810E5C3C3F80+810E5C4E0000" description="Solo &gt; Surface 2 &gt; Infinite Health" />
+				<cheat type="GameShark" code="800E63FF0007" description="Solo &gt; Surface 2 &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810B3C3C3F80+810B3C4E0000" description="Solo &gt; Bunker 2 &gt; Infinite Health" />
+				<cheat type="GameShark" code="800B43FF0007" description="Solo &gt; Bunker 2 &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810C543C3F80+810C544E0000" description="Solo &gt; Statue &gt; Infinite Health" />
+				<cheat type="GameShark" code="800C5BFF0007" description="Solo &gt; Statue &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810CCC3C3F80+810CCC4E0000" description="Solo &gt; Archives, Cavern, Cradle, &amp; Egypt &gt; Infinite Health" />
+				<cheat type="GameShark" code="800CD3FF0007" description="Solo &gt; Archives, Cavern, Cradle, &amp; Egypt &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810D6C3C3F80+810D6C4E0000" description="Solo &gt; Streets &gt; Infinite Health" />
+				<cheat type="GameShark" code="800D73FF0007" description="Solo &gt; Streets &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810C043C3F80+810C044E0000" description="Solo &gt; Train, Jungle, &amp; Control Center &gt; Infinite Health" />
+				<cheat type="GameShark" code="800C0BFF0007" description="Solo &gt; Train, Jungle, &amp; Control Center &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="810B003C3F80+810B003C3F80" description="Solo &gt; Aztec &gt; Infinite Health" />
+				<cheat type="GameShark" code="800B07FF0007" description="Solo &gt; Aztec &gt; Infinite Ammo" />
+
+				<cheat type="GameShark" code="8002B1970040" description="Multi &gt; Unlock All Characters" />
+				<cheat type="GameShark" code="8002B537000A" description="Multi &gt; Level = Caverns" />
+				<cheat type="GameShark" code="8002B537000B" description="Multi &gt; Level = Egyptian" />
+
+				<cheat type="GameShark" code="8006966E0001" description="Unlock Cheat Option &gt; 2x Grenade Launchers" />
+				<cheat type="GameShark" code="800696710001" description="Unlock Cheat Option &gt; 2x Hunting Knife" />
+				<cheat type="GameShark" code="800696720001" description="Unlock Cheat Option &gt; 2x Laser" />
+				<cheat type="GameShark" code="8006966F0001" description="Unlock Cheat Option &gt; 2x RC-P90" />
+				<cheat type="GameShark" code="8006966D0001" description="Unlock Cheat Option &gt; 2x Rocket Launchers" />
+				<cheat type="GameShark" code="800696700001" description="Unlock Cheat Option &gt; 2x Throwing Knife" />
+				<cheat type="GameShark" code="800696530001" description="Unlock Cheat Option &gt; All Guns" />
+				<cheat type="GameShark" code="8006965A0001" description="Unlock Cheat Option &gt; Bond Invisible" />
+				<cheat type="GameShark" code="8006965C0001" description="Unlock Cheat Option &gt; DK Mode" />
+				<cheat type="GameShark" code="8006966C0001" description="Unlock Cheat Option &gt; Enemy Rockets" />
+				<cheat type="GameShark" code="8006966A0001" description="Unlock Cheat Option &gt; Fast Animation" />
+				<cheat type="GameShark" code="800696650001" description="Unlock Cheat Option &gt; Gold PP7" />
+				<cheat type="GameShark" code="800696630001" description="Unlock Cheat Option &gt; Golden Gun" />
+				<cheat type="GameShark" code="8006965B0001" description="Unlock Cheat Option &gt; Infinite Ammo" />
+				<cheat type="GameShark" code="800696520001" description="Unlock Cheat Option &gt; Invincible" />
+				<cheat type="GameShark" code="800696620001" description="Unlock Cheat Option &gt; Laser" />
+				<cheat type="GameShark" code="800696570001" description="Unlock Cheat Option &gt; Line Mode" />
+				<cheat type="GameShark" code="800696610001" description="Unlock Cheat Option &gt; Magnum" />
+				<cheat type="GameShark" code="800696670001" description="Unlock Cheat Option &gt; No Radar" />
+				<cheat type="GameShark" code="8006965F0001" description="Unlock Cheat Option &gt; Paint Ball Mode" />
+				<cheat type="GameShark" code="8002B5370009" description="Unlock Cheat Option &gt; Play Archives Level" />
+				<cheat type="GameShark" code="8002B5370008" description="Unlock Cheat Option &gt; Play Bunker Level" />
+				<cheat type="GameShark" code="800696640001" description="Unlock Cheat Option &gt; Silver PP7" />
+				<cheat type="GameShark" code="8006966B0001" description="Unlock Cheat Option &gt; Slow Animation" />
+				<cheat type="GameShark" code="8006965E0001" description="Unlock Cheat Option &gt; Tiny Bond" />
+				<cheat type="GameShark" code="800696680001" description="Unlock Cheat Option &gt; Turbo Mode" />
+			</cheats>
+		</game>
+		<game title="Mario Kart 64 (USA)">
+			<hashes>
+				<hash md5="e19398a0fd1cc12df64fca7fbcaa82cc" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="811643900000+811643920002" description="P1 &gt; No Laps to Race" />
+				<cheat type="GameShark" code="800F6A4E0000" description="P1 &gt; Condition = Normal" />
+				<cheat type="GameShark" code="800F6A4E0001" description="P1 &gt; Condition = Faster" />
+				<cheat type="GameShark" code="800F6A4E0002" description="P1 &gt; Condition = Have Star" />
+				<cheat type="GameShark" code="800F6A4E0010" description="P1 &gt; Condition = Nothing" />
+				<cheat type="GameShark" code="800F6A4E0020" description="P1 &gt; Condition = Mushroom" />
+				<cheat type="GameShark" code="80165F5D0000+80165F8A0000" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Nothing" />
+				<cheat type="GameShark" code="80165F5D0001+80165F8A0001" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 1 Banana" />
+				<cheat type="GameShark" code="80165F5D0002+80165F8A0002" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 3 Bananas" />
+				<cheat type="GameShark" code="80165F5D0003+80165F8A0003" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 1 Green Shell" />
+				<cheat type="GameShark" code="80165F5D0004+80165F8A0004" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 3 Green Shells" />
+				<cheat type="GameShark" code="80165F5D0005+80165F8A0005" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 1 Red Shell" />
+				<cheat type="GameShark" code="80165F5D0006+80165F8A0006" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 3 Red Shells" />
+				<cheat type="GameShark" code="80165F5D0007+80165F8A0007" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Blue Shell" />
+				<cheat type="GameShark" code="80165F5D0008+80165F8A0008" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Lightning Bolt" />
+				<cheat type="GameShark" code="80165F5D0009+80165F8A0009" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Upside Down '?'" />
+				<cheat type="GameShark" code="80165F5D000A+80165F8A000A" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Star" />
+				<cheat type="GameShark" code="80165F5D000B+80165F8A000B" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Ghost" />
+				<cheat type="GameShark" code="80165F5D000C+80165F8A000C" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 1 Mushroom" />
+				<cheat type="GameShark" code="80165F5D000D+80165F8A000D" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 2 Mushrooms" />
+				<cheat type="GameShark" code="80165F5D000E+80165F8A000E" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = 3 Mushrooms" />
+				<cheat type="GameShark" code="80165F5D000F+80165F8A000F" description="P1 &amp; P2 Mode &gt; P1 &gt; Weapon = Gold Mushroom" />
+			</cheats>
+		</game>
+		<game title="Perfect Dark (USA) (Rev A)">
+			<hashes>
+				<hash md5="f267577a1faeca4c07f1bb188452ca80" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="802C8F5C0001" description="Global &gt; Always Firing/Punching" />
+				<cheat type="GameShark" code="802829180001" description="Global &gt; Bullets Fire x6" />
+				<cheat type="GameShark" code="802551080020" description="Global &gt; Bullets Penetrate Shields [INFO: Able to kill bot on Chicago level, etc.]" />
+				<cheat type="GameShark" code="802857980001" description="Global &gt; Walk Through Doors [WARNING: Enemies will also be able to walk through doors]" />
+				<cheat type="GameShark" code="8001AC0F0000+8001AC1F0080+8001AC4B0081+8001AC5B0001+8001AC6B0081+8001AC7B0001+8001AC8B0081+8001AC9B0001+8001ACAB0081+8001ACB70001" description="Global &gt; Human Players Move Faster [INFO: Forward movement for all human players is much faster; strafing is unaffected]" />
+				<cheat type="GameShark" code="802C6D6B0001" description="Global &gt; Press L or R to Have X-Ray Scope &gt; With Any Weapon" />
+				<cheat type="GameShark" code="802C6D630001" description="Global &gt; Press L or R to Have X-Ray Scope &gt; When Unarmed" />
+				<cheat type="GameShark" code="802216A00020" description="Global &gt; Lighting &gt; Lights Always On [TODO: DOESN'T WORK?]" />
+				<cheat type="GameShark" code="80223D240020" description="Global &gt; Lighting &gt; All Lights On At Full Brightness (Overrides Light Switch) [USAGE: Works best when enabled before beginning a level]" />
+				<cheat type="GameShark" code="802C92C40020" description="Carrington Institute &gt; Able To Use &amp; Take Weapons Out Of The Firing Range [WARNING: Must be enabled _before_ the agent selection menu appears]" />
+				<cheat type="GameShark" code="8120677C3F80+811ED77C3F80+811D477C3F80" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Health" />
+				<cheat type="GameShark" code="8026AC100020" description="Solo &amp; Co-Op &gt; P1 &gt; Immune To Enemy Gunfire" />
+				<cheat type="GameShark" code="D009C7E40040+8120672040F2+D009C7E40040+802066D30000+D009C7E40040+811ED72040F2+D009C7E40040+801ED6D30000+D009C7E40040+811D472040F2+D009C7E40040+801D46D30000" description="Solo &amp; Co-Op &gt; P1 &gt; Moon Jump (press B) [USAGE: Activate it when you are already in the air. (e.g., run down hills, steps). Then hold the B button to rise, and release to fall.]" />
+				<cheat type="GameShark" code="80207F100007+801EEF100007+801D5F100007" description="Solo &amp; Co-Op &gt; P1 &gt; Have All Weapons" />
+				<cheat type="GameShark" code="8020769F00FF+801EE69F00FF+801D569F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo, No Reloads &gt; All Weapons &gt; Left hand" />
+				<cheat type="GameShark" code="80206EFB00FF+801EDEFB00FF+801D4EFB00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo, No Reloads &gt; All Weapons &gt; Right hand" />
+				<cheat type="GameShark" code="80207E4F00FF+801EEE4F00FF+801D5E4F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Falcon 2, Falcon 2 (Silenced), Falcon 2 (Scope), MagSec 4, Mauler, Phoenix, PP9i &amp; CCI3" />
+				<cheat type="GameShark" code="80207E7300FF+801EEE7300FF+801D5E7300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; DY357 Magnum &amp; DY357-LX" />
+				<cheat type="GameShark" code="80207E5300FF+801EEE5300FF+801D5E5300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; CMPI50, Cyclone, Callisto NTG, RC-PI20, Laptop Gun, KLOI3I3, ZZT (9mm), DMC &amp; RC-P45" />
+				<cheat type="GameShark" code="80207E5B00FF+801EEE5B00FF+801D5E5B00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Dragon, K7 Avenger, AR34, SuperDragon (Rapid Fire), Sniper Rifle, K7 Special, AR53" />
+				<cheat type="GameShark" code="80207E5F00FF+801EEE5F00FF+801D5E5F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Shotgun" />
+				<cheat type="GameShark" code="80207E8700FF+801EEE8700FF+801D5E8700FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Reaper" />
+				<cheat type="GameShark" code="80207E6300FF+801EEE6300FF+801D5E6300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; FarSight XR-20" />
+				<cheat type="GameShark" code="80207E7700FF+801EEE7700FF+801D5E7700FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Devastator &amp; SuperDragon (Grenade Launcher)" />
+				<cheat type="GameShark" code="80207E6B00FF+801EEE6B00FF+801D5E6B00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Rocket Launcher" />
+				<cheat type="GameShark" code="80207E6F00FF+801EEE6F00FF+801D5E6F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Combat Knife" />
+				<cheat type="GameShark" code="80207E5700FF+801EEE5700FF+801D5E5700FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Crossbow" />
+				<cheat type="GameShark" code="80207E9700FF+801EEE9700FF+801D5E9700FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Tranquilizer" />
+				<cheat type="GameShark" code="80207E6700FF+801EEE6700FF+801D5E6700FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Grenade" />
+				<cheat type="GameShark" code="80207E9300FF+801EEE9300FF+801D5E9300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; N-Bomb" />
+				<cheat type="GameShark" code="80207E8300FF+801EEE8300FF+801D5E8300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Timed Mine" />
+				<cheat type="GameShark" code="80207E7F00FF+801EEE7F00FF+801D5E7F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Proximinity Mine" />
+				<cheat type="GameShark" code="80207E7B00FF+801EEE7B00FF+801D5E7B00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Remote Mine" />
+				<cheat type="GameShark" code="80207E9F00FF+801EEE9F00FF+801D5E9F00FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Combat Boost" />
+				<cheat type="GameShark" code="80207EA300FF+801EEEA300FF+801D5EA300FF" description="Solo &amp; Co-Op &gt; P1 &gt; Infinite Ammo &gt; Psychosis Gun" />
+				<cheat type="GameShark" code="8024E1D40020" description="Solo &amp; Co-Op &gt; P1 &gt; Some Enemies &gt; Can't See You" />
+				<cheat type="GameShark" code="8026E1380020" description="Solo &amp; Co-Op &gt; P1 &gt; Some Enemies &gt; Don't Attack v1" />
+				<cheat type="GameShark" code="80273E000020" description="Solo &amp; Co-Op &gt; P1 &gt; Some Enemies &gt; Don't Attack v2" />
+				<cheat type="GameShark" code="80273E4C0020" description="Solo &amp; Co-Op &gt; P1 &gt; Some Enemies &gt; Don't Go On Patrol" />
+				<cheat type="GameShark" code="80264DE80001" description="Solo &amp; Co-Op &gt; P1 &gt; Some Enemies &gt; Confused When They Chase After You" />
+			</cheats>
+		</game>
+		<game title="Star Wars - Shadows of the Empire (USA) (Rev B)">
+			<hashes>
+				<hash md5="99b150a2e655d771ee1695cc1df65b65" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="800E0EB300FF" description="All Levels &gt; Infinite Lives" />
+				<cheat type="GameShark" code="800E1B5500FF" description="All Levels &gt; Infinite Missiles" />
+				<cheat type="GameShark" code="810EDD004000" description="All Levels &gt; Time Is Always 0:00:02" />
+				<cheat type="GameShark" code="811128260000" description="All Levels &gt; No Clipping" />
+				<cheat type="GameShark" code="810D098E0001" description="All Levels &gt; Debug Info When Paused" />
+				<cheat type="GameShark" code="890D098A0001" description="All Levels &gt; Press GameShark Button for Pink Debug Screen [TODO: HOW?]" />
+
+				<cheat type="GameShark" code="800DD5A30003" description="Always Play Level = Battle Of Hoth" />
+				<cheat type="GameShark" code="800DD5A30004" description="Always Play Level = Escape From Echo Base" />
+				<cheat type="GameShark" code="800DD5A30006" description="Always Play Level = The Asteroid Field" />
+				<cheat type="GameShark" code="800DD5A30007" description="Always Play Level = Ord Mantell Junkyard" />
+				<cheat type="GameShark" code="800DD5A3000B" description="Always Play Level = Gall Spaceport" />
+				<cheat type="GameShark" code="800DD5A30010" description="Always Play Level = Mos Eisley Beggar's Canyon" />
+				<cheat type="GameShark" code="800DD5A30013" description="Always Play Level = Imperial Freighter Suprosa" />
+				<cheat type="GameShark" code="800DD5A30018" description="Always Play Level = Sewers Of Imperial City" />
+				<cheat type="GameShark" code="800DD5A3001A" description="Always Play Level = Xizor's Palace" />
+				<cheat type="GameShark" code="800DD5A3001D" description="Always Play Level = Skyhook Battle" />
+
+				<cheat type="GameShark" code="890E18503F28" description="01. Battle of Hoth &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="811EBC4042C8" description="01. Battle of Hoth &gt; Infinite Health [INFO: Flying into an AT-ST/AT-AT will still kill you]" />
+
+				<cheat type="GameShark" code="890DD2B20007" description="02. Escape from Echo Base (first stage only) &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="D01130650020+811A7BF04100" description="02. Escape from Echo Base (first stage only) &gt; Press L to Moon Jump" />
+				<cheat type="GameShark" code="801A7BC50003+801A7BC600E0" description="02. Escape from Echo Base (first stage only) &gt; All Weapons" />
+				<cheat type="GameShark" code="811A7C0442C8" description="02. Escape from Echo Base (first stage only) &gt; Infinite Health" />
+				<cheat type="GameShark" code="D11130642010+801A7BC70040" description="02. Escape from Echo Base (first stage only) &gt; Press Z + R to Have Jet Pack" />
+				<cheat type="GameShark" code="811A7C0C42C8" description="02. Escape from Echo Base (first stage only) &gt; Infinite Jet Pack" />
+				<cheat type="GameShark" code="811A7C1042C8" description="02. Escape from Echo Base (first stage only) &gt; Laser Always Full Power" />
+				<cheat type="GameShark" code="811A7C144348" description="02. Escape from Echo Base (first stage only) &gt; Infinite Pulse Ammo" />
+				<cheat type="GameShark" code="811A7C184348" description="02. Escape from Echo Base (first stage only) &gt; Infinite Flame Ammo" />
+				<cheat type="GameShark" code="811A7C1C4348" description="02. Escape from Echo Base (first stage only) &gt; Infinite Seeker Ammo" />
+				<cheat type="GameShark" code="811A7C204348" description="02. Escape from Echo Base (first stage only) &gt; Infinite Stunner Ammo" />
+				<cheat type="GameShark" code="811A7C244348" description="02. Escape from Echo Base (first stage only) &gt; Infinite Disrupter Ammo" />
+
+				<cheat type="GameShark" code="890E1B3C0000+890E1B400000" description="03. The Asteroid Field &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+
+				<cheat type="GameShark" code="811A7BAA42C8" description="04. Ord Mantell Junkyard &gt; Infinite Health [TODO: DOESN'T WORK]" />
+				<cheat type="GameShark" code="811A7BB442C8" description="04. Ord Mantell Junkyard &gt; Laser Always Full Power" />
+
+				<cheat type="GameShark" code="890DD2B20007" description="05. Gall Spaceport (first stage only) &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="D01130650020+811A7B084100" description="05. Gall Spaceport (first stage only) &gt; Press L to Moon Jump" />
+				<cheat type="GameShark" code="801A7ADD0003+801A7ADE00E0" description="05. Gall Spaceport (first stage only) &gt; All Weapons" />
+				<cheat type="GameShark" code="811A7B1C42C8" description="05. Gall Spaceport (first stage only) &gt; Infinite Health" />
+				<cheat type="GameShark" code="D11130642010+801A7ADF0040" description="05. Gall Spaceport (first stage only) &gt; Press Z + R to Have Jet Pack" />
+				<cheat type="GameShark" code="811A7B2442C8" description="05. Gall Spaceport (first stage only) &gt; Infinite Jet Pack" />
+				<cheat type="GameShark" code="811A7B2842C8" description="05. Gall Spaceport (first stage only) &gt; Laser Always Full Power" />
+				<cheat type="GameShark" code="811A7B2C4348" description="05. Gall Spaceport (first stage only) &gt; Infinite Pulse Ammo" />
+				<cheat type="GameShark" code="811A7B304348" description="05. Gall Spaceport (first stage only) &gt; Infinite Flame Ammo" />
+				<cheat type="GameShark" code="811A7B344348" description="05. Gall Spaceport (first stage only) &gt; Infinite Seeker Ammo" />
+				<cheat type="GameShark" code="811A7B384348" description="05. Gall Spaceport (first stage only) &gt; Infinite Stunner Ammo" />
+				<cheat type="GameShark" code="811A7B3C4348" description="05. Gall Spaceport (first stage only) &gt; Infinite Disrupter Ammo" />
+
+				<cheat type="GameShark" code="890DD2B20007" description="07. Imperial Freighter Suprosa &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="D01130650020+811A32604100" description="07. Imperial Freighter Suprosa &gt; Press L to Moon Jump" />
+				<cheat type="GameShark" code="801A32350003+801A323600E0" description="07. Imperial Freighter Suprosa &gt; All Weapons" />
+				<cheat type="GameShark" code="811A327442C8" description="07. Imperial Freighter Suprosa &gt; Infinite Health" />
+				<cheat type="GameShark" code="D11130642010+801A32370040" description="07. Imperial Freighter Suprosa &gt; Press Z + R to Have Jet Pack" />
+				<cheat type="GameShark" code="811A327C42C8" description="07. Imperial Freighter Suprosa &gt; Infinite Jet Pack" />
+				<cheat type="GameShark" code="811A328042C8" description="07. Imperial Freighter Suprosa &gt; Laser Always Full Power" />
+				<cheat type="GameShark" code="811A32844348" description="07. Imperial Freighter Suprosa &gt; Infinite Pulse Ammo" />
+				<cheat type="GameShark" code="811A32884348" description="07. Imperial Freighter Suprosa &gt; Infinite Flame Ammo" />
+				<cheat type="GameShark" code="811A328C4348" description="07. Imperial Freighter Suprosa &gt; Infinite Seeker Ammo" />
+				<cheat type="GameShark" code="811A32904348" description="07. Imperial Freighter Suprosa &gt; Infinite Stunner Ammo" />
+				<cheat type="GameShark" code="811A32944348" description="07. Imperial Freighter Suprosa &gt; Infinite Disrupter Ammo" />
+
+				<cheat type="GameShark" code="890DD2B20007" description="08. Sewers of Imperial City &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="D01130650020+811A80704100" description="08. Sewers of Imperial City &gt; Press L to Moon Jump" />
+				<cheat type="GameShark" code="801A80450003+801A804600E0" description="08. Sewers of Imperial City &gt; All Weapons" />
+				<cheat type="GameShark" code="811A808442C8" description="08. Sewers of Imperial City &gt; Infinite Health" />
+				<cheat type="GameShark" code="D11130642010+801A80470040" description="08. Sewers of Imperial City &gt; Press Z + R to Have Jet Pack" />
+				<cheat type="GameShark" code="811A808C42C8" description="08. Sewers of Imperial City &gt; Infinite Jet Pack" />
+				<cheat type="GameShark" code="811A809042C8" description="08. Sewers of Imperial City &gt; Laser Always Full Power" />
+				<cheat type="GameShark" code="811A80944348" description="08. Sewers of Imperial City &gt; Infinite Pulse Ammo" />
+				<cheat type="GameShark" code="811A80984348" description="08. Sewers of Imperial City &gt; Infinite Flame Ammo" />
+				<cheat type="GameShark" code="811A809C4348" description="08. Sewers of Imperial City &gt; Infinite Seeker Ammo" />
+				<cheat type="GameShark" code="811A80A04348" description="08. Sewers of Imperial City &gt; Infinite Stunner Ammo" />
+				<cheat type="GameShark" code="811A80A44348" description="08. Sewers of Imperial City &gt; Infinite Disrupter Ammo" />
+
+				<cheat type="GameShark" code="890DD2B20007" description="09. Xizor's Palace &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+				<cheat type="GameShark" code="811A5F4442C8" description="09. Xizor's Palace &gt; Infinite Health" />
+				<cheat type="GameShark" code="801A5F050003+801A5F0600E0" description="09. Xizor's Palace &gt; All Weapons" />
+				<cheat type="GameShark" code="D11130642010+801A5F070040" description="09. Xizor's Palace &gt; Press Z + R to Have Jet Pack" />
+				<cheat type="GameShark" code="811A5F4C42C8" description="09. Xizor's Palace &gt; Infinite Jet Pack" />
+				<cheat type="GameShark" code="811A5F5042C8" description="09. Xizor's Palace &gt; Laser Always Full Power" />
+				<cheat type="GameShark" code="811A5F544348" description="09. Xizor's Palace &gt; Infinite Pulse Ammo" />
+				<cheat type="GameShark" code="811A5F584348" description="09. Xizor's Palace &gt; Infinite Flame Ammo" />
+				<cheat type="GameShark" code="811A5F5C4348" description="09. Xizor's Palace &gt; Infinite Seeker Ammo" />
+				<cheat type="GameShark" code="811A5F604348" description="09. Xizor's Palace &gt; Infinite Stunner Ammo" />
+				<cheat type="GameShark" code="811A5F644348" description="09. Xizor's Palace &gt; Infinite Disrupter Ammo" />
+
+				<cheat type="GameShark" code="890E1B3C0000+890E1B400000" description="10. Skyhook Battle &gt; Press GameShark Button To Complete Stage [TODO: HOW?]" />
+			</cheats>
+		</game>
+		<game title="Super Mario 64 (USA)">
+			<hashes>
+				<hash md5="165a9558b7539507e73e7afecffb200c" />
+				<hash md5="20b854b239203baf6c961b850a4a51a2" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="A032D58C0001" description="Level Select [USAGE: To display the menu, either A) restart the console, or B) enter any level and press Start &gt; Exit] [WARNING: When the menu is displayed, the game silently switches to the 'Mario D' game save slot]" />
+				<cheat type="GameShark" code="8033B21D0064" description="Infinite &gt; Lives" />
+				<cheat type="GameShark" code="8033B21E0008" description="Infinite &gt; Energy and Breath" />
+				<cheat type="GameShark" code="A125460EFFFF+A125460C240B+A1254610A54B+A12546120026+A12546141000+A1254616000C" description="Monsters Don't Hurt Mario [TODO: DOESN'T WORK]" />
+				<cheat type="GameShark" code="8033B22C0001" description="High Falls Don't Hurt Mario &gt; v1" />
+				<cheat type="GameShark" code="8033B22C00D1" description="High Falls Don't Hurt Mario &gt; v2" />
+				<cheat type="GameShark" code="D033AFA10020+8133B1BC4220+D033B1BD0020+8133B17C0300+D033B1BD0020+8133B17E0880" description="Press L to Moon Jump [WARNING: Disrupts long jumps, star collection, and saving while enabled]" />
+				<cheat type="GameShark" code="8133B226FFFF" description="Cap &gt; Infinite Usage" />
+				<cheat type="GameShark" code="8033B1770000" description="Cap = None &gt; v1" />
+				<cheat type="GameShark" code="8033B1770001" description="Cap = None &gt; v2" />
+				<cheat type="GameShark" code="8033B1770012" description="Cap = Invisible" />
+				<cheat type="GameShark" code="8033B1770015" description="Cap = Metal" />
+				<cheat type="GameShark" code="8033B1770019" description="Cap = Flying" />
+				<cheat type="GameShark" code="8133B176001A" description="Cap = Flying + Invisible" />
+				<cheat type="GameShark" code="8133B176001C" description="Cap = Flying + Metal" />
+				<cheat type="GameShark" code="8133B176001E" description="Cap = Flying + Metal + Invisible" />
+				<cheat type="GameShark" code="A1253DAC0000+A1253DAE0000+A1253DB00000+A1253DB20000" description="Walk Up Hills [TODO: DOESN'T WORK]" />
+				<cheat type="GameShark" code="8933B2180063" description="Press GameShark Button for 99 Coins [TODO: HOW?]" />
+				<cheat type="GameShark" code="A032D5980001" description="Debug Mode" />
+				<cheat type="GameShark" code="D134B89E0860+8134B89C8019+D134B89E0860+8134B89E51AC" description="Play As = Mips (rabbit)" />
+				<cheat type="GameShark" code="D134B89E0860+8134B89C8019+D134B89E0860+8134B89E4E28" description="Play As = Yoshi" />
+			</cheats>
+		</game>
+		<game title="Super Smash Bros. (USA)">
+			<hashes>
+				<hash md5="3c4e65d9b7bf55338496108f04da7f41" />
+			</hashes>
+			<cheats>
+				<cheat type="GameShark" code="810A49380FF0" description="Global &gt; Access All Characters" />
+				<cheat type="GameShark" code="800A493700FF" description="Global &gt; Access Mushroom Kingdom" />
+
+				<cheat type="GameShark" code="810A4B2E43CB" description="1P Mode &gt; Infinite Time" />
+				<cheat type="GameShark" code="800A4AE7000D" description="1P Mode &gt; Skip To The Final Battle Cheat" />
+				<cheat type="GameShark" code="800A4B430004" description="1P Mode &gt; P1 &gt; Infinite Lives" />
+				<cheat type="GameShark" code="810A4B860500" description="1P Mode &gt; P1 &gt; High % Health" />
+				<cheat type="GameShark" code="810A4B860000" description="1P Mode &gt; P1 &gt; Low % Health" />
+				<cheat type="GameShark" code="800A4BB70004" description="1P Mode &gt; P2 &gt; Infinite Lives" />
+				<cheat type="GameShark" code="810A4BFA0500" description="1P Mode &gt; P2 &gt; High % Health" />
+				<cheat type="GameShark" code="810A4BFA0000" description="1P Mode &gt; P2 &gt; Low % Health" />
+				<cheat type="GameShark" code="800A4C2B0004" description="1P Mode &gt; P3 &gt; Infinite Lives" />
+				<cheat type="GameShark" code="810A4C6E0500" description="1P Mode &gt; P3 &gt; High % Health" />
+				<cheat type="GameShark" code="810A4C6E0000" description="1P Mode &gt; P3 &gt; Low % Health" />
+				<cheat type="GameShark" code="800A4C9F0004" description="1P Mode &gt; P4 &gt; Infinite Lives" />
+				<cheat type="GameShark" code="810A4CE20500" description="1P Mode &gt; P4 &gt; High % Health" />
+				<cheat type="GameShark" code="810A4CE20000" description="1P Mode &gt; P4 &gt; Low % Health" />
+
+				<cheat type="GameShark" code="810A4D1E43CB" description="VS Mode &gt; Infinite Time" />
+
+				<cheat type="GameShark" code="D109EFA40400+8118D0A20001" description="VS Mode &gt; P1 &gt; Press Down On The + Pad To Have Items Appear In Random Spots" />
+
+				<cheat type="GameShark" code="810A4D760500" description="VS Mode &gt; P1 &gt; Health = High %" />
+				<cheat type="GameShark" code="810A4D760000" description="VS Mode &gt; P1 &gt; Health = Low %" />
+				<cheat type="GameShark" code="800A4D2B0000" description="VS Mode &gt; P1 &gt; Always Play As = Mario" />
+				<cheat type="GameShark" code="800A4D2B0001" description="VS Mode &gt; P1 &gt; Always Play As = Fox" />
+				<cheat type="GameShark" code="800A4D2B0002" description="VS Mode &gt; P1 &gt; Always Play As = Donkey Kong" />
+				<cheat type="GameShark" code="800A4D2B0003" description="VS Mode &gt; P1 &gt; Always Play As = Samus" />
+				<cheat type="GameShark" code="800A4D2B0004" description="VS Mode &gt; P1 &gt; Always Play As = Luigi" />
+				<cheat type="GameShark" code="800A4D2B0005" description="VS Mode &gt; P1 &gt; Always Play As = Link" />
+				<cheat type="GameShark" code="800A4D2B0006" description="VS Mode &gt; P1 &gt; Always Play As = Yoshi" />
+				<cheat type="GameShark" code="800A4D2B0007" description="VS Mode &gt; P1 &gt; Always Play As = Captain Falcon" />
+				<cheat type="GameShark" code="800A4D2B0008" description="VS Mode &gt; P1 &gt; Always Play As = Kirby" />
+				<cheat type="GameShark" code="800A4D2B0009" description="VS Mode &gt; P1 &gt; Always Play As = Pikachu" />
+				<cheat type="GameShark" code="800A4D2B000A" description="VS Mode &gt; P1 &gt; Always Play As = Jigglypuff" />
+				<cheat type="GameShark" code="800A4D2B000B" description="VS Mode &gt; P1 &gt; Always Play As = Ness" />
+
+				<cheat type="GameShark" code="810A4DEA0500" description="VS Mode &gt; P2 &gt; Health = High %" />
+				<cheat type="GameShark" code="810A4DEA0000" description="VS Mode &gt; P2 &gt; Health = Low %" />
+				<cheat type="GameShark" code="800A4D9F0000" description="VS Mode &gt; P2 &gt; Always Play As = Mario" />
+				<cheat type="GameShark" code="800A4D9F0001" description="VS Mode &gt; P2 &gt; Always Play As = Fox" />
+				<cheat type="GameShark" code="800A4D9F0002" description="VS Mode &gt; P2 &gt; Always Play As = Donkey Kong" />
+				<cheat type="GameShark" code="800A4D9F0003" description="VS Mode &gt; P2 &gt; Always Play As = Samus" />
+				<cheat type="GameShark" code="800A4D9F0004" description="VS Mode &gt; P2 &gt; Always Play As = Luigi" />
+				<cheat type="GameShark" code="800A4D9F0005" description="VS Mode &gt; P2 &gt; Always Play As = Link" />
+				<cheat type="GameShark" code="800A4D9F0006" description="VS Mode &gt; P2 &gt; Always Play As = Yoshi" />
+				<cheat type="GameShark" code="800A4D9F0007" description="VS Mode &gt; P2 &gt; Always Play As = Captain Falcon" />
+				<cheat type="GameShark" code="800A4D9F0008" description="VS Mode &gt; P2 &gt; Always Play As = Kirby" />
+				<cheat type="GameShark" code="800A4D9F0009" description="VS Mode &gt; P2 &gt; Always Play As = Pikachu" />
+				<cheat type="GameShark" code="800A4D9F000A" description="VS Mode &gt; P2 &gt; Always Play As = Jigglypuff" />
+				<cheat type="GameShark" code="800A4D9F000B" description="VS Mode &gt; P2 &gt; Always Play As = Ness" />
+
+				<cheat type="GameShark" code="810A4E5E0500" description="VS Mode &gt; P3 &gt; Health = High %" />
+				<cheat type="GameShark" code="810A4E5E0000" description="VS Mode &gt; P3 &gt; Health = Low %" />
+				<cheat type="GameShark" code="800A4E130000" description="VS Mode &gt; P3 &gt; Always Play As = Mario" />
+				<cheat type="GameShark" code="800A4E130001" description="VS Mode &gt; P3 &gt; Always Play As = Fox" />
+				<cheat type="GameShark" code="800A4E130002" description="VS Mode &gt; P3 &gt; Always Play As = Donkey Kong" />
+				<cheat type="GameShark" code="800A4E130003" description="VS Mode &gt; P3 &gt; Always Play As = Samus" />
+				<cheat type="GameShark" code="800A4E130004" description="VS Mode &gt; P3 &gt; Always Play As = Luigi" />
+				<cheat type="GameShark" code="800A4E130005" description="VS Mode &gt; P3 &gt; Always Play As = Link" />
+				<cheat type="GameShark" code="800A4E130006" description="VS Mode &gt; P3 &gt; Always Play As = Yoshi" />
+				<cheat type="GameShark" code="800A4E130007" description="VS Mode &gt; P3 &gt; Always Play As = Captain Falcon" />
+				<cheat type="GameShark" code="800A4E130008" description="VS Mode &gt; P3 &gt; Always Play As = Kirby" />
+				<cheat type="GameShark" code="800A4E130009" description="VS Mode &gt; P3 &gt; Always Play As = Pikachu" />
+				<cheat type="GameShark" code="800A4E13000A" description="VS Mode &gt; P3 &gt; Always Play As = Jigglypuff" />
+				<cheat type="GameShark" code="800A4E13000B" description="VS Mode &gt; P3 &gt; Always Play As = Ness" />
+
+				<cheat type="GameShark" code="810A4ED20500" description="VS Mode &gt; P4 &gt; Health = High %" />
+				<cheat type="GameShark" code="810A4ED20000" description="VS Mode &gt; P4 &gt; Health = Low %" />
+				<cheat type="GameShark" code="800A4E870000" description="VS Mode &gt; P4 &gt; Always Play As = Mario" />
+				<cheat type="GameShark" code="800A4E870001" description="VS Mode &gt; P4 &gt; Always Play As = Fox" />
+				<cheat type="GameShark" code="800A4E870002" description="VS Mode &gt; P4 &gt; Always Play As = Donkey Kong" />
+				<cheat type="GameShark" code="800A4E870003" description="VS Mode &gt; P4 &gt; Always Play As = Samus" />
+				<cheat type="GameShark" code="800A4E870004" description="VS Mode &gt; P4 &gt; Always Play As = Luigi" />
+				<cheat type="GameShark" code="800A4E870005" description="VS Mode &gt; P4 &gt; Always Play As = Link" />
+				<cheat type="GameShark" code="800A4E870006" description="VS Mode &gt; P4 &gt; Always Play As = Yoshi" />
+				<cheat type="GameShark" code="800A4E870007" description="VS Mode &gt; P4 &gt; Always Play As = Captain Falcon" />
+				<cheat type="GameShark" code="800A4E870008" description="VS Mode &gt; P4 &gt; Always Play As = Kirby" />
+				<cheat type="GameShark" code="800A4E870009" description="VS Mode &gt; P4 &gt; Always Play As = Pikachu" />
+				<cheat type="GameShark" code="800A4E87000A" description="VS Mode &gt; P4 &gt; Always Play As = Jigglypuff" />
+				<cheat type="GameShark" code="800A4E87000B" description="VS Mode &gt; P4 &gt; Always Play As = Ness" />
+			</cheats>
+		</game>
+		<game title="Legend of Zelda, The - Ocarina of Time (USA) (Rev B)">
+			<hashes>
+				<hash md5="1f26107a97cd9d923df493ebfbfd234d" />
+			</hashes>
+			<cheats>
+				<!-- <cheat type="GameShark" code="F10004E42400+EE0000000000" description="Enable Code (Must Be On)" /> -->
+				<!-- <cheat type="GameShark" code="D01C8D7400??" description="Activator 1 P1" />    -->
+				<!-- <cheat type="GameShark" code="D01C8D7500??" description="Activator 2 P1" />    -->
+				<!-- <cheat type="GameShark" code="D11C8D74????" description="Dual Activator P1" /> -->
+				<cheat type="GameShark" code="8111ACB00140" description="Infinite &gt; Energy" />
+				<cheat type="GameShark" code="D011ACB90008+8011ACBA0001+8011ACBC0001+8011ACB30060" description="Infinite &gt; Magic" />
+				<cheat type="GameShark" code="8011AD1A0009" description="Infinite Magic Beans" />
+				<cheat type="GameShark" code="8111ACAE0140" description="Max &gt; Heart Containers" />
+				<cheat type="GameShark" code="8111AD5003E7" description="Max &gt; Skulltulas Killed" />
+				<cheat type="GameShark" code="8111AD1C7777" description="Have &gt; All Equipment" />
+				<cheat type="GameShark" code="8111AD2430FF+8111AD26FFFF" description="Have &gt; All Quest/Status Items" />
+				<cheat type="GameShark" code="8011AD490009" description="Have &gt; Infinite Small Keys" />
+				<cheat type="GameShark" code="8011AD280007" description="Have &gt; Big Key, Compass, &amp; Map" />
+				<cheat type="GameShark" code="8011ACFB0007" description="Have Item &gt; Fairy Ocarina" />
+				<cheat type="GameShark" code="8011ACFB0008" description="Have Item &gt; Ocarina of Time" />
+				<cheat type="GameShark" code="8011ACFD000A" description="Have Item &gt; Hookshot" />
+				<cheat type="GameShark" code="8011ACFD000B" description="Have Item &gt; Longshot" />
+				<cheat type="GameShark" code="8011AD00000E" description="Have Item &gt; Boomerang" />
+				<cheat type="GameShark" code="8011AD01000F" description="Have Item &gt; Lens of Truth" />
+				<cheat type="GameShark" code="8011AD020010" description="Have Item &gt; Magic Beans" />
+				<cheat type="GameShark" code="8011AD030011" description="Have Item &gt; Megaton Hammer" />
+				<cheat type="GameShark" code="8011ACF90005" description="Have Item &gt; Din's Fire (MP6)" />
+				<cheat type="GameShark" code="8011ACFF000D" description="Have Item &gt; Fairie's Wind (MP6)" />
+				<cheat type="GameShark" code="8011AD050013" description="Have Item &gt; Nayru's Love (MP12)" />
+				<cheat type="GameShark" code="8011AD210001" description="Have Item &gt; Quiver (Holds 30)" />
+				<cheat type="GameShark" code="8011ACF80004" description="Have Item &gt; Fire Arrow (MP2)" />
+				<cheat type="GameShark" code="8011ACFE000C" description="Have Item &gt; Ice Arrow (MP2)" />
+				<cheat type="GameShark" code="8011AD040012" description="Have Item &gt; Light Arrow (MP4)" />
+				<cheat type="GameShark" code="8011ACF40000" description="Item &gt; Deku Stick &gt; Have" />
+				<cheat type="GameShark" code="8011AD0C0009" description="Item &gt; Deku Stick &gt; Infinite" />
+				<cheat type="GameShark" code="8011ACF50001" description="Item &gt; Deku Nut &gt; Have" />
+				<cheat type="GameShark" code="8011AD0D0009" description="Item &gt; Deku Nut &gt; Infinite" />
+				<cheat type="GameShark" code="8011AD060002" description="Item &gt; Bombs &gt; Have" />
+				<cheat type="GameShark" code="8011AD0E0009" description="Item &gt; Bombs &gt; Infinite" />
+				<cheat type="GameShark" code="8011ACF70003" description="Item &gt; Fairy Bow &gt; Have" />
+				<cheat type="GameShark" code="8011AD0F0009" description="Item &gt; Fairy Bow &gt; Infinite" />
+				<cheat type="GameShark" code="8011ACFA0006" description="Item &gt; Fairy Slingshot &gt; Have" />
+				<cheat type="GameShark" code="8011AD120009" description="Item &gt; Fairy Slingshot &gt; Infinite" />
+				<cheat type="GameShark" code="8011ACFC0009" description="Item &gt; Bombchu &gt; Have" />
+				<cheat type="GameShark" code="8011AD140009" description="Item &gt; Bombchu &gt; Infinite" />
+				<!-- <cheat type="GameShark" code="8011AD0600??" description="Always Have Bottle 1 Modifier" /> -->
+				<!-- <cheat type="GameShark" code="8011AD0700??" description="Always Have Bottle 2 Modifier" /> -->
+				<!-- <cheat type="GameShark" code="8011AD0800??" description="Always Have Bottle 3 Modifier" /> -->
+				<!-- <cheat type="GameShark" code="8011AD0900??" description="Always Have Bottle 4 Modifier" /> -->
+				<!-- <cheat type="GameShark" code="8011AD0A00??" description="Item Modifier 1" />               -->
+				<!-- <cheat type="GameShark" code="8011AD0B00??" description="Item Modifier 2" />               -->
+				<cheat type="GameShark" code="8011ACBE0001" description="Turn Giant's Knife Into Biggoron's Sword" />
+				<!-- <cheat type="GameShark" code="8011AD2200??" description="Equipment Modifier 1" />    -->
+				<!-- <cheat type="GameShark" code="8011AD2300??" description="Equipment Modifier 2" />    -->
+				<!-- <cheat type="GameShark" code="8011ACF000??" description="Equipped Stuff Modifier" /> -->
+				<cheat type="GameShark" code="8011ACE90011" description="C Left to Use Hammer [INFO: You will be able to use the Hammer when you are a kid, but you will not see it]" />
+				<!-- <cheat type="GameShark" code="8111AC8C????" description="Time of Day Modifier" />    -->
+				<cheat type="GameShark" code="D01C8D750020+811DB35040CB" description="Gravity &gt; L Button For Moon Jump" />
+				<cheat type="GameShark" code="D01C8D750030+811DBB72000D" description="Gravity &gt; Hover Boots Last While Holding L &amp; R Buttons" />
+
+				<cheat type="GameShark" code="8111ACB00140" description="Infinite Energy" />
+				<cheat type="GameShark" code="8111ACAE0140" description="Maximum Hearts" />
+				<cheat type="GameShark" code="8011AD5100FF" description="All Skulltulas Killed" />
+				<cheat type="GameShark" code="8111AD1C7777" description="Have All Equipment" />
+				<cheat type="GameShark" code="8111AD2430FF+8111AD26FFFF" description="Have All Quest &amp; Status Items" />
+				<cheat type="GameShark" code="D011ACB90008+8011ACBA0001+8011ACBC0001+8011ACB30060" description="Infinite Magic" />
+				<cheat type="GameShark" code="D01C8D750020+811DB35040CB" description="Fly Mode Note: Hold the L Button to go as high as you want and let go to fall." />
+				<cheat type="GameShark" code="D01C8D750030+811DBB72000D" description="Hover Boots Last While Holding L &amp; R" />
+				<cheat type="GameShark" code="8011ACFB0008" description="Have The Ocarina Of Time" />
+				<cheat type="GameShark" code="8011ACF90005" description="Have Din's Fire" />
+				<cheat type="GameShark" code="8011ACFF000D" description="Have Farore's Wind" />
+				<cheat type="GameShark" code="8011AD050013" description="Have Nayru's Love" />
+				<cheat type="GameShark" code="8011AD490009" description="Infinite Small Keys" />
+				<cheat type="GameShark" code="8011AD280007" description="Have Big Key, Compass, And Map" />
+				<cheat type="GameShark" code="8011ACF80004" description="Have Fire Arrows" />
+				<cheat type="GameShark" code="8011ACFE000C" description="Have Ice Arrows" />
+				<cheat type="GameShark" code="8011AD040012" description="Have Light Arrows" />
+				<cheat type="GameShark" code="8011ACF40000" description="Have Deku Stick" />
+				<cheat type="GameShark" code="8011AD0C0009" description="Infinite Deku Sticks" />
+				<cheat type="GameShark" code="8011ACF50001" description="Have Deku Nut" />
+				<cheat type="GameShark" code="8011AD0D0009" description="Infinite Deku Nuts" />
+				<cheat type="GameShark" code="8011ACF60002" description="Have Bombs" />
+				<cheat type="GameShark" code="8011AD0E0009" description="Infinite Bombs" />
+				<cheat type="GameShark" code="8011ACF70003" description="Have The Fairy Bow" />
+				<cheat type="GameShark" code="8011AD0F0009" description="Infinite Arrows" />
+				<cheat type="GameShark" code="8011ACFA0006" description="Have The Fairy Slingshot" />
+				<cheat type="GameShark" code="8011AD120009" description="Infinite Slingshot Ammo" />
+				<cheat type="GameShark" code="8011ACFC0009" description="Have Bombchu" />
+				<cheat type="GameShark" code="8011AD140009" description="Infinite Bombchu's" />
+				<cheat type="GameShark" code="8011ACFB0007" description="Always Have The Fairy Ocarina" />
+				<cheat type="GameShark" code="8011ACFD000A" description="Always Have The Hookshot" />
+				<cheat type="GameShark" code="8011ACFD000B" description="Always Have The Longshot" />
+				<cheat type="GameShark" code="8011AD00000E" description="Always Have The Boomerang" />
+				<cheat type="GameShark" code="8011AD01000F" description="Always Have The Lens Of Truth" />
+				<cheat type="GameShark" code="8011AD020010" description="Have The Magic Beans" />
+				<cheat type="GameShark" code="8011AD1A0009" description="Infinite Magic Beans" />
+				<cheat type="GameShark" code="8011AD030011" description="Always Have The Megaton Hammer" />
+				<cheat type="GameShark" code="8011ACBE0001" description="Have Biggoron's Sword" />
+				<cheat type="GameShark" code="8111ACB503E7" description="Unlimited Rupees" />
+				<cheat type="GameShark" code="8011AD210001+8011AD220004+8011AD2300D8" description="Have Golden Gauntlet, Golden Scale, 50 Bomb Bag, And 30 Arrow Quiver" />
+				<cheat type="GameShark" code="8011AD210001" description="Have 30 Arrow Quiver" />
+				<cheat type="GameShark" code="8011ACE90011" description="Have The Megaton Hammer Equiped To Left C Note: You can use this as Adult OR Young Link!" />
+				<cheat type="GameShark" code="8011AD220004" description="Have Golden Scale" />
+				<cheat type="GameShark" code="8011AD220006" description="Have Broken Giant's Knife" />
+				<cheat type="GameShark" code="8011AD2200C0" description="Have 50 Bullet Bag" />
+				<cheat type="GameShark" code="8011AD230018" description="Have 40 Bomb Bag" />
+				<cheat type="GameShark" code="8011AD230028" description="Have Silver Gauntlets" />
+				<cheat type="GameShark" code="" description="&gt; Have Shield &amp; Sword Equipped These cheats mostly thanks to Kong K Rool" />
+				<cheat type="GameShark" code="8011ACF10011" description="Deku Shield &amp; Kokiri Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10012" description="Deku Shield &amp; Master Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10013" description="Deku Shield &amp; Giants Knife Or Biggorons Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10021" description="Hylian Shield &amp; Kokiri Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10022" description="Hylian Shield &amp; Master Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10023" description="Hylian Shield &amp; Giants Knife Or Biggorons Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10031" description="Mirror Shield &amp; Kokiri Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10032" description="Mirror Shield &amp; Master Sword Equipped" />
+				<cheat type="GameShark" code="8011ACF10033" description="Mirror Shield &amp; Giants Knife Or Biggorons Sword Equipped" />
+				<cheat type="GameShark" code="" description="&gt; Bottle 1 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD060014" description="Bottle &gt; 1 = Empty" />
+				<cheat type="GameShark" code="8011AD060015" description="Bottle &gt; 1 = Red Potion" />
+				<cheat type="GameShark" code="8011AD060016" description="Bottle &gt; 1 = Green Potion" />
+				<cheat type="GameShark" code="8011AD060017" description="Bottle &gt; 1 = Blue Potion" />
+				<cheat type="GameShark" code="8011AD060018" description="Bottle &gt; 1 = A Fairy" />
+				<cheat type="GameShark" code="8011AD060019" description="Bottle &gt; 1 = A Fish" />
+				<cheat type="GameShark" code="8011AD06001A" description="Bottle &gt; 1 = Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD06001B" description="Bottle &gt; 1 = Ruto's Letter" />
+				<cheat type="GameShark" code="8011AD06001C" description="Bottle &gt; 1 = Blue Flame" />
+				<cheat type="GameShark" code="8011AD06001D" description="Bottle &gt; 1 = Bugs" />
+				<cheat type="GameShark" code="8011AD06001E" description="Bottle &gt; 1 = A Big Poe" />
+				<cheat type="GameShark" code="8011AD06001F" description="Bottle &gt; 1 = Half Full Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD060020" description="Bottle &gt; 1 = Normal Poe" />
+				<cheat type="GameShark" code="" description="&gt; Bottle 2 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD070014" description="Bottle &gt; 2 = Empty" />
+				<cheat type="GameShark" code="8011AD070015" description="Bottle &gt; 2 = Red Potion" />
+				<cheat type="GameShark" code="8011AD070016" description="Bottle &gt; 2 = Green Potion" />
+				<cheat type="GameShark" code="8011AD070017" description="Bottle &gt; 2 = Blue Potion" />
+				<cheat type="GameShark" code="8011AD070018" description="Bottle &gt; 2 = A Fairy" />
+				<cheat type="GameShark" code="8011AD070019" description="Bottle &gt; 2 = A Fish" />
+				<cheat type="GameShark" code="8011AD07001A" description="Bottle &gt; 2 = Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD07001B" description="Bottle &gt; 2 = Ruto's Letter" />
+				<cheat type="GameShark" code="8011AD07001C" description="Bottle &gt; 2 = Blue Flame" />
+				<cheat type="GameShark" code="8011AD07001D" description="Bottle &gt; 2 = Bugs" />
+				<cheat type="GameShark" code="8011AD07001E" description="Bottle &gt; 2 = A Big Poe" />
+				<cheat type="GameShark" code="8011AD07001F" description="Bottle &gt; 2 = Half Full Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD070020" description="Bottle &gt; 2 = Normal Poe" />
+				<cheat type="GameShark" code="" description="&gt; Bottle 3 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD080014" description="Have This Bottle" />
+				<cheat type="GameShark" code="8011AD080015" description="Have Bottle With Red Potion" />
+				<cheat type="GameShark" code="8011AD080016" description="Have Bottle With Green Potion" />
+				<cheat type="GameShark" code="8011AD080017" description="Have Bottle With Blue Potion" />
+				<cheat type="GameShark" code="8011AD080018" description="Have Bottle With A Fairy" />
+				<cheat type="GameShark" code="8011AD080019" description="Have Bottle With A Fish" />
+				<cheat type="GameShark" code="8011AD08001A" description="Have Bottle With Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD08001B" description="Have Bottle With Ruto's Letter" />
+				<cheat type="GameShark" code="8011AD08001C" description="Have Bottle With Blue Flame" />
+				<cheat type="GameShark" code="8011AD08001D" description="Have Bottle With Bugs" />
+				<cheat type="GameShark" code="8011AD08001E" description="Have Bottle With A Big Poe" />
+				<cheat type="GameShark" code="8011AD08001F" description="Have Bottle With Half Full Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD080020" description="Have Bottle With Normal Poe" />
+				<cheat type="GameShark" code="" description="&gt; Bottle 4 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD090014" description="Have This Bottle" />
+				<cheat type="GameShark" code="8011AD090015" description="Have Bottle With Red Potion" />
+				<cheat type="GameShark" code="8011AD090016" description="Have Bottle With Green Potion" />
+				<cheat type="GameShark" code="8011AD090017" description="Have Bottle With Blue Potion" />
+				<cheat type="GameShark" code="8011AD090018" description="Have Bottle With A Fairy" />
+				<cheat type="GameShark" code="8011AD090019" description="Have Bottle With A Fish" />
+				<cheat type="GameShark" code="8011AD09001A" description="Have Bottle With Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD09001B" description="Have Bottle With Ruto's Letter" />
+				<cheat type="GameShark" code="8011AD09001C" description="Have Bottle With Blue Flame" />
+				<cheat type="GameShark" code="8011AD09001D" description="Have Bottle With Bugs" />
+				<cheat type="GameShark" code="8011AD09001E" description="Have Bottle With A Big Poe" />
+				<cheat type="GameShark" code="8011AD09001F" description="Have Bottle With Half Full Lon Lon Milk" />
+				<cheat type="GameShark" code="8011AD090020" description="Have Bottle With Normal Poe" />
+				<cheat type="GameShark" code="" description="&gt; Have In Item Slot 1 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD0A002D" description="Pocket Egg" />
+				<cheat type="GameShark" code="8011AD0A002E" description="Pocket Cucco" />
+				<cheat type="GameShark" code="8011AD0A002F" description="Cojiro" />
+				<cheat type="GameShark" code="8011AD0A0030" description="Odd Mushroom" />
+				<cheat type="GameShark" code="8011AD0A0031" description="Odd Potion" />
+				<cheat type="GameShark" code="8011AD0A0032" description="Poacher's Saw" />
+				<cheat type="GameShark" code="8011AD0A0033" description="Goron's Sword (Broken)" />
+				<cheat type="GameShark" code="8011AD0A0034" description="Prescription" />
+				<cheat type="GameShark" code="8011AD0A0035" description="Eyeball Frog" />
+				<cheat type="GameShark" code="8011AD0A0036" description="Eye Drops" />
+				<cheat type="GameShark" code="8011AD0A0037" description="Biggoron's Sword Claim Check" />
+				<cheat type="GameShark" code="" description="&gt; Have In Item Slot 2 Note: Do NOT use any of these cheat codes together." />
+				<cheat type="GameShark" code="8011AD0B0021" description="Weird Egg" />
+				<cheat type="GameShark" code="8011AD0B0022" description="Chicken" />
+				<cheat type="GameShark" code="8011AD0B0023" description="Zelda's Letter" />
+				<cheat type="GameShark" code="8011AD0B0024" description="Keaton Mask" />
+				<cheat type="GameShark" code="8011AD0B0025" description="Skull Mask" />
+				<cheat type="GameShark" code="8011AD0B0026" description="Spooky Mask" />
+				<cheat type="GameShark" code="8011AD0B0027" description="Bunny Hood" />
+				<cheat type="GameShark" code="8011AD0B0028" description="Goron Mask" />
+				<cheat type="GameShark" code="8011AD0B0029" description="Zora Mask" />
+				<cheat type="GameShark" code="8011AD0B002A" description="Gerudo Mask" />
+				<cheat type="GameShark" code="8011AD0B002B" description="Mask of Truth" />
+				<cheat type="GameShark" code="8011AD0B002C" description="Sold Out Sign" />
+				<cheat type="GameShark" code="" description="&gt; Have Clothes Equiped The following cheats mostly thanks to Kong K. Rool" />
+				<cheat type="GameShark" code="8011ACF00021" description="Have Normal Tunic &amp; Iron Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00031" description="Have Normal Tunic &amp; Hover Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00012" description="Have Goron Tunic &amp; Normal Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00022" description="Have Goron Tunic &amp; Iron Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00032" description="Have Goron Tunic &amp; Hover Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00013" description="Have Zora Tunic &amp; Normal Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00023" description="Have Zora Tunic &amp; Iron Boots Equiped" />
+				<cheat type="GameShark" code="8011ACF00033" description="Have Zora Tunic &amp; Hover Boots Equiped" />
+				<cheat type="GameShark" code="" description="&gt; Start Point The following cheats mostly thanks to Kong K. Rool" />
+				<cheat type="GameShark" code="8011ACE70002" description="Start Inside Jabu Jabu's Belly" />
+				<cheat type="GameShark" code="8011ACE70006" description="Start At The Spirit Temple" />
+				<cheat type="GameShark" code="8011ACE7000A" description="Start Inside Gannon's Castle" />
+				<cheat type="GameShark" code="8011ACE7000C" description="Start At The Thieves Hideout" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.nds">
+		<game title="New Super Mario Bros. (USA)">
+			<hashes>
+				<hash md5="a2ddba012e5c3c2096d0be57cc273be5" />
+			</hashes>
+			<cheats>
+				<cheat code="1208B3340000027C+2208B32400000003" type="Action Replay" description="Always Giant Mario" />
+				<cheat code="2208B32C00000002" type="Action Replay" description="Always Have Fire Flower Power Up" />
+				<cheat code="22085A5000000001" type="Action Replay" description="Play As Luigi" />
+				<cheat code="2208B36400000063" type="Action Replay" description="Infinite Lives" />
+				<cheat code="1208B3500000027C" type="Action Replay" description="Invincible" />
+				<cheat code="02088C3C00430043+02088C4000430043+02088C4400430043+02088C4800430043" type="Action Replay" description="Open All Worlds" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.nes">
+		<game title="Bad Dudes (USA)">
+			<hashes>
+				<hash md5="e5f71b547f6a8c6166c55b1baa7d21c5" />
+			</hashes>
+			<cheats>
+				<cheat code="AVSOYOSZ+ELEAPOZE+AIEAZPAP" type="Game Genie" description="Invincibility" />
+				<cheat code="APEETPEY" type="Game Genie" description="Infinite health" />
+				<cheat code="SZOEAOSE" type="Game Genie" description="Infinite health (alt)" />
+				<cheat code="SZNKASVK" type="Game Genie" description="Infinite lives" />
+				<cheat code="GXOKASVK" type="Game Genie" description="Infinite continues" />
+				<cheat code="SGVYOUVK" type="Game Genie" description="Infinite time" />
+				<cheat code="AAUPIOGI" type="Game Genie" description="Hit anywhere" />
+				<cheat code="AOUSNGEY" type="Game Genie" description="One hit kills" />
+				<cheat code="PENXYZLA" type="Game Genie" description="Start with 1 life and 1 continue" />
+				<cheat code="TENXYZLA" type="Game Genie" description="Start with double lives and continues" />
+				<cheat code="PENXYZLE" type="Game Genie" description="Start with triple lives and continues" />
+				<cheat code="PESAIYIE" type="Game Genie" description="Gain double usual energy from drinks" />
+				<cheat code="02A2:01" type="Action Replay" description="Have the Nunchaku" />
+				<cheat code="02A2:02" type="Action Replay" description="Have the Knife" />
+				<cheat code="032F:00+0344:00" type="Action Replay" description="One hit kills on bosses" />
+			</cheats>
+		</game>
+	</system>
+    <system id="openemu.system.snes">
+		<game title="Super Mario World (USA)">
+			<hashes>
+				<hash md5="cdd3c8c37322978ca8669b34bc89c804" />
+                <hash md5="dbe1f3c8f3a0b2db52b7d59417891117" />
+			</hashes>
+			<cheats>
+                <cheat code="CBB7-6D67+D4B7-6DA7+3CB7-6FD7+69B7-6F07" type="Game Genie" description="Start as Cape Mario" />
+				<cheat code="CBB7-6D67+D7B7-6DA7+3CB7-6FD7+69B7-6F07" type="Game Genie" description="Start as Fire Mario" />
+				<cheat code="14B4-6F07" type="Game Genie" description="Start with 99 lives" />
+				<cheat code="7E1497:FF" type="Action Replay" description="Invincibility" />
+                <cheat code="7E1490:FF" type="Action Replay" description="Invincibility (Starman)" />
+                <cheat code="7E0019:03" type="Action Replay" description="Always Fiery Mario" />
+				<cheat code="7E0DC1:01" type="Action Replay" description="Always have Yoshi" />
+			</cheats>
+		</game>
+	</system>
+    <system id="openemu.system.sg">
+		<game title="Sonic The Hedgehog 2 (World)">
+			<hashes>
+				<hash md5="8e2c29a1e65111fe2078359e685e7943" />
+			</hashes>
+			<cheats>
+				<cheat code="NN8A-AADN" type="Game Genie" description="Start with 99 lives (player 1)" />
+				<cheat code="ACZT-CACN" type="Game Genie" description="Need 0 chaos emeralds to become Super Sonic (Still need 50 rings)" />
+                <cheat code="FFFE21:0032" type="Action Replay" description="Always have 50 rings" />
+                <cheat code="FFB02B:0002" type="Action Replay" description="Invincibility" />
+			</cheats>
+		</game>
+        <game title="Sonic The Hedgehog 2 (World) (Rev A)">
+			<hashes>
+				<hash md5="9feeb724052c39982d432a7851c98d3e" />
+			</hashes>
+			<cheats>
+                <cheat code="BWZA-CA9Y+ACZT-DZ2E+RGZT-C6TL+ARZT-DP2R+AWZT-CR2Y" type="Game Genie" description="Jump in midair (Sonic)" />
+				<cheat code="NN8A-AAD2" type="Game Genie" description="Start with 99 lives (player 1)" />
+				<cheat code="ACZT-CACA" type="Game Genie" description="Need 0 chaos emeralds to become Super Sonic (Still need 50 rings)" />
+                <cheat code="FFFE21:0032" type="Action Replay" description="Always have 50 rings" />
+                <cheat code="FFB02B:0002" type="Action Replay" description="Invincibility" />
+			</cheats>
+		</game>
+	</system>
+	<system id="openemu.system.sms">
+		<game title="Alex Kidd in Miracle World (USA, Europe)">
+			<hashes>
+				<hash md5="3d9a8d5c2d6d3f8ff63a8f7c77ffa983" />
+				<hash md5="f43e74ffec58ddf62f0b8667d31f22c0" />
+			</hashes>
+			<cheats>
+				<cheat code="00C0-2502" type="Action Replay" description="Infinite Lives" />
+				<cheat code="00C0-30CC" type="Action Replay" description="Infinite Money" />
+				<cheat code="00C0-5407" type="Action Replay" description="Start Level With Motor Bike" />
+				<cheat code="00C0-5101" type="Action Replay" description="Start Level With Speed Boat" />
+				<cheat code="00C0-4D01" type="Action Replay" description="Power Bracelet" />
+				<cheat code="00C0-4901" type="Action Replay" description="Cane of Flight" />
+				<cheat code="00C0-4A01" type="Action Replay" description="Teleport Powder" />
+				<cheat code="00C0-4601" type="Action Replay" description="Magic Capsule A (Attack)" />
+				<cheat code="00C0-4701" type="Action Replay" description="Magic Capsule B (Barrier)" />
+				<cheat code="00C0-4E01" type="Action Replay" description="Hirotta Stone" />
+				<cheat code="00C0-4C01" type="Action Replay" description="Letter To Nibana" />
+				<cheat code="00C0-4B01" type="Action Replay" description="Moonstone Medallion" />
+			</cheats>
+		</game>
+	</system>
+</systems>

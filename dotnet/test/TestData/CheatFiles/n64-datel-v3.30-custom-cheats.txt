@@ -1,0 +1,990 @@
+;------------------------------------
+"Banjo-Kazooie v1.0"
+;------------------------------------
+
+"(M)"
+DE000400 0000
+8124C9D8 1000
+812876A4 1000
+812D3DC0 2400
+
+"Infinite Lives"
+80385F8B 0009
+
+"Infinite Health"
+80385F83 0008
+80385F87 0008
+
+"Infinite Air"
+81385F8E 0E10
+
+"Infinite Eggs"
+80385F67 0063
+
+"Infinite Red Feathers"
+80385F6F 0063
+
+"Infinite Gold Feathers"
+80385F73 0063
+
+"Press L to Levitate"
+D0281251 0020
+8137C4BC 43E0
+
+"Extra Notes" .off
+80385F63 0063
+
+"Extra Jiggies" .off
+80385FCB 0063
+
+.end
+
+;------------------------------------
+"Banjo-Kazooie v1.1"
+;------------------------------------
+
+"(M)"
+DE000400 0000
+8124B728 1000
+812864E4 1000
+812D2E00 2400
+
+"Infinite Lives"
+803851AB 0009
+
+"Infinite Health"
+803851A3 0008
+803851A7 0008
+
+"Infinite Air"
+813851AE 0E10
+
+"Infinite Eggs"
+80385187 0063
+
+"Infinite Red Feathers"
+8038518F 0063
+
+"Infinite Gold Feathers"
+80385193 0063
+
+"Press L to Levitate"
+D02804C9 0020
+8137B6BC 43E0
+
+"Extra Notes" .off
+80385183 0063
+
+"Extra Jiggies" .off
+803851EB 0063
+
+.end
+
+;------------------------------------
+"GoldenEye 007"
+;------------------------------------
+
+" " .off
+"------- HEALTH -------" .off
+" " .off
+
+"Infinite Health & Armor (ASM)"
+8100C0F4 0801
+8100C0F6 8090
+8100C0F8 AFA4
+8100C0FA 0000
+81060240 0004
+81060242 7600
+81060244 3C02
+81060246 8008
+81060248 8C42
+8106024A 9EE0
+8106024C 3401
+8106024E 3F80
+81060250 A441
+81060252 00DC
+81060254 A441
+81060256 00E0
+81060258 0800
+8106025A 303F
+
+; WARNING: You will NOT be able
+; to pick up anything while
+; invincible. To pick up a
+; weapon or item, first DISABLE
+; invincibility.
+"Press D-UP/DOWN for Invincible"
+D0064F30 0008
+800364B4 0001
+D0064F30 0004
+800364B4 0000
+
+" " .off
+"------- ENEMIES -------" .off
+" " .off
+
+"Guards Can't Aim" .off
+8002CE40 0030
+80030B1C 0030
+
+"Guards Can't See Bond" .off
+800364C7 0000
+
+"Guards Are Weak" .off
+8002CE48 0048
+
+" " .off
+"------- AMMO -------" .off
+" " .off
+
+"Infinite Ammo in Clip"
+80079E3B 0001
+
+"Instant Reloads"
+D00D37FF 0001
+800D37FF 00FF
+D00B6BFF 0001
+800B6BFF 00FF
+D00D9BFF 0001
+800D9BFF 00FF
+D00B43FF 0001
+800B43FF 00FF
+D00C6FFF 0001
+800C6FFF 00FF
+D00E63FF 0001
+800E63FF 00FF
+D00C5BFF 0001
+800C5BFF 00FF
+D00CD3FF 0001
+800CD3FF 00FF
+D00D73FF 0001
+800D73FF 00FF
+D00D9BFF 0001
+800D9BFF 00FF
+D00C0BFF 0001
+800C0BFF 00FF
+D00B07FF 0001
+800B07FF 00FF
+
+" " .off
+"------- MISSIONS -------" .off
+" " .off
+
+"Always Have 00:00 Time" .off
+8004837E 0000
+8004838E 0000
+80048396 0000
+80079A22 0000
+80079F26 0000
+
+"Have All Objectives Done" .off
+80036FD3 0001
+
+" " .off
+"------- OTHER -------" .off
+" " .off
+
+"D-LEFT/RIGHT: Toggle Fast Bond"
+D0064F30 0002 ; D-LEFT
+80036FCF 0000 ; OFF
+D0064F30 0001 ; D-RIGHT
+80036FCF 0001 ; ON
+
+"L/R: Toggle Walk Thru Doors"
+D0064F31 0020 ; L
+800364CB 0000 ; Turn cheat ON
+D0064F31 0010 ; R
+800364CB 0001 ; Turn cheat OFF
+
+" " .off
+"------- BETA CONTENT -------" .off
+" " .off
+
+; 1. Go to the pier farthest away from the start of the level.
+; 2. While facing the water, stand in the far right corner of the pier.
+; 3. Press the GS button. You will now be standing on the water.
+; 4. Walk straight to the island on the opposite side.
+; 5. It is not possible to return to the pier. You will need to restart the level.
+"Press L+R for Dam SecretIsland" .off
+D0064F31 0030
+800D33ED 0000
+
+.end
+
+;------------------------------------
+"Mario Kart"
+;------------------------------------
+
+"P1 > No Laps to Win Race" .off
+81164390 0000
+81164392 0002
+
+" " .off
+"------- P1 CONDITION -------" .off
+" " .off
+
+"Normal" .off
+800F6A4E 0000
+
+"Faster" .off
+800F6A4E 0001
+
+"Star"
+800F6A4E 0002
+
+"Nothing" .off
+800F6A4E 0010
+
+"Mushroom" .off
+800F6A4E 0020
+
+" " .off
+"------- P1 WEAPON -------" .off
+" " .off
+
+"1x Banana" .off
+80165F5D 0001
+80165F8A 0001
+
+"3x Bananas" .off
+80165F5D 0002
+80165F8A 0002
+
+"1x Green Shell" .off
+80165F5D 0003
+80165F8A 0003
+
+"3x Green Shells" .off
+80165F5D 0004
+80165F8A 0004
+
+"1x Red Shell" .off
+80165F5D 0005
+80165F8A 0005
+
+"3x Red Shells" .off
+80165F5D 0006
+80165F8A 0006
+
+"Blue Shell" .off
+80165F5D 0007
+80165F8A 0007
+
+"Lightning Bolt"
+80165F5D 0008
+80165F8A 0008
+
+"Upside Down '?'" .off
+80165F5D 0009
+80165F8A 0009
+
+"Star" .off
+80165F5D 000A
+80165F8A 000A
+
+"Ghost" .off
+80165F5D 000B
+80165F8A 000B
+
+"3 Mushrooms" .off
+80165F5D 000E
+80165F8A 000E
+
+"Gold Mushroom" .off
+80165F5D 000F
+80165F8A 000F
+
+.end
+
+;------------------------------------
+"Perfect Dark v1.0"
+;------------------------------------
+
+"(M)"
+FF72C5A0 0000
+
+"P1 > Infinite Health (ASM)"
+D125599C 4604
+8125599C 4600
+D125599E 5181
+8125599E 5185
+
+"Enemies Can't Aim"
+8026AC10 0020
+
+"P1 > All Weapons (no ammo)"
+D0207F10 0000
+80207F10 0007
+D01EEF10 0000
+801EEF10 0007
+D01D5F10 0000
+801D5F10 0007
+
+"Infinite Ammo > Bullets"
+D01D4EFB 0000
+801D4EFB 00FF
+D01D569F 0000
+801D569F 00FF
+D01EDEFB 0000
+801EDEFB 00FF
+D01EE69F 0000
+801EE69F 00FF
+D0206EFB 0000
+80206EFB 00FF
+D020769F 0000
+8020769F 00FF
+
+"Infinite Ammo > Throwables" .off
+D0206EFE 0000
+80206EFF 00FF
+D01EDEFE 0000
+801EDEFF 00FF
+D01D4EFE 0000
+801D4EFF 00FF
+
+.end
+
+;------------------------------------
+"Perfect Dark v1.1"
+;------------------------------------
+
+"(M)"
+FF72C5A0 0000
+
+; Only needed on EverDrive
+;"(M) - Most Levels"
+;FF72C5A0 0000
+;
+;"(M) - Air Force One" .off
+;FF75C000 0000
+
+"Lights Don't Glare" .off
+802D23F0 0020
+
+"NPCs Can't Aim" .off
+8026AC10 0020
+
+"NPCs Don't Attack" .off
+80273E00 0020
+
+"All Weapons (NO AMMO)"
+D0207F10 0000
+80207F10 0007
+D01EEF10 0000
+801EEF10 0007
+D01D5F10 0000
+801D5F10 0007
+
+"Health Never Decreases (ASM)"
+8125599C 461F
+
+"Press D-Up: Combat Boost ON"
+D009C7E4 0008
+8009A427 0001
+
+"Press D-Down: Combat Boost OFF"
+D009C7E4 0004
+8009A427 0000
+
+" " .off
+"---- AMMO NEVER DECREASES ----" .off
+" " .off
+
+"Bullets"
+812BA8A8 0300
+
+"RC-P120 cloak"
+812C6F20 0080
+
+"Combat boost"
+812BB892 0000
+
+"Mauler charge"
+812C6AB2 0000
+
+"Tranq secondary"
+812BB748 0100
+
+"Throwables" .off
+812BB39E 0000
+
+"Cloak"
+802C9735 00E0
+802C9738 0000
+;802C973A 0000
+
+" " .off
+"------ INSTANT RELOADS ------" .off
+" " .off
+
+"Most Weapons"
+D01D4EFB 0001
+801D4EFB 0002
+D01D569F 0001
+801D569F 0004
+D01EDEFB 0001
+801EDEFB 0008
+D01EE69F 0001
+801EE69F 0010
+D0206EFB 0001
+80206EFB 0020
+D020769F 0001
+8020769F 0040
+
+"SuperDragon grenades"
+D0206EFE 0000
+80206EFF 00FF
+D01EDEFE 0000
+801EDEFF 00FF
+D01D4EFE 0000
+801D4EFF 00FF
+
+" " .off
+"------- MOON JUMP -------" .off
+" " .off
+
+"P1 Solo: Press B to Moon Jump" .off
+D009C7E4 0040
+81206720 40F2
+D009C7E4 0040
+802066D3 0000
+D009C7E4 0040
+811ED720 40F2
+D009C7E4 0040
+801ED6D3 0000
+D009C7E4 0040
+811D4720 40F2
+D009C7E4 0040
+801D46D3 0000
+
+"P1 Multi: Press B to Moon Jump" .off
+D009C7E4 0040
+811BB720 40F2
+D009C7E4 0040
+801BB6D3 0000
+
+" " .off
+"------- FIRING RANGE -------" .off
+" " .off
+
+"Goal Score = 1" .off
+810ACD22 0001
+
+"No Accuracy Limit" .off
+800ACD28 0000
+
+"No Ammo Limit" .off
+800ACD26 00FF
+
+"No Goal Targets" .off
+800ACD24 00FF
+
+"No Time Limit" .off
+800ACD25 00FF
+
+.end
+
+;------------------------------------
+"Shadows of the Empire v1.0"
+;------------------------------------
+
+"Press Z+R for Debug Menu"
+D11126A4 2010
+800D017F 0001
+
+"Infinite Lives"
+800E05CB 00FF
+
+"Infinite Missiles"
+800E1265 00FF
+
+"Infinite Jetpack (ASM)"
+80076AA5 003F
+80076C51 003F
+80076B41 003F
+
+.end
+
+;------------------------------------
+"Shadows of the Empire v1.1"
+;------------------------------------
+
+"Press Z+R for Debug Menu"
+D11126A4 2010
+800D01BF 0001
+
+"Infinite Lives"
+800E0EB3 00FF
+
+"Infinite Missiles"
+800E1B55 00FF
+
+"Infinite Jetpack (ASM)"
+80076BB5 003F
+80076D61 003F
+80076C51 003F
+
+.end
+
+;------------------------------------
+"Shadows of the Empire v1.2"
+;------------------------------------
+
+"Press Z+R for Debug Menu"
+D1113064 2010
+800D098B 0001
+
+"Infinite Lives"
+800E0EB3 00FF
+
+"Infinite Jetpack (ASM)"
+80077155 003F
+800771F1 003F
+80077301 003F
+
+.end
+
+;------------------------------------
+"Super Mario 64"
+;------------------------------------
+
+"Infinite Lives"
+8033B21D 0064
+
+"Infinite Energy & Breath"
+8033B21E 0008
+
+"Monsters Don't Hurt Mario"
+A033B197 0001
+
+"Falling Doesn't Hurt Mario"
+8033B22C 00E8
+8133B178 FFFF
+
+"Press D-Up for 99 Coins"
+D033AFA0 0008
+8133B218 0063
+
+"Press L to Levitate"
+D033AFA1 0020
+8133B1BC 4220
+D033AFA1 0020
+8133B17C 0300
+D033AFA1 0020
+8133B17E 0880
+
+.end
+
+;------------------------------------
+"Super Smash Bros"
+;------------------------------------
+
+"(M)"
+F10396B0 2400
+DE000400 0000
+
+" " .off
+"------- P1 ALL MODES -------" .off
+" " .off
+
+"Infinite Health"
+810EA264 0810
+810EA266 0000
+81400000 5320
+81400002 0001
+81400004 0000
+81400006 2821
+81400008 0803
+8140000A A89B
+8140000C 01C5
+8140000E 7821
+
+"Infinite Jumps"
+8113FECC 240D
+
+"Invincible After Death" .off
+810E8AC0 0C00
+810E8AC2 0018
+81000060 8FA5
+81000062 001C
+81000064 3C01
+81000066 8013
+81000068 8C21
+8100006A 0D84
+8100006C 2404
+; 02 for "Invincible after death"
+; 03 for "Untouchable"
+8100006E 0002
+81000070 50A1
+81000072 0001
+81000074 ACA4
+81000076 05AC
+81000078 03E0
+8100007A 0008
+8100007C 2400
+
+" " .off
+"------- P1 STORY MODE -------" .off
+" " .off
+
+"Infinite Time"
+810A4B2E 43CB
+
+"Infinite Lives"
+800A4B43 0004
+
+"Super Strong" .off
+800A4B39 001E
+800A4B37 0000
+
+"Weak Enemies" .off
+800A4BAD 000A
+800A4C21 000A
+800A4C95 000A
+800A4BAB 00AE
+800A4C1F 00AE
+800A4C93 00AE
+
+"Skip Straight To Master Hand" .off
+800A4AE7 000D
+
+"D-DOWN to Spawn Items" .off
+D109EFA4 0400
+8118D0A2 0001
+
+"Enable All Hidden Characters" .off
+810A4938 0FF0
+
+"Enable All Prizes" .off
+800A4937 00FF
+
+.end
+
+;------------------------------------
+"Yoshi's Story"
+;------------------------------------
+
+; https://www.codetwink.com/view-cheats-1683-title-yoshi%27s+story.html
+; https://gamehacking.org/game/21054
+
+"(M)"
+DE000400 0000
+EE000000 0000
+
+"Press D-Up to Have All Fruit"
+D00F9390 0008
+800F89D3 001E
+
+"Infinite Eggs (after pickup)"
+8103E89C 2400
+
+"Infinite Lives (all Yoshis)"
+800F8DF7 00FF
+
+"Infinite Flutter"
+81034924 A040
+8102DEC8 3000
+
+" " .off
+"------- INFINITE HEALTH ------" .off
+" " .off
+
+"All Yoshis"
+8102B780 2400
+
+"Dark Blue Yoshi" .off
+800F8DC3 0008
+
+"Green Yoshi" .off
+800F8DB7 0008
+
+"Light Blue Yoshi" .off
+800F8DC7 0008
+
+"Pink Yoshi" .off
+800F8DCB 0008
+
+"Red Yoshi" .off
+800F8DBB 0008
+
+"Yellow Yoshi" .off
+800F8DBF 0008
+
+"Black Yoshi" .off
+800F8DD3 0008
+
+"White Yoshi" .off
+800F8DCF 0008
+
+.end
+
+;------------------------------------
+"Zelda: OOT v1.2"
+;------------------------------------
+
+; https://www.codetwink.com/view-cheats-1523-title-legend+of+zelda-ocarina+of+time%2C+the+version+1.2.html
+
+"(M)"
+F10004E4 2400
+F0000319 0078
+
+"Infinite Health"
+8111ACB0 0140
+
+"Infinite Magic Meter" .off
+D011ACB9 0008
+8011ACBA 0001
+8011ACBC 0001
+8011ACB3 0060
+
+"Press D-LEFT for SUNRISE"
+D01C8D74 0002
+8111AC8C 4000
+
+"Press D-RIGHT for SUNSET"
+D01C8D74 0001
+8111AC8C C000
+
+" " .off
+"------- BOTTLES -------" .off
+" " .off
+
+"Bottle #2 = Fish" .off
+8011AD07 0019
+
+"Bottle #3 = Blue Fire"
+8011AD08 001C
+
+"Bottle #4 = Fairy"
+8011AD09 0018
+
+" " .off
+"------- INFINITE -------" .off
+" " .off
+
+"Deku Sticks"
+8011AD0C 0010
+
+"Deku Nuts"
+8011AD0D 001E
+
+"Slingshot Bullets"
+8011AD12 001E
+
+"Bombs"
+8011AD0E 0014
+
+"Bombchus"
+8011AD14 0014
+
+"Arrows"
+8011AD0F 0028
+
+"Magic Beans"
+8011AD1A 0010
+
+" " .off
+"------- ACTIVATORS -------" .off
+" " .off
+
+"Press L Button for Moon Jump"
+D01C8D75 0020
+811DB350 40CB
+
+"Press D-UP for Max Rupees"
+D01C8D74 0008
+8111C04C 07FF
+
+"Press D-DOWN for Zero Rupees" .off
+D01C8D74 0004
+8111C04C 8000
+
+" " .off
+"------- EPONA CARROTS -------" .off
+" " .off
+
+"Lon Lon Ranch" .off
+D01EF588 0004
+801EF588 0005
+
+"Hyrule Field" .off
+D01EEF88 0004
+801EEF88 0005
+
+"Lake Hylia" .off
+D01EF388 0004
+801EF388 0005
+
+"Gerudo's Fortress" .off
+D01EF108 0004
+801EF108 0005
+
+" " .off
+"------- ARCHERY RANGE -------" .off
+" " .off
+
+"Gerudo Archery: Infin. Arrows" .off
+801D948F 0063
+
+"Gerudo Archery: Max Score" .off
+8111C086 05DC
+
+" " .off
+"------- INVENTORY -------" .off
+" " .off
+
+"All Equipment" .off
+8111AD1C 7777
+
+"All Quest Status Items" .off
+8111AD24 30FF
+8111AD26 FFFF
+
+"Have Deku Stick" .off
+8011ACF4 0000
+
+"Deku Nut" .off
+8011ACF5 0001
+
+"Bombs" .off
+8011ACF6 0002
+
+"Bombchus" .off
+8011ACFC 0009
+
+"Slingshot" .off
+8011ACFA 0006
+
+"Boomerang" .off
+8011AD00 000E
+
+"Bow" .off
+8011ACF7 0003
+
+"Quiver (Holds 30)" .off
+8011AD21 0001
+
+"Hookshot" .off
+8011ACFD 000A
+
+"Longshot" .off
+8011ACFD 000B
+
+"Lens of Truth" .off
+8011AD01 000F
+
+"Megaton Hammer" .off
+8011AD03 0011
+
+"Fairy Ocarina" .off
+8011ACFB 0007
+
+"Ocarina of Time" .off
+8011ACFB 0008
+
+"Magic Beans" .off
+8011AD02 0010
+
+"Golden Scale + Bullet Bag" .off
+8011AD22 00C4
+
+"Bomb Bag + Goron Bracelet" .off
+8011AD23 0038
+
+"Din's Fire (MP6)" .off
+8011ACF9 0005
+
+"Farore's Wind (MP6)" .off
+8011ACFF 000D
+
+"Nayru's Love (MP12)" .off
+8011AD05 0013
+
+"Fire Arrow (MP2)" .off
+8011ACF8 0004
+
+"Ice Arrow (MP2)" .off
+8011ACFE 000C
+
+"Light Arrow (MP4)" .off
+8011AD04 0012
+
+"50 Skulltulas Killed" .off
+8111AD50 0032
+
+"Giant Knife -> Biggoron Sword" .off
+8011ACBE 0001
+
+" " .off
+"------- MAP & COMPASS -------" .off
+" " .off
+
+"Deku Tree" .off
+8011AD28 0006
+
+"Dodongo's Cavern" .off
+8011AD29 0006
+
+"Jabu-Jabu" .off
+8011AD2A 0006
+
+"Bottom of the Well" .off
+8011AD30 0006
+
+"Ice Cavern" .off
+8011AD31 0006
+
+" " .off
+"------- BIG KEY & MAP -------" .off
+" " .off
+
+"Forest Temple" .off
+8011AD2B 0007
+
+"Fire Temple" .off
+8011AD2C 0007
+
+"Water Temple" .off
+8011AD2D 0007
+
+"Spirit Temple" .off
+8011AD2E 0007
+
+"Shadow Temple" .off
+8011AD2F 0007
+
+" " .off
+"------- SMALL KEYS -------" .off
+" " .off
+
+"Treasure Box Shop"
+8011AD4C 0009
+
+"Forest Temple" .off
+8011AD3F 0009
+
+"Fire Temple" .off
+8011AD40 0009
+
+"Water Temple" .off
+8011AD41 0009
+
+"Spirit Temple" .off
+8011AD42 0009
+
+"Shadow Temple" .off
+8011AD43 0009
+
+"Bottom of the Well" .off
+8011AD44 0009
+
+"Gerudo Training" .off
+8011AD47 0009
+
+"Thieves' Hideout" .off
+8011AD48 0009
+
+"Ganon's Castle" .off
+8011AD49 0009
+
+.end

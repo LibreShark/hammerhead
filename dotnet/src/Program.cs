@@ -1,599 +1,360 @@
-﻿using System.Drawing;
-using BetterConsoles.Colors.Extensions;
-using BetterConsoles.Core;
-using BetterConsoles.Tables;
-using BetterConsoles.Tables.Builders;
-using BetterConsoles.Tables.Configuration;
-using BetterConsoles.Tables.Models;
+﻿using System.CommandLine;
+using System.Text.RegularExpressions;
+using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead;
 
-using N64;
-
-internal delegate int Runner(string[] args);
-
-internal class CliCmd
-{
-    private readonly string _id;
-    private readonly int _minArgCount;
-    private readonly int _maxArgCount;
-    private readonly Runner _runner;
-
-    public CliCmd(string id, int minArgCount = 0, int maxArgCount = int.MaxValue, Runner? runner = null)
-    {
-        _id = id;
-        _minArgCount = minArgCount;
-        _maxArgCount = maxArgCount;
-        _runner = runner ?? (args => 0);
-    }
-
-    public bool Is(string id)
-    {
-        return string.Equals(_id, id);
-    }
-
-    public int Run(IEnumerable<string> args)
-    {
-        var arr = args.ToArray();
-        var isOutOfBounds = arr.Length < _minArgCount || arr.Length > _maxArgCount - 1;
-        return isOutOfBounds ? ShowUsage() : _runner(arr);
-    }
-
-    public static int ShowUsage()
-    {
-        Console.WriteLine(@"
-Usage: dotnet run --project dotnet/src/src.csproj -- COMMAND [...args]
-
-Commands:
-
-    rom-info        GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Displays detailed information about the given GS ROM files.
-
-    export-cheats   GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Dumps the cheat lists from the given GS ROMs to
-                    Datel-formatted plain text files in the temp directory.
-
-    import-cheats   FROM_DATEL_FORMATTED.txt TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
-
-                    Writes a Datel-formatted plain text cheat list to the given
-                    GS ROM files.
-
-    copy-cheats     FROM_GS_ROM.bin TO_GS_ROM_1.bin [TO_GS_ROM_2.bin ...]
-
-                    Copies the list of cheats from one GS ROM file to another.
-
-    scrub-rom       GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Attempts to clean up garbage cheats, reset user preferences,
-                    etc.
-
-    decrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Decrypts the given Datel-encrypted ROM files so that they
-                    can be inspected and edited.
-
-    encrypt-rom     GS_ROM_1.bin [GS_ROM_2.bin ...]
-
-                    Encrypts the given unencrypted ROM files for use with the
-                    official Datel N64 Utils.
-
-    scramble-xp64   XP64_ROM_1.bin [XP64_ROM_2.bin ...]
-
-                    Scrambles the given Xplorer 64 ROM files so that they can be
-                    written to the cart's two SST29EE010 EEPROM chips.
-
-    unscramble-xp64 XP64_ROM_1.bin [XP64_ROM_2.bin ...]
-
-                    Unscrambles Xplorer 64 ROM files that were dumped from the
-                    cart's two SST29EE010 EEPROM chips.
-");
-        return 1;
-    }
-}
-
 internal static class Program
 {
-    private static readonly Color TableHeaderColor = Color.FromArgb(152, 114, 159);
-    private static readonly Color TableKeyColor = Color.FromArgb(160, 160, 160);
-    private static readonly Color TableValueColor = Color.FromArgb(230, 230, 230);
-
-    public static int Main(string[] cliArgs)
+    public static async Task<int> Main(string[] args)
     {
-        // ANSI color ASCII art generated with
-        // https://github.com/TheZoraiz/ascii-image-converter
-        Console.WriteLine();
-        Console.WriteLine(Resources.N64_GS_LOGO_ASCII_ART_ANSI_TXT.Trim());
-        Console.WriteLine(Resources.LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT);
-
-        if (cliArgs.Length < 1)
-        {
-            return CliCmd.ShowUsage();
-        }
-
-        CliCmd[] cmds = {
-            new(id: "rom-info", minArgCount: 1, runner: PrintRomInfo),
-            new(id: "export-cheats", minArgCount: 1, runner: ExportCheats),
-            new(id: "import-cheats", minArgCount: 2,
-                runner: (cmdArgs) => ImportCheats(cmdArgs[0], cmdArgs.Skip(1))),
-            new(id: "copy-cheats", minArgCount: 2,
-                runner: (cmdArgs) => CopyCheats(cmdArgs[0], cmdArgs.Skip(1))),
-            new(id: "scrub-rom", minArgCount: 1, runner: ScrubRoms),
-            new(id: "encrypt-rom", minArgCount: 1, runner: EncryptRoms),
-            new(id: "decrypt-rom", minArgCount: 1, runner: DecryptRoms),
-            new(id: "scramble-xp64", minArgCount: 1, runner: ScrambleXp64),
-            new(id: "unscramble-xp64", minArgCount: 1, runner: UnscrambleXp64),
-        };
-
-        var cmdId = cliArgs[0];
-        var cmdArgs = cliArgs.Skip(1).ToArray();
-
-        foreach (var cmd in cmds)
-        {
-            if (cmd.Is(cmdId))
-            {
-                return cmd.Run(cmdArgs);
-            }
-        }
-
-        return CliCmd.ShowUsage();
+        var cli = new Cli();
+        cli.Always += (_, @params) => PrintBanner(@params);
+        cli.OnInfo += (_, @params) => PrintFileInfo(@params);
+        cli.OnEncryptRom += (_, @params) => EncryptRom(@params);
+        cli.OnDecryptRom += (_, @params) => DecryptRom(@params);
+        cli.OnScrambleRom += (_, @params) => ScrambleRom(@params);
+        cli.OnUnscrambleRom += (_, @params) => UnscrambleRom(@params);
+        cli.OnDumpCheats += (_, @params) => DumpCheats(@params);
+        cli.OnCopyCheats += (_, @params) => CopyCheats(@params);
+        return await cli.RootCommand.InvokeAsync(args);
     }
 
-    private static int CopyCheats(string srcRomFilePath, IEnumerable<string> destRomFilePaths)
+    private static void PrintBanner(CmdParams cmdParams)
     {
-        var srcBytes = File.ReadAllBytes(srcRomFilePath);
-        var srcInfo = RomReader.FromBytes(srcBytes);
-        if (srcInfo == null)
+        var printer = new TerminalPrinter(printFormat: cmdParams.PrintFormatId);
+        printer.PrintBanner(cmdParams);
+    }
+
+    private static void PrintFileInfo(InfoCmdParams @params)
+    {
+        foreach (FileInfo romFile in @params.InputFiles)
         {
-            Console.Error.Write($"Invalid GS ROM file source: \"{srcRomFilePath}\"");
-            return 1;
+            AbstractCodec codec = AbstractCodec.ReadFromFile(romFile.FullName, @params.InputCodecId);
+            var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+            printer.PrintFileInfo(romFile, @params);
         }
+    }
 
-        Console.WriteLine($"Copying cheats from source GS ROM file: '{srcRomFilePath.SetStyle(FontStyleExt.Bold)}'\n");
+    private class FileTransformParams
+    {
+        public FileInfo InputFile { get; init; }
+        public FileInfo OutputFile { get; init; }
+        public AbstractCodec Codec { get; init; }
+        public TerminalPrinter Printer { get; init; }
 
-        foreach (var destRomFilePath in destRomFilePaths)
+        public FileTransformParams(FileInfo inputFile, FileInfo outputFile, AbstractCodec codec, TerminalPrinter printer)
         {
-            Console.WriteLine($"Writing cheats to destination GS ROM file: '{destRomFilePath.SetStyle(FontStyleExt.Bold)}'...");
-            var destBytes = File.ReadAllBytes(destRomFilePath);
-            var destInfo = RomReader.FromBytes(destBytes);
-            if (destInfo == null)
+            InputFile = inputFile;
+            OutputFile = outputFile;
+            Codec = codec;
+            Printer = printer;
+        }
+    }
+
+    private static void TransformOneRomFile(
+        string status,
+        string fileSuffix,
+        RomCmdParams @params,
+        Func<FileTransformParams, bool> isSupported,
+        Action<FileTransformParams> transform)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
+
+        var printer = new TerminalPrinter(@params.PrintFormatId);
+        printer.PrintRomCommand(status, inputFile, outputFile, () =>
+        {
+            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            var fileParams = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+            if (!isSupported(fileParams))
             {
-                Console.Error.Write($"Invalid GS ROM file destination: \"{destRomFilePath}\"");
-                return 1;
+                printer.PrintError(new InvalidOperationException(
+                    $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
             }
 
-            for (var i = 0; i < 0x00010000; i++)
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
             {
-                var to = destInfo.GameListOffset + i;
-                var from = srcInfo.GameListOffset + i;
-                if (to > 0x00040000 || from > 0x00040000)
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
+                return;
+            }
+
+            transform(fileParams);
+        });
+    }
+
+    private static void TransformOneCheatFile(
+        string status,
+        string fileSuffix,
+        RomCmdParams @params,
+        Func<FileTransformParams, bool> isSupported,
+        Action<FileTransformParams> transform)
+    {
+        FileInfo inputFile = @params.InputFile!;
+        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
+
+        var printer = new TerminalPrinter(@params.PrintFormatId);
+        printer.PrintRomCommand(status, inputFile, outputFile, () =>
+        {
+            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
+
+            if (!isSupported(ftp))
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
+            }
+
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
+                return;
+            }
+
+            transform(ftp);
+        });
+    }
+
+    private static void EncryptRom(RomCmdParams @params)
+    {
+        TransformOneRomFile(
+            "Encrypting ROM file",
+            "encrypted",
+            @params,
+            t => t.Codec.SupportsFileEncryption(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Encrypt())
+            );
+    }
+
+    private static void DecryptRom(RomCmdParams @params)
+    {
+        TransformOneRomFile(
+            "Decrypting ROM file",
+            "decrypted",
+            @params,
+            t => t.Codec.SupportsFileEncryption(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Decrypt())
+        );
+    }
+
+    private static void ScrambleRom(RomCmdParams @params)
+    {
+        TransformOneRomFile(
+            "Scrambling ROM file",
+            "scrambled",
+            @params,
+            t => t.Codec.SupportsFileScrambling(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Scramble())
+        );
+    }
+
+    private static void UnscrambleRom(RomCmdParams @params)
+    {
+        TransformOneRomFile(
+            "Unscrambling ROM file",
+            "unscrambled",
+            @params,
+            t => t.Codec.SupportsFileScrambling(),
+            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Unscramble())
+        );
+    }
+
+    private static void DumpCheats(DumpCheatsCmdParams @params)
+    {
+        foreach (FileInfo inputFile in @params.InputFiles!)
+        {
+            FileInfo outputFile = GenerateOutputFile(@params.OutputDir, inputFile, "cheats", "txt");
+
+            TransformOneCheatFile(
+                "Dumping cheats",
+                "cheats",
+                new RomCmdParams()
                 {
-                    break;
+                    InputFile = inputFile,
+                    OutputFile = outputFile,
+                    OverwriteExistingFiles = @params.OverwriteExistingFiles,
+                    PrintFormatId = @params.PrintFormatId,
+                    HideBanner = @params.HideBanner,
+                    Clean = @params.Clean,
+                },
+                t => t.Codec.SupportsCheats(),
+                t =>
+                {
+                    TerminalPrinter printer = t.Printer;
+                    AbstractCodec inputCodec = t.Codec;
+                    // TODO(CheatoBaggins): Warn the user that --output-format is ignored
+                    // when writing to an existing ROM output file whose codec can be auto-detected.
+                    // If the existing file is EMPTY or not a supported codec, THEN we should
+                    // use --output-format.
+                    // Throw an error if the user tries to write to a different ROM format
+                    // than the existing output file.
+                    if (outputFile.Exists && @params.OutputFormat != CodecId.Auto)
+                    {
+                        // TODO(CheatoBaggins): What to do?
+                        // Check SupportsFirmware value
+                        Console.WriteLine();
+                    }
+                    CodecId outputCodecId =
+                        @params.OutputFormat == CodecId.Auto
+                            ? inputCodec.DefaultCheatOutputCodec
+                            : @params.OutputFormat;
+                    if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
+                    {
+                        throw new InvalidOperationException(
+                            $"Output codec {@params.OutputFormat} ({@params.OutputFormat.ToDisplayString()}) " +
+                            "does not support writing cheats yet.");
+                    }
+
+                    AbstractCodec outputCodec =
+                        outputFile.Exists
+                            ? AbstractCodec.ReadFromFile(outputFile.FullName)
+                            : AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+
+                    outputCodec.Games.RemoveAll(_ => true);
+                    outputCodec.Games.AddRange(inputCodec.Games);
+                    outputCodec.WriteChangesToBuffer();
+
+                    File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
                 }
-                destBytes[to] = srcBytes[from];
-            }
-
-            File.WriteAllBytes(destRomFilePath, destBytes);
-        }
-
-        return 0;
-    }
-
-    private static int ImportCheats(string srcDatelFormattedTextFilePath, IEnumerable<string> destRomFilePaths)
-    {
-        Console.WriteLine($"Import cheats from Datel-formatted plain text file: '{srcDatelFormattedTextFilePath.SetStyle(FontStyleExt.Bold)}'\n");
-
-        foreach (var destRomFilePath in destRomFilePaths)
-        {
-            Console.WriteLine($"Writing cheats to destination GS ROM file: '{destRomFilePath.SetStyle(FontStyleExt.Bold)}'...");
-            Examples.ImportGameListFromFile(
-                srcDatelFormattedTextFilePath,
-                destRomFilePath
             );
         }
-
-        return 0;
     }
 
-    private static int PrintRomInfo(IEnumerable<string> romFilePaths)
+    private static void CopyCheats(RomCmdParams @params)
     {
-        foreach (var romFilePath in romFilePaths)
+        // TODO(CheatoBaggins): Fix file extension
+        FileInfo inputFile = @params.InputFile!;
+        var inputCodec = AbstractCodec.ReadFromFile(inputFile.FullName);
+        var printer = new TerminalPrinter(inputCodec, @params.PrintFormatId);
+
+        FileInfo outputFile;
+        AbstractCodec outputCodec;
+
+        CodecId outputCodecId = @params.OutputFormat;
+        if (outputCodecId == CodecId.Auto)
         {
-            RomInfo? rom = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
-            if (rom == null)
+            outputCodecId = inputCodec.DefaultCheatOutputCodec;
+        }
+
+        if (@params.OutputFile == null)
+        {
+            // What extension?
+            outputFile = GenerateOutputFile(null, inputFile, "cheats", ".txt");
+            outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
+        }
+        else if (@params.OutputFile.Exists)
+        {
+            outputFile = @params.OutputFile;
+            if (@params.OutputFormat == CodecId.Auto)
             {
-                Console.Error.WriteLine("ERROR: Unable to read GS firmware file.");
-                continue;
-            }
-
-            Console.WriteLine(@"
-================================================================================
-");
-            Console.WriteLine(Path.GetFileName(romFilePath).SetStyle(FontStyleExt.Bold).ForegroundColor(Color.LimeGreen));
-            Console.WriteLine();
-            Console.WriteLine("Dump integrity levels:");
-            Console.WriteLine("- ⭐️ Pristine dump");
-            Console.WriteLine("- ✅ Clean dump");
-            Console.WriteLine("- ❌ Dirty dump");
-            Console.WriteLine("- ⚠️  Unknown provenance");
-            Console.WriteLine("- 🦈 LibreShark firmware (open source!)");
-
-            Console.Write(BuildFileTable(rom));
-            Console.Write(BuildKeyCodesTable(rom));
-            Console.Write(BuildGameTable(rom));
-        }
-
-        return 0;
-    }
-
-    private static string BuildFileTable(RomInfo rom)
-    {
-        CellFormat headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor
-        };
-
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Property",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor
-                )
-            )
-            .AddColumn("Value")
-                .RowsFormat()
-                    .ForegroundColor(TableValueColor)
-                    .Alignment(Alignment.Left)
-                    .HasInnerFormatting()
-            .Build();
-
-        var ipl3Bytes = rom.ActiveKeyCode?.Ipl3ChunkCrcBytes;
-        var ipl3Crc32 = Join(ipl3Bytes)
-            .ForegroundColor(Color.LimeGreen)
-            .SetStyle(FontStyleExt.Underline);
-        var firmBytes = rom.ActiveKeyCode?.ProgramChunkCrcBytes;
-        var firmCrc32 = Join(firmBytes)
-            .ForegroundColor(Color.DeepSkyBlue)
-            .SetStyle(FontStyleExt.Underline);
-        var pcBytes = rom.ActiveKeyCode?.ProgramCounterBytes;
-        var pcCrc32 = Join(pcBytes)
-            .ForegroundColor(Color.Red)
-            .SetStyle(FontStyleExt.Underline);
-
-        foreach (var kc in rom.KeyCodes)
-        {
-            var kcShortName = kc.Name[..5];
-            if (ipl3Bytes != null && kc.Ipl3ChunkCrcBytes.SequenceEqual(ipl3Bytes))
-            {
-                ipl3Crc32 += $" ({kcShortName})";
-            }
-            if (pcBytes != null && kc.ProgramCounterBytes.SequenceEqual(pcBytes))
-            {
-                pcCrc32 += $" ({kcShortName})";
-            }
-        }
-
-        var ver = rom.Version;
-        table.Config = TableConfig.Unicode();
-        table
-            .AddRow("Dump integrity", "Pristine | Clean | Dirty | Unknown")
-            .AddRow("Brand", ver.DisplayBrand.ForegroundGradient(Color.FromArgb(180, 0, 0), Color.Red))
-            .AddRow("Version", ver.DisplayNumber.ForegroundColor(Color.LimeGreen))
-            .AddRow("ISO timestamp", ver.DisplayBuildTimestampIso.ForegroundColor(Color.DeepSkyBlue))
-            .AddRow("Locale", ver.DisplayLocale)
-            .AddRow("", "")
-            .AddRow("Raw timestamp", $"'{ver.DisplayBuildTimestampRaw}'")
-            .AddRow("Title version number", $"{ver.ParsedTitleVersionNumber:F2}")
-            .AddRow("", "")
-            .AddRow("File CRC32", rom.Checksum?.CRC32)
-            .AddRow("File CRC32C", rom.Checksum?.CRC32C)
-            .AddRow("File MD5", rom.Checksum?.MD5)
-            .AddRow("File SHA1", rom.Checksum?.SHA1)
-            .AddRow("", "")
-            .AddRow("IPL3 chunk CRC32", ipl3Crc32)
-            .AddRow("Firmware chunk CRC32", firmCrc32)
-            .AddRow("Program counter", pcCrc32)
-            ;
-        return $"\nFile properties:\n{table}";
-    }
-
-    private static string Join(byte[]? bytes)
-    {
-        if (bytes == null)
-        {
-            return "";
-        }
-
-        return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
-    }
-
-    private static string BuildKeyCodesTable(RomInfo rom)
-    {
-        var numKCs = rom.KeyCodes.Count;
-        if (numKCs == 0)
-        {
-            return $"\nKey codes ({numKCs}):\n" +
-                   "No key codes found.".SetStyle(FontStyleExt.Bold) +
-                   "\n".SetStyle(FontStyleExt.None);
-        }
-
-        CellFormat headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor
-        };
-
-        var hasPcBytes = rom.KeyCodes.First()?.ProgramCounterBytes.Length > 0;
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Game CIC",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableKeyColor,
-                    innerFormatting: true,
-                    alignment: Alignment.Left
-                )
-            )
-            .AddColumn("IPL3 CRC32  Firm CRC32  " + (hasPcBytes ? "ProgCounter " : "") + "Check",
-                rowsFormat: new CellFormat(
-                    foregroundColor: TableValueColor,
-                    innerFormatting: true,
-                    alignment: Alignment.Left
-                )
-            )
-            .Build();
-
-        var ver = rom.Version;
-        table.Config = TableConfig.Unicode();
-
-        foreach (var kc in rom.KeyCodes)
-        {
-            FontStyleExt activeStyle = FontStyleExt.Bold | FontStyleExt.Underline;
-            FontStyleExt inactiveStyle = FontStyleExt.None;
-            FontStyleExt style = kc.IsActive ? activeStyle : inactiveStyle;
-
-            bool isActivePc =
-                kc.ProgramCounterBytes.SequenceEqual(rom.ActiveKeyCode?.ProgramCounterBytes ?? new byte[] { });
-
-            string ipl3 = FormatKeyCodeBytes(kc.Ipl3ChunkCrcBytes)
-                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
-                .ForegroundColor(Color.LimeGreen);
-            string fw = FormatKeyCodeBytes(kc.ProgramChunkCrcBytes)
-                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
-                .ForegroundColor(Color.DeepSkyBlue);
-            string pc = FormatKeyCodeBytes(kc.ProgramCounterBytes)
-                .SetStyle(isActivePc ? activeStyle : inactiveStyle)
-                .ForegroundColor(Color.Red);
-            string check = kc.CheckDigit.ToString("X02")
-                .SetStyle(kc.IsActive ? activeStyle : inactiveStyle)
-                .ForegroundColor(Color.Yellow);
-
-            // If a 32-bit Program Counter (PC) value is present in the
-            // key code, add a space after it.
-            //
-            // All N64 ROMs (including GameShark firmware) store the PC at 0x08.
-            // Firmware v2.21 and later include the PC value in their key codes;
-            // v2.10 and earlier do not.
-            if (kc.ProgramCounterBytes.Length > 0)
-            {
-                pc = " " + pc;
-            }
-
-            string nameActive   = $"> {kc.Name.SetStyle(style)}".ForegroundColor(Color.White);
-            string nameInactive = $"  {kc.Name}";
-            string name         = kc.IsActive ? nameActive : nameInactive;
-            string keyCode      = $"{ipl3} {fw}{pc} {check}";
-
-            table.AddRow(name, keyCode);
-        }
-
-        return $"\nKey codes ({numKCs}): \n{table}";
-    }
-
-    private static string FormatKeyCodeBytes(byte[] bytes)
-    {
-        return string.Join(' ', bytes.Select((b) => b.ToString("X02")));
-    }
-
-    private static string BuildGameTable(RomInfo rom)
-    {
-        if (rom.Games.Count == 0)
-        {
-            return "\nGames (0):\n" +
-                   "No games found.".SetStyle(FontStyleExt.Bold) +
-                   "\n".SetStyle(FontStyleExt.None);
-        }
-
-        CellFormat headerFormat = new CellFormat()
-        {
-            Alignment = Alignment.Left,
-            FontStyle = FontStyleExt.Bold,
-            ForegroundColor = TableHeaderColor
-        };
-
-        var nameFormat = new CellFormat(
-            foregroundColor: TableKeyColor,
-            innerFormatting: true
-        );
-        var countFormat = new CellFormat(
-            foregroundColor: TableKeyColor,
-            alignment: Alignment.Right,
-            innerFormatting: true
-        );
-        Table table = new TableBuilder(headerFormat)
-            .AddColumn("Name", rowsFormat: nameFormat)
-            .AddColumn("Cheats", rowsFormat: countFormat)
-            .AddColumn("Active", rowsFormat: countFormat)
-            .AddColumn("Codes", rowsFormat: countFormat)
-            .AddColumn("Warnings", rowsFormat: countFormat)
-            .Build();
-
-        table.Config = TableConfig.Unicode();
-
-        foreach (var game in rom.Games)
-        {
-            var warningCountInt = game.GetWarnings().Length + game.Cheats.SelectMany(cheat => cheat.GetWarnings()).Count();
-            var hasWarnings = warningCountInt > 0;
-            var warningCountStr =
-                hasWarnings
-                    ? ErrorFont(warningCountInt)
-                    : warningCountInt.ToString();
-            var gameName = hasWarnings ? ErrorFont(game.Name) : game.Name;
-            table.AddRow(
-                gameName,
-                game.Cheats.Count,
-                game.Cheats.Count(cheat => cheat.IsActiveByDefault),
-                game.Cheats.SelectMany(cheat => cheat.Codes).Count(),
-                warningCountStr
-                );
-        }
-
-        var gameCount = rom.Games.Count;
-        var cheatCount = rom.Games.SelectMany((game) => game.Cheats).Count();
-        return $"\nGames ({gameCount}, with {cheatCount} cheats):\n{table}";
-    }
-
-    private static string ErrorFont(Object o)
-    {
-        return o.ToString().ForegroundColor(Color.Red).SetStyle(FontStyleExt.Bold);
-    }
-
-    private static int ExportCheats(IEnumerable<string> romFilePaths)
-    {
-        var cheatFilePaths = new List<string>();
-
-        foreach (var romFilePath in romFilePaths)
-        {
-            RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
-            if (romInfo == null)
-            {
-                Console.Error.WriteLine("ERROR: Unable to read GS firmware file.");
-                continue;
-            }
-
-            List<Game> games = romInfo.Games;
-            List<Cheat> cheats = games.SelectMany((game) => game.Cheats).ToList();
-
-            Console.WriteLine("================================================================================");
-            Console.WriteLine();
-            Console.WriteLine(Path.GetFileName(romFilePath));
-            Console.WriteLine();
-            Console.WriteLine($"{romInfo.Version}");
-            Console.WriteLine();
-            Console.WriteLine($"File checksums: {romInfo.Checksum}");
-            Console.WriteLine();
-            if (romInfo.KeyCodes.Count > 0)
-            {
-                string keyCodesStr = string.Join("\n", romInfo.KeyCodes.Select((kc) => kc.ToString()));
-                Console.WriteLine($"{keyCodesStr}");
+                outputCodec = AbstractCodec.ReadFromFile(outputFile.FullName);
+                outputCodecId = outputCodec.Metadata.CodecId;
             }
             else
             {
-                Console.WriteLine("No key codes found.");
+                outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
             }
-
-            Console.WriteLine();
-            Console.WriteLine($"{cheats.Count:N0} cheats for {games.Count:N0} games");
-            Console.WriteLine();
-
-            var cheatFileName = Path.GetFileName(Path.ChangeExtension(romFilePath, "txt"));
-            var cheatFileDir = Path.Join(Path.GetTempPath(), "gs", DateTime.Now.ToString("yyyyMMdd-HHmmss-UTCzzz").Replace(":", ""));
-            var cheatFilePath = Path.Join(cheatFileDir, cheatFileName);
-            Directory.CreateDirectory(cheatFileDir);
-            ListWriter.ToFile(cheatFilePath, games);
-            cheatFilePaths.Add(cheatFilePath);
+        }
+        else
+        {
+            outputFile = @params.OutputFile;
+            outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
         }
 
-        Console.WriteLine("================================================================================");
-        Console.WriteLine();
-
-        foreach (var cheatFilePath in cheatFilePaths)
+        printer.PrintCheatsCommand("Copying cheats", inputFile, inputCodec, outputFile, outputCodec, () =>
         {
-            Console.WriteLine(cheatFilePath);
-        }
-
-        return 0;
-    }
-
-    private static int ScrubRoms(IEnumerable<string> romFilePaths)
-    {
-        foreach (var romFilePath in romFilePaths)
-        {
-            var outputFilePath = Path.ChangeExtension(romFilePath, "scrubbed.z64");
-
-            Console.WriteLine("================================================================================");
-            Console.WriteLine();
-            Console.WriteLine($"Scrubbing GS ROM file \"{romFilePath}\"...");
-
-            RomInfo? romInfo = RomReader.FromBytes(File.ReadAllBytes(romFilePath));
-            if (romInfo == null)
+            if (!inputCodec.SupportsCheats())
             {
-                Console.Error.WriteLine("ERROR: Unable to read GS firmware file.");
-                continue;
+                printer.PrintError(new InvalidOperationException(
+                    $"{inputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
+            }
+            if (!outputCodec.SupportsCheats())
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"{outputCodec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
+                ));
+                return;
+            }
+            if (inputCodec.Metadata.ConsoleId != outputCodec.Metadata.ConsoleId)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Input and output formats must both be for the same game console. Aborting."
+                ));
+                return;
+            }
+            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
+                ));
+                return;
+            }
+            if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
+            {
+                printer.PrintError(new InvalidOperationException(
+                    $"Output codec {outputCodecId} ({outputCodecId.ToDisplayString()}) " +
+                    "does not support writing cheats yet."
+                ));
+                return;
             }
 
-            RomWriter.ToFileAndReset(romInfo.Games, romFilePath, outputFilePath);
-            Console.WriteLine($"Scrubbed GS ROM file written to \"{outputFilePath}\"!");
-            Console.WriteLine();
-        }
+            outputCodec.Games.RemoveAll(_ => true);
+            outputCodec.Games.AddRange(inputCodec.Games);
+            outputCodec.WriteChangesToBuffer();
 
-        return 0;
+            File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
+        });
     }
 
-    private static int EncryptRoms(IEnumerable<string> romFilePaths)
+    private static FileInfo GenerateOutputFile(DirectoryInfo? outputDir, FileInfo inputFile, string suffix, string? extension = null)
     {
-        foreach (var decryptedRomFilePath in romFilePaths)
+        string inFileName = inputFile.Name;
+        string inFileDirPath = inputFile.DirectoryName!;
+        string oldExt = extension ?? inputFile.Extension;
+
+        if (!oldExt.StartsWith("."))
         {
-            var encryptedRomFilePath = Path.ChangeExtension(decryptedRomFilePath, "enc");
-            Console.WriteLine($"Encrypting GS ROM file \"{decryptedRomFilePath}\" -> \"{encryptedRomFilePath}\"...");
-            Examples.EncryptRom(decryptedRomFilePath, encryptedRomFilePath);
+            oldExt = $".{oldExt}";
         }
 
-        return 0;
-    }
+        string newExt = $".{DateTime.Now.ToFilenameString()}.{suffix}{oldExt}";
+        string outFileName;
 
-    private static int DecryptRoms(IEnumerable<string> romFilePaths)
-    {
-        foreach (var encryptedRomFilePath in romFilePaths)
+        Match match = Regex.Match(inFileName, "\\.[0-9tTzZ.-]{4,}\\.\\w+\\.\\w+$");
+        if (match.Success)
         {
-            var decryptedRomFilePath = Path.ChangeExtension(encryptedRomFilePath, "dec");
-            Console.WriteLine($"Decrypting GS ROM file \"{encryptedRomFilePath}\" -> \"{decryptedRomFilePath}\"...");
-            Examples.DecryptRom(encryptedRomFilePath, decryptedRomFilePath);
+            outFileName = inFileName.Replace(match.Value, newExt);
+        }
+        else
+        {
+            outFileName = Path.ChangeExtension(inFileName, newExt);
         }
 
-        return 0;
-    }
+        string outFileDirPath = outputDir?.FullName ?? inFileDirPath;
 
-    private static int ScrambleXp64(IEnumerable<string> inputRomFilePaths)
-    {
-        foreach (var inputRomFilePath in inputRomFilePaths)
+        try
         {
-            var unscrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "scrambled.bin");
-
-            Console.WriteLine($"Scrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
-
-            var scrambledBytes = N64XplorerScrambler.ScrambleXpRom(unscrambledBytes);
-            File.WriteAllBytes(outputRomFilePath, scrambledBytes);
+            string testFilePath = Path.Join(outFileDirPath, Path.GetRandomFileName());
+            File.WriteAllText(testFilePath, "test");
+            File.Delete(testFilePath);
+        }
+        catch
+        {
+            outFileDirPath = Directory.CreateTempSubdirectory("hammerhead-").FullName;
         }
 
-        return 0;
-    }
-
-    private static int UnscrambleXp64(IEnumerable<string> inputRomFilePaths)
-    {
-        foreach (var inputRomFilePath in inputRomFilePaths)
-        {
-            var scrambledBytes = File.ReadAllBytes(inputRomFilePath);
-            var outputRomFilePath = Path.ChangeExtension(inputRomFilePath, "unscrambled.bin");
-
-            Console.WriteLine($"Unscrambling Xplorer 64 ROM file '{inputRomFilePath}' to '{outputRomFilePath}'...");
-
-            var unscrambledBytes = N64XplorerScrambler.UnscrambleXpRom(scrambledBytes);
-            File.WriteAllBytes(outputRomFilePath, unscrambledBytes);
-        }
-
-        return 0;
+        return new FileInfo(Path.Join(outFileDirPath, outFileName));
     }
 }

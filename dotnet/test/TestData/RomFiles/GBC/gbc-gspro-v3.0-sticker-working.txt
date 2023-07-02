@@ -1,0 +1,38 @@
+﻿= FlashGBX Dump Report =
+
+== File Information ==
+* File Name:       gbc-gspro-v3.0-sticker-working.gbc
+* File Size:       128.0 KiB (131072 bytes)
+* CRC32:           11d13455
+* MD5:             155daf418dd3c76ee4450b764365f306
+* SHA-1:           64a37358bde8dadb14fad072c4f4743129a34c00
+* SHA-256:         62cc16abed0527bf1e6c10f6f8473c4ec545aaea797925109fa886b0a666883d
+
+== General Information ==
+* Hardware:        GBxCart RW v1.4a/b – Firmware R42+L10
+* Software:        FlashGBX v3.31
+* OS Platform:     Windows-10-10.0.19045-SP0
+* Baud Rate:       1700000
+* Dump Time:       2023-06-29T17:17:25-05:00
+* Time Elapsed:    9 seconds (13.16 KiB/s)
+* Transfer Buffer: 64 bytes
+* Retries:         7
+
+== Dumping Settings ==
+* Mode:            Game Boy
+* ROM Size:        128 KiB
+* Mapper Type:     Unlicensed Datel Orbit V2 Mapper
+* Cartridge Type:  Action Replay (Datel Orbit V2)
+
+== Parsed Data ==
+* Game Title:      DAMON BARWIN7
+* Revision:        10
+* Super Game Boy:  No support
+* Game Boy Color:  Supported
+* Nintendo Logo:   Invalid
+* Header Checksum: Invalid (0x94≠0x00)
+* ROM Checksum:    Invalid (0xCF57≠0x0000)
+* ROM Size:        256 KiB (0x03)
+* SRAM Size:       No SRAM (0x00)
+* Mapper Type:     MBC1 (0x01)
+* Target Platform: Game Boy Color

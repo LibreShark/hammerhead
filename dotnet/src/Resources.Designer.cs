@@ -28,7 +28,7 @@ namespace LibreShark.Hammerhead {
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("src.Resources", typeof(Resources).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("LibreShark.Hammerhead.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -45,15 +45,106 @@ namespace LibreShark.Hammerhead {
             }
         }
         
-        internal static string N64_GS_LOGO_ASCII_ART_ANSI_TXT {
+        internal static string GAMESHARK_LOGO_ASCII_ART_ANSI_TXT {
             get {
-                return ResourceManager.GetString("N64_GS_LOGO_ASCII_ART_ANSI_TXT", resourceCulture);
+                return ResourceManager.GetString("GAMESHARK_LOGO_ASCII_ART_ANSI_TXT", resourceCulture);
             }
         }
         
-        internal static string LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT {
+        internal static string GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT {
             get {
-                return ResourceManager.GetString("LIBRESHARK_WORDMARK_ASCII_ART_PLAIN_TXT", resourceCulture);
+                return ResourceManager.GetString("GAMESHARK_LOGO_ASCII_ART_PLAIN_TXT", resourceCulture);
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_ANSI_REGULAR {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_ANSI_REGULAR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_ANSI_SHADOW {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_ANSI_SHADOW", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_BIG_MONEY_NW {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_BIG_MONEY_NW", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_BIG {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_BIG", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_COLOSSAL {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_COLOSSAL", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_CYBERLARGE {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_CYBERLARGE", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_CYBERMEDIUM {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_CYBERMEDIUM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_DOOM {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_DOOM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_NANCYJ_IMPROVED {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_NANCYJ_IMPROVED", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_NANCYJ_UNDERLINED {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_NANCYJ_UNDERLINED", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_NANCYJ {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_NANCYJ", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_SLANT {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_SLANT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FIGLET_FONT_STANDARD {
+            get {
+                object obj = ResourceManager.GetObject("FIGLET_FONT_STANDARD", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
