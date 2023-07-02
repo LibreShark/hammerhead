@@ -80,10 +80,40 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     protected override ParsedFile ToProtoImpl()
     {
-        var proto = base.ToProto();
-        proto.SmxTimezones.AddRange(_tzs);
-        proto.SmxContacts.AddRange(_contacts);
-        proto.SmxMessages.AddRange(_messages);
+        var proto = new ParsedFile();
+        proto.SmxTimezones.AddRange(_tzs.Select(x =>
+        {
+            return new GbcSmxTimeZone(x)
+            {
+                OriginalTzId = x.OriginalTzId.RemoveAddress(),
+                OriginalOffsetStr = x.OriginalOffsetStr.RemoveAddress(),
+            };
+        }));
+        proto.SmxContacts.AddRange(_contacts.Select(x =>
+        {
+            return new GbcSmxContact()
+            {
+                EntryNumber = x.EntryNumber.RemoveAddress(),
+                PersonName = x.PersonName.RemoveAddress(),
+                EmailAddress = x.EmailAddress.RemoveAddress(),
+                PhoneNumber = x.PhoneNumber.RemoveAddress(),
+                StreetAddress = x.StreetAddress.RemoveAddress(),
+                UnknownField1 = x.UnknownField1.RemoveAddress(),
+                UnknownField2 = x.UnknownField2.RemoveAddress(),
+            };
+        }));
+        proto.SmxMessages.AddRange(_messages.Select(x =>
+        {
+            return new GbcSmxMessage(x)
+            {
+                RecipientEmail = x.RecipientEmail.RemoveAddress(),
+                Subject = x.Subject.RemoveAddress(),
+                Message = x.Message.RemoveAddress(),
+                RawDate = x.RawDate.RemoveAddress(),
+                UnknownField1 = x.UnknownField1.RemoveAddress(),
+                UnknownField2 = x.UnknownField2.RemoveAddress(),
+            };
+        }));
         return proto;
     }
 
@@ -247,14 +277,14 @@ public sealed class GbcSharkMxRom : AbstractCodec
         u8 tzIdx = 0;
         while (true)
         {
-            RomString utcOffset = Scribe.ReadCStringUntilNull(3, false).Readable();
+            RomString utcOffset = Scribe.ReadCStringUntilNull(3, false).Readable().Trim();
             if (!utcOffset.Value.All(IsTzChar))
             {
                 break;
             }
 
             u8[] unknownBytes = Scribe.ReadBytes(2);
-            RomString tzName = Scribe.ReadCStringUntilNull(10, true).Readable();
+            RomString tzName = Scribe.ReadCStringUntilNull(10, true).Readable().Trim();
             GbcSmxTimeZone tz = ParseTimeZone(tzIdx, utcOffset, tzName);
             _tzs.Add(tz);
             tzIdx++;
