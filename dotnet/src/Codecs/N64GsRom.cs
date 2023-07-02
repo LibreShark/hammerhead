@@ -108,6 +108,18 @@ public sealed class N64GsRom : AbstractCodec
         Games.AddRange(ReadGames());
     }
 
+    public override ParsedFile ToProto()
+    {
+        var proto = base.ToProto();
+        proto.KeyCodes.AddRange(_keyCodes.Select(kc => new Code()
+        {
+            CodeIndex = (u32)proto.KeyCodes.Count,
+            Bytes = kc.Bytes,
+            Comment = kc.Name.Value,
+        }));
+        return proto;
+    }
+
     private List<Game> ReadGames()
     {
         Scribe.Seek(_gameListAddr);

@@ -318,6 +318,11 @@ public static class ExtensionMethods
         return newRS;
     }
 
+    public static RomString RemoveAddress(this RomString oldRS)
+    {
+        return new RomString() { Value = oldRS.Value };
+    }
+
     public static RomString Readable(this RomString oldRS)
     {
         var newRS = new RomString(oldRS).Trim();
@@ -351,7 +356,7 @@ public static class ExtensionMethods
             CodecId.GbcMonsterbrainRom => "GBC - Monster Brain ROM",
             CodecId.GbcSharkMxRom => "GBC - Shark MX ROM",
             CodecId.GbcXploderRom => "GBC - Xploder/Xplorer ROM",
-            CodecId.Jsonproto => "Hammerhead protobuf JSON",
+            CodecId.HammerheadJson => "Hammerhead protobuf JSON",
             CodecId.LibretroText => "Libretro/RetroArch cheat list",
             CodecId.N64Edx7Text => "N64 - EverDrive-64 X7 cheat list",
             CodecId.N64GamesharkMemcard => "N64 - GameShark cheats (mempak note)",
@@ -363,7 +368,6 @@ public static class ExtensionMethods
             CodecId.N64Xplorer64Rom => "N64 - Xplorer 64 ROM",
             CodecId.N64Xplorer64Text => "N64 - FCD-formatted cheat list",
             CodecId.OpenemuXml => "OpenEmu XML cheat list",
-            CodecId.Textproto => "Hammerhead protobuf text",
             CodecId.UnspecifiedCodecId => "UNSPECIFIED ROM format",
             CodecId.UnsupportedCodecId => "UNSUPPORTED ROM format",
             _ => throw new NotSupportedException($"CodecId {codecId} is missing from ToDisplayString()!"),

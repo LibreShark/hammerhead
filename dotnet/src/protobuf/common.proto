@@ -11,12 +11,30 @@ option csharp_namespace = "LibreShark.Hammerhead";
  * Input/output files
  ******************************************************************************/
 
-// Video game enhancer file (firmware dump or cheat list).
-message VgeFile {
-  VgeMetadata metadata = 1;
-  bytes raw_input = 2;
-  bytes buffer = 3;
-  repeated Game games = 4;
+message HammerheadDump {
+  AppInfo app_info = 1;
+  repeated ParsedFile parsed_files = 2;
+}
+
+message AppInfo {
+  // Version of Hammerhead that wrote the protobuf file.
+  // Includes git commit information.
+  string informational_version = 1;
+
+  // Plain SemVer format.
+  string semantic_version = 2;
+
+  // Date and time that the Hammerhead binary was built.
+  string build_date_iso = 3;
+
+  // Date and time that the protobuf file was written to disk.
+  string write_date_iso = 4;
+}
+
+// Data parsed by Hammerhead from a video game enhancer file (firmware dump or cheat list).
+message ParsedFile {
+  FileMetadata metadata = 1;
+  repeated Game games = 2;
 
   // N64 only
   repeated Code key_codes = 101;
@@ -29,13 +47,7 @@ message VgeFile {
   repeated GbcSmxTimeZone smx_timezones = 203;
 }
 
-message VgeFileProp {
-  string key = 1;
-  string value = 2;
-  bool is_visual_spacer = 3;
-}
-
-message VgeMetadata {
+message FileMetadata {
   string file_path = 1;
   ConsoleId console_id = 2;
   CodecId codec_id = 3;
@@ -73,8 +85,7 @@ message VgeMetadata {
   // database of known versions.
   bool is_known_version = 16;
 
-  repeated VgeFileProp file_properties = 17;
-  repeated RomRange file_sections = 18;
+  repeated RomRange file_sections = 17;
 }
 
 message CodecFeatureSupport {
@@ -116,14 +127,13 @@ enum CodecId {
   // Generic cheat containers (platform-agnostic)
   //////////////////////////////////////////////////////////////////////////////
 
-  JSONPROTO = 3;
-  TEXTPROTO = 4;
+  HAMMERHEAD_JSON = 3;
 
   // XML cheat file format for OpenEmu (all consoles).
-  OPENEMU_XML = 5;
+  OPENEMU_XML = 4;
 
   // RetroArch
-  LIBRETRO_TEXT = 6;
+  LIBRETRO_TEXT = 5;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy & Game Boy Pocket
@@ -251,13 +261,12 @@ enum BrandId {
 
 // Output format for printing to the terminal (stdout).
 enum PrintFormatId {
-  UNKNOWN_PRINT_FORMAT = 0x00;
-  DETECT = 0x01;
-  COLOR = 0x02;
-  PLAIN = 0x03;
-  JSON = 0x04;
-  PROTO = 0x05;
-  MARKDOWN = 0x06;
+  UNKNOWN_PRINT_FORMAT = 0;
+  DETECT = 1;
+  COLOR = 2;
+  PLAIN = 3;
+  JSON = 4;
+  MARKDOWN = 5;
 }
 
 /*******************************************************************************
@@ -285,8 +294,9 @@ message Cheat {
 message Code {
   uint32 code_index = 1;
   bytes bytes = 2;
-  string comment = 3;
-  repeated Warning warnings = 4;
+  string formatted = 3;
+  string comment = 4;
+  repeated Warning warnings = 5;
 }
 
 message Warning {

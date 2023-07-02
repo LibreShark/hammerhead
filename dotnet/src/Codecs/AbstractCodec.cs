@@ -52,7 +52,7 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    public VgeMetadata Metadata { get; }
+    public FileMetadata Metadata { get; }
 
     public List<Game> Games { get; }
 
@@ -91,7 +91,7 @@ public abstract class AbstractCodec
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
         Games = new List<Game>();
-        Metadata = new VgeMetadata
+        Metadata = new FileMetadata()
         {
             FilePath = filePath,
             ConsoleId = consoleId,
@@ -99,6 +99,16 @@ public abstract class AbstractCodec
             FileChecksum = RawInput.ComputeChecksums(),
             CodecFeatureSupport = new CodecFeatureSupport(),
         };
+    }
+
+    public virtual ParsedFile ToProto()
+    {
+        var parsed = new ParsedFile()
+        {
+            Metadata = Metadata,
+        };
+        parsed.Games.AddRange(Games);
+        return parsed;
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}

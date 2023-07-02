@@ -1,5 +1,8 @@
 ﻿using System.CommandLine;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.Codecs;
 
@@ -23,18 +26,92 @@ internal static class Program
 
     private static void PrintBanner(CmdParams cmdParams)
     {
+        if (cmdParams.PrintFormatId is PrintFormatId.Json)
+        {
+            return;
+        }
         var printer = new TerminalPrinter(printFormat: cmdParams.PrintFormatId);
         printer.PrintBanner(cmdParams);
     }
 
     private static void PrintFileInfo(InfoCmdParams @params)
     {
+        var parsedFiles = new RepeatedField<ParsedFile>();
+
         foreach (FileInfo romFile in @params.InputFiles)
         {
             AbstractCodec codec = AbstractCodec.ReadFromFile(romFile.FullName, @params.InputCodecId);
-            var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-            printer.PrintFileInfo(romFile, @params);
+
+            if (@params.PrintFormatId is PrintFormatId.Json)
+            {
+                ParsedFile parsedFile = GetNormalizedProto(codec);
+                parsedFiles.Add(parsedFile);
+            }
+            else
+            {
+                var printer = new TerminalPrinter(codec, @params.PrintFormatId);
+                printer.PrintFileInfo(romFile, @params);
+            }
         }
+
+        var dump = new HammerheadDump()
+        {
+            AppInfo = new AppInfo()
+            {
+                InformationalVersion = GitVersionInformation.InformationalVersion,
+                SemanticVersion = GitVersionInformation.AssemblySemVer,
+                BuildDateIso = Assembly.GetEntryAssembly()!.GetBuildDate().ToIsoString(),
+                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
+            },
+        };
+        dump.ParsedFiles.AddRange(parsedFiles);
+
+        if (@params.PrintFormatId is PrintFormatId.Json)
+        {
+            var formatter = new JsonFormatter(
+                JsonFormatter.Settings.Default
+                    .WithIndentation()
+                    .WithFormatDefaultValues(true)
+                    .WithPreserveProtoFieldNames(true)
+            );
+            Console.WriteLine(formatter.Format(dump));
+        }
+    }
+
+    private static ParsedFile GetNormalizedProto(AbstractCodec codec)
+    {
+        ParsedFile parsedFile = codec.ToProto();
+
+        var ids = parsedFile.Metadata.Identifiers.Select(rs => rs.RemoveAddress()).ToArray();
+        parsedFile.Metadata.Identifiers.Clear();
+        parsedFile.Metadata.Identifiers.AddRange(ids);
+
+        var games = parsedFile.Games.Select(game =>
+        {
+            game.GameName = game.GameName.RemoveAddress();
+
+            var cheats = game.Cheats.Select(cheat =>
+            {
+                cheat.CheatName = cheat.CheatName.RemoveAddress();
+
+                var codes = cheat.Codes.Select(code =>
+                {
+                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
+                    return code;
+                }).ToArray();
+                cheat.Codes.Clear();
+                cheat.Codes.AddRange(codes);
+
+                return cheat;
+            }).ToArray();
+            game.Cheats.Clear();
+            game.Cheats.AddRange(cheats);
+
+            return game;
+        }).ToArray();
+        parsedFile.Games.Clear();
+        parsedFile.Games.AddRange(games);
+        return parsedFile;
     }
 
     private class FileTransformParams

@@ -78,6 +78,15 @@ public sealed class GbcSharkMxRom : AbstractCodec
         Metadata.IsKnownVersion = KnownDisplayVersions.Contains(Metadata.DisplayVersion);
     }
 
+    public override ParsedFile ToProto()
+    {
+        var proto = base.ToProto();
+        proto.SmxTimezones.AddRange(_tzs);
+        proto.SmxContacts.AddRange(_contacts);
+        proto.SmxMessages.AddRange(_messages);
+        return proto;
+    }
+
     private void ParseVersion()
     {
         s32 welcomeAddr = Scribe.Find("Welcome to");

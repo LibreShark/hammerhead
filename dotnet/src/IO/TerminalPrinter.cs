@@ -620,7 +620,6 @@ public class TerminalPrinter
             case PrintFormatId.Color:
             case PrintFormatId.Markdown:
             case PrintFormatId.Json:
-            case PrintFormatId.Proto:
                 return printFormat;
             case PrintFormatId.Detect:
             {
