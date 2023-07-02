@@ -31,11 +31,18 @@ Partial support:
 | GBA Datel GameShark ROMs              | Yes    | Yes  |       |
 | GBA FCD GameShark & Code Breaker ROMs | Yes    | Yes  |       |
 | GBA TV Tuner ROMs                     | Yes    |      |       |
-| N64 EverDrive-64 X7 cheats            |        |      |       |
 | N64 GB Hunter ROMs                    | Yes    |      |       |
-| N64 Project 64 v1.x cheats            |        |      |       |
-| N64 Project 64 v3.x cheats            |        |      |       |
-| OpenEmu cheats                        |        |      |       |
+
+No support yet:
+
+| File format                | Detect | Read | Write |
+|:-------------------------- |:------ |:---- |:----- |
+| Hammerhead JSON cheats     |        |      |       |
+| Hammerhead protobuf cheats |        |      |       |
+| OpenEmu XML cheats         |        |      |       |
+| N64 EverDrive-64 X7 cheats |        |      |       |
+| N64 Project 64 v1.x cheats |        |      |       |
+| N64 Project 64 v3.x cheats |        |      |       |
 
 ## Screenshots
 
