@@ -296,51 +296,51 @@ public static class ExtensionMethods
 
     #region Protobuf
 
-    public static RomString Trim(this RomString oldRS)
+    public static RomString Trim(this RomString oldStr)
     {
-        string oldValue = oldRS.Value;
+        string oldValue = oldStr.Value;
         string trimStart = oldValue.TrimStart();
         string trimEnd = oldValue.TrimEnd();
         string newValue = oldValue.Trim();
         int startDelta = oldValue.Length - trimStart.Length;
         int endDelta = oldValue.Length - trimEnd.Length;
         int lengthDelta = oldValue.Length - newValue.Length;
-        var newRS = new RomString(oldRS)
+        var newStr = new RomString(oldStr)
         {
             Value = newValue,
-            Addr = new RomRange(oldRS.Addr)
+            Addr = new RomRange(oldStr.Addr)
             {
-                StartIndex = (u32)(oldRS.Addr.StartIndex - startDelta),
-                EndIndex = (u32)(oldRS.Addr.EndIndex - endDelta),
-                Length = (u32)(oldRS.Addr.Length - lengthDelta),
+                StartIndex = (u32)(oldStr.Addr.StartIndex - startDelta),
+                EndIndex = (u32)(oldStr.Addr.EndIndex - endDelta),
+                Length = (u32)(oldStr.Addr.Length - lengthDelta),
                 RawBytes = ByteString.CopyFrom(
-                    oldRS.Addr.RawBytes
+                    oldStr.Addr.RawBytes
                         .Skip(startDelta)
-                        .Take(oldRS.Addr.RawBytes.Length - lengthDelta)
+                        .Take(oldStr.Addr.RawBytes.Length - lengthDelta)
                         .ToArray()
                 ),
             },
         };
-        return newRS;
+        return newStr;
     }
 
-    public static RomString WithoutAddress(this RomString oldRS)
+    public static RomString WithoutAddress(this RomString rs)
     {
-        return new RomString() { Value = oldRS.Value };
+        return new RomString() { Value = rs.Value };
     }
 
-    public static RomString Readable(this RomString oldRS)
+    public static RomString Readable(this RomString oldStr)
     {
-        var newRS = new RomString(oldRS).Trim();
-        newRS.Value = String.Join(
+        var newStr = new RomString(oldStr).Trim();
+        newStr.Value = String.Join(
             "",
-            oldRS.Value.Select(c =>
+            oldStr.Value.Select(c =>
             {
                 bool isPrintable = c is >= ' ' and <= '~';
                 return isPrintable ? c : ' ';
             })
         );
-        return newRS;
+        return newStr;
     }
 
     public static string ToDisplayString(this RomRange range)
@@ -445,8 +445,9 @@ public static class ExtensionMethods
             ConsoleId.GameGear => "Game Gear (GG)",
             ConsoleId.Nintendo64 => "Nintendo 64 (N64)",
             ConsoleId.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
-            ConsoleId.Dreamcast => "Dreamcast",
-            ConsoleId.Gamecube => "GameCube",
+            ConsoleId.Dreamcast => "Dreamcast (DC)",
+            ConsoleId.Gamecube => "GameCube (GC)",
+            ConsoleId.Universal => "Universal (all consoles)",
             ConsoleId.UnknownConsole => "UNKNOWN game console",
             _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
         };
@@ -464,15 +465,10 @@ public static class ExtensionMethods
             ConsoleId.Playstation1 => "PSX",
             ConsoleId.Dreamcast => "DC",
             ConsoleId.Gamecube => "GC",
+            ConsoleId.Universal => "ALL",
             ConsoleId.UnknownConsole => "UNKNOWN",
             _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
         };
-    }
-
-    public static string ToDisplayString(this N64KeyCode kc)
-    {
-        return $"{kc.Bytes.ToHexString(" ")}: {kc.Name.Value}" +
-               (kc.IsKeyCodeActive ? " [ACTIVE]" : "");
     }
 
     #endregion
@@ -639,7 +635,14 @@ public static class ExtensionMethods
         return string.Join("", bytes.Select((b) => b.ToString("X2")));
     }
 
+    public static RomString ToRomString(this string value)
+    {
+        return new RomString() { Value = value };
+    }
+
     #endregion
+
+    #region CLI
 
     public static T? GetValue<T>(
         this IValueDescriptor<T> symbol,
@@ -661,4 +664,6 @@ public static class ExtensionMethods
         }
         throw new ArgumentException("Symbol must be an Argument<T> or Option<T>, but object is neither.");
     }
+
+    #endregion
 }

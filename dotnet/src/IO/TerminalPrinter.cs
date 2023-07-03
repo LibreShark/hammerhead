@@ -373,7 +373,7 @@ public class TerminalPrinter
         int gameCount = _codec.Games.Count;
         if (gameCount == 0)
         {
-            Console.WriteLine(Error("No games/cheats found."));
+            AnsiConsole.Markup(Error("No games/cheats found.") + "\n");
             Console.WriteLine();
             return;
         }

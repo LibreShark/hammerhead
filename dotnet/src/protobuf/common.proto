@@ -300,10 +300,14 @@ message Cheat {
 
 message Code {
   uint32 code_index = 1;
-  bytes bytes = 2;
-  string formatted = 3;
-  string comment = 4;
-  repeated Warning warnings = 5;
+  RomString code_name = 2;
+  bytes bytes = 3;
+  string formatted = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
+
+  // N64 only
+  bool is_active_key_code = 7;
 }
 
 message Warning {

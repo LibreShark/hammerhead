@@ -87,7 +87,7 @@ public abstract class AbstractCodec
         };
     }
 
-    protected virtual ParsedFile ToProtoImpl()
+    protected virtual ParsedFile GetCustomProtoFields()
     {
         return new ParsedFile();
     }
@@ -106,14 +106,12 @@ public abstract class AbstractCodec
 
     public ParsedFile ToProto()
     {
-        var parsed = new ParsedFile(ToProtoImpl())
+        var parsed = new ParsedFile(GetCustomProtoFields())
         {
             Metadata = Metadata,
         };
         parsed.Games.AddRange(Games);
         return NormalizeProto(parsed);
-
-        // TODO(CheatoBaggins): Refactor Games, Metadata, KeyCodes, etc. into ParsedFile proto
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
@@ -246,12 +244,11 @@ public abstract class AbstractCodec
 
     private static ParsedFile NormalizeProto(ParsedFile parsedFile)
     {
+        RomString[] ids = parsedFile.Metadata.Identifiers
+            .Select(rs => rs.WithoutAddress())
+            .ToArray();
         parsedFile.Metadata.Identifiers.Clear();
-        parsedFile.Metadata.Identifiers.AddRange(
-            parsedFile.Metadata.Identifiers
-                .Select(rs => rs.WithoutAddress())
-                .ToArray()
-        );
+        parsedFile.Metadata.Identifiers.AddRange(ids);
         var games = parsedFile.Games.Select(game =>
         {
             game.GameName = game.GameName.WithoutAddress();
@@ -274,21 +271,6 @@ public abstract class AbstractCodec
         parsedFile.Games.Clear();
         parsedFile.Games.AddRange(games);
         return parsedFile;
-    }
-
-    protected static RomString EmptyRomStr()
-    {
-        return new RomString()
-        {
-            Value = "",
-            Addr = new RomRange()
-            {
-                Length = 0,
-                StartIndex = 0,
-                EndIndex = 0,
-                RawBytes = ByteString.Empty,
-            },
-        };
     }
 
     public bool IsValidFormat()

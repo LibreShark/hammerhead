@@ -34,12 +34,6 @@ enum Xp64Opcode {
   WRITE_ONCE_UNCACHED_16BIT_TYPE1 = 0xF1;
 }
 
-message N64KeyCode {
-  RomString name = 1;
-  bytes bytes = 2;
-  bool is_key_code_active = 3;
-}
-
 message N64GsVersionProto {
   string raw_header_timestamp = 1;
   string raw_ui_title = 2;

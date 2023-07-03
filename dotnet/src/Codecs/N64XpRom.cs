@@ -58,6 +58,8 @@ public sealed class N64XpRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
 
+    private readonly List<Code> _keyCodes = new();
+
     private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -118,6 +120,13 @@ public sealed class N64XpRom : AbstractCodec
 
         ReadGames();
         ReadUserPrefs();
+    }
+
+    protected override ParsedFile GetCustomProtoFields()
+    {
+        var proto = new ParsedFile();
+        proto.N64Data.KeyCodes.AddRange(_keyCodes);
+        return proto;
     }
 
     private static AbstractBinaryScribe Unobfuscate(u8[] rawInput)
@@ -241,6 +250,7 @@ public sealed class N64XpRom : AbstractCodec
                 "See https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
         }
 
+        // ReSharper disable InconsistentNaming
         string ddd = match.Groups["ddd"].Value;
         string MMM = match.Groups["MMM"].Value;
         string d = match.Groups["d"].Value;
@@ -248,15 +258,17 @@ public sealed class N64XpRom : AbstractCodec
         string mm = match.Groups["mm"].Value;
         string ss = match.Groups["ss"].Value;
         string ZZZ = match.Groups["ZZZ"].Value;
+        string yyyy = match.Groups["yyyy"].Value;
+        // ReSharper restore InconsistentNaming
+
         // British Summer Time (BST)
         if (ZZZ == "BST")
         {
             ZZZ = "GMT";
         }
-        string yyyy = match.Groups["yyyy"].Value;
-        const string dateTimeFormat =
-            // Wed Nov 24 15:25:52 GMT 1999
-            "ddd MMM d H:mm:ss yyyy";
+
+        // Wed Nov 24 15:25:52 GMT 1999
+        const string dateTimeFormat = "ddd MMM d H:mm:ss yyyy";
         string buildDateFixed = $"{ddd} {MMM} {d} {H}:{mm}:{ss} {yyyy}";
         DateTimeOffset buildDateTimeWithoutTz = DateTimeOffset.ParseExact(
             buildDateFixed, dateTimeFormat,
@@ -305,6 +317,7 @@ public sealed class N64XpRom : AbstractCodec
 
     private static bool DetectScrambled(u8[] bytes)
     {
+        // ReSharper disable InconsistentNaming
         string strle = Get2Chars(bytes, 0x0016);
         string strFC = Get2Chars(bytes, 0x0436);
         string strDS = Get2Chars(bytes, 0x1096);
@@ -312,6 +325,7 @@ public sealed class N64XpRom : AbstractCodec
         string strlo = Get2Chars(bytes, 0x123C);
         string strFU = Get2Chars(bytes, 0x131E);
         string strTU = Get2Chars(bytes, 0x133E);
+        // ReSharper restore InconsistentNaming
         return strle == "le" &&
                strFC == "FC" &&
                strDS == "D " &&

@@ -41,9 +41,9 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private readonly List<GbcSmxContact> _contacts = new();
     private readonly List<GbcSmxMessage> _messages = new();
 
-    private RomString _regCodeCopy1 = EmptyRomStr();
-    private RomString _regCodeCopy2 = EmptyRomStr();
-    private RomString _secretPin = EmptyRomStr();
+    private RomString _regCodeCopy1 = "".ToRomString();
+    private RomString _regCodeCopy2 = "".ToRomString();
+    private RomString _secretPin = "".ToRomString();
 
     private static readonly string[] KnownDisplayVersions =
     {
@@ -78,7 +78,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         Metadata.IsKnownVersion = KnownDisplayVersions.Contains(Metadata.DisplayVersion);
     }
 
-    protected override ParsedFile ToProtoImpl()
+    protected override ParsedFile GetCustomProtoFields()
     {
         var proto = new ParsedFile(Parsed);
         foreach (GbcSmxTimeZone tz in proto.GbcSmxData.Timezones)
@@ -211,7 +211,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
         // There are 50 numbered message contact entries, followed by a single
         // unnumbered contact entry.
-        _contacts.Add(ReadNextContact(EmptyRomStr()));
+        _contacts.Add(ReadNextContact("".ToRomString()));
     }
 
     private RomString ReadNextContactEntryNum()
@@ -223,7 +223,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         // unnumbered contact entry.
         if (peekBytes[0] == 'M' && peekBytes[1] == 'e')
         {
-            return EmptyRomStr();
+            return "".ToRomString();
         }
         else
         {

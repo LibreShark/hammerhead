@@ -108,12 +108,13 @@ public sealed class GbcCbRom : AbstractCodec
                 var cheat = new Cheat()
                 {
                     CheatIndex = cheatIdx,
-                    CheatName = nameIdx == 0
-                        // Custom, user-entered cheat
-                        // TODO(CheatoBaggins): Are custom names stored in the ROM?
-                        ? new RomString() { Value = "USR CSTM" }
-                        // Build-in cheat with standard name
-                        : _cheatNames[nameIdx],
+                    CheatName =
+                        nameIdx == 0
+                            // Custom, user-entered cheat
+                            // TODO(CheatoBaggins): Are custom names stored in the ROM?
+                            ? "USR CSTM".ToRomString()
+                            // Build-in cheat with standard name
+                            : _cheatNames[nameIdx],
                 };
                 cheat.Codes.Add(new Code()
                 {

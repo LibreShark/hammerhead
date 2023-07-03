@@ -69,7 +69,7 @@ public sealed class N64XpText : AbstractCodec
                 curCheat = new Cheat()
                 {
                     CheatIndex = (u32)curGame.Cheats.Count,
-                    CheatName = new RomString() { Value = line.Trim() },
+                    CheatName = line.Trim().ToRomString(),
                 };
                 curGame.Cheats.Add(curCheat);
             }
@@ -78,7 +78,7 @@ public sealed class N64XpText : AbstractCodec
                 curGame = new Game()
                 {
                     GameIndex = (u32)games.Count,
-                    GameName = new RomString() { Value = line.Trim() },
+                    GameName = line.Trim().ToRomString(),
                 };
                 games.Add(curGame);
             }
