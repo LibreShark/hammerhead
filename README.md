@@ -25,6 +25,7 @@ In progress:
 | GB GameShark v2.x ROMs                | Yes    | Yes  |       |
 | GBC Code Breaker ROMs                 | Yes    | Yes  |       |
 | GBC GameShark v3.x ROMs               | Yes    | Yes  |       |
+| GBC GameShark v3.x cheats (*.gcf)     |        |      |       |
 | GBC GameShark v4.x ROMs               | Yes    | Yes  |       |
 | GBC Shark MX ROMs                     | Yes    | Yes  |       |
 | GBC Xploder ROMs                      | Yes    | Yes  |       |

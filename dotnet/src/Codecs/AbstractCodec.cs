@@ -62,6 +62,7 @@ public abstract class AbstractCodec
         // Game Boy Color
         GbcCbRom.Factory,
         GbcGsV3Rom.Factory,
+        GbcGsV3CodeFile.Factory,
         GbcGsV4Rom.Factory,
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
