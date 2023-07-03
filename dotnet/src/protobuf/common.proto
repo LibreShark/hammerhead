@@ -94,7 +94,13 @@ message FileMetadata {
   ChecksumResult file_checksum = 12;
   ChecksumResult firmware_checksum = 13;
 
+  // C strings found in the input file that help identify it, or that
+  // distinguish it from other file formats. Used for auto-detecting which codec
+  // to use when reading a file.
   repeated RomString identifiers = 14;
+
+  // File names found in the input file that potentially reveal something
+  // interesting about how the ROM binary was built.
   repeated RomString file_name_refs = 15;
 
   // Whether the ROM's firmware version is found in Hammerhead's internal

@@ -24,14 +24,14 @@ internal static class Program
         return await cli.RootCommand.InvokeAsync(args);
     }
 
-    private static void PrintBanner(CmdParams cmdParams)
+    private static void PrintBanner(CmdParams @params)
     {
-        if (cmdParams.PrintFormatId is PrintFormatId.Json)
+        if (@params.PrintFormatId is PrintFormatId.Json)
         {
             return;
         }
-        var printer = new TerminalPrinter(printFormat: cmdParams.PrintFormatId);
-        printer.PrintBanner(cmdParams);
+        var printer = new TerminalPrinter(printFormat: @params.PrintFormatId);
+        printer.PrintBanner(@params);
     }
 
     private static void PrintFileInfo(InfoCmdParams @params)
@@ -56,6 +56,7 @@ internal static class Program
         if (@params.PrintFormatId is PrintFormatId.Json)
         {
             var entryAssembly = Assembly.GetEntryAssembly()!;
+            // TODO(CheatoBaggins): De-duplicate with ProtobufJson
             var dump = new HammerheadDump()
             {
                 AppInfo = new AppInfo()
@@ -69,6 +70,7 @@ internal static class Program
                 },
             };
             dump.ParsedFiles.AddRange(parsedFiles);
+            // TODO(CheatoBaggins): De-duplicate with ProtobufJson
             var formatter = new JsonFormatter(
                 JsonFormatter.Settings.Default
                     .WithIndentation()

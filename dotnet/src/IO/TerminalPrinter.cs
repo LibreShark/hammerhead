@@ -271,7 +271,10 @@ public class TerminalPrinter
         table.AddRow("", "");
         table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion.EscapeMarkup()));
         table.AddRow("Build date", OrUnknown(buildDateDisplay.EscapeMarkup()));
-        table.AddRow("Known ROM version", isKnownVersionStr);
+        if (_codec.Support.SupportsFirmware)
+        {
+            table.AddRow("Known firmware version", isKnownVersionStr);
+        }
         table.AddRow("", "");
         table.AddRow("File size", fileSize.EscapeMarkup());
 
@@ -300,14 +303,12 @@ public class TerminalPrinter
 
     private void PrintIdentifiers(InfoCmdParams @params)
     {
-        PrintHeading("Identifier strings");
-
         if (_codec.Metadata.Identifiers.Count == 0)
         {
-            AnsiConsole.Markup(Italic("No identifiers found."));
-            Console.WriteLine();
             return;
         }
+
+        PrintHeading("Identifier strings");
 
         Table table = BuildTable(TableBorder.Rounded);
         table
