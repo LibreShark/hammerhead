@@ -38,14 +38,6 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private const u32 SecretPinAddr = 0x0002007C;
     private const u32 MessagesAddr  = 0x00021000;
 
-    private readonly List<GbcSmxTimeZone> _tzs = new();
-    private readonly List<GbcSmxContact> _contacts = new();
-    private readonly List<GbcSmxMessage> _messages = new();
-
-    private RomString _regCodeCopy1 = "".ToRomString();
-    private RomString _regCodeCopy2 = "".ToRomString();
-    private RomString _secretPin = "".ToRomString();
-
     private static readonly string[] KnownDisplayVersions =
     {
         "v1.02 (US)",
@@ -53,9 +45,13 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
 
+    private GbcSmxData Data => Parsed.GbcSmxData;
+
     private GbcSharkMxRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Parsed.GbcSmxData = new GbcSmxData();
+
         Support.SupportsFirmware = true;
         Support.SupportsUserPrefs = true;
         Support.SupportsSmxMessages = true;
@@ -170,17 +166,19 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private void ParseRegistrationCode()
     {
-        _regCodeCopy1 = Scribe.Seek(RegCodeAddr).ReadCStringUntilNull(16, false);
-        _regCodeCopy2 = Scribe.Seek(RegCodeAddr + 16).ReadCStringUntilNull(16, false);
+        Data.RegCode1 = Scribe.Seek(RegCodeAddr).ReadCStringUntilNull(16, false);
+        Data.RegCode2 = Scribe.Seek(RegCodeAddr + 16).ReadCStringUntilNull(16, false);
 
-        if (_regCodeCopy1.Value.Length > 0)
+        if (Data.RegCode1.Value.Length > 0)
         {
-            Metadata.Identifiers.Add(_regCodeCopy1);
+            Data.RegCode1 = Data.RegCode1;
+            Metadata.Identifiers.Add(Data.RegCode1);
             Support.HasPristineUserPrefs = false;
         }
-        if (_regCodeCopy2.Value.Length > 0)
+        if (Data.RegCode2.Value.Length > 0)
         {
-            Metadata.Identifiers.Add(_regCodeCopy2);
+            Data.RegCode2 = Data.RegCode2;
+            Metadata.Identifiers.Add(Data.RegCode2);
             Support.HasPristineUserPrefs = false;
         }
     }
@@ -188,11 +186,12 @@ public sealed class GbcSharkMxRom : AbstractCodec
     private void ParseSecretPin()
     {
         Scribe.Seek(SecretPinAddr);
-        _secretPin = Scribe.ReadPrintableCString();
+        Data.SecretPin = Scribe.ReadPrintableCString();
 
-        if (_secretPin.Value.Length > 0)
+        if (Data.SecretPin.Value.Length > 0)
         {
-            Metadata.Identifiers.Add(_secretPin);
+            Data.SecretPin = Data.SecretPin;
+            Metadata.Identifiers.Add(Data.SecretPin);
             Support.HasPristineUserPrefs = false;
         }
     }
@@ -207,12 +206,12 @@ public sealed class GbcSharkMxRom : AbstractCodec
             {
                 break;
             }
-            _contacts.Add(ReadNextContact(entryNumStr));
+            Data.Contacts.Add(ReadNextContact(entryNumStr));
         }
 
         // There are 50 numbered message contact entries, followed by a single
         // unnumbered contact entry.
-        _contacts.Add(ReadNextContact("".ToRomString()));
+        Data.Contacts.Add(ReadNextContact("".ToRomString()));
     }
 
     private RomString ReadNextContactEntryNum()
@@ -270,7 +269,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         while (true)
         {
             RomString utcOffset = Scribe.ReadCStringUntilNull(3, false).Readable().Trim();
-            if (!utcOffset.Value.All(IsTzChar))
+            if (string.IsNullOrWhiteSpace(utcOffset.Value) || !utcOffset.Value.All(IsTzChar))
             {
                 break;
             }
@@ -278,7 +277,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
             u8[] unknownBytes = Scribe.ReadBytes(2);
             RomString tzName = Scribe.ReadCStringUntilNull(10, true).Readable().Trim();
             GbcSmxTimeZone tz = ParseTimeZone(tzIdx, utcOffset, tzName);
-            _tzs.Add(tz);
+            Data.Timezones.Add(tz);
             tzIdx++;
         }
     }
@@ -313,7 +312,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 return;
             }
 
-            _messages.Add(new GbcSmxMessage()
+            Data.Messages.Add(new GbcSmxMessage()
             {
                 Subject = subject,
                 RecipientEmail = recipientEmail,
@@ -370,13 +369,13 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
     {
-        printer.PrintHeading($"Time zones ({_tzs.Count})");
+        printer.PrintHeading($"Time zones ({Data.Timezones.Count})");
         PrintTimeZoneTable(printer, @params);
 
-        printer.PrintHeading($"Contacts ({_contacts.Count})");
+        printer.PrintHeading($"Contacts ({Data.Contacts.Count})");
         PrintContactsTable(printer, @params);
 
-        printer.PrintHeading($"Messages ({_messages.Count})");
+        printer.PrintHeading($"Messages ({Data.Messages.Count})");
         PrintMessagesTable(printer, @params);
     }
 
@@ -389,7 +388,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Modern ID"))
             ;
 
-        foreach (GbcSmxTimeZone tz in _tzs)
+        foreach (GbcSmxTimeZone tz in Data.Timezones)
         {
             TimeSpan modernUtcOffset = GetModernTz(tz).GetUtcOffset(DateTimeOffset.UtcNow);
 
@@ -414,9 +413,9 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Value"))
             ;
 
-        table.AddRow("Reg code, copy #1", _regCodeCopy1.Value);
-        table.AddRow("Reg code, copy #2", _regCodeCopy2.Value);
-        table.AddRow("Secret PIN", _secretPin.Value);
+        table.AddRow("Reg code, copy #1", Data.RegCode1.Value);
+        table.AddRow("Reg code, copy #2", Data.RegCode2.Value);
+        table.AddRow("Secret PIN", Data.SecretPin.Value);
 
         printer.PrintTable(table);
     }
@@ -433,7 +432,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Street address"))
                 ;
 
-        foreach (GbcSmxContact contact in _contacts)
+        foreach (GbcSmxContact contact in Data.Contacts)
         {
             string entryNumber = printer.Dim(contact.EntryNumber.Value);
             string personName = contact.PersonName.Value;
@@ -473,7 +472,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Unknown field #2"))
                 ;
 
-        foreach (GbcSmxMessage message in _messages)
+        foreach (GbcSmxMessage message in Data.Messages)
         {
             table.AddRow(
                 message.Subject.Value,
@@ -491,9 +490,16 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)
     {
-        s8 relativeOffset = s8.Parse(offsetStr.Value);
-        s8 utcOffset = (s8)(relativeOffset - 5);
-        return TimeSpan.FromHours(utcOffset);
+        try
+        {
+            s8 relativeOffset = s8.Parse(offsetStr.Value);
+            s8 utcOffset = (s8)(relativeOffset - 5);
+            return TimeSpan.FromHours(utcOffset);
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
     }
 
     private static string GetModernTzId(RomString originalId)
