@@ -80,7 +80,7 @@ public sealed class N64GsRom : AbstractCodec
         Metadata.BuildDateRaw = _rawTimestamp;
         Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
         Metadata.DisplayVersion = _version.DisplayNumber;
-        Metadata.SortableVersion = _version.Number;
+        Metadata.SortableVersion = _version.Number; // TODO(CheatoBaggins): Account for April/May builds
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
 

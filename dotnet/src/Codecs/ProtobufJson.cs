@@ -48,10 +48,10 @@ public sealed class ProtobufJson : AbstractCodec
         var formatter = new JsonFormatter(
             JsonFormatter.Settings.Default
                 .WithIndentation()
-                .WithFormatDefaultValues(true)
+                .WithFormatDefaultValues(false)
                 .WithPreserveProtoFieldNames(true)
         );
-        Buffer = formatter.Format(Parsed).ToUtf8Bytes();
+        Buffer = $"{formatter.Format(Parsed)}\n".ToUtf8Bytes();
         return this;
     }
 

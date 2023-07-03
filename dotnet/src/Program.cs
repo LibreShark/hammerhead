@@ -73,7 +73,7 @@ internal static class Program
                     .WithFormatDefaultValues(true)
                     .WithPreserveProtoFieldNames(true)
             );
-            Console.WriteLine(formatter.Format(dump));
+            Console.WriteLine(formatter.Format(dump) + "\n");
         }
     }
 
