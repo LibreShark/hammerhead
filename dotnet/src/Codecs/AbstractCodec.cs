@@ -150,6 +150,7 @@ public abstract class AbstractCodec
     {
         var parsed = new ParsedFile(Parsed);
         ParsedFile normalized = NormalizeProto(parsed);
+        SanitizeCustomProtoFields(normalized);
         return normalized;
     }
 
