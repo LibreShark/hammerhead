@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;

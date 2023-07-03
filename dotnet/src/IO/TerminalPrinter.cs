@@ -1,7 +1,6 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Google.Protobuf.Collections;
-using LibreShark.Hammerhead.Codecs;
+using LibreShark.Hammerhead.Nintendo64;
 using NeoSmart.PrettySize;
 using Spectre.Console;
 

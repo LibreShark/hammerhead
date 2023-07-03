@@ -1,11 +1,9 @@
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;

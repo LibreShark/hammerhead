@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.Codecs;
+using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead;
 

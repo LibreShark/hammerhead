@@ -1,9 +1,10 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf.WellKnownTypes;
+using LibreShark.Hammerhead.Nintendo64;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoyColor;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;

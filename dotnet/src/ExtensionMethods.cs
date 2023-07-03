@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using LibreShark.Hammerhead.N64;
 using Color = System.Drawing.Color;
 
 namespace LibreShark.Hammerhead;

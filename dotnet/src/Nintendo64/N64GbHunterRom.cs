@@ -1,7 +1,7 @@
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace LibreShark.Hammerhead.N64;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 public partial class N64GsVersion
 {

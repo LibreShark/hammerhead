@@ -1,10 +1,12 @@
 using System.Collections.Immutable;
-using Google.Protobuf;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.GameBoy;
+using LibreShark.Hammerhead.GameBoyAdvance;
+using LibreShark.Hammerhead.GameBoyColor;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -41,21 +43,30 @@ public abstract class AbstractCodec
     protected readonly AbstractBinaryScribe Scribe;
 
     private static readonly CodecFileFactory[] CodecFactories = new[] {
+        // Game Boy (original and Pocket)
         GbGsRom.Factory,
-        GbaGsDatelRom.Factory,
-        GbaGsFcdRom.Factory,
-        GbaTvTunerRom.Factory,
+
+        // Game Boy Color
         GbcCbRom.Factory,
         GbcGsV3Rom.Factory,
         GbcGsV4Rom.Factory,
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
         GbcXpRom.Factory,
+
+        // Game Boy Advance
+        GbaGsDatelRom.Factory,
+        GbaGsFcdRom.Factory,
+        GbaTvTunerRom.Factory,
+
+        // Nintendo 64
         N64GbHunterRom.Factory,
         N64GsRom.Factory,
         N64GsText.Factory,
         N64XpRom.Factory,
         N64XpText.Factory,
+
+        // Generic
         ProtobufJson.Factory,
         UnknownCodec.Factory,
     };
