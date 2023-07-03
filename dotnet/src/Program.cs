@@ -350,9 +350,7 @@ internal static class Program
                 return;
             }
 
-            outputCodec.Games.RemoveAll(_ => true);
-            outputCodec.Games.AddRange(inputCodec.Games);
-            outputCodec.WriteChangesToBuffer();
+            outputCodec.ImportFromProto(inputCodec.ToProto());
 
             File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
         });

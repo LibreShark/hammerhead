@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
@@ -49,9 +50,11 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    public FileMetadata Metadata { get; protected init; }
+    protected ParsedFile Parsed;
 
-    public List<Game> Games { get; protected init; }
+    public FileMetadata Metadata => Parsed.Metadata;
+
+    public RepeatedField<Game> Games => Parsed.Games;
 
     protected readonly AbstractBinaryScribe Scribe;
 
@@ -89,20 +92,34 @@ public abstract class AbstractCodec
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        Games = new List<Game>();
-        Metadata = new FileMetadata()
+        Parsed = new ParsedFile()
         {
-            FilePath = filePath,
-            ConsoleId = consoleId,
-            CodecId = codecId,
-            FileChecksum = RawInput.ComputeChecksums(),
-            CodecFeatureSupport = new CodecFeatureSupport(),
+            Metadata = new FileMetadata()
+            {
+                FilePath = filePath,
+                ConsoleId = consoleId,
+                CodecId = codecId,
+                FileChecksum = RawInput.ComputeChecksums(),
+                CodecFeatureSupport = new CodecFeatureSupport(),
+            },
         };
     }
 
     protected virtual ParsedFile ToProtoImpl()
     {
         return new ParsedFile();
+    }
+
+    public AbstractCodec ImportFromProto(ParsedFile parsed)
+    {
+        var old = Parsed;
+        Parsed = new ParsedFile(parsed);
+        Parsed.Metadata.CodecId = old.Metadata.CodecId;
+        Parsed.Metadata.CodecFeatureSupport = old.Metadata.CodecFeatureSupport;
+        Parsed.Metadata.FilePath = old.Metadata.FilePath;
+        WriteChangesToBuffer();
+        Parsed.Metadata.FileChecksum = Buffer.ComputeChecksums();
+        return this;
     }
 
     public ParsedFile ToProto()
@@ -113,6 +130,8 @@ public abstract class AbstractCodec
         };
         parsed.Games.AddRange(Games);
         return NormalizeProto(parsed);
+
+        // TODO(CheatoBaggins): Refactor Games, Metadata, KeyCodes, etc. into ParsedFile proto
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}

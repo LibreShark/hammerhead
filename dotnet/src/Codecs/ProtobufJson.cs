@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Codecs;
@@ -30,27 +31,18 @@ public sealed class ProtobufJson : AbstractCodec
     private ProtobufJson(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
-        var proto = HammerheadDump.Parser.ParseJson(rawInput.ToUtf8String());
-        if (proto == null)
-        {
-            throw new ArgumentException($"Failed to parse protobuf JSON file '{filePath}'.");
-        }
-
-        if (proto.ParsedFiles.Count != 1)
-        {
-            throw new ArgumentException(
-                $"Expected JSON to contain exactly one parsed file, " +
-                $"but found {proto.ParsedFiles.Count} in '{filePath}'.");
-        }
-
-        var file = proto.ParsedFiles.First();
-        Metadata = file.Metadata;
-        Games = file.Games.ToList();
     }
 
     public override AbstractCodec WriteChangesToBuffer()
     {
-        throw new NotImplementedException();
+        var formatter = new JsonFormatter(
+            JsonFormatter.Settings.Default
+                .WithIndentation()
+                .WithFormatDefaultValues(true)
+                .WithPreserveProtoFieldNames(true)
+        );
+        Buffer = formatter.Format(Parsed).ToUtf8Bytes();
+        return this;
     }
 
     public static bool Is(u8[] bytes)
