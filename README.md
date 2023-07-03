@@ -16,13 +16,13 @@ Full support:
 | N64 GameShark ROMs         | Yes    | Yes  | Yes   |
 | N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   |
 | N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |
+| Hammerhead JSON cheats     | Yes    | Yes  | Yes   |
 
-Partial support:
+In progress:
 
 | File format                           | Detect | Read | Write |
 |:------------------------------------- |:------ |:---- |:----- |
 | GB GameShark v2.x ROMs                | Yes    | Yes  |       |
-| GBC BrainBoy / Monster Brain ROMs     | Yes    |      |       |
 | GBC Code Breaker ROMs                 | Yes    | Yes  |       |
 | GBC GameShark v3.x ROMs               | Yes    | Yes  |       |
 | GBC GameShark v4.x ROMs               | Yes    | Yes  |       |
@@ -30,19 +30,18 @@ Partial support:
 | GBC Xploder ROMs                      | Yes    | Yes  |       |
 | GBA Datel GameShark ROMs              | Yes    | Yes  |       |
 | GBA FCD GameShark & Code Breaker ROMs | Yes    | Yes  |       |
+| OpenEmu XML cheats                    |        |      |       |
+| N64 EverDrive-64 X7 cheats            |        |      |       |
+| N64 Project 64 v1.x cheats            |        |      |       |
+| N64 Project 64 v3.x cheats            |        |      |       |
+
+Limited support:
+
+| File format                           | Detect | Read | Write |
+|:------------------------------------- |:------ |:---- |:----- |
+| GBC BrainBoy / Monster Brain ROMs     | Yes    |      |       |
 | GBA TV Tuner ROMs                     | Yes    |      |       |
 | N64 GB Hunter ROMs                    | Yes    |      |       |
-
-No support yet:
-
-| File format                | Detect | Read | Write |
-|:-------------------------- |:------ |:---- |:----- |
-| Hammerhead JSON cheats     |        |      |       |
-| Hammerhead protobuf cheats |        |      |       |
-| OpenEmu XML cheats         |        |      |       |
-| N64 EverDrive-64 X7 cheats |        |      |       |
-| N64 Project 64 v1.x cheats |        |      |       |
-| N64 Project 64 v3.x cheats |        |      |       |
 
 ## Screenshots
 
