@@ -1,4 +1,4 @@
-namespace LibreShark.Hammerhead.Nintendo64;
+namespace LibreShark.Hammerhead.Codecs;
 
 public class CodecFileFactory
 {

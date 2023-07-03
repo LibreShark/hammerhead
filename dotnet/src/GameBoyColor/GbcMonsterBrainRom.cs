@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using LibreShark.Hammerhead.Nintendo64;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;

@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;

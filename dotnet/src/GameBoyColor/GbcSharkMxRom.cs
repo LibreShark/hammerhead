@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf.WellKnownTypes;
-using LibreShark.Hammerhead.Nintendo64;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 

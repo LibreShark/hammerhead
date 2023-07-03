@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
-using LibreShark.Hammerhead.Nintendo64;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;

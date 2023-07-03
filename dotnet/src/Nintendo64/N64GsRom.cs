@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 

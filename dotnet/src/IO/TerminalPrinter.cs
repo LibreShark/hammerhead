@@ -1,6 +1,6 @@
 using System.Globalization;
 using Google.Protobuf.Collections;
-using LibreShark.Hammerhead.Nintendo64;
+using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
 

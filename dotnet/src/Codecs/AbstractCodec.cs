@@ -4,9 +4,10 @@ using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
 using LibreShark.Hammerhead.GameBoyColor;
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Nintendo64;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.Nintendo64;
+namespace LibreShark.Hammerhead.Codecs;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
