@@ -490,16 +490,9 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     private static TimeSpan ParseOriginalUtcOffset(RomString offsetStr)
     {
-        try
-        {
-            s8 relativeOffset = s8.Parse(offsetStr.Value);
-            s8 utcOffset = (s8)(relativeOffset - 5);
-            return TimeSpan.FromHours(utcOffset);
-        }
-        catch (Exception e)
-        {
-            throw;
-        }
+        s8 relativeOffset = s8.Parse(offsetStr.Value);
+        s8 utcOffset = (s8)(relativeOffset - 5);
+        return TimeSpan.FromHours(utcOffset);
     }
 
     private static string GetModernTzId(RomString originalId)
