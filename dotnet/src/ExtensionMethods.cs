@@ -324,7 +324,7 @@ public static class ExtensionMethods
         return newRS;
     }
 
-    public static RomString RemoveAddress(this RomString oldRS)
+    public static RomString WithoutAddress(this RomString oldRS)
     {
         return new RomString() { Value = oldRS.Value };
     }

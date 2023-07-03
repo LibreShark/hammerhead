@@ -111,9 +111,9 @@ public sealed class N64GsRom : AbstractCodec
     protected override ParsedFile ToProtoImpl()
     {
         var proto = new ParsedFile();
-        proto.KeyCodes.AddRange(_keyCodes.Select(kc => new Code()
+        proto.N64Data.KeyCodes.AddRange(_keyCodes.Select(kc => new Code()
         {
-            CodeIndex = (u32)proto.KeyCodes.Count,
+            CodeIndex = (u32)proto.N64Data.KeyCodes.Count,
             Bytes = kc.Bytes,
             Comment = kc.Name.Value,
         }));

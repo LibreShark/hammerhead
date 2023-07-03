@@ -80,40 +80,31 @@ public sealed class GbcSharkMxRom : AbstractCodec
 
     protected override ParsedFile ToProtoImpl()
     {
-        var proto = new ParsedFile();
-        proto.SmxTimezones.AddRange(_tzs.Select(x =>
+        var proto = new ParsedFile(Parsed);
+        foreach (GbcSmxTimeZone tz in proto.GbcSmxData.Timezones)
         {
-            return new GbcSmxTimeZone(x)
-            {
-                OriginalTzId = x.OriginalTzId.RemoveAddress(),
-                OriginalOffsetStr = x.OriginalOffsetStr.RemoveAddress(),
-            };
-        }));
-        proto.SmxContacts.AddRange(_contacts.Select(x =>
+            tz.OriginalTzId = tz.OriginalTzId.WithoutAddress();
+            tz.OriginalOffsetStr = tz.OriginalOffsetStr.WithoutAddress();
+        }
+        foreach (GbcSmxContact contact in proto.GbcSmxData.Contacts)
         {
-            return new GbcSmxContact()
-            {
-                EntryNumber = x.EntryNumber.RemoveAddress(),
-                PersonName = x.PersonName.RemoveAddress(),
-                EmailAddress = x.EmailAddress.RemoveAddress(),
-                PhoneNumber = x.PhoneNumber.RemoveAddress(),
-                StreetAddress = x.StreetAddress.RemoveAddress(),
-                UnknownField1 = x.UnknownField1.RemoveAddress(),
-                UnknownField2 = x.UnknownField2.RemoveAddress(),
-            };
-        }));
-        proto.SmxMessages.AddRange(_messages.Select(x =>
+            contact.EntryNumber = contact.EntryNumber.WithoutAddress();
+            contact.PersonName = contact.PersonName.WithoutAddress();
+            contact.EmailAddress = contact.EmailAddress.WithoutAddress();
+            contact.PhoneNumber = contact.PhoneNumber.WithoutAddress();
+            contact.StreetAddress = contact.StreetAddress.WithoutAddress();
+            contact.UnknownField1 = contact.UnknownField1.WithoutAddress();
+            contact.UnknownField2 = contact.UnknownField2.WithoutAddress();
+        }
+        foreach (GbcSmxMessage message in proto.GbcSmxData.Messages)
         {
-            return new GbcSmxMessage(x)
-            {
-                RecipientEmail = x.RecipientEmail.RemoveAddress(),
-                Subject = x.Subject.RemoveAddress(),
-                Message = x.Message.RemoveAddress(),
-                RawDate = x.RawDate.RemoveAddress(),
-                UnknownField1 = x.UnknownField1.RemoveAddress(),
-                UnknownField2 = x.UnknownField2.RemoveAddress(),
-            };
-        }));
+            message.RecipientEmail = message.RecipientEmail.WithoutAddress();
+            message.Subject = message.Subject.WithoutAddress();
+            message.Message = message.Message.WithoutAddress();
+            message.RawDate = message.RawDate.WithoutAddress();
+            message.UnknownField1 = message.UnknownField1.WithoutAddress();
+            message.UnknownField2 = message.UnknownField2.WithoutAddress();
+        }
         return proto;
     }
 

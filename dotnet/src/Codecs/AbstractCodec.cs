@@ -17,24 +17,6 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public class CodecFileFactory
-{
-    public Func<u8[], bool> AutoDetect { get; }
-    public Func<CodecId, bool> IsCodec { get; }
-    public Func<string, u8[], AbstractCodec> Create { get; }
-
-    public CodecFileFactory(
-        Func<u8[], bool> autoDetect,
-        Func<CodecId, bool> isCodec,
-        Func<string, u8[], AbstractCodec> create
-    )
-    {
-        AutoDetect = autoDetect;
-        IsCodec = isCodec;
-        Create = create;
-    }
-}
-
 public abstract class AbstractCodec
 {
     public ImmutableArray<u8> RawInput { get; }
@@ -264,15 +246,18 @@ public abstract class AbstractCodec
 
     private static ParsedFile NormalizeProto(ParsedFile parsedFile)
     {
-        var ids = parsedFile.Metadata.Identifiers.Select(rs => rs.RemoveAddress()).ToArray();
         parsedFile.Metadata.Identifiers.Clear();
-        parsedFile.Metadata.Identifiers.AddRange(ids);
+        parsedFile.Metadata.Identifiers.AddRange(
+            parsedFile.Metadata.Identifiers
+                .Select(rs => rs.WithoutAddress())
+                .ToArray()
+        );
         var games = parsedFile.Games.Select(game =>
         {
-            game.GameName = game.GameName.RemoveAddress();
+            game.GameName = game.GameName.WithoutAddress();
             var cheats = game.Cheats.Select(cheat =>
             {
-                cheat.CheatName = cheat.CheatName.RemoveAddress();
+                cheat.CheatName = cheat.CheatName.WithoutAddress();
                 var codes = cheat.Codes.Select(code =>
                 {
                     code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);

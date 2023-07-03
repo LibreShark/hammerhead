@@ -37,14 +37,24 @@ message ParsedFile {
   repeated Game games = 2;
 
   // N64 only
-  repeated Code key_codes = 101;
+  N64Data n64_data = 101;
 
   // GBC Shark MX only
-  repeated GbcSmxMessage smx_messages = 201;
-  // GBC Shark MX only
-  repeated GbcSmxContact smx_contacts = 202;
-  // GBC Shark MX only
-  repeated GbcSmxTimeZone smx_timezones = 203;
+  GbcSmxData gbc_smx_data = 102;
+}
+
+message N64Data {
+  repeated Code key_codes = 1;
+}
+
+// GBC Shark MX
+message GbcSmxData {
+  RomString reg_code_1 = 1;
+  RomString reg_code_2 = 2;
+  RomString secret_pin = 3;
+  repeated GbcSmxMessage messages = 4;
+  repeated GbcSmxContact contacts = 5;
+  repeated GbcSmxTimeZone timezones = 6;
 }
 
 message FileMetadata {
