@@ -213,6 +213,7 @@ internal static class Program
     {
         foreach (FileInfo inputFile in @params.InputFiles!)
         {
+            // TODO(CheatoBaggins): Fix file extension
             FileInfo outputFile = GenerateOutputFile(@params.OutputDir, inputFile, "cheats", "txt");
 
             TransformOneCheatFile(
@@ -272,7 +273,6 @@ internal static class Program
 
     private static void CopyCheats(RomCmdParams @params)
     {
-        // TODO(CheatoBaggins): Fix file extension
         FileInfo inputFile = @params.InputFile!;
         var inputCodec = AbstractCodec.ReadFromFile(inputFile.FullName);
         var printer = new TerminalPrinter(inputCodec, @params.PrintFormatId);
@@ -288,8 +288,8 @@ internal static class Program
 
         if (@params.OutputFile == null)
         {
-            // What extension?
-            outputFile = GenerateOutputFile(null, inputFile, "cheats", ".txt");
+            string extension = outputCodecId.FileExtension();
+            outputFile = GenerateOutputFile(null, inputFile, "cheats", extension);
             outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
         }
         else if (@params.OutputFile.Exists)

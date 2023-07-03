@@ -38,7 +38,7 @@ public sealed class GbaGsFcdRom : AbstractCodec
         "Wed Jun 14 11:49:42 2006", // GameShark PRO SP karabiner (USA)
     };
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbaGsFcdRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

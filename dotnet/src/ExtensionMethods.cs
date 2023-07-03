@@ -352,7 +352,7 @@ public static class ExtensionMethods
     {
         return codecId switch
         {
-            CodecId.GboGamesharkRom => "GB - GameShark ROM",
+            CodecId.GbGamesharkRom => "GB - GameShark ROM",
             CodecId.GbaGamesharkDatelRom => "GBA - Datel GameShark ROM",
             CodecId.GbaGamesharkFcdRom => "GBA - FCD GameShark ROM",
             CodecId.GbaTvTunerRom => "GBA - TV Tuner ROM",
@@ -377,6 +377,38 @@ public static class ExtensionMethods
             CodecId.UnspecifiedCodecId => "UNSPECIFIED ROM format",
             CodecId.UnsupportedCodecId => "UNSUPPORTED ROM format",
             _ => throw new NotSupportedException($"CodecId {codecId} is missing from ToDisplayString()!"),
+        };
+    }
+
+    public static string FileExtension(this CodecId codecId)
+    {
+        return codecId switch
+        {
+            CodecId.GbGamesharkRom => ".gb",
+            CodecId.GbaGamesharkDatelRom => ".gba",
+            CodecId.GbaGamesharkFcdRom => ".gba",
+            CodecId.GbaTvTunerRom => ".gba",
+            CodecId.GbcCodebreakerRom => ".gbc",
+            CodecId.GbcGamesharkV3Rom => ".gbc",
+            CodecId.GbcGamesharkV4Rom => ".gbc",
+            CodecId.GbcMonsterbrainRom => ".gbc",
+            CodecId.GbcSharkMxRom => ".gbc",
+            CodecId.GbcXploderRom => ".gbc",
+            CodecId.HammerheadJson => ".json",
+            CodecId.LibretroText => ".txt",
+            CodecId.N64Edx7Text => ".txt",
+            CodecId.N64GamesharkMemcard => ".n64",
+            CodecId.N64GamesharkRom => ".n64",
+            CodecId.N64GamesharkText => ".txt",
+            CodecId.N64GbhunterRom => ".n64",
+            CodecId.N64Pj64V1Text => ".txt",
+            CodecId.N64Pj64V3Text => ".txt",
+            CodecId.N64Xplorer64Rom => ".n64",
+            CodecId.N64Xplorer64Text => ".txt",
+            CodecId.OpenemuXml => ".xml",
+            CodecId.UnspecifiedCodecId => ".UNSPECIFIED",
+            CodecId.UnsupportedCodecId => ".UNSUPPORTED",
+            _ => throw new NotSupportedException($"CodecId {codecId} is missing from FileExtension()!"),
         };
     }
 

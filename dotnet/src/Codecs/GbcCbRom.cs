@@ -43,7 +43,7 @@ public sealed class GbcCbRom : AbstractCodec
     private readonly RomString[] _cheatNames = new RomString[16];
     private readonly RomString _selectedGameName;
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

@@ -44,7 +44,7 @@ public sealed class GbcGsV4Rom : AbstractCodec
         "Gameshark     V4.2",
     };
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbcGsV4Rom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

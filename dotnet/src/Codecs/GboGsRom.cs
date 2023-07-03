@@ -22,7 +22,7 @@ using f64 = Double;
 public sealed class GboGsRom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyOriginal;
-    private const CodecId ThisCodecId = CodecId.GboGamesharkRom;
+    private const CodecId ThisCodecId = CodecId.GbGamesharkRom;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
@@ -33,7 +33,7 @@ public sealed class GboGsRom : AbstractCodec
 
     private readonly List<RomString> _cheatNames = new();
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GboGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

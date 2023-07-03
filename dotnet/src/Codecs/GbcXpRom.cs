@@ -34,7 +34,7 @@ public sealed class GbcXpRom : AbstractCodec
     private const u32 ManufacturerAddr = 0x00000104;
     private const u32 GameListAddr     = 0x00020000;
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbcXpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
