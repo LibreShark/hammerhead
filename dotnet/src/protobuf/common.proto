@@ -17,18 +17,24 @@ message HammerheadDump {
 }
 
 message AppInfo {
+  // "Hammerhead"
+  string app_name = 1;
+
   // Plain SemVer format.
-  string semantic_version = 1;
+  string semantic_version = 2;
 
   // Version of Hammerhead that wrote the protobuf file.
   // Includes git commit information.
-  string informational_version = 2;
+  string informational_version = 3;
 
   // Date and time that the Hammerhead binary was built.
-  string build_date_iso = 3;
+  string build_date_iso = 4;
 
   // Date and time that the protobuf file was written to disk.
-  string write_date_iso = 4;
+  string write_date_iso = 5;
+
+  // https://github.com/LibreShark/hammerhead
+  string source_code_url = 6;
 }
 
 // Data parsed by Hammerhead from a video game enhancer file (firmware dump or cheat list).

@@ -321,10 +321,10 @@ public class TerminalPrinter
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
             table.AddRow(
-                KeyCell($"0x{id.Addr.StartIndex:X8}"),
-                KeyCell($"0x{id.Addr.EndIndex:X8}"),
-                KeyCell($"0x{id.Addr.Length:X}"),
-                KeyCell($"{id.Addr.Length}"),
+                KeyCell($"0x{id.Addr?.StartIndex:X8}"),
+                KeyCell($"0x{id.Addr?.EndIndex:X8}"),
+                KeyCell($"0x{id.Addr?.Length:X}"),
+                KeyCell($"{id.Addr?.Length}"),
                 id.Value.EscapeMarkup()
             );
         }

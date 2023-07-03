@@ -26,8 +26,8 @@ public sealed class ProtobufJson : AbstractCodec
         var codec = new ProtobufJson(filePath, rawInput);
         if (rawInput.Length > 0)
         {
-            ParsedFile parsed = ParsedFile.Parser.ParseJson(rawInput.ToUtf8String());
-            codec.ImportFromProto(parsed);
+            HammerheadDump dump = HammerheadDump.Parser.ParseJson(rawInput.ToUtf8String());
+            codec.ImportFromProto(dump.ParsedFiles.First());
         }
         return codec;
     }
@@ -51,7 +51,7 @@ public sealed class ProtobufJson : AbstractCodec
                 .WithFormatDefaultValues(false)
                 .WithPreserveProtoFieldNames(true)
         );
-        Buffer = $"{formatter.Format(Parsed)}\n".ToUtf8Bytes();
+        Buffer = $"{formatter.Format(Dump)}\n".ToUtf8Bytes();
         return this;
     }
 
@@ -59,7 +59,7 @@ public sealed class ProtobufJson : AbstractCodec
     {
         try
         {
-            ParsedFile? parsed = ParsedFile.Parser.ParseJson(bytes.ToUtf8String());
+            HammerheadDump? parsed = HammerheadDump.Parser.ParseJson(bytes.ToUtf8String());
             return parsed != null;
         }
         catch

@@ -590,10 +590,11 @@ public static class ExtensionMethods
                          Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
                          "~";
 
-        return fullPath
+        string shortPath = fullPath
                 .Replace(cwd + Path.DirectorySeparatorChar, "")
                 .Replace(homeDir, "~")
             ;
+        return shortPath;
     }
 
     public static string ShortName(this FileSystemInfo file)

@@ -53,20 +53,22 @@ internal static class Program
             }
         }
 
-        var dump = new HammerheadDump()
-        {
-            AppInfo = new AppInfo()
-            {
-                InformationalVersion = GitVersionInformation.InformationalVersion,
-                SemanticVersion = GitVersionInformation.AssemblySemVer,
-                BuildDateIso = Assembly.GetEntryAssembly()!.GetBuildDate().ToIsoString(),
-                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
-            },
-        };
-        dump.ParsedFiles.AddRange(parsedFiles);
-
         if (@params.PrintFormatId is PrintFormatId.Json)
         {
+            var entryAssembly = Assembly.GetEntryAssembly()!;
+            var dump = new HammerheadDump()
+            {
+                AppInfo = new AppInfo()
+                {
+                    AppName = entryAssembly.GetName().Name,
+                    SemanticVersion = GitVersionInformation.AssemblySemVer,
+                    InformationalVersion = GitVersionInformation.InformationalVersion,
+                    BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
+                    WriteDateIso = DateTimeOffset.Now.ToIsoString(),
+                    SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
+                },
+            };
+            dump.ParsedFiles.AddRange(parsedFiles);
             var formatter = new JsonFormatter(
                 JsonFormatter.Settings.Default
                     .WithIndentation()

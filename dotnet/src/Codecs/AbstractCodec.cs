@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Reflection;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
@@ -35,7 +36,17 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    protected ParsedFile Parsed;
+    protected HammerheadDump Dump;
+
+    protected ParsedFile Parsed
+    {
+        get => Dump.ParsedFiles.First();
+        set
+        {
+            Dump.ParsedFiles.Clear();
+            Dump.ParsedFiles.Add(value);
+        }
+    }
 
     public FileMetadata Metadata => Parsed.Metadata;
 
@@ -86,6 +97,19 @@ public abstract class AbstractCodec
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
+        var entryAssembly = Assembly.GetEntryAssembly()!;
+        Dump = new HammerheadDump()
+        {
+            AppInfo = new AppInfo()
+            {
+                AppName = entryAssembly.GetName().Name,
+                SemanticVersion = GitVersionInformation.AssemblySemVer,
+                InformationalVersion = GitVersionInformation.InformationalVersion,
+                BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
+                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
+                SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
+            },
+        };
         Parsed = new ParsedFile()
         {
             Metadata = new FileMetadata()
@@ -107,10 +131,15 @@ public abstract class AbstractCodec
     public AbstractCodec ImportFromProto(ParsedFile parsed)
     {
         var old = Parsed;
-        Parsed = new ParsedFile(parsed);
-        Parsed.Metadata.CodecId = old.Metadata.CodecId;
-        Parsed.Metadata.CodecFeatureSupport = old.Metadata.CodecFeatureSupport;
-        Parsed.Metadata.FilePath = old.Metadata.FilePath;
+        Parsed = new ParsedFile(parsed)
+        {
+            Metadata =
+            {
+                CodecId = old.Metadata.CodecId,
+                CodecFeatureSupport = old.Metadata.CodecFeatureSupport,
+                FilePath = old.Metadata.FilePath,
+            },
+        };
         WriteChangesToBuffer();
         Parsed.Metadata.FileChecksum = Buffer.ComputeChecksums();
         return this;
@@ -123,7 +152,8 @@ public abstract class AbstractCodec
             Metadata = Metadata,
         };
         parsed.Games.AddRange(Games);
-        return NormalizeProto(parsed);
+        ParsedFile normalized = NormalizeProto(parsed);
+        return normalized;
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
