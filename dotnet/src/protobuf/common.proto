@@ -231,19 +231,16 @@ enum CodecId {
 // E.g., GameShark Pro for GBC is also backward compatible with GB/GBP,
 // but its ConsoleId is GBC because that's the newest of the 3.
 enum ConsoleId {
-  UNKNOWN_CONSOLE = 0x00;
-
-  GAME_BOY_ORIGINAL = 0x01;
-  GAME_BOY_COLOR = 0x02;
-  GAME_BOY_ADVANCE = 0x04;
-
-  GAME_GEAR = 0x20;
-
-  PLAYSTATION_1 = 0x30;
-  NINTENDO_64 = 0x40;
-
-  DREAMCAST = 0x41;
-  GAMECUBE = 0x42;
+  UNKNOWN_CONSOLE = 0;
+  UNIVERSAL = 1;
+  GAME_BOY_ORIGINAL = 2;
+  GAME_BOY_COLOR = 3;
+  GAME_BOY_ADVANCE = 4;
+  GAME_GEAR = 5;
+  PLAYSTATION_1 = 6;
+  NINTENDO_64 = 7;
+  DREAMCAST = 8;
+  GAMECUBE = 9;
 }
 
 // Official marketing brand name of the device,

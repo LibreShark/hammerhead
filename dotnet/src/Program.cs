@@ -213,61 +213,15 @@ internal static class Program
     {
         foreach (FileInfo inputFile in @params.InputFiles!)
         {
-            // TODO(CheatoBaggins): Fix file extension
-            FileInfo outputFile = GenerateOutputFile(@params.OutputDir, inputFile, "cheats", "txt");
-
-            TransformOneCheatFile(
-                "Dumping cheats",
-                "cheats",
-                new RomCmdParams()
-                {
-                    InputFile = inputFile,
-                    OutputFile = outputFile,
-                    OverwriteExistingFiles = @params.OverwriteExistingFiles,
-                    PrintFormatId = @params.PrintFormatId,
-                    HideBanner = @params.HideBanner,
-                    Clean = @params.Clean,
-                },
-                t => t.Codec.SupportsCheats(),
-                t =>
-                {
-                    TerminalPrinter printer = t.Printer;
-                    AbstractCodec inputCodec = t.Codec;
-                    // TODO(CheatoBaggins): Warn the user that --output-format is ignored
-                    // when writing to an existing ROM output file whose codec can be auto-detected.
-                    // If the existing file is EMPTY or not a supported codec, THEN we should
-                    // use --output-format.
-                    // Throw an error if the user tries to write to a different ROM format
-                    // than the existing output file.
-                    if (outputFile.Exists && @params.OutputFormat != CodecId.Auto)
-                    {
-                        // TODO(CheatoBaggins): What to do?
-                        // Check SupportsFirmware value
-                        Console.WriteLine();
-                    }
-                    CodecId outputCodecId =
-                        @params.OutputFormat == CodecId.Auto
-                            ? inputCodec.DefaultCheatOutputCodec
-                            : @params.OutputFormat;
-                    if (outputCodecId is CodecId.UnspecifiedCodecId or CodecId.UnsupportedCodecId)
-                    {
-                        throw new InvalidOperationException(
-                            $"Output codec {@params.OutputFormat} ({@params.OutputFormat.ToDisplayString()}) " +
-                            "does not support writing cheats yet.");
-                    }
-
-                    AbstractCodec outputCodec =
-                        outputFile.Exists
-                            ? AbstractCodec.ReadFromFile(outputFile.FullName)
-                            : AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
-
-                    outputCodec.Games.Clear();
-                    outputCodec.Games.AddRange(inputCodec.Games);
-                    outputCodec.WriteChangesToBuffer();
-
-                    File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
-                }
-            );
+            CopyCheats(new RomCmdParams()
+            {
+                InputFile = inputFile,
+                PrintFormatId = @params.PrintFormatId,
+                OutputFormat = @params.OutputFormat,
+                OverwriteExistingFiles = @params.OverwriteExistingFiles,
+                Clean = @params.Clean,
+                HideBanner = @params.HideBanner,
+            });
         }
     }
 
@@ -327,10 +281,11 @@ internal static class Program
                 ));
                 return;
             }
-            if (inputCodec.Metadata.ConsoleId != outputCodec.Metadata.ConsoleId)
+            if (outputCodec.Metadata.ConsoleId != inputCodec.Metadata.ConsoleId &&
+                outputCodec.Metadata.ConsoleId != ConsoleId.Universal)
             {
                 printer.PrintError(new InvalidOperationException(
-                    $"Input and output formats must both be for the same game console. Aborting."
+                    $"Input and output formats ({inputCodec.Metadata.ConsoleId} and {outputCodec.Metadata.ConsoleId}) must both be for the same game console. Aborting."
                 ));
                 return;
             }

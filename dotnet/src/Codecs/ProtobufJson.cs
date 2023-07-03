@@ -16,7 +16,7 @@ using f64 = Double;
 
 public sealed class ProtobufJson : AbstractCodec
 {
-    private const ConsoleId ThisConsoleId = ConsoleId.UnknownConsole;
+    private const ConsoleId ThisConsoleId = ConsoleId.Universal;
     private const CodecId ThisCodecId = CodecId.HammerheadJson;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
@@ -31,6 +31,10 @@ public sealed class ProtobufJson : AbstractCodec
     private ProtobufJson(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Support.SupportsCheats = true;
+        Support.SupportsUserPrefs = true;
+        Support.SupportsKeyCodes = true;
+        Support.SupportsSmxMessages = true;
     }
 
     public override AbstractCodec WriteChangesToBuffer()
