@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
@@ -34,13 +35,35 @@ internal static class Program
         printer.PrintBanner(@params);
     }
 
+    private static T Try<T>(FileInfo inputFile, Func<T> factory)
+    {
+        T value;
+
+        try
+        {
+            value = factory.Invoke();
+        }
+        catch
+        {
+            Console.Error.WriteLine();
+            Console.Error.WriteLine();
+            Console.Error.WriteLine($"ERROR while reading file '{inputFile.FullName}'!");
+            Console.Error.WriteLine();
+            Console.Error.WriteLine();
+            throw;
+        }
+
+        return value;
+    }
+
     private static void PrintFileInfo(InfoCmdParams @params)
     {
         var parsedFiles = new RepeatedField<ParsedFile>();
 
-        foreach (FileInfo romFile in @params.InputFiles)
+        foreach (FileInfo inputFile in @params.InputFiles)
         {
-            AbstractCodec codec = AbstractCodec.ReadFromFile(romFile.FullName, @params.InputCodecId);
+
+            AbstractCodec codec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName, @params.InputCodecId));
 
             if (@params.PrintFormatId is PrintFormatId.Json)
             {
@@ -49,7 +72,7 @@ internal static class Program
             else
             {
                 var printer = new TerminalPrinter(codec, @params.PrintFormatId);
-                printer.PrintFileInfo(romFile, @params);
+                printer.PrintFileInfo(inputFile, @params);
             }
         }
 
@@ -110,7 +133,7 @@ internal static class Program
         var printer = new TerminalPrinter(@params.PrintFormatId);
         printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
-            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            AbstractCodec codec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName));
             var fileParams = new FileTransformParams(inputFile, outputFile, codec, printer);
 
             if (!isSupported(fileParams))
@@ -196,7 +219,7 @@ internal static class Program
     private static void CopyCheats(RomCmdParams @params)
     {
         FileInfo inputFile = @params.InputFile!;
-        var inputCodec = AbstractCodec.ReadFromFile(inputFile.FullName);
+        AbstractCodec inputCodec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName));
         var printer = new TerminalPrinter(inputCodec, @params.PrintFormatId);
 
         FileInfo outputFile;
@@ -219,7 +242,7 @@ internal static class Program
             outputFile = @params.OutputFile;
             if (@params.OutputFormat == CodecId.Auto)
             {
-                outputCodec = AbstractCodec.ReadFromFile(outputFile.FullName);
+                outputCodec = Try(outputFile, () => AbstractCodec.ReadFromFile(outputFile.FullName));
                 outputCodecId = outputCodec.Metadata.CodecId;
             }
             else
