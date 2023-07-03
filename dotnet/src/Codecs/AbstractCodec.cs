@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using Google.Protobuf.Collections;
-using Google.Protobuf.Reflection;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
 using LibreShark.Hammerhead.GameBoyColor;
@@ -62,8 +61,9 @@ public abstract class AbstractCodec
         // Game Boy Color
         GbcCbRom.Factory,
         GbcGsV3Rom.Factory,
-        GbcGsV3CodeFile.Factory,
         GbcGsV4Rom.Factory,
+        GbcGsV3CodeFile.Factory,
+        GbcGsV3CodeDb.Factory,
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
         GbcXpRom.Factory,

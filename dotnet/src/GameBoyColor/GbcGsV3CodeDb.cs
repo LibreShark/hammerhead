@@ -15,25 +15,23 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// "Game Boy Code File" (*.gcf) binary format for the official PC utils for
-/// v3.X GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
-/// made by Datel/InterAct.
+/// C:\Program Files\Interact\GameShark for GameBoy\gbdata\gbcheats.bin
 /// </summary>
-public sealed class GbcGsV3CodeFile : AbstractCodec
+public sealed class GbcGsV3CodeDb : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
-    private const CodecId ThisCodecId = CodecId.GbcGamesharkV3Gcf;
+    private const CodecId ThisCodecId = CodecId.GbcGamesharkV3Cdb;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
-    public static GbcGsV3CodeFile Create(string filePath, u8[] rawInput)
+    public static GbcGsV3CodeDb Create(string filePath, u8[] rawInput)
     {
-        return new GbcGsV3CodeFile(filePath, rawInput);
+        return new GbcGsV3CodeDb(filePath, rawInput);
     }
 
     public override CodecId DefaultCheatOutputCodec => ThisCodecId;
 
-    private GbcGsV3CodeFile(string filePath, u8[] rawInput)
+    private GbcGsV3CodeDb(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;
