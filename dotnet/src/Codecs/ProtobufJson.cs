@@ -23,7 +23,13 @@ public sealed class ProtobufJson : AbstractCodec
 
     public static ProtobufJson Create(string filePath, u8[] rawInput)
     {
-        return new ProtobufJson(filePath, rawInput);
+        var codec = new ProtobufJson(filePath, rawInput);
+        if (rawInput.Length > 0)
+        {
+            ParsedFile parsed = ParsedFile.Parser.ParseJson(rawInput.ToUtf8String());
+            codec.ImportFromProto(parsed);
+        }
+        return codec;
     }
 
     public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
@@ -51,7 +57,15 @@ public sealed class ProtobufJson : AbstractCodec
 
     public static bool Is(u8[] bytes)
     {
-        return true;
+        try
+        {
+            ParsedFile? parsed = ParsedFile.Parser.ParseJson(bytes.ToUtf8String());
+            return parsed != null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public static bool Is(CodecId codecId)
