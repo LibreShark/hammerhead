@@ -41,7 +41,7 @@ public abstract class AbstractCodec
     protected readonly AbstractBinaryScribe Scribe;
 
     private static readonly CodecFileFactory[] CodecFactories = new[] {
-        GboGsRom.Factory,
+        GbGsRom.Factory,
         GbaGsDatelRom.Factory,
         GbaGsFcdRom.Factory,
         GbaTvTunerRom.Factory,
