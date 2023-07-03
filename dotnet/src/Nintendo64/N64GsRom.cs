@@ -462,7 +462,7 @@ public sealed class N64GsRom : AbstractCodec
             string hexString = keyCode.Bytes.ToHexString(" ");
             table.AddRow(
                 keyCode.IsActiveKeyCode
-                    ? $"> {keyCodeName}"
+                    ? $"> [green underline]{keyCodeName}[/]" + " [ACTIVE]".EscapeMarkup()
                     : $"  {keyCodeName}",
                 hexString
             );
