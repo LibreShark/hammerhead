@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Color = System.Drawing.Color;
 
 namespace LibreShark.Hammerhead;
 
@@ -24,19 +23,33 @@ using f64 = Double;
 
 public static class ExtensionMethods
 {
-    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+    /// <summary>
+    /// The two primary manufacturers of video game enhancers (Datel and FCD)
+    /// compiled their firmware on English Windows 9x machines and used the
+    /// default codepage when encoding strings. Some strings contain bytes
+    /// above 127 (e.g., the accented 'e' in "Pokèmon Bisasam") that
+    /// cannot be properly decoded with ASCII, which is only 7-bit.
+    /// </summary>
+    private static readonly Encoding Windows1252;
+
+    private static readonly Encoding Utf8;
+
+    static ExtensionMethods()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Windows1252 = Encoding.GetEncoding(
+            "Windows-1252",
+            new EncoderReplacementFallback("?"),
+            new DecoderReplacementFallback("?")
+        );
+        Utf8 = Encoding.GetEncoding(
+            "utf-8",
+            new EncoderReplacementFallback("?"),
+            new DecoderReplacementFallback("?")
+        );
+    }
 
     #region Bytes
-
-    private static readonly Encoding Ascii = Encoding.GetEncoding(
-        "ascii",
-        new EncoderReplacementFallback("?"),
-        new DecoderReplacementFallback("?"));
-
-    private static readonly Encoding Utf8 = Encoding.GetEncoding(
-        "utf-8",
-        new EncoderReplacementFallback("?"),
-        new DecoderReplacementFallback("?"));
 
     public static string ToUtf8String(this u8[] bytes)
     {
@@ -55,17 +68,17 @@ public static class ExtensionMethods
 
     public static string ToAsciiString(this u8[] bytes)
     {
-        return Ascii.GetString(bytes);
+        return Windows1252.GetString(bytes);
     }
 
     public static u8[] ToAsciiBytes(this string str)
     {
-        return Ascii.GetBytes(str);
+        return Windows1252.GetBytes(str);
     }
 
     public static u8[] ToAsciiBytes(this StringBuilder str)
     {
-        return Ascii.GetBytes(str.ToString());
+        return Windows1252.GetBytes(str.ToString());
     }
 
     public static string ToHexString(this IEnumerable<byte> eBytes, string delimiter = "")

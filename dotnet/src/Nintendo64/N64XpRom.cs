@@ -248,7 +248,7 @@ public sealed class N64XpRom : AbstractCodec
         {
             throw new FormatException(
                 $"Build date/time stamp '{buildDateRaw.Value}' at {buildDateRaw.Addr} " +
-                "does not match expected format `ddd MMM d H:mm:ss ZZZ yyyy`. " +
+                "does not match expected format 'ddd MMM d H:mm:ss ZZZ yyyy'. " +
                 "See https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
         }
 

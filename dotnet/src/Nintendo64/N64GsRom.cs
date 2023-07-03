@@ -186,16 +186,23 @@ public sealed class N64GsRom : AbstractCodec
             return name;
         }
 
-        name.Value = name.Value.Replace("`F6`", "Key");
-        name.Value = name.Value.Replace("`F7`", "Have ");
-        name.Value = name.Value.Replace("`F8`", "Lives");
-        name.Value = name.Value.Replace("`F9`", "Energy");
-        name.Value = name.Value.Replace("`FA`", "Health");
-        name.Value = name.Value.Replace("`FB`", "Activate ");
-        name.Value = name.Value.Replace("`FC`", "Unlimited ");
-        name.Value = name.Value.Replace("`FD`", "Player ");
-        name.Value = name.Value.Replace("`FE`", "Always ");
-        name.Value = name.Value.Replace("`FF`", "Infinite ");
+        name.Value = string.Join("", name.Value.Select(c =>
+        {
+            return (int)c switch
+            {
+                0xF6 => "Key",
+                0xF7 => "Have ",
+                0xF8 => "Lives",
+                0xF9 => "Energy",
+                0xFA => "Health",
+                0xFB => "Activate ",
+                0xFC => "Unlimited ",
+                0xFD => "Player ",
+                0xFE => "Always ",
+                0xFF => "Infinite ",
+                _ => c.ToString(),
+            };
+        }));
 
         return name;
     }
@@ -300,17 +307,34 @@ public sealed class N64GsRom : AbstractCodec
         return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
     }
 
+    private void WriteName(string str)
+    {
+        str = str
+                .Replace("Key", "\xF6")
+                .Replace("Have ", "\xF7")
+                .Replace("Lives", "\xF8")
+                .Replace("Energy", "\xF9")
+                .Replace("Health", "\xFA")
+                .Replace("Activate ", "\xFB")
+                .Replace("Unlimited ", "\xFC")
+                .Replace("Player ", "\xFD")
+                .Replace("Always ", "\xFE")
+                .Replace("Infinite ", "\xFF")
+            ;
+        Scribe.WriteCString(str, 30);
+    }
+
     public override AbstractCodec WriteChangesToBuffer()
     {
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
         foreach (Game game in Games)
         {
-            Scribe.WriteCString(game.GameName.Value, 30);
+            WriteName(game.GameName.Value);
             Scribe.WriteU8((u8)game.Cheats.Count);
             foreach (Cheat cheat in game.Cheats)
             {
-                Scribe.WriteCString(cheat.CheatName.Value, 30);
+                WriteName(cheat.CheatName.Value);
                 u8 codeCount = (u8)cheat.Codes.Count;
                 if (cheat.IsCheatActive)
                 {

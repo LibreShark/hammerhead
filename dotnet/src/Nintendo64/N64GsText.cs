@@ -82,7 +82,7 @@ public sealed class N64GsText : AbstractCodec
                     state = ParserState.InGame;
                     break;
                 case ParserState.InList:
-                    Console.Error.WriteLine($"[state=InList] Unrecognized line in cheat file: `{line}`");
+                    Console.Error.WriteLine($"[state=InList] Unrecognized line in cheat file: '{line}'");
                     continue;
                 case ParserState.InGame when endMatch.Success:
                     state = ParserState.InList;
@@ -99,7 +99,7 @@ public sealed class N64GsText : AbstractCodec
                     state = ParserState.InCheat;
                     break;
                 case ParserState.InGame:
-                    Console.Error.WriteLine($"[state=InGame] Unrecognized line in cheat file: `{line}`");
+                    Console.Error.WriteLine($"[state=InGame] Unrecognized line in cheat file: '{line}'");
                     continue;
                 case ParserState.InCheat when endMatch.Success:
                     state = ParserState.InList;
@@ -119,7 +119,7 @@ public sealed class N64GsText : AbstractCodec
                     break;
                 }
                 case ParserState.InCheat:
-                    Console.Error.WriteLine($"[state=InCheat] Unrecognized line in cheat file: `{line}`");
+                    Console.Error.WriteLine($"[state=InCheat] Unrecognized line in cheat file: '{line}'");
                     continue;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -360,10 +360,6 @@ public abstract class AbstractBinaryScribe
 
     private static string ByteToStr(u8 b)
     {
-        if (b > 127)
-        {
-            return string.Concat('`', b.ToString("X2"), '`');
-        }
         if (b == '\0') return @"\0";
         if (b == '\t') return @"\t";
         if (b == '\n') return @"\n";
