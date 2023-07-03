@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using Google.Protobuf.Collections;
+using Google.Protobuf.Reflection;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
 using LibreShark.Hammerhead.GameBoyColor;
@@ -123,9 +124,8 @@ public abstract class AbstractCodec
         };
     }
 
-    protected virtual ParsedFile GetCustomProtoFields()
+    protected virtual void SanitizeCustomProtoFields(ParsedFile parsed)
     {
-        return new ParsedFile();
     }
 
     public AbstractCodec ImportFromProto(ParsedFile parsed)
@@ -145,13 +145,9 @@ public abstract class AbstractCodec
         return this;
     }
 
-    public ParsedFile ToProto()
+    public ParsedFile ToSlimProto()
     {
-        var parsed = new ParsedFile(GetCustomProtoFields())
-        {
-            Metadata = Metadata,
-        };
-        parsed.Games.AddRange(Games);
+        var parsed = new ParsedFile(Parsed);
         ParsedFile normalized = NormalizeProto(parsed);
         return normalized;
     }

@@ -67,7 +67,7 @@ internal static class Program
 
             if (@params.PrintFormatId is PrintFormatId.Json)
             {
-                parsedFiles.Add(codec.ToProto());
+                parsedFiles.Add(codec.ToSlimProto());
             }
             else
             {
@@ -296,7 +296,7 @@ internal static class Program
                 return;
             }
 
-            outputCodec.ImportFromProto(inputCodec.ToProto());
+            outputCodec.ImportFromProto(inputCodec.ToSlimProto());
 
             File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
         });

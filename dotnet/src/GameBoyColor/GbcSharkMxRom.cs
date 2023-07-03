@@ -75,15 +75,14 @@ public sealed class GbcSharkMxRom : AbstractCodec
         Metadata.IsKnownVersion = KnownDisplayVersions.Contains(Metadata.DisplayVersion);
     }
 
-    protected override ParsedFile GetCustomProtoFields()
+    protected override void SanitizeCustomProtoFields(ParsedFile parsed)
     {
-        var proto = new ParsedFile(Parsed);
-        foreach (GbcSmxTimeZone tz in proto.GbcSmxData.Timezones)
+        foreach (GbcSmxTimeZone tz in parsed.GbcSmxData.Timezones)
         {
             tz.OriginalTzId = tz.OriginalTzId.WithoutAddress();
             tz.OriginalOffsetStr = tz.OriginalOffsetStr.WithoutAddress();
         }
-        foreach (GbcSmxContact contact in proto.GbcSmxData.Contacts)
+        foreach (GbcSmxContact contact in parsed.GbcSmxData.Contacts)
         {
             contact.EntryNumber = contact.EntryNumber.WithoutAddress();
             contact.PersonName = contact.PersonName.WithoutAddress();
@@ -93,7 +92,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
             contact.UnknownField1 = contact.UnknownField1.WithoutAddress();
             contact.UnknownField2 = contact.UnknownField2.WithoutAddress();
         }
-        foreach (GbcSmxMessage message in proto.GbcSmxData.Messages)
+        foreach (GbcSmxMessage message in parsed.GbcSmxData.Messages)
         {
             message.RecipientEmail = message.RecipientEmail.WithoutAddress();
             message.Subject = message.Subject.WithoutAddress();
@@ -102,7 +101,6 @@ public sealed class GbcSharkMxRom : AbstractCodec
             message.UnknownField1 = message.UnknownField1.WithoutAddress();
             message.UnknownField2 = message.UnknownField2.WithoutAddress();
         }
-        return proto;
     }
 
     private void ParseVersion()

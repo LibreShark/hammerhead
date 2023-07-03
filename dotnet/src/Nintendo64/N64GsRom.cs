@@ -44,7 +44,6 @@ public sealed class N64GsRom : AbstractCodec
     private readonly RomString _rawTimestamp;
     private readonly N64GsVersion _version;
     private readonly Code _activeKeyCode;
-    private readonly List<Code> _keyCodes;
 
     private const u32 ProgramCounterAddr = 0x00000008;
     private const u32 ActiveKeyCodeAddr  = 0x00000010;
@@ -53,9 +52,13 @@ public sealed class N64GsRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
+    private N64Data Data => Parsed.N64Data;
+
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Parsed.N64Data = new N64Data();
+
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
@@ -96,9 +99,8 @@ public sealed class N64GsRom : AbstractCodec
         _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        List<Code> keyCodes = ReadKeyCodes();
-        _activeKeyCode = ReadActiveKeyCode(keyCodes);
-        _keyCodes = keyCodes;
+        Data.KeyCodes.Add(ReadKeyCodes());
+        _activeKeyCode = ReadActiveKeyCode();
 
         Support.IsFileEncrypted      = DetectEncrypted(rawInput);
         Support.IsFirmwareCompressed = DetectCompressed(rawInput);
@@ -108,14 +110,12 @@ public sealed class N64GsRom : AbstractCodec
         Games.AddRange(ReadGames());
     }
 
-    protected override ParsedFile GetCustomProtoFields()
+    protected override void SanitizeCustomProtoFields(ParsedFile parsed)
     {
-        var proto = new ParsedFile()
+        foreach (var kc in parsed.N64Data.KeyCodes)
         {
-            N64Data = new N64Data(),
-        };
-        proto.N64Data.KeyCodes.AddRange(_keyCodes);
-        return proto;
+            kc.CodeName = kc.CodeName.WithoutAddress();
+        }
     }
 
     private List<Game> ReadGames()
@@ -207,15 +207,15 @@ public sealed class N64GsRom : AbstractCodec
         return name;
     }
 
-    private Code ReadActiveKeyCode(List<Code> keyCodes)
+    private Code ReadActiveKeyCode()
     {
         u8[] activeCrcBytes = Scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
         u8[] activePcBytes = Scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
         RomString? name = null;
-        if (keyCodes.Count > 0)
+        if (Data.KeyCodes.Count > 0)
         {
-            Code? activeKeyCode = keyCodes.Find(kc =>
+            Code? activeKeyCode = Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
@@ -419,7 +419,7 @@ public sealed class N64GsRom : AbstractCodec
         Console.WriteLine($"Active key code: {hexString} {nameStr}");
         Console.WriteLine();
 
-        if (Support.SupportsKeyCodes && Support.HasKeyCodes)
+        if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
         {
             PrintKeyCodesTable(printer);
         }
@@ -457,7 +457,7 @@ public sealed class N64GsRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Active?"))
             ;
 
-        foreach (Code keyCode in _keyCodes)
+        foreach (Code keyCode in Data.KeyCodes)
         {
             string keyCodeName = keyCode.CodeName.Value.EscapeMarkup();
             string hexString = keyCode.Bytes.ToHexString(" ");

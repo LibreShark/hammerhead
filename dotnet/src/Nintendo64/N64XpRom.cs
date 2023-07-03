@@ -121,14 +121,12 @@ public sealed class N64XpRom : AbstractCodec
         ReadUserPrefs();
     }
 
-    protected override ParsedFile GetCustomProtoFields()
+    protected override void SanitizeCustomProtoFields(ParsedFile parsed)
     {
-        var proto = new ParsedFile()
+        foreach (var kc in parsed.N64Data.KeyCodes)
         {
-            N64Data = new N64Data(),
-        };
-        proto.N64Data.KeyCodes.AddRange(_keyCodes);
-        return proto;
+            kc.CodeName = kc.CodeName.WithoutAddress();
+        }
     }
 
     private static AbstractBinaryScribe Unobfuscate(u8[] rawInput)
