@@ -415,7 +415,7 @@ public sealed class N64GsRom : AbstractCodec
 
         printer.PrintHeading("Key codes");
         string hexString = _activeKeyCode.Bytes.ToHexString(" ");
-        RomString nameStr = _activeKeyCode.CodeName;
+        string nameStr = _activeKeyCode.CodeName.Value;
         Console.WriteLine($"Active key code: {hexString} {nameStr}");
         Console.WriteLine();
 
