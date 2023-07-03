@@ -129,42 +129,6 @@ internal static class Program
         });
     }
 
-    private static void TransformOneCheatFile(
-        string status,
-        string fileSuffix,
-        RomCmdParams @params,
-        Func<FileTransformParams, bool> isSupported,
-        Action<FileTransformParams> transform)
-    {
-        FileInfo inputFile = @params.InputFile!;
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
-
-        var printer = new TerminalPrinter(@params.PrintFormatId);
-        printer.PrintRomCommand(status, inputFile, outputFile, () =>
-        {
-            var codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-            var ftp = new FileTransformParams(inputFile, outputFile, codec, printer);
-
-            if (!isSupported(ftp))
-            {
-                printer.PrintError(new InvalidOperationException(
-                    $"{codec.Metadata.CodecId.ToDisplayString()} files do not support this operation. Aborting."
-                ));
-                return;
-            }
-
-            if (outputFile.Exists && !@params.OverwriteExistingFiles)
-            {
-                printer.PrintError(new InvalidOperationException(
-                    $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
-                ));
-                return;
-            }
-
-            transform(ftp);
-        });
-    }
-
     private static void EncryptRom(RomCmdParams @params)
     {
         TransformOneRomFile(
