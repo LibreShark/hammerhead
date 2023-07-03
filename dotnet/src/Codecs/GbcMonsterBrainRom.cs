@@ -23,7 +23,7 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcMonsterbrainRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcMonsterBrainRom Create(string filePath, u8[] rawInput)
     {

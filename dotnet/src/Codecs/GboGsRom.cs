@@ -24,7 +24,7 @@ public sealed class GboGsRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyOriginal;
     private const CodecId ThisCodecId = CodecId.GboGamesharkRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GboGsRom Create(string filePath, u8[] rawInput)
     {

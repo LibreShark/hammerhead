@@ -17,7 +17,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaGamesharkDatelRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbaGsDatelRom Create(string filePath, u8[] rawInput)
     {

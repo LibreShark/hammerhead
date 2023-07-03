@@ -260,7 +260,7 @@ internal static class Program
                             ? AbstractCodec.ReadFromFile(outputFile.FullName)
                             : AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
 
-                    outputCodec.Games.RemoveAll(_ => true);
+                    outputCodec.Games.Clear();
                     outputCodec.Games.AddRange(inputCodec.Games);
                     outputCodec.WriteChangesToBuffer();
 

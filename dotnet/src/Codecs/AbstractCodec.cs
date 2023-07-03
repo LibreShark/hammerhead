@@ -20,19 +20,16 @@ public class CodecFileFactory
 {
     public Func<u8[], bool> AutoDetect { get; }
     public Func<CodecId, bool> IsCodec { get; }
-    public CodecId CodecId { get; }
     public Func<string, u8[], AbstractCodec> Create { get; }
 
     public CodecFileFactory(
         Func<u8[], bool> autoDetect,
         Func<CodecId, bool> isCodec,
-        CodecId codecId,
         Func<string, u8[], AbstractCodec> create
     )
     {
         AutoDetect = autoDetect;
         IsCodec = isCodec;
-        CodecId = codecId;
         Create = create;
     }
 }
@@ -52,9 +49,9 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    public FileMetadata Metadata { get; }
+    public FileMetadata Metadata { get; protected init; }
 
-    public List<Game> Games { get; }
+    public List<Game> Games { get; protected init; }
 
     protected readonly AbstractBinaryScribe Scribe;
 
@@ -69,10 +66,12 @@ public abstract class AbstractCodec
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
         GbcXpRom.Factory,
+        N64GbHunterRom.Factory,
         N64GsRom.Factory,
         N64GsText.Factory,
         N64XpRom.Factory,
         N64XpText.Factory,
+        ProtobufJson.Factory,
         UnknownCodec.Factory,
     };
 

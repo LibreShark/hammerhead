@@ -13,23 +13,39 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public sealed class UnknownCodec : AbstractCodec
+public sealed class ProtobufJson : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.UnknownConsole;
-    private const CodecId ThisCodecId = CodecId.UnsupportedCodecId;
+    private const CodecId ThisCodecId = CodecId.HammerheadJson;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
-    public static UnknownCodec Create(string filePath, u8[] rawInput)
+    public static ProtobufJson Create(string filePath, u8[] rawInput)
     {
-        return new UnknownCodec(filePath, rawInput);
+        return new ProtobufJson(filePath, rawInput);
     }
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
-    private UnknownCodec(string filePath, u8[] rawInput)
+    private ProtobufJson(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        var proto = HammerheadDump.Parser.ParseJson(rawInput.ToUtf8String());
+        if (proto == null)
+        {
+            throw new ArgumentException($"Failed to parse protobuf JSON file '{filePath}'.");
+        }
+
+        if (proto.ParsedFiles.Count != 1)
+        {
+            throw new ArgumentException(
+                $"Expected JSON to contain exactly one parsed file, " +
+                $"but found {proto.ParsedFiles.Count} in '{filePath}'.");
+        }
+
+        var file = proto.ParsedFiles.First();
+        Metadata = file.Metadata;
+        Games = file.Games.ToList();
     }
 
     public override AbstractCodec WriteChangesToBuffer()

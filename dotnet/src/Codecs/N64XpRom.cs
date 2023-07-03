@@ -27,7 +27,7 @@ public sealed class N64XpRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Xplorer64Rom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static N64XpRom Create(string filePath, u8[] rawInput)
     {

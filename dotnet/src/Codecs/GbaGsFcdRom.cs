@@ -23,7 +23,7 @@ public sealed class GbaGsFcdRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaGamesharkFcdRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbaGsFcdRom Create(string filePath, u8[] rawInput)
     {

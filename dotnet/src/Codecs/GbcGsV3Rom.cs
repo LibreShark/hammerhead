@@ -23,7 +23,7 @@ public sealed class GbcGsV3Rom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcGamesharkV3Rom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcGsV3Rom Create(string filePath, u8[] rawInput)
     {

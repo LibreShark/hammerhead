@@ -24,6 +24,13 @@ public sealed class N64GbHunterRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GbhunterRom;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
+
+    public static N64GbHunterRom Create(string filePath, u8[] rawInput)
+    {
+        return new N64GbHunterRom(filePath, rawInput);
+    }
+
     private readonly s32[] _rle01Addresses;
 
     public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
