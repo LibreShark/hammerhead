@@ -99,7 +99,7 @@ public sealed class N64GsRom : AbstractCodec
         _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        Data.KeyCodes.Add(ReadKeyCodes());
+        Data.KeyCodes.AddRange(ReadKeyCodes());
         _activeKeyCode = ReadActiveKeyCode();
 
         Support.IsFileEncrypted      = DetectEncrypted(rawInput);
@@ -250,7 +250,7 @@ public sealed class N64GsRom : AbstractCodec
         while (Scribe.Position <= maxPos)
         {
             u8[] bytes = Scribe.ReadBytes((u32)keyCodeByteLength);
-            RomString name = Scribe.ReadPrintableCString(0x1F, true);
+            RomString name = Scribe.ReadPrintableCString(31, true);
             while (Scribe.PeekBytes(1)[0] == 0)
             {
                 Scribe.ReadU8();
@@ -454,7 +454,6 @@ public sealed class N64GsRom : AbstractCodec
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Games (CIC chip)"))
                 .AddColumn(printer.HeaderCell("Key code"))
-                .AddColumn(printer.HeaderCell("Active?"))
             ;
 
         foreach (Code keyCode in Data.KeyCodes)
@@ -463,11 +462,9 @@ public sealed class N64GsRom : AbstractCodec
             string hexString = keyCode.Bytes.ToHexString(" ");
             table.AddRow(
                 keyCode.IsActiveKeyCode
-                    ? $"> {keyCodeName} [ACTIVE]".EscapeMarkup()
+                    ? $"> {keyCodeName}"
                     : $"  {keyCodeName}",
-                keyCode.IsActiveKeyCode
-                    ? hexString
-                    : ""
+                hexString
             );
         }
 
