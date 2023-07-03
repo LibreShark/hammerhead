@@ -124,7 +124,10 @@ public sealed class N64XpRom : AbstractCodec
 
     protected override ParsedFile GetCustomProtoFields()
     {
-        var proto = new ParsedFile();
+        var proto = new ParsedFile()
+        {
+            N64Data = new N64Data(),
+        };
         proto.N64Data.KeyCodes.AddRange(_keyCodes);
         return proto;
     }
