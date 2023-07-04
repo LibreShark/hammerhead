@@ -1,3 +1,6 @@
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
+using Google.Protobuf;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
@@ -22,6 +25,11 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcGamesharkV3Cdb;
 
+    private static readonly Regex StandardCodeRegex =
+        new Regex("^[a-f0-9]{8}$", RegexOptions.IgnoreCase);
+    private static readonly Regex PlaceholderCodeRegex =
+        new Regex("^[a-f0-9]{2}xx[a-f0-9]{4}$", RegexOptions.IgnoreCase);
+
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcGsV3CodeDb Create(string filePath, u8[] rawInput)
@@ -37,18 +45,101 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         Support.SupportsCheats = true;
 
         ReadGames();
+
+        // TODO(CheatoBaggins): Determine if Action Replay-branded software
+        // exists, and if it's possible to detect the brand from file contents.
+        Metadata.BrandId = BrandId.Gameshark;
     }
 
     private void ReadGames()
     {
-        Scribe.Seek(0x18);
+        Scribe.Seek(0);
         u16 gameCount = Scribe.ReadU16();
+        var gameMap = new Dictionary<u16, Game>(gameCount);
         for (u16 i = 0; i < gameCount; i++)
         {
-            // TODO(CheatoBaggins): Implement
-            // See:
-            // https://github.com/visualboyadvance-m/visualboyadvance-m/blob/24b92462f90ba44a218daa5a4cc5db1b27446119/src/wx/cmdevents.cpp#L430
-            // https://github.com/visualboyadvance-m/visualboyadvance-m/blob/24b92462f90ba44a218daa5a4cc5db1b27446119/src/gb/gbCheats.cpp#L405
+            u16 rawGameNumber = Scribe.ReadU16();
+
+            // TODO(CheatoBaggins): Figure out what these flags mean
+            u16 gameNumber = (u16)(rawGameNumber & ~0x9000);
+
+            RomString gameName = Scribe.ReadFixedLengthPrintableCString(16);
+            var game = new Game()
+            {
+                GameIndex = (u32)gameMap.Count,
+                GameName = gameName,
+            };
+            gameMap[gameNumber] = game;
+            Games.Add(game);
+        }
+
+        u16 cheatCount = Scribe.ReadU16();
+        for (u16 i = 0; i < cheatCount; i++)
+        {
+            u16 rawGameNumber = Scribe.ReadU16();
+
+            // TODO(CheatoBaggins): Figure out what these flags mean
+            bool isCheatActive = (rawGameNumber & 0x9000) != 0;
+            u16 gameNumber = (u16)(rawGameNumber & ~0x9000);
+
+            RomString cheatName = Scribe.ReadFixedLengthPrintableCString(12);
+            u32 codeAddr = Scribe.Position;
+            RomString codeStr = Scribe.ReadFixedLengthPrintableCString(8);
+
+            if (codeStr.Value.Length < 8)
+            {
+                Console.Error.WriteLine($"WARNING: Invalid cheat code length at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                continue;
+            }
+
+            // GBC GameShark PC software v4.x has at least one typo where
+            // the letter 'O' is used instead of the number zero,
+            // which causes a parsing error if we don't replace it with zero.
+            codeStr.Value = codeStr.Value.Replace('O', '0');
+            codeStr.Value = codeStr.Value.Replace('o', '0');
+
+            if (!StandardCodeRegex.IsMatch(codeStr.Value))
+            {
+                if (PlaceholderCodeRegex.IsMatch(codeStr.Value))
+                {
+                    Console.Error.WriteLine($"WARNING: Unsupported value placeholder at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                }
+                else
+                {
+                    Console.Error.WriteLine($"WARNING: Invalid cheat code characters at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                }
+                continue;
+            }
+
+            bool hasKey = gameMap.ContainsKey(gameNumber);
+            Game game = gameMap[gameNumber];
+            Cheat? prevCheat = game.Cheats.LastOrDefault();
+            byte[] codeBytes = codeStr.Value.HexToBytes();
+            if (prevCheat?.CheatName.Value == cheatName.Value)
+            {
+                var code = new Code()
+                {
+                    CodeIndex = (u32)prevCheat.Codes.Count,
+                    Bytes = ByteString.CopyFrom(codeBytes),
+                };
+                prevCheat.Codes.Add(code);
+            }
+            else
+            {
+                var curCheat = new Cheat()
+                {
+                    CheatIndex = (u32)game.Cheats.Count,
+                    CheatName = cheatName,
+                    IsCheatActive = isCheatActive,
+                };
+                game.Cheats.Add(curCheat);
+                var code = new Code()
+                {
+                    CodeIndex = (u32)curCheat.Codes.Count,
+                    Bytes = ByteString.CopyFrom(codeBytes),
+                };
+                curCheat.Codes.Add(code);
+            }
         }
     }
 
@@ -60,7 +151,15 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
     public static bool Is(u8[] bytes)
     {
         // TODO(CheatoBaggins): Is there a way to detect these?
-        return false;
+        try
+        {
+            var codec = new GbcGsV3CodeDb("", bytes);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public static bool Is(AbstractCodec codec)

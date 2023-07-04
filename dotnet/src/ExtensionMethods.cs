@@ -369,8 +369,8 @@ public static class ExtensionMethods
             CodecId.GbaGamesharkFcdRom => "GBA - FCD GameShark ROM",
             CodecId.GbaTvTunerRom => "GBA - TV Tuner ROM",
             CodecId.GbcCodebreakerRom => "GBC - Code Breaker ROM",
-            CodecId.GbcGamesharkV3Cdb => "GBC - GameShark v3.x cheat DB",
-            CodecId.GbcGamesharkV3Gcf => "GBC - GameShark v3.x cheat update",
+            CodecId.GbcGamesharkV3Cdb => "GBC - GameShark v3.x PC cheat DB",
+            CodecId.GbcGamesharkV3Gcf => "GBC - GameShark v3.x PC cheat update",
             CodecId.GbcGamesharkV3Rom => "GBC - GameShark v3.x ROM",
             CodecId.GbcGamesharkV4Rom => "GBC - GameShark v4.x ROM",
             CodecId.GbcMonsterbrainRom => "GBC - Monster Brain ROM",
@@ -625,7 +625,8 @@ public static class ExtensionMethods
         u8[] bytes = new u8[len / 2];
         for (int i = 0; i < len; i += 2)
         {
-            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            string substring = hex.Substring(i, 2);
+            bytes[i / 2] = Convert.ToByte(substring, 16);
         }
         return bytes;
     }
