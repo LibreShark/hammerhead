@@ -68,7 +68,7 @@ dotnet run --project dotnet/src/src.csproj -- \
         --print-format=json
 ```
 
-![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
+![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-gbc-smx.png)
 
 ## Supported file formats
 
