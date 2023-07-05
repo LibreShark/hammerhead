@@ -18,7 +18,7 @@ public sealed class UnknownCodec : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.UnknownConsole;
     private const CodecId ThisCodecId = CodecId.UnsupportedCodecId;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static UnknownCodec Create(string filePath, u8[] rawInput)
     {

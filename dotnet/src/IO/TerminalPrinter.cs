@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
@@ -94,6 +93,20 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
+    public void PrintWarning(string message)
+    {
+        if (!message.ToUpperInvariant().Contains("WARNING"))
+        {
+            message = $"WARNING: {message}";
+        }
+        if (IsColor)
+        {
+            AnsiConsole.Markup($"\n[red]{message}[/]\n\n");
+            return;
+        }
+        Console.Error.WriteLine($"\n{message}\n");
+    }
+
     public void PrintError(Exception e)
     {
         string message = e.ToString();
@@ -104,7 +117,6 @@ public class TerminalPrinter
         if (IsColor)
         {
             AnsiConsole.WriteException(e);
-            // AnsiConsole.Write($"\n[b red]{message}[/]\n");
             return;
         }
         Console.Error.WriteLine($"\n{message}\n");
@@ -272,7 +284,10 @@ public class TerminalPrinter
         table.AddRow("", "");
         table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion.EscapeMarkup()));
         table.AddRow("Build date", OrUnknown(buildDateDisplay.EscapeMarkup()));
-        table.AddRow("Known ROM version", isKnownVersionStr);
+        if (_codec.Support.SupportsFirmware)
+        {
+            table.AddRow("Known firmware version", isKnownVersionStr);
+        }
         table.AddRow("", "");
         table.AddRow("File size", fileSize.EscapeMarkup());
 
@@ -301,14 +316,12 @@ public class TerminalPrinter
 
     private void PrintIdentifiers(InfoCmdParams @params)
     {
-        PrintHeading("Identifier strings");
-
         if (_codec.Metadata.Identifiers.Count == 0)
         {
-            AnsiConsole.Markup(Italic("No identifiers found."));
-            Console.WriteLine();
             return;
         }
+
+        PrintHeading("Identifier strings");
 
         Table table = BuildTable(TableBorder.Rounded);
         table
@@ -322,10 +335,10 @@ public class TerminalPrinter
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
             table.AddRow(
-                KeyCell($"0x{id.Addr.StartIndex:X8}"),
-                KeyCell($"0x{id.Addr.EndIndex:X8}"),
-                KeyCell($"0x{id.Addr.Length:X}"),
-                KeyCell($"{id.Addr.Length}"),
+                KeyCell($"0x{id.Addr?.StartIndex:X8}"),
+                KeyCell($"0x{id.Addr?.EndIndex:X8}"),
+                KeyCell($"0x{id.Addr?.Length:X}"),
+                KeyCell($"{id.Addr?.Length}"),
                 id.Value.EscapeMarkup()
             );
         }
@@ -373,7 +386,7 @@ public class TerminalPrinter
         int gameCount = _codec.Games.Count;
         if (gameCount == 0)
         {
-            Console.WriteLine(Error("No games/cheats found."));
+            AnsiConsole.Markup(Error("No games/cheats found.") + "\n");
             Console.WriteLine();
             return;
         }
@@ -408,7 +421,7 @@ public class TerminalPrinter
 
         Table table = BuildTable()
                 .AddColumn(HeaderCell("Name"))
-                .AddColumn(HeaderCell("# Games/Cheats"), column => column.Alignment = Justify.Right)
+                .AddColumn(HeaderCell("# cheats/codes"), column => column.Alignment = Justify.Right)
                 .AddColumn(HeaderCell("Warnings"))
             ;
 
@@ -421,11 +434,11 @@ public class TerminalPrinter
             string gameName = game.GameName.Value.EscapeMarkup();
             if (game.IsGameActive)
             {
-                gameName = BoldUnderline(gameName);
+                gameName = BoldUnderline(Green(gameName)) + " [ACTIVE]".EscapeMarkup();
             }
             else
             {
-                gameName = Bold(gameName);
+                gameName = Underline(gameName);
             }
             table.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
 
@@ -438,6 +451,10 @@ public class TerminalPrinter
             {
                 int codeCount = cheat.Codes.Count;
                 string cheatName = cheat.CheatName.Value.EscapeMarkup();
+                if (cheat.IsCheatActive)
+                {
+                    cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
+                }
                 table.AddRow($"  - {cheatName}", codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
@@ -446,7 +463,11 @@ public class TerminalPrinter
                 foreach (Code code in cheat.Codes)
                 {
                     string codeString = code.Bytes.ToCodeString(_codec.Metadata.ConsoleId);
-                    table.AddRow($"    {(Dim(codeString))}", "", "");
+                    string codeComment = string.IsNullOrWhiteSpace(code.Comment) ? "" : $"    // {code.Comment}";
+                    string codeStringFormatted = code.IsCodeDisabled
+                        ? Dim(Strikethrough(codeString) + "    " + BoldItalic("(disabled)"))
+                        : Dim(codeString);
+                    table.AddRow($"        {codeStringFormatted}{Dim(codeComment)}", "", "");
                 }
             }
         }
@@ -549,6 +570,18 @@ public class TerminalPrinter
         return $"[b u]{str}[/]";
     }
 
+    public string Strikethrough(string str)
+    {
+        if (!IsColor) return str;
+        return $"[strikethrough]{str}[/]";
+    }
+
+    public string Invert(string str)
+    {
+        if (!IsColor) return str;
+        return $"[invert]{str}[/]";
+    }
+
     public string HeaderCell(string str)
     {
         return Bold(str);
@@ -593,25 +626,6 @@ public class TerminalPrinter
 
     #region Color support detection
 
-    private static bool IsInputRedirected => IsConsoleSizeZero && Console.KeyAvailable;
-
-    private static bool IsOutputRedirected => IsConsoleSizeZero && !Console.KeyAvailable;
-
-    private static bool IsConsoleSizeZero
-    {
-        get
-        {
-            try
-            {
-                return 0 == Console.WindowHeight + Console.WindowWidth;
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-        }
-    }
-
     public static PrintFormatId GetEffectivePrintFormatId(PrintFormatId printFormat)
     {
         switch (printFormat)
@@ -620,14 +634,13 @@ public class TerminalPrinter
             case PrintFormatId.Color:
             case PrintFormatId.Markdown:
             case PrintFormatId.Json:
-            case PrintFormatId.Proto:
                 return printFormat;
             case PrintFormatId.Detect:
             {
                 // https://no-color.org/
                 bool isColorDisabled = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR"));
                 bool isDumbTerminal = Environment.GetEnvironmentVariable("TERM") is "dumb" or "xterm";
-                return isColorDisabled || isDumbTerminal || IsOutputRedirected
+                return isColorDisabled || isDumbTerminal || Console.IsOutputRedirected
                     ? PrintFormatId.Plain
                     : PrintFormatId.Color;
             }

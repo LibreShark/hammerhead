@@ -6,7 +6,7 @@
 
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.N64;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;

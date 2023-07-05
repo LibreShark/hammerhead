@@ -1,7 +1,8 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoyAdvance;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -17,7 +18,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyAdvance;
     private const CodecId ThisCodecId = CodecId.GbaGamesharkDatelRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbaGsDatelRom Create(string filePath, u8[] rawInput)
     {
@@ -38,7 +39,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
 
     private readonly AbstractBinaryScribe _beScribe = new BigEndianScribe(new byte[8]);
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbaGsDatelRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

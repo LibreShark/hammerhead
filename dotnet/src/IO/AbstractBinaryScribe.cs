@@ -287,6 +287,20 @@ public abstract class AbstractBinaryScribe
         }, isNullTerminated);
     }
 
+    public RomString ReadFixedLengthPrintableCString(u32 len)
+    {
+        u32 startPos = Position;
+        RomString romStr = ReadPrintableCString(len, false).Trim();
+        u32 endPos = startPos + len;
+        if (endPos < BufferRef.Length)
+        {
+            // In case the string contains an unexpected null byte and stops
+            // reading early, make sure we seek to the right end position.
+            Seek(endPos);
+        }
+        return romStr;
+    }
+
     public RomString ReadPrintableCString(u32 maxLen = 0, bool isNullTerminated = true)
     {
         return ReadCString(maxLen, (byte b, out string ch) =>
@@ -308,7 +322,7 @@ public abstract class AbstractBinaryScribe
         var sb = new StringBuilder();
 
         u32 startPos = Position;
-        while (true)
+        while (!EndReached)
         {
             byte b = BufferRef[Position];
             bool isNull = b == 0;
@@ -360,10 +374,6 @@ public abstract class AbstractBinaryScribe
 
     private static string ByteToStr(u8 b)
     {
-        if (b > 127)
-        {
-            return string.Concat('`', b.ToString("X2"), '`');
-        }
         if (b == '\0') return @"\0";
         if (b == '\t') return @"\t";
         if (b == '\n') return @"\n";
@@ -378,10 +388,20 @@ public abstract class AbstractBinaryScribe
 
     #endregion
 
+    public void WriteBytes(ByteString byteString)
+    {
+        WriteBytes(byteString.ToByteArray());
+    }
+
     public void WriteBytes(u8[] bytes)
     {
         Array.Copy(bytes, 0, BufferRef, (s32)Position, bytes.Length);
         Position += (u32)bytes.Length;
+    }
+
+    public void WriteCString(RomString str, int maxLen = 0, bool isNullTerminated = true)
+    {
+        WriteCString(str.Value, maxLen, isNullTerminated);
     }
 
     public void WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)

@@ -1,9 +1,9 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -25,7 +25,19 @@ public sealed class N64GsRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
+
+    /// <summary>
+    /// The GS firmware will silently truncate names beyond this length.
+    /// The official PC utils will crash if you try to use longer names.
+    /// </summary>
+    private const u8 GameNameMaxDisplayLen = 30;
+
+    /// <summary>
+    /// The GS firmware will silently truncate names beyond this length.
+    /// The official PC utils will crash if you try to use longer names.
+    /// </summary>
+    private const u8 CheatNameMaxDisplayLen = 30;
 
     public static N64GsRom Create(string filePath, u8[] rawInput)
     {
@@ -43,8 +55,7 @@ public sealed class N64GsRom : AbstractCodec
     private readonly RomString _headerId;
     private readonly RomString _rawTimestamp;
     private readonly N64GsVersion _version;
-    private readonly N64KeyCode _activeKeyCode;
-    private readonly List<N64KeyCode> _keyCodes;
+    private readonly Code _activeKeyCode;
 
     private const u32 ProgramCounterAddr = 0x00000008;
     private const u32 ActiveKeyCodeAddr  = 0x00000010;
@@ -53,9 +64,13 @@ public sealed class N64GsRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
+    private N64Data Data => Parsed.N64Data;
+
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Parsed.N64Data = new N64Data();
+
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
@@ -80,7 +95,7 @@ public sealed class N64GsRom : AbstractCodec
         Metadata.BuildDateRaw = _rawTimestamp;
         Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
         Metadata.DisplayVersion = _version.DisplayNumber;
-        Metadata.SortableVersion = _version.Number;
+        Metadata.SortableVersion = _version.Number; // TODO(CheatoBaggins): Account for April/May builds
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
 
@@ -96,9 +111,8 @@ public sealed class N64GsRom : AbstractCodec
         _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        List<N64KeyCode> keyCodes = ReadKeyCodes();
-        _activeKeyCode = ReadActiveKeyCode(keyCodes);
-        _keyCodes = keyCodes;
+        Data.KeyCodes.AddRange(ReadKeyCodes());
+        _activeKeyCode = ReadActiveKeyCode();
 
         Support.IsFileEncrypted      = DetectEncrypted(rawInput);
         Support.IsFirmwareCompressed = DetectCompressed(rawInput);
@@ -106,6 +120,14 @@ public sealed class N64GsRom : AbstractCodec
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
+    }
+
+    protected override void SanitizeCustomProtoFields(ParsedFile parsed)
+    {
+        foreach (var kc in parsed.N64Data.KeyCodes)
+        {
+            kc.CodeName = kc.CodeName.WithoutAddress();
+        }
     }
 
     private List<Game> ReadGames()
@@ -167,7 +189,6 @@ public sealed class N64GsRom : AbstractCodec
     {
         u32 startPos = Scribe.Position;
 
-        // Firmware and official Datel GS Utils do not support names longer than 30 chars.
         RomString name = Scribe.ReadPrintableCString();
 
         if (name.Value.Length < 1)
@@ -176,45 +197,52 @@ public sealed class N64GsRom : AbstractCodec
             return name;
         }
 
-        name.Value = name.Value.Replace("`F6`", "Key");
-        name.Value = name.Value.Replace("`F7`", "Have ");
-        name.Value = name.Value.Replace("`F8`", "Lives");
-        name.Value = name.Value.Replace("`F9`", "Energy");
-        name.Value = name.Value.Replace("`FA`", "Health");
-        name.Value = name.Value.Replace("`FB`", "Activate ");
-        name.Value = name.Value.Replace("`FC`", "Unlimited ");
-        name.Value = name.Value.Replace("`FD`", "Player ");
-        name.Value = name.Value.Replace("`FE`", "Always ");
-        name.Value = name.Value.Replace("`FF`", "Infinite ");
+        name.Value = string.Join("", name.Value.Select(c =>
+        {
+            return (int)c switch
+            {
+                0xF6 => "Key",
+                0xF7 => "Have ",
+                0xF8 => "Lives",
+                0xF9 => "Energy",
+                0xFA => "Health",
+                0xFB => "Activate ",
+                0xFC => "Unlimited ",
+                0xFD => "Player ",
+                0xFE => "Always ",
+                0xFF => "Infinite ",
+                _ => c.ToString(),
+            };
+        }));
 
         return name;
     }
 
-    private N64KeyCode ReadActiveKeyCode(List<N64KeyCode> keyCodes)
+    private Code ReadActiveKeyCode()
     {
         u8[] activeCrcBytes = Scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
         u8[] activePcBytes = Scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
         RomString? name = null;
-        if (keyCodes.Count > 0)
+        if (Data.KeyCodes.Count > 0)
         {
-            N64KeyCode? activeKeyCode = keyCodes.Find(kc =>
+            Code? activeKeyCode = Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
             });
-            name = activeKeyCode?.Name;
+            name = activeKeyCode?.CodeName;
         }
 
-        return new N64KeyCode()
+        return new Code()
         {
-            Name = name ?? new RomString() { Value = "probably CIC-NUS-6102" },
+            CodeName = name ?? "probably CIC-NUS-6102".ToRomString(),
             Bytes = ByteString.CopyFrom(activeCrcBytes.Concat(activePcBytes).ToArray()),
-            IsKeyCodeActive = true,
+            IsActiveKeyCode = true,
         };
     }
 
-    private List<N64KeyCode> ReadKeyCodes()
+    private List<Code> ReadKeyCodes()
     {
         u8[] activePrefix = Scribe.PeekBytesAt(ActiveKeyCodeAddr, 8);
 
@@ -226,23 +254,23 @@ public sealed class N64GsRom : AbstractCodec
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
         {
-            return new List<N64KeyCode>();
+            return new List<Code>();
         }
 
-        List<N64KeyCode> keyCodes = new();
+        List<Code> keyCodes = new();
         while (Scribe.Position <= maxPos)
         {
             u8[] bytes = Scribe.ReadBytes((u32)keyCodeByteLength);
-            RomString name = Scribe.ReadPrintableCString(0x1F, true);
+            RomString name = Scribe.ReadPrintableCString(31, true);
             while (Scribe.PeekBytes(1)[0] == 0)
             {
                 Scribe.ReadU8();
             }
             bool isActive = bytes.Contains(activePrefix);
-            var keyCode = new N64KeyCode() {
-                Name = name,
+            var keyCode = new Code() {
+                CodeName = name,
                 Bytes = ByteString.CopyFrom(bytes),
-                IsKeyCodeActive = isActive,
+                IsActiveKeyCode = isActive,
             };
             keyCodes.Add(keyCode);
         }
@@ -290,17 +318,34 @@ public sealed class N64GsRom : AbstractCodec
         return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
     }
 
+    private void WriteName(string str)
+    {
+        str = str
+                .Replace("Key", "\xF6")
+                .Replace("Have ", "\xF7")
+                .Replace("Lives", "\xF8")
+                .Replace("Energy", "\xF9")
+                .Replace("Health", "\xFA")
+                .Replace("Activate ", "\xFB")
+                .Replace("Unlimited ", "\xFC")
+                .Replace("Player ", "\xFD")
+                .Replace("Always ", "\xFE")
+                .Replace("Infinite ", "\xFF")
+            ;
+        Scribe.WriteCString(str, 30);
+    }
+
     public override AbstractCodec WriteChangesToBuffer()
     {
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
         foreach (Game game in Games)
         {
-            Scribe.WriteCString(game.GameName.Value, 30);
+            WriteName(game.GameName.Value);
             Scribe.WriteU8((u8)game.Cheats.Count);
             foreach (Cheat cheat in game.Cheats)
             {
-                Scribe.WriteCString(cheat.CheatName.Value, 30);
+                WriteName(cheat.CheatName.Value);
                 u8 codeCount = (u8)cheat.Codes.Count;
                 if (cheat.IsCheatActive)
                 {
@@ -309,7 +354,7 @@ public sealed class N64GsRom : AbstractCodec
                 Scribe.WriteU8(codeCount);
                 foreach (Code code in cheat.Codes)
                 {
-                    Scribe.WriteBytes(code.Bytes.ToByteArray());
+                    Scribe.WriteBytes(code.Bytes);
                 }
             }
         }
@@ -380,10 +425,12 @@ public sealed class N64GsRom : AbstractCodec
         PrintAddressTable(printer);
 
         printer.PrintHeading("Key codes");
-        Console.WriteLine($"Active key code: {_activeKeyCode.ToDisplayString()}");
+        string hexString = _activeKeyCode.Bytes.ToHexString(" ");
+        string nameStr = _activeKeyCode.CodeName.Value;
+        Console.WriteLine($"Active key code: {hexString} {nameStr}");
         Console.WriteLine();
 
-        if (Support.SupportsKeyCodes && Support.HasKeyCodes)
+        if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
         {
             PrintKeyCodesTable(printer);
         }
@@ -418,20 +465,17 @@ public sealed class N64GsRom : AbstractCodec
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Games (CIC chip)"))
                 .AddColumn(printer.HeaderCell("Key code"))
-                .AddColumn(printer.HeaderCell("Active?"))
             ;
 
-        foreach (N64KeyCode keyCode in _keyCodes)
+        foreach (Code keyCode in Data.KeyCodes)
         {
-            string keyCodeName = keyCode.Name.Value.EscapeMarkup();
+            string keyCodeName = keyCode.CodeName.Value.EscapeMarkup();
             string hexString = keyCode.Bytes.ToHexString(" ");
             table.AddRow(
-                keyCode.IsKeyCodeActive
-                    ? $"> {keyCodeName} [ACTIVE]".EscapeMarkup()
+                keyCode.IsActiveKeyCode
+                    ? $"> [green underline]{keyCodeName}[/]" + " [ACTIVE]".EscapeMarkup()
                     : $"  {keyCodeName}",
-                keyCode.IsKeyCodeActive
-                    ? hexString
-                    : ""
+                hexString
             );
         }
 

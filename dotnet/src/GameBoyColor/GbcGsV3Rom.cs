@@ -1,7 +1,8 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoyColor;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -23,7 +24,7 @@ public sealed class GbcGsV3Rom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcGamesharkV3Rom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcGsV3Rom Create(string filePath, u8[] rawInput)
     {
@@ -38,7 +39,7 @@ public sealed class GbcGsV3Rom : AbstractCodec
         "v3.00",
     };
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbcGsV3Rom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)

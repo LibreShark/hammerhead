@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoyColor;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -23,7 +24,7 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcMonsterbrainRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcMonsterBrainRom Create(string filePath, u8[] rawInput)
     {

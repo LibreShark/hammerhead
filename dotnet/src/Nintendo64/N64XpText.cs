@@ -1,9 +1,10 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -21,7 +22,7 @@ public sealed class N64XpText : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Xplorer64Text;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static N64XpText Create(string filePath, u8[] rawInput)
     {
@@ -69,7 +70,7 @@ public sealed class N64XpText : AbstractCodec
                 curCheat = new Cheat()
                 {
                     CheatIndex = (u32)curGame.Cheats.Count,
-                    CheatName = new RomString() { Value = line.Trim() },
+                    CheatName = line.Trim().ToRomString(),
                 };
                 curGame.Cheats.Add(curCheat);
             }
@@ -78,7 +79,7 @@ public sealed class N64XpText : AbstractCodec
                 curGame = new Game()
                 {
                     GameIndex = (u32)games.Count,
-                    GameName = new RomString() { Value = line.Trim() },
+                    GameName = line.Trim().ToRomString(),
                 };
                 games.Add(curGame);
             }

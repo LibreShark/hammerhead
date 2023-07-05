@@ -11,31 +11,59 @@ option csharp_namespace = "LibreShark.Hammerhead";
  * Input/output files
  ******************************************************************************/
 
-// Video game enhancer file (firmware dump or cheat list).
-message VgeFile {
-  VgeMetadata metadata = 1;
-  bytes raw_input = 2;
-  bytes buffer = 3;
-  repeated Game games = 4;
+message HammerheadDump {
+  AppInfo app_info = 1;
+  repeated ParsedFile parsed_files = 2;
+}
+
+message AppInfo {
+  // "Hammerhead"
+  string app_name = 1;
+
+  // Plain SemVer format.
+  string semantic_version = 2;
+
+  // Version of Hammerhead that wrote the protobuf file.
+  // Includes git commit information.
+  string informational_version = 3;
+
+  // Date and time that the Hammerhead binary was built.
+  string build_date_iso = 4;
+
+  // Date and time that the protobuf file was written to disk.
+  string write_date_iso = 5;
+
+  // https://github.com/LibreShark/hammerhead
+  string source_code_url = 6;
+}
+
+// Data parsed by Hammerhead from a video game enhancer file (firmware dump or cheat list).
+message ParsedFile {
+  FileMetadata metadata = 1;
+  repeated Game games = 2;
 
   // N64 only
-  repeated Code key_codes = 101;
+  N64Data n64_data = 101;
 
   // GBC Shark MX only
-  repeated GbcSmxMessage smx_messages = 201;
-  // GBC Shark MX only
-  repeated GbcSmxContact smx_contacts = 202;
-  // GBC Shark MX only
-  repeated GbcSmxTimeZone smx_timezones = 203;
+  GbcSmxData gbc_smx_data = 102;
 }
 
-message VgeFileProp {
-  string key = 1;
-  string value = 2;
-  bool is_visual_spacer = 3;
+message N64Data {
+  repeated Code key_codes = 1;
 }
 
-message VgeMetadata {
+// GBC Shark MX
+message GbcSmxData {
+  RomString reg_code_1 = 1;
+  RomString reg_code_2 = 2;
+  RomString secret_pin = 3;
+  repeated GbcSmxMessage messages = 4;
+  repeated GbcSmxContact contacts = 5;
+  repeated GbcSmxTimeZone timezones = 6;
+}
+
+message FileMetadata {
   string file_path = 1;
   ConsoleId console_id = 2;
   CodecId codec_id = 3;
@@ -66,15 +94,20 @@ message VgeMetadata {
   ChecksumResult file_checksum = 12;
   ChecksumResult firmware_checksum = 13;
 
+  // C strings found in the input file that help identify it, or that
+  // distinguish it from other file formats. Used for auto-detecting which codec
+  // to use when reading a file.
   repeated RomString identifiers = 14;
+
+  // File names found in the input file that potentially reveal something
+  // interesting about how the ROM binary was built.
   repeated RomString file_name_refs = 15;
 
   // Whether the ROM's firmware version is found in Hammerhead's internal
   // database of known versions.
   bool is_known_version = 16;
 
-  repeated VgeFileProp file_properties = 17;
-  repeated RomRange file_sections = 18;
+  repeated RomRange file_sections = 17;
 }
 
 message CodecFeatureSupport {
@@ -116,20 +149,19 @@ enum CodecId {
   // Generic cheat containers (platform-agnostic)
   //////////////////////////////////////////////////////////////////////////////
 
-  JSONPROTO = 3;
-  TEXTPROTO = 4;
+  HAMMERHEAD_JSON = 3;
 
   // XML cheat file format for OpenEmu (all consoles).
-  OPENEMU_XML = 5;
+  OPENEMU_XML = 4;
 
   // RetroArch
-  LIBRETRO_TEXT = 6;
+  LIBRETRO_TEXT = 5;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy & Game Boy Pocket
   //////////////////////////////////////////////////////////////////////////////
 
-  GBO_GAMESHARK_ROM = 20;
+  GB_GAMESHARK_ROM = 20;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy Color
@@ -138,23 +170,30 @@ enum CodecId {
   // Action Replay too
   GBC_GAMESHARK_V3_ROM = 40;
 
-  // Action Replay too
-  GBC_GAMESHARK_V4_ROM = 41;
+  // "GameBoy Codes File" (*.gcf), a standalone cheat file format for the
+  // official PC utils from Datel/InterAct.
+  GBC_GAMESHARK_V3_GCF = 41;
 
-  GBC_CODEBREAKER_ROM = 42;
+  // C:\Program Files\Interact\GameShark for GameBoy\gbdata\gbcheats.bin
+  GBC_GAMESHARK_V3_CDB = 42;
+
+  // Action Replay too
+  GBC_GAMESHARK_V4_ROM = 43;
+
+  GBC_CODEBREAKER_ROM = 50;
 
   // BrainBoy is a fork of Code Breaker that was specifically designed for
   // cheating in Pokemon games. It does not allow the user to edit or even see
   // any cheat codes, and it only supports specific Pokemon games.
   // BrainBoy was later renamed to Monster Brain, but the ROM format stayed
   // the same.
-  GBC_MONSTERBRAIN_ROM = 43;
+  GBC_MONSTERBRAIN_ROM = 55;
 
   // AKA "Xplorer GB"
-  GBC_XPLODER_ROM = 44;
+  GBC_XPLODER_ROM = 56;
 
   // Email client
-  GBC_SHARK_MX_ROM = 45;
+  GBC_SHARK_MX_ROM = 59;
 
   //////////////////////////////////////////////////////////////////////////////
   // Game Boy Advance
@@ -211,19 +250,16 @@ enum CodecId {
 // E.g., GameShark Pro for GBC is also backward compatible with GB/GBP,
 // but its ConsoleId is GBC because that's the newest of the 3.
 enum ConsoleId {
-  UNKNOWN_CONSOLE = 0x00;
-
-  GAME_BOY_ORIGINAL = 0x01;
-  GAME_BOY_COLOR = 0x02;
-  GAME_BOY_ADVANCE = 0x04;
-
-  GAME_GEAR = 0x20;
-
-  PLAYSTATION_1 = 0x30;
-  NINTENDO_64 = 0x40;
-
-  DREAMCAST = 0x41;
-  GAMECUBE = 0x42;
+  UNKNOWN_CONSOLE = 0;
+  UNIVERSAL = 1;
+  GAME_BOY_ORIGINAL = 2;
+  GAME_BOY_COLOR = 3;
+  GAME_BOY_ADVANCE = 4;
+  GAME_GEAR = 5;
+  PLAYSTATION_1 = 6;
+  NINTENDO_64 = 7;
+  DREAMCAST = 8;
+  GAMECUBE = 9;
 }
 
 // Official marketing brand name of the device,
@@ -238,26 +274,26 @@ enum BrandId {
   BRAINBOY      = 0x03;
   CODE_BREAKER  = 0x04;
   EQUALIZER     = 0x05;
-  GAMESHARK     = 0x06;
-  GAME_BOOSTER  = 0x07;
-  GAME_BUSTER   = 0x08;
-  GAME_GENIE    = 0x09;
-  GB_HUNTER     = 0x0A;
-  MONSTER_BRAIN = 0x0B;
-  SHARK_MX      = 0x0C;
-  XPLODER       = 0x0D;
-  XPLORER       = 0x0E;
+  EVERDRIVE     = 0x06;
+  GAMESHARK     = 0x07;
+  GAME_BOOSTER  = 0x08;
+  GAME_BUSTER   = 0x09;
+  GAME_GENIE    = 0x0A;
+  GB_HUNTER     = 0x0B;
+  MONSTER_BRAIN = 0x0C;
+  SHARK_MX      = 0x0D;
+  XPLODER       = 0x0E;
+  XPLORER       = 0x0F;
 }
 
 // Output format for printing to the terminal (stdout).
 enum PrintFormatId {
-  UNKNOWN_PRINT_FORMAT = 0x00;
-  DETECT = 0x01;
-  COLOR = 0x02;
-  PLAIN = 0x03;
-  JSON = 0x04;
-  PROTO = 0x05;
-  MARKDOWN = 0x06;
+  UNKNOWN_PRINT_FORMAT = 0;
+  DETECT = 1;
+  COLOR = 2;
+  PLAIN = 3;
+  JSON = 4;
+  MARKDOWN = 5;
 }
 
 /*******************************************************************************
@@ -284,9 +320,17 @@ message Cheat {
 
 message Code {
   uint32 code_index = 1;
-  bytes bytes = 2;
-  string comment = 3;
-  repeated Warning warnings = 4;
+  RomString code_name = 2;
+  bytes bytes = 3;
+  string formatted = 4;
+  string comment = 5;
+  repeated Warning warnings = 6;
+
+  // N64 only
+  bool is_active_key_code = 7;
+
+  // EverDrive-64 X7 only
+  bool is_code_disabled = 8;
 }
 
 message Warning {

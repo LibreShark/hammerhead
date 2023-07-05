@@ -1,11 +1,10 @@
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
-using LibreShark.Hammerhead.N64;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.Nintendo64;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -27,7 +26,7 @@ public sealed class N64XpRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Xplorer64Rom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static N64XpRom Create(string filePath, u8[] rawInput)
     {
@@ -58,9 +57,13 @@ public sealed class N64XpRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
 
+    private readonly List<Code> _keyCodes = new();
+
     private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Parsed.N64Data = new N64Data();
+
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
@@ -118,6 +121,14 @@ public sealed class N64XpRom : AbstractCodec
 
         ReadGames();
         ReadUserPrefs();
+    }
+
+    protected override void SanitizeCustomProtoFields(ParsedFile parsed)
+    {
+        foreach (var kc in parsed.N64Data.KeyCodes)
+        {
+            kc.CodeName = kc.CodeName.WithoutAddress();
+        }
     }
 
     private static AbstractBinaryScribe Unobfuscate(u8[] rawInput)
@@ -237,10 +248,11 @@ public sealed class N64XpRom : AbstractCodec
         {
             throw new FormatException(
                 $"Build date/time stamp '{buildDateRaw.Value}' at {buildDateRaw.Addr} " +
-                "does not match expected format `ddd MMM d H:mm:ss ZZZ yyyy`. " +
+                "does not match expected format 'ddd MMM d H:mm:ss ZZZ yyyy'. " +
                 "See https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings");
         }
 
+        // ReSharper disable InconsistentNaming
         string ddd = match.Groups["ddd"].Value;
         string MMM = match.Groups["MMM"].Value;
         string d = match.Groups["d"].Value;
@@ -248,15 +260,17 @@ public sealed class N64XpRom : AbstractCodec
         string mm = match.Groups["mm"].Value;
         string ss = match.Groups["ss"].Value;
         string ZZZ = match.Groups["ZZZ"].Value;
+        string yyyy = match.Groups["yyyy"].Value;
+        // ReSharper restore InconsistentNaming
+
         // British Summer Time (BST)
         if (ZZZ == "BST")
         {
             ZZZ = "GMT";
         }
-        string yyyy = match.Groups["yyyy"].Value;
-        const string dateTimeFormat =
-            // Wed Nov 24 15:25:52 GMT 1999
-            "ddd MMM d H:mm:ss yyyy";
+
+        // Wed Nov 24 15:25:52 GMT 1999
+        const string dateTimeFormat = "ddd MMM d H:mm:ss yyyy";
         string buildDateFixed = $"{ddd} {MMM} {d} {H}:{mm}:{ss} {yyyy}";
         DateTimeOffset buildDateTimeWithoutTz = DateTimeOffset.ParseExact(
             buildDateFixed, dateTimeFormat,
@@ -267,7 +281,31 @@ public sealed class N64XpRom : AbstractCodec
 
     public override AbstractCodec WriteChangesToBuffer()
     {
-        throw new NotImplementedException();
+        Scribe.Seek(GameListAddr);
+
+        foreach (Game game in Games)
+        {
+            Scribe.WriteCString(game.GameName, 32);
+            Scribe.WriteU8((u8)game.Cheats.Count);
+
+            foreach (Cheat cheat in game.Cheats)
+            {
+                Scribe.WriteCString(cheat.CheatName, 32);
+                Scribe.WriteU8((u8)cheat.Codes.Count);
+
+                foreach (Code code in cheat.Codes)
+                {
+                    Scribe.WriteBytes(code.Bytes);
+                }
+            }
+        }
+
+        while (Scribe.Position < 0x3E000)
+        {
+            Scribe.WriteU8(0xFF);
+        }
+
+        return this;
     }
 
     private static bool DetectPlain(u8[] bytes)
@@ -281,6 +319,7 @@ public sealed class N64XpRom : AbstractCodec
 
     private static bool DetectScrambled(u8[] bytes)
     {
+        // ReSharper disable InconsistentNaming
         string strle = Get2Chars(bytes, 0x0016);
         string strFC = Get2Chars(bytes, 0x0436);
         string strDS = Get2Chars(bytes, 0x1096);
@@ -288,6 +327,7 @@ public sealed class N64XpRom : AbstractCodec
         string strlo = Get2Chars(bytes, 0x123C);
         string strFU = Get2Chars(bytes, 0x131E);
         string strTU = Get2Chars(bytes, 0x133E);
+        // ReSharper restore InconsistentNaming
         return strle == "le" &&
                strFC == "FC" &&
                strDS == "D " &&

@@ -1,10 +1,9 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "common.proto";
 
 package libreshark.hammerhead.n64;
-option csharp_namespace = "LibreShark.Hammerhead.N64";
+option csharp_namespace = "LibreShark.Hammerhead.Nintendo64";
 
 enum Xp64Opcode {
   NULL_OPCODE                     = 0x00;
@@ -32,12 +31,6 @@ enum Xp64Opcode {
   UNDOCUMENTED_OPCODE_D2          = 0xD2;
   WRITE_ONCE_UNCACHED_8BIT        = 0xF0;
   WRITE_ONCE_UNCACHED_16BIT_TYPE1 = 0xF1;
-}
-
-message N64KeyCode {
-  RomString name = 1;
-  bytes bytes = 2;
-  bool is_key_code_active = 3;
 }
 
 message N64GsVersionProto {

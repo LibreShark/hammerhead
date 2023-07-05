@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoy;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -19,23 +20,23 @@ using f64 = Double;
 /// GameShark and Action Replay for the original Game Boy and Game Boy Pocket,
 /// made by Datel/InterAct.
 /// </summary>
-public sealed class GboGsRom : AbstractCodec
+public sealed class GbGsRom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyOriginal;
-    private const CodecId ThisCodecId = CodecId.GboGamesharkRom;
+    private const CodecId ThisCodecId = CodecId.GbGamesharkRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
-    public static GboGsRom Create(string filePath, u8[] rawInput)
+    public static GbGsRom Create(string filePath, u8[] rawInput)
     {
-        return new GboGsRom(filePath, rawInput);
+        return new GbGsRom(filePath, rawInput);
     }
 
     private readonly List<RomString> _cheatNames = new();
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
-    private GboGsRom(string filePath, u8[] rawInput)
+    private GbGsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
         Support.SupportsCheats = true;

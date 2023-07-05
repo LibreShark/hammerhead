@@ -1,13 +1,12 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Force.Crc32;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using LibreShark.Hammerhead.N64;
-using Color = System.Drawing.Color;
 
 namespace LibreShark.Hammerhead;
 
@@ -24,19 +23,33 @@ using f64 = Double;
 
 public static class ExtensionMethods
 {
-    private static readonly Color UnknownColor = Color.FromArgb(160, 160, 160);
+    /// <summary>
+    /// The two primary manufacturers of video game enhancers (Datel and FCD)
+    /// compiled their firmware on English Windows 9x machines and used the
+    /// default codepage when encoding strings. Some strings contain bytes
+    /// above 127 (e.g., the accented 'e' in "Pokèmon Bisasam") that
+    /// cannot be properly decoded with ASCII, which is only 7-bit.
+    /// </summary>
+    private static readonly Encoding Windows1252;
+
+    private static readonly Encoding Utf8;
+
+    static ExtensionMethods()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Windows1252 = Encoding.GetEncoding(
+            "Windows-1252",
+            new EncoderReplacementFallback("?"),
+            new DecoderReplacementFallback("?")
+        );
+        Utf8 = Encoding.GetEncoding(
+            "utf-8",
+            new EncoderReplacementFallback("?"),
+            new DecoderReplacementFallback("?")
+        );
+    }
 
     #region Bytes
-
-    private static readonly Encoding Ascii = Encoding.GetEncoding(
-        "ascii",
-        new EncoderReplacementFallback("?"),
-        new DecoderReplacementFallback("?"));
-
-    private static readonly Encoding Utf8 = Encoding.GetEncoding(
-        "utf-8",
-        new EncoderReplacementFallback("?"),
-        new DecoderReplacementFallback("?"));
 
     public static string ToUtf8String(this u8[] bytes)
     {
@@ -55,17 +68,17 @@ public static class ExtensionMethods
 
     public static string ToAsciiString(this u8[] bytes)
     {
-        return Ascii.GetString(bytes);
+        return Windows1252.GetString(bytes);
     }
 
     public static u8[] ToAsciiBytes(this string str)
     {
-        return Ascii.GetBytes(str);
+        return Windows1252.GetBytes(str);
     }
 
     public static u8[] ToAsciiBytes(this StringBuilder str)
     {
-        return Ascii.GetBytes(str.ToString());
+        return Windows1252.GetBytes(str.ToString());
     }
 
     public static string ToHexString(this IEnumerable<byte> eBytes, string delimiter = "")
@@ -295,40 +308,51 @@ public static class ExtensionMethods
 
     #region Protobuf
 
-    public static RomString Trim(this RomString oldRS)
+    public static RomString Trim(this RomString oldStr)
     {
-        string oldValue = oldRS.Value;
+        string oldValue = oldStr.Value;
+        string trimStart = oldValue.TrimStart();
+        string trimEnd = oldValue.TrimEnd();
         string newValue = oldValue.Trim();
-        RomString newRS = new RomString
+        int startDelta = oldValue.Length - trimStart.Length;
+        int endDelta = oldValue.Length - trimEnd.Length;
+        int lengthDelta = oldValue.Length - newValue.Length;
+        var newStr = new RomString(oldStr)
         {
             Value = newValue,
+            Addr = new RomRange(oldStr.Addr)
+            {
+                StartIndex = (u32)(oldStr.Addr.StartIndex - startDelta),
+                EndIndex = (u32)(oldStr.Addr.EndIndex - endDelta),
+                Length = (u32)(oldStr.Addr.Length - lengthDelta),
+                RawBytes = ByteString.CopyFrom(
+                    oldStr.Addr.RawBytes
+                        .Skip(startDelta)
+                        .Take(oldStr.Addr.RawBytes.Length - lengthDelta)
+                        .ToArray()
+                ),
+            },
         };
-        u32 startIndex = oldRS.Addr.StartIndex;
-        u32 endIndex = (u32)(oldRS.Addr.EndIndex - (oldValue.Length - newValue.Length));
-        u8[] oldBytes = oldRS.Addr.RawBytes.ToByteArray();
-        u32 byteLen = endIndex - startIndex;
-        newRS.Addr = new RomRange
-        {
-            StartIndex = startIndex,
-            EndIndex = endIndex,
-            Length = byteLen,
-            RawBytes = ByteString.CopyFrom(oldBytes[..(int)byteLen]),
-        };
-        return newRS;
+        return newStr;
     }
 
-    public static RomString Readable(this RomString oldRS)
+    public static RomString WithoutAddress(this RomString rs)
     {
-        var newRS = new RomString(oldRS).Trim();
-        newRS.Value = String.Join(
+        return new RomString() { Value = rs.Value };
+    }
+
+    public static RomString Readable(this RomString oldStr)
+    {
+        var newStr = new RomString(oldStr).Trim();
+        newStr.Value = String.Join(
             "",
-            oldRS.Value.Select(c =>
+            oldStr.Value.Select(c =>
             {
                 bool isPrintable = c is >= ' ' and <= '~';
                 return isPrintable ? c : ' ';
             })
         );
-        return newRS;
+        return newStr;
     }
 
     public static string ToDisplayString(this RomRange range)
@@ -340,17 +364,19 @@ public static class ExtensionMethods
     {
         return codecId switch
         {
-            CodecId.GboGamesharkRom => "GB - GameShark ROM",
+            CodecId.GbGamesharkRom => "GB - GameShark ROM",
             CodecId.GbaGamesharkDatelRom => "GBA - Datel GameShark ROM",
             CodecId.GbaGamesharkFcdRom => "GBA - FCD GameShark ROM",
             CodecId.GbaTvTunerRom => "GBA - TV Tuner ROM",
             CodecId.GbcCodebreakerRom => "GBC - Code Breaker ROM",
+            CodecId.GbcGamesharkV3Cdb => "GBC - GameShark v3.x PC cheat DB",
+            CodecId.GbcGamesharkV3Gcf => "GBC - GameShark v3.x PC cheat update",
             CodecId.GbcGamesharkV3Rom => "GBC - GameShark v3.x ROM",
             CodecId.GbcGamesharkV4Rom => "GBC - GameShark v4.x ROM",
             CodecId.GbcMonsterbrainRom => "GBC - Monster Brain ROM",
             CodecId.GbcSharkMxRom => "GBC - Shark MX ROM",
             CodecId.GbcXploderRom => "GBC - Xploder/Xplorer ROM",
-            CodecId.Jsonproto => "Hammerhead protobuf JSON",
+            CodecId.HammerheadJson => "Hammerhead protobuf JSON",
             CodecId.LibretroText => "Libretro/RetroArch cheat list",
             CodecId.N64Edx7Text => "N64 - EverDrive-64 X7 cheat list",
             CodecId.N64GamesharkMemcard => "N64 - GameShark cheats (mempak note)",
@@ -362,10 +388,43 @@ public static class ExtensionMethods
             CodecId.N64Xplorer64Rom => "N64 - Xplorer 64 ROM",
             CodecId.N64Xplorer64Text => "N64 - FCD-formatted cheat list",
             CodecId.OpenemuXml => "OpenEmu XML cheat list",
-            CodecId.Textproto => "Hammerhead protobuf text",
             CodecId.UnspecifiedCodecId => "UNSPECIFIED ROM format",
             CodecId.UnsupportedCodecId => "UNSUPPORTED ROM format",
             _ => throw new NotSupportedException($"CodecId {codecId} is missing from ToDisplayString()!"),
+        };
+    }
+
+    public static string FileExtension(this CodecId codecId)
+    {
+        return codecId switch
+        {
+            CodecId.GbGamesharkRom => ".gb",
+            CodecId.GbaGamesharkDatelRom => ".gba",
+            CodecId.GbaGamesharkFcdRom => ".gba",
+            CodecId.GbaTvTunerRom => ".gba",
+            CodecId.GbcCodebreakerRom => ".gbc",
+            CodecId.GbcGamesharkV3Cdb => ".bin",
+            CodecId.GbcGamesharkV3Gcf => ".gcf",
+            CodecId.GbcGamesharkV3Rom => ".gbc",
+            CodecId.GbcGamesharkV4Rom => ".gbc",
+            CodecId.GbcMonsterbrainRom => ".gbc",
+            CodecId.GbcSharkMxRom => ".gbc",
+            CodecId.GbcXploderRom => ".gbc",
+            CodecId.HammerheadJson => ".json",
+            CodecId.LibretroText => ".txt",
+            CodecId.N64Edx7Text => ".txt",
+            CodecId.N64GamesharkMemcard => ".n64",
+            CodecId.N64GamesharkRom => ".n64",
+            CodecId.N64GamesharkText => ".txt",
+            CodecId.N64GbhunterRom => ".n64",
+            CodecId.N64Pj64V1Text => ".txt",
+            CodecId.N64Pj64V3Text => ".txt",
+            CodecId.N64Xplorer64Rom => ".n64",
+            CodecId.N64Xplorer64Text => ".txt",
+            CodecId.OpenemuXml => ".xml",
+            CodecId.UnspecifiedCodecId => ".UNSPECIFIED",
+            CodecId.UnsupportedCodecId => ".UNSUPPORTED",
+            _ => throw new NotSupportedException($"CodecId {codecId} is missing from FileExtension()!"),
         };
     }
 
@@ -378,6 +437,7 @@ public static class ExtensionMethods
             BrandId.Brainboy => "BrainBoy",
             BrandId.CodeBreaker => "Code Breaker",
             BrandId.Equalizer => "Equalizer",
+            BrandId.Everdrive => "EverDrive",
             BrandId.GameBooster => "Game Booster",
             BrandId.GameBuster => "Game Buster",
             BrandId.GameGenie => "Game Genie",
@@ -402,8 +462,9 @@ public static class ExtensionMethods
             ConsoleId.GameGear => "Game Gear (GG)",
             ConsoleId.Nintendo64 => "Nintendo 64 (N64)",
             ConsoleId.Playstation1 => "PlayStation 1 (PS/PS1/PSX)",
-            ConsoleId.Dreamcast => "Dreamcast",
-            ConsoleId.Gamecube => "GameCube",
+            ConsoleId.Dreamcast => "Dreamcast (DC)",
+            ConsoleId.Gamecube => "GameCube (GC)",
+            ConsoleId.Universal => "Universal (all consoles)",
             ConsoleId.UnknownConsole => "UNKNOWN game console",
             _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
         };
@@ -421,20 +482,21 @@ public static class ExtensionMethods
             ConsoleId.Playstation1 => "PSX",
             ConsoleId.Dreamcast => "DC",
             ConsoleId.Gamecube => "GC",
+            ConsoleId.Universal => "ALL",
             ConsoleId.UnknownConsole => "UNKNOWN",
             _ => throw new NotSupportedException($"ConsoleId {consoleId} is missing from ToDisplayString()!"),
         };
     }
 
-    public static string ToDisplayString(this N64KeyCode kc)
-    {
-        return $"{kc.Bytes.ToHexString(" ")}: {kc.Name.Value}" +
-               (kc.IsKeyCodeActive ? " [ACTIVE]" : "");
-    }
-
     #endregion
 
     #region Date/Time
+
+    public static DateTimeOffset GetBuildDate(this Assembly assembly)
+    {
+        var attribute = assembly.GetCustomAttribute<BuildDateAttribute>();
+        return attribute?.DateTimeOffset ?? default(DateTimeOffset);
+    }
 
     public static DateTimeOffset WithTimeZone(this DateTime dt, string tzName)
     {
@@ -546,10 +608,11 @@ public static class ExtensionMethods
                          Environment.GetEnvironmentVariable("HOME") ?? // Unix/Linux
                          "~";
 
-        return fullPath
+        string shortPath = fullPath
                 .Replace(cwd + Path.DirectorySeparatorChar, "")
                 .Replace(homeDir, "~")
             ;
+        return shortPath;
     }
 
     public static string ShortName(this FileSystemInfo file)
@@ -563,7 +626,8 @@ public static class ExtensionMethods
         u8[] bytes = new u8[len / 2];
         for (int i = 0; i < len; i += 2)
         {
-            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            string substring = hex.Substring(i, 2);
+            bytes[i / 2] = Convert.ToByte(substring, 16);
         }
         return bytes;
     }
@@ -590,7 +654,14 @@ public static class ExtensionMethods
         return string.Join("", bytes.Select((b) => b.ToString("X2")));
     }
 
+    public static RomString ToRomString(this string value)
+    {
+        return new RomString() { Value = value };
+    }
+
     #endregion
+
+    #region CLI
 
     public static T? GetValue<T>(
         this IValueDescriptor<T> symbol,
@@ -612,4 +683,6 @@ public static class ExtensionMethods
         }
         throw new ArgumentException("Symbol must be an Argument<T> or Option<T>, but object is neither.");
     }
+
+    #endregion
 }

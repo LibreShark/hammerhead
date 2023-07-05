@@ -1,8 +1,9 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead.Codecs;
+namespace LibreShark.Hammerhead.GameBoyColor;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 using u8 = Byte;
@@ -29,7 +30,7 @@ public sealed class GbcCbRom : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
     private const CodecId ThisCodecId = CodecId.GbcCodebreakerRom;
 
-    public static readonly CodecFileFactory Factory = new(Is, Is, ThisCodecId, Create);
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static GbcCbRom Create(string filePath, u8[] rawInput)
     {
@@ -43,7 +44,7 @@ public sealed class GbcCbRom : AbstractCodec
     private readonly RomString[] _cheatNames = new RomString[16];
     private readonly RomString _selectedGameName;
 
-    public override CodecId DefaultCheatOutputCodec => CodecId.UnsupportedCodecId;
+    public override CodecId DefaultCheatOutputCodec => CodecId.HammerheadJson;
 
     private GbcCbRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
@@ -108,12 +109,13 @@ public sealed class GbcCbRom : AbstractCodec
                 var cheat = new Cheat()
                 {
                     CheatIndex = cheatIdx,
-                    CheatName = nameIdx == 0
-                        // Custom, user-entered cheat
-                        // TODO(CheatoBaggins): Are custom names stored in the ROM?
-                        ? new RomString() { Value = "USR CSTM" }
-                        // Build-in cheat with standard name
-                        : _cheatNames[nameIdx],
+                    CheatName =
+                        nameIdx == 0
+                            // Custom, user-entered cheat
+                            // TODO(CheatoBaggins): Are custom names stored in the ROM?
+                            ? "USR CSTM".ToRomString()
+                            // Build-in cheat with standard name
+                            : _cheatNames[nameIdx],
                 };
                 cheat.Codes.Add(new Code()
                 {

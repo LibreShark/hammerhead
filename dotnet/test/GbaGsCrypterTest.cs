@@ -1,4 +1,4 @@
-using LibreShark.Hammerhead.Gba;
+using LibreShark.Hammerhead.GameBoyAdvance;
 
 namespace LibreShark.Hammerhead.Test.Gba;
 

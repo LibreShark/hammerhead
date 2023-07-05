@@ -1,6 +1,11 @@
 using System.Collections.Immutable;
-using Google.Protobuf;
+using System.Reflection;
+using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.GameBoy;
+using LibreShark.Hammerhead.GameBoyAdvance;
+using LibreShark.Hammerhead.GameBoyColor;
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Nintendo64;
 using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
@@ -15,27 +20,6 @@ using u32 = UInt32;
 using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
-
-public class CodecFileFactory
-{
-    public Func<u8[], bool> AutoDetect { get; }
-    public Func<CodecId, bool> IsCodec { get; }
-    public CodecId CodecId { get; }
-    public Func<string, u8[], AbstractCodec> Create { get; }
-
-    public CodecFileFactory(
-        Func<u8[], bool> autoDetect,
-        Func<CodecId, bool> isCodec,
-        CodecId codecId,
-        Func<string, u8[], AbstractCodec> create
-    )
-    {
-        AutoDetect = autoDetect;
-        IsCodec = isCodec;
-        CodecId = codecId;
-        Create = create;
-    }
-}
 
 public abstract class AbstractCodec
 {
@@ -52,27 +36,53 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    public VgeMetadata Metadata { get; }
+    protected readonly HammerheadDump Dump;
 
-    public List<Game> Games { get; }
+    protected ParsedFile Parsed
+    {
+        get => Dump.ParsedFiles.First();
+        set
+        {
+            Dump.ParsedFiles.Clear();
+            Dump.ParsedFiles.Add(value);
+        }
+    }
+
+    public FileMetadata Metadata => Parsed.Metadata;
+
+    public RepeatedField<Game> Games => Parsed.Games;
 
     protected readonly AbstractBinaryScribe Scribe;
 
     private static readonly CodecFileFactory[] CodecFactories = new[] {
-        GboGsRom.Factory,
-        GbaGsDatelRom.Factory,
-        GbaGsFcdRom.Factory,
-        GbaTvTunerRom.Factory,
+        // Game Boy (original and Pocket)
+        GbGsRom.Factory,
+
+        // Game Boy Color
         GbcCbRom.Factory,
         GbcGsV3Rom.Factory,
         GbcGsV4Rom.Factory,
+        GbcGsV3CodeFile.Factory,
+        GbcGsV3CodeDb.Factory,
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
         GbcXpRom.Factory,
+
+        // Game Boy Advance
+        GbaGsDatelRom.Factory,
+        GbaGsFcdRom.Factory,
+        GbaTvTunerRom.Factory,
+
+        // Nintendo 64
+        N64EdX7Text.Factory,
+        N64GbHunterRom.Factory,
         N64GsRom.Factory,
         N64GsText.Factory,
         N64XpRom.Factory,
         N64XpText.Factory,
+
+        // Generic
+        ProtobufJson.Factory,
         UnknownCodec.Factory,
     };
 
@@ -90,15 +100,59 @@ public abstract class AbstractCodec
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        Games = new List<Game>();
-        Metadata = new VgeMetadata
+        var entryAssembly = Assembly.GetEntryAssembly()!;
+        Dump = new HammerheadDump()
         {
-            FilePath = filePath,
-            ConsoleId = consoleId,
-            CodecId = codecId,
-            FileChecksum = RawInput.ComputeChecksums(),
-            CodecFeatureSupport = new CodecFeatureSupport(),
+            AppInfo = new AppInfo()
+            {
+                AppName = entryAssembly.GetName().Name,
+                SemanticVersion = GitVersionInformation.AssemblySemVer,
+                InformationalVersion = GitVersionInformation.InformationalVersion,
+                BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
+                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
+                SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
+            },
         };
+        Parsed = new ParsedFile()
+        {
+            Metadata = new FileMetadata()
+            {
+                FilePath = filePath,
+                ConsoleId = consoleId,
+                CodecId = codecId,
+                FileChecksum = RawInput.ComputeChecksums(),
+                CodecFeatureSupport = new CodecFeatureSupport(),
+            },
+        };
+    }
+
+    protected virtual void SanitizeCustomProtoFields(ParsedFile parsed)
+    {
+    }
+
+    public AbstractCodec ImportFromProto(ParsedFile parsed)
+    {
+        var old = Parsed;
+        Parsed = new ParsedFile(parsed)
+        {
+            Metadata =
+            {
+                CodecId = old.Metadata.CodecId,
+                CodecFeatureSupport = old.Metadata.CodecFeatureSupport,
+                FilePath = old.Metadata.FilePath,
+            },
+        };
+        WriteChangesToBuffer();
+        Parsed.Metadata.FileChecksum = Buffer.ComputeChecksums();
+        return this;
+    }
+
+    public ParsedFile ToSlimProto()
+    {
+        var parsed = new ParsedFile(Parsed);
+        ParsedFile normalized = NormalizeProto(parsed);
+        SanitizeCustomProtoFields(normalized);
+        return normalized;
     }
 
     public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
@@ -229,19 +283,35 @@ public abstract class AbstractCodec
 
     public abstract AbstractCodec WriteChangesToBuffer();
 
-    protected static RomString EmptyRomStr()
+    private static ParsedFile NormalizeProto(ParsedFile parsedFile)
     {
-        return new RomString()
+        RomString[] ids = parsedFile.Metadata.Identifiers
+            .Select(rs => rs.WithoutAddress())
+            .ToArray();
+        parsedFile.Metadata.Identifiers.Clear();
+        parsedFile.Metadata.Identifiers.AddRange(ids);
+        var games = parsedFile.Games.Select(game =>
         {
-            Value = "",
-            Addr = new RomRange()
+            game.GameName = game.GameName.WithoutAddress();
+            var cheats = game.Cheats.Select(cheat =>
             {
-                Length = 0,
-                StartIndex = 0,
-                EndIndex = 0,
-                RawBytes = ByteString.Empty,
-            },
-        };
+                cheat.CheatName = cheat.CheatName.WithoutAddress();
+                var codes = cheat.Codes.Select(code =>
+                {
+                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
+                    return code;
+                }).ToArray();
+                cheat.Codes.Clear();
+                cheat.Codes.AddRange(codes);
+                return cheat;
+            }).ToArray();
+            game.Cheats.Clear();
+            game.Cheats.AddRange(cheats);
+            return game;
+        }).ToArray();
+        parsedFile.Games.Clear();
+        parsedFile.Games.AddRange(games);
+        return parsedFile;
     }
 
     public bool IsValidFormat()
