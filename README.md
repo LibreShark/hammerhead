@@ -31,7 +31,7 @@ dotnet run --project dotnet/src/src.csproj -- \
         --overwrite
 ```
 
-![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-cheats-copy-gs-to-xp.png)
+![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-cheats-copy-xp-to-gs.png)
 
 ### Encrypt a ROM file
 
