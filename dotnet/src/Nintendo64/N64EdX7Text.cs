@@ -26,14 +26,17 @@ public sealed class N64EdX7Text : AbstractCodec
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64Edx7Text;
 
+    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
+
+    private const u8 CodeCommentMaxLen = 36;
+    private const u8 MaxCodes = 34;
+
     // 80273E00!0020 NPCs Don't Attack
     private static readonly Regex CodeLineRegex =
         new Regex("^(?<addr>[a-f0-9]{8})(?<active>[! ])(?<value>[a-f0-9]{4})(?:\\s+(?<comment>.+))?$", RegexOptions.IgnoreCase);
 
     private static readonly Regex XofYRegex =
         new Regex(@"\s*\[[ 0-9]+(?:\s*(?:/|of)?\s*)?[ 0-9]+]\s*");
-
-    public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
     public static N64EdX7Text Create(string filePath, u8[] rawInput)
     {
@@ -80,8 +83,6 @@ public sealed class N64EdX7Text : AbstractCodec
             string cheatName = cheatStrings.First();
             string comment = cheatStrings.Length > 1 ? cheatStrings[1] : "";
 
-            // TODO(CheatoBaggins): Combine multiple codes into a single cheat
-
             Cheat curCheat;
             Cheat? prevCheat = game.Cheats.LastOrDefault(cheat => cheat.CheatName.Value == cheatName);
 
@@ -113,7 +114,53 @@ public sealed class N64EdX7Text : AbstractCodec
 
     public override AbstractCodec WriteChangesToBuffer()
     {
-        throw new NotImplementedException();
+        if (Games.Count > 1)
+        {
+            Console.Error.WriteLine(
+                $"WARNING: EverDrive-64 X7 cheat files only support one game, " +
+                $"but found {Games.Count}. Only the first game will be output.");
+        }
+
+        int codeLineCount = 0;
+        var lines = new List<string>();
+
+        foreach (Game game in Games)
+        {
+            lines.Add($"# {game.GameName.Value}");
+            foreach (Cheat cheat in game.Cheats)
+            {
+                foreach (Code code in cheat.Codes)
+                {
+                    string codeString = code.Bytes.ToCodeString(Metadata.ConsoleId);
+                    string codeLine = codeString;
+                    if (!string.IsNullOrWhiteSpace(cheat.CheatName.Value))
+                    {
+                        codeLine += " " + cheat.CheatName.Value;
+                    }
+                    if (!string.IsNullOrWhiteSpace(code.Comment))
+                    {
+                        codeLine += " " + code.Comment;
+                    }
+                    lines.Add(codeLine);
+                    codeLineCount++;
+                }
+            }
+
+            // Only output the first game in the list
+            break;
+        }
+
+        if (codeLineCount > MaxCodes)
+        {
+            Console.Error.WriteLine(
+                $"WARNING: EverDrive-64 X7 does not support more than {MaxCodes} codes, " +
+                $"but found {codeLineCount}. The last {codeLineCount - MaxCodes} codes " +
+                "will be silently ignored by EverDrive.");
+        }
+
+        Buffer = string.Join("\n", lines).ToUtf8Bytes();
+
+        return this;
     }
 
     private static bool IsPlainTextChar(u8 b)
