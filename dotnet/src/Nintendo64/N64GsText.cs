@@ -77,6 +77,7 @@ public sealed class N64GsText : AbstractCodec
                     {
                         GameIndex = (u32)games.Count,
                         GameName = new RomString() { Value = nameMatch.Groups["name"].Value },
+                        Comment = GetComment(nameMatch.Groups["comment"]),
                     };
                     games.Add(curGame);
                     state = ParserState.InGame;
@@ -89,11 +90,14 @@ public sealed class N64GsText : AbstractCodec
                     continue;
                 case ParserState.InGame when nameMatch.Success:
                 case ParserState.InCheat when nameMatch.Success:
+                    Group offMatchGroup = nameMatch.Groups["off"];
+                    bool isOff = offMatchGroup is { Success: true, Value.Length: > 0 };
                     curCheat = new Cheat()
                     {
                         CheatIndex = (u32)curGame.Cheats.Count,
                         CheatName = new RomString() { Value = nameMatch.Groups["name"].Value },
-                        IsCheatActive = !(nameMatch.Groups["off"].Success && nameMatch.Groups["off"].Value.Length > 0),
+                        IsCheatActive = !isOff,
+                        Comment = GetComment(nameMatch.Groups["comment"]),
                     };
                     curGame.Cheats.Add(curCheat);
                     state = ParserState.InCheat;
@@ -111,9 +115,7 @@ public sealed class N64GsText : AbstractCodec
                         CodeIndex = (u32)curCheat.Codes.Count,
                         Bytes = ByteString.CopyFrom(
                             $"{codeMatch.Groups["address"].Value}{codeMatch.Groups["value"].Value}".HexToBytes()),
-                        Comment = codeMatch.Groups["comment"].Success && !string.IsNullOrWhiteSpace(codeMatch.Groups["comment"].Value)
-                            ? codeMatch.Groups["comment"].Value
-                            : "",
+                        Comment = GetComment(codeMatch.Groups["comment"]),
                     };
                     curCheat.Codes.Add(code);
                     break;
@@ -140,26 +142,36 @@ public sealed class N64GsText : AbstractCodec
 """);
         foreach (Game game in Games)
         {
+            string gameNameComment =
+                !string.IsNullOrWhiteSpace(game.Comment)
+                    ? $" ; {game.Comment}"
+                    : "";
             sb.AppendLine($"""
 ;------------------------------------
-{Quote(game.GameName.Value)}
+{Quote(game.GameName.Value)}{gameNameComment}
 ;------------------------------------
 
 """);
             foreach (Cheat cheat in game.Cheats)
             {
                 string cheatOff = cheat.IsCheatActive ? "" : " .off";
-                sb.AppendLine(Quote(cheat.CheatName.Value) + cheatOff);
+                string cheatLine = Quote(cheat.CheatName.Value) + cheatOff;
+                if (!string.IsNullOrWhiteSpace(cheat.Comment))
+                {
+                    cheatLine += $" ; {cheat.Comment}";
+                }
+                sb.AppendLine(cheatLine);
+
                 foreach (Code code in cheat.Codes)
                 {
-                    sb.Append(code.Bytes.ToCodeString(Metadata.ConsoleId));
+                    string codeLine = code.Bytes.ToCodeString(Metadata.ConsoleId);
                     if (!string.IsNullOrWhiteSpace(code.Comment))
                     {
-                        sb.Append(" ; ");
-                        sb.Append(code.Comment);
+                        codeLine += $" ; {code.Comment}";
                     }
-                    sb.AppendLine();
+                    sb.AppendLine(codeLine);
                 }
+
                 sb.AppendLine();
             }
 
@@ -204,6 +216,11 @@ public sealed class N64GsText : AbstractCodec
             .Select(line => line.Trim())
             .Where(line => !string.IsNullOrWhiteSpace(line))
             .ToArray();
+    }
+
+    private static string GetComment(Group matchGroup)
+    {
+        return matchGroup.Success && !string.IsNullOrWhiteSpace(matchGroup.Value) ? matchGroup.Value : "";
     }
 
     private static BigEndianScribe MakeScribe(byte[] rawInput)
