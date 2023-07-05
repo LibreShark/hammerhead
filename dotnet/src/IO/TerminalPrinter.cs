@@ -613,25 +613,6 @@ public class TerminalPrinter
 
     #region Color support detection
 
-    private static bool IsInputRedirected => IsConsoleSizeZero && Console.KeyAvailable;
-
-    private static bool IsOutputRedirected => IsConsoleSizeZero && !Console.KeyAvailable;
-
-    private static bool IsConsoleSizeZero
-    {
-        get
-        {
-            try
-            {
-                return 0 == Console.WindowHeight + Console.WindowWidth;
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-        }
-    }
-
     public static PrintFormatId GetEffectivePrintFormatId(PrintFormatId printFormat)
     {
         switch (printFormat)
@@ -646,7 +627,7 @@ public class TerminalPrinter
                 // https://no-color.org/
                 bool isColorDisabled = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR"));
                 bool isDumbTerminal = Environment.GetEnvironmentVariable("TERM") is "dumb" or "xterm";
-                return isColorDisabled || isDumbTerminal || IsOutputRedirected
+                return isColorDisabled || isDumbTerminal || Console.IsOutputRedirected
                     ? PrintFormatId.Plain
                     : PrintFormatId.Color;
             }
