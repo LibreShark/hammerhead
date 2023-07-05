@@ -27,6 +27,18 @@ public sealed class N64GsRom : AbstractCodec
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
+    /// <summary>
+    /// The GS firmware will silently truncate names beyond this length.
+    /// The official PC utils will crash if you try to use longer names.
+    /// </summary>
+    private const u8 GameNameMaxDisplayLen = 30;
+
+    /// <summary>
+    /// The GS firmware will silently truncate names beyond this length.
+    /// The official PC utils will crash if you try to use longer names.
+    /// </summary>
+    private const u8 CheatNameMaxDisplayLen = 30;
+
     public static N64GsRom Create(string filePath, u8[] rawInput)
     {
         return new N64GsRom(filePath, rawInput);
@@ -177,7 +189,6 @@ public sealed class N64GsRom : AbstractCodec
     {
         u32 startPos = Scribe.Position;
 
-        // Firmware and official Datel GS Utils do not support names longer than 30 chars.
         RomString name = Scribe.ReadPrintableCString();
 
         if (name.Value.Length < 1)
