@@ -154,7 +154,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         try
         {
             var codec = new GbcGsV3CodeDb("", bytes);
-            return true;
+            return codec.Games.Count > 0;
         }
         catch
         {

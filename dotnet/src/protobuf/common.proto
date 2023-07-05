@@ -328,6 +328,9 @@ message Code {
 
   // N64 only
   bool is_active_key_code = 7;
+
+  // EverDrive-64 X7 only
+  bool is_code_disabled = 8;
 }
 
 message Warning {

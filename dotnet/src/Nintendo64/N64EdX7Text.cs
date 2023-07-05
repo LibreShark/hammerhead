@@ -74,7 +74,7 @@ public sealed class N64EdX7Text : AbstractCodec
 
             byte[] addr = match.Groups["addr"].Value.HexToBytes();
             byte[] value = match.Groups["value"].Value.HexToBytes();
-            bool isActive = match.Groups["active"].Value == " ";
+            bool isCodeDisabled = match.Groups["active"].Value == "!";
 
             string[] cheatStrings = XofYRegex.Split(match.Groups["comment"].Value);
             string cheatName = cheatStrings.First();
@@ -95,7 +95,7 @@ public sealed class N64EdX7Text : AbstractCodec
                 {
                     CheatIndex = (u32)game.Cheats.Count,
                     CheatName = cheatName.ToRomString(),
-                    IsCheatActive = isActive,
+                    IsCheatActive = !isCodeDisabled,
                 };
                 game.Cheats.Add(curCheat);
             }
@@ -105,6 +105,7 @@ public sealed class N64EdX7Text : AbstractCodec
                 CodeIndex = (u32)curCheat.Codes.Count,
                 Bytes = ByteString.CopyFrom(addr.Concat(value).ToArray()),
                 Comment = comment,
+                IsCodeDisabled = isCodeDisabled,
             };
             curCheat.Codes.Add(code);
         }
