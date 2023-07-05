@@ -31,6 +31,8 @@ public sealed class N64EdX7Text : AbstractCodec
     private const u8 CodeCommentMaxLen = 36;
     private const u8 MaxCodes = 34;
 
+    private static readonly Regex CommentRegex = new Regex(@"\s*#.*");
+
     // 80273E00!0020 NPCs Don't Attack
     private static readonly Regex CodeLineRegex =
         new Regex("^(?<addr>[a-f0-9]{8})(?<active>[! ])(?<value>[a-f0-9]{4})(?:\\s+(?<comment>.+))?$", RegexOptions.IgnoreCase);
@@ -175,7 +177,11 @@ public sealed class N64EdX7Text : AbstractCodec
         {
             return false;
         }
-        string[] lines = GetAllNonEmptyLines(buffer);
+        string[] lines = GetAllNonEmptyLines(buffer)
+            .Select(line => CommentRegex.Replace(line, ""))
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray()
+        ;
         return lines.All(line => CodeLineRegex.IsMatch(line));
     }
 
