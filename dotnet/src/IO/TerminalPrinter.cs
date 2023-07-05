@@ -408,7 +408,7 @@ public class TerminalPrinter
 
         Table table = BuildTable()
                 .AddColumn(HeaderCell("Name"))
-                .AddColumn(HeaderCell("# Games/Cheats"), column => column.Alignment = Justify.Right)
+                .AddColumn(HeaderCell("# cheats/codes"), column => column.Alignment = Justify.Right)
                 .AddColumn(HeaderCell("Warnings"))
             ;
 
@@ -421,11 +421,11 @@ public class TerminalPrinter
             string gameName = game.GameName.Value.EscapeMarkup();
             if (game.IsGameActive)
             {
-                gameName = BoldUnderline(gameName);
+                gameName = BoldUnderline(Green(gameName)) + " [ACTIVE]".EscapeMarkup();
             }
             else
             {
-                gameName = Bold(gameName);
+                gameName = Underline(gameName);
             }
             table.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
 
@@ -438,6 +438,10 @@ public class TerminalPrinter
             {
                 int codeCount = cheat.Codes.Count;
                 string cheatName = cheat.CheatName.Value.EscapeMarkup();
+                if (cheat.IsCheatActive)
+                {
+                    cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
+                }
                 table.AddRow($"  - {cheatName}", codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
@@ -447,7 +451,10 @@ public class TerminalPrinter
                 {
                     string codeString = code.Bytes.ToCodeString(_codec.Metadata.ConsoleId);
                     string codeComment = string.IsNullOrWhiteSpace(code.Comment) ? "" : $"    // {code.Comment}";
-                    table.AddRow($"    {Dim(codeString)}{Dim(codeComment)}", "", "");
+                    string codeStringFormatted = code.IsCodeDisabled
+                        ? Dim(Strikethrough(codeString) + "    " + BoldItalic("(disabled)"))
+                        : Dim(codeString);
+                    table.AddRow($"        {codeStringFormatted}{Dim(codeComment)}", "", "");
                 }
             }
         }
@@ -548,6 +555,18 @@ public class TerminalPrinter
     {
         if (!IsColor) return str;
         return $"[b u]{str}[/]";
+    }
+
+    public string Strikethrough(string str)
+    {
+        if (!IsColor) return str;
+        return $"[strikethrough]{str}[/]";
+    }
+
+    public string Invert(string str)
+    {
+        if (!IsColor) return str;
+        return $"[invert]{str}[/]";
     }
 
     public string HeaderCell(string str)
