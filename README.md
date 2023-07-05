@@ -8,7 +8,7 @@ Written in cross-platform C# and .NET.
 
 ## Usage examples
 
-### Dump ROM cheats to plain text
+### Dump cheats from ROM files to plain text
 
 Dump the cheats from all supported input files to their default text file formats:
 
@@ -58,7 +58,7 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
 
-### Shark MX to JSON
+### Dump Shark MX data to JSON
 
 Dump GBC Shark MX contacts/messages to JSON:
 
