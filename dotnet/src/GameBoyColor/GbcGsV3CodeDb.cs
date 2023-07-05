@@ -39,9 +39,13 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => ThisCodecId;
 
-    private GbcGsV3CodeDb(string filePath, u8[] rawInput)
+    private readonly bool _isSilent;
+
+    private GbcGsV3CodeDb(string filePath, u8[] rawInput, bool isSilent = false)
         : base(filePath, rawInput, MakeScribe(rawInput), ThisConsoleId, ThisCodecId)
     {
+        _isSilent = isSilent;
+
         Support.SupportsCheats = true;
 
         ReadGames();
@@ -49,6 +53,17 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         // TODO(CheatoBaggins): Determine if Action Replay-branded software
         // exists, and if it's possible to detect the brand from file contents.
         Metadata.BrandId = BrandId.Gameshark;
+    }
+
+    private void PrintWarning(Exception e)
+    {
+        if (_isSilent)
+        {
+            return;
+        }
+
+        var printer = new TerminalPrinter(this);
+        printer.PrintWarning(e);
     }
 
     private void ReadGames()
@@ -88,7 +103,11 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
 
             if (codeStr.Value.Length < 8)
             {
-                Console.Error.WriteLine($"WARNING: Invalid cheat code length at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                PrintWarning(
+                    new FormatException(
+                        $"WARNING: Invalid cheat code length at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value})."
+                    )
+                );
                 continue;
             }
 
@@ -102,11 +121,19 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
             {
                 if (PlaceholderCodeRegex.IsMatch(codeStr.Value))
                 {
-                    Console.Error.WriteLine($"WARNING: Unsupported value placeholder at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                    PrintWarning(
+                        new FormatException(
+                            $"WARNING: Unsupported value placeholder at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value})."
+                        )
+                    );
                 }
                 else
                 {
-                    Console.Error.WriteLine($"WARNING: Invalid cheat code characters at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value}).");
+                    PrintWarning(
+                        new FormatException(
+                            $"WARNING: Invalid cheat code characters at 0x{codeAddr:X8}: '{codeStr.Value}' ({cheatName.Value})."
+                        )
+                    );
                 }
                 continue;
             }
@@ -153,7 +180,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         // TODO(CheatoBaggins): Is there a way to detect these?
         try
         {
-            var codec = new GbcGsV3CodeDb("", bytes);
+            var codec = new GbcGsV3CodeDb("", bytes, true);
             return codec.Games.Count > 0;
         }
         catch
