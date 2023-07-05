@@ -446,7 +446,8 @@ public class TerminalPrinter
                 foreach (Code code in cheat.Codes)
                 {
                     string codeString = code.Bytes.ToCodeString(_codec.Metadata.ConsoleId);
-                    table.AddRow($"    {(Dim(codeString))}", "", "");
+                    string codeComment = string.IsNullOrWhiteSpace(code.Comment) ? "" : $"    // {code.Comment}";
+                    table.AddRow($"    {Dim(codeString)}{Dim(codeComment)}", "", "");
                 }
             }
         }

@@ -36,7 +36,7 @@ public abstract class AbstractCodec
         protected set => Scribe.ResetBuffer(value);
     }
 
-    protected HammerheadDump Dump;
+    protected readonly HammerheadDump Dump;
 
     protected ParsedFile Parsed
     {
@@ -74,6 +74,7 @@ public abstract class AbstractCodec
         GbaTvTunerRom.Factory,
 
         // Nintendo 64
+        N64EdX7Text.Factory,
         N64GbHunterRom.Factory,
         N64GsRom.Factory,
         N64GsText.Factory,

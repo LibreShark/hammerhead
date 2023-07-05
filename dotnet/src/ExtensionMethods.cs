@@ -437,6 +437,7 @@ public static class ExtensionMethods
             BrandId.Brainboy => "BrainBoy",
             BrandId.CodeBreaker => "Code Breaker",
             BrandId.Equalizer => "Equalizer",
+            BrandId.Everdrive => "EverDrive",
             BrandId.GameBooster => "Game Booster",
             BrandId.GameBuster => "Game Buster",
             BrandId.GameGenie => "Game Genie",
