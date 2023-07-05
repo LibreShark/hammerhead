@@ -17,6 +17,7 @@ Full support:
 | N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   |
 | N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |
 | Hammerhead JSON cheats     | Yes    | Yes  | Yes   |
+| N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   |
 
 In progress:
 
@@ -25,24 +26,28 @@ In progress:
 | GB GameShark v2.x ROMs                | Yes    | Yes  |       |
 | GBC Code Breaker ROMs                 | Yes    | Yes  |       |
 | GBC GameShark v3.x ROMs               | Yes    | Yes  |       |
-| GBC GameShark v3.x cheats (*.gcf)     |        |      |       |
 | GBC GameShark v4.x ROMs               | Yes    | Yes  |       |
 | GBC Shark MX ROMs                     | Yes    | Yes  |       |
 | GBC Xploder ROMs                      | Yes    | Yes  |       |
 | GBA Datel GameShark ROMs              | Yes    | Yes  |       |
 | GBA FCD GameShark & Code Breaker ROMs | Yes    | Yes  |       |
-| OpenEmu XML cheats                    |        |      |       |
-| N64 EverDrive-64 X7 cheats            |        |      |       |
-| N64 Project 64 v1.x cheats            |        |      |       |
-| N64 Project 64 v3.x cheats            |        |      |       |
+
+Planned:
+
+| File format                        | Detect | Read | Write |
+|:---------------------------------- |:------ |:---- |:----- |
+| GBC GameShark v3.x cheats (\*.gcf) |        |      |       |
+| OpenEmu XML cheats                 |        |      |       |
+| N64 Project 64 v1.x cheats         |        |      |       |
+| N64 Project 64 v3.x cheats         |        |      |       |
 
 Limited support:
 
-| File format                           | Detect | Read | Write |
-|:------------------------------------- |:------ |:---- |:----- |
-| GBC BrainBoy / Monster Brain ROMs     | Yes    |      |       |
-| GBA TV Tuner ROMs                     | Yes    |      |       |
-| N64 GB Hunter ROMs                    | Yes    |      |       |
+| File format                       | Detect | Read | Write |
+|:--------------------------------- |:------ |:---- |:----- |
+| GBC BrainBoy / Monster Brain ROMs | Yes    |      |       |
+| GBA TV Tuner ROMs                 | Yes    |      |       |
+| N64 GB Hunter ROMs                | Yes    |      |       |
 
 ## Screenshots
 
