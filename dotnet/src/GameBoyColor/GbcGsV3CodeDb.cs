@@ -63,7 +63,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         }
 
         var printer = new TerminalPrinter(this);
-        printer.PrintWarning(e);
+        printer.PrintWarning(e.Message);
     }
 
     private void ReadGames()

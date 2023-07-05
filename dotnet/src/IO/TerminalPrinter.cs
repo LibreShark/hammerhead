@@ -93,16 +93,15 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
-    public void PrintWarning(Exception e)
+    public void PrintWarning(string message)
     {
-        string message = e.ToString();
         if (!message.ToUpperInvariant().Contains("WARNING"))
         {
             message = $"WARNING: {message}";
         }
         if (IsColor)
         {
-            AnsiConsole.WriteException(e);
+            AnsiConsole.Markup($"\n[red]{message}[/]\n\n");
             return;
         }
         Console.Error.WriteLine($"\n{message}\n");

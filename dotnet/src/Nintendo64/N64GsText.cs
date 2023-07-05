@@ -24,6 +24,12 @@ public sealed class N64GsText : AbstractCodec
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
+    /// <summary>
+    /// The official PC utils will crash if you try to use longer names.
+    /// The firmware, however, simply truncates longer names.
+    /// </summary>
+    private const int MaxNameLen = 30;
+
     public static N64GsText Create(string filePath, u8[] rawInput)
     {
         return new N64GsText(filePath, rawInput);
@@ -131,6 +137,27 @@ public sealed class N64GsText : AbstractCodec
         return games;
     }
 
+    private void PrintWarning(Exception e)
+    {
+        var printer = new TerminalPrinter(this);
+        printer.PrintWarning(e.Message);
+    }
+
+    private string TruncateName(RomString romStr)
+    {
+        string name = romStr.Value;
+        if (name.Length > MaxNameLen)
+        {
+            PrintWarning(new FormatException(
+                $"WARNING: Game/cheat names over {MaxNameLen} chars will CRASH the " +
+                $"official Datel PC utils. " +
+                $"'{name}' will be truncated to {MaxNameLen} chars."
+            ));
+            return name[..MaxNameLen];
+        }
+        return name;
+    }
+
     public override AbstractCodec WriteChangesToBuffer()
     {
         var sb = new StringBuilder();
@@ -142,20 +169,22 @@ public sealed class N64GsText : AbstractCodec
 """);
         foreach (Game game in Games)
         {
+            string gameNameValue = TruncateName(game.GameName);
             string gameNameComment =
                 !string.IsNullOrWhiteSpace(game.Comment)
                     ? $" ; {game.Comment}"
                     : "";
             sb.AppendLine($"""
 ;------------------------------------
-{Quote(game.GameName.Value)}{gameNameComment}
+{Quote(gameNameValue)}{gameNameComment}
 ;------------------------------------
 
 """);
             foreach (Cheat cheat in game.Cheats)
             {
                 string cheatOff = cheat.IsCheatActive ? "" : " .off";
-                string cheatLine = Quote(cheat.CheatName.Value) + cheatOff;
+                string cheatNameValue = TruncateName(cheat.CheatName);
+                string cheatLine = Quote(cheatNameValue) + cheatOff;
                 if (!string.IsNullOrWhiteSpace(cheat.Comment))
                 {
                     cheatLine += $" ; {cheat.Comment}";
