@@ -53,7 +53,7 @@ View all information extracted by Hammerhead from a directory of ROM and cheat t
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
-    info ar3.enc
+    info *.{bin,enc}
 ```
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
