@@ -62,6 +62,8 @@ public sealed class N64XpRom : AbstractCodec
     private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {
+        Parsed.N64Data = new N64Data();
+
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
