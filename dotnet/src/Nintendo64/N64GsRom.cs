@@ -81,6 +81,9 @@ public sealed class N64GsRom : AbstractCodec
         Support.HasFirmware = true;
 
         // TODO(CheatoBaggins): Decompress v3.x ROM files
+        // See:
+        // - https://github.com/Jhynjhiruu/fsblob/blob/716e921e97b95ca075bf86b96589b89f7ef75b17/src/lib.rs
+        // - https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/tools/splat_ext/fsblob.py
 
         _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
         _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);

@@ -22,6 +22,8 @@ using f64 = Double;
 /// <summary>
 /// Encrypt or decrypt a GameShark ROM image for use with Datel's official
 /// N64 Utils PC program, which requires encrypted ROMs.
+///
+/// See also: https://github.com/Jhynjhiruu/gsdec/blob/10a97456fb07d1d3f0d643426893462cbde95a17/src/main.rs
 /// </summary>
 class N64GsCrypter
 {
