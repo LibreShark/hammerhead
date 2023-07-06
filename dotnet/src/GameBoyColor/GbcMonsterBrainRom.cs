@@ -16,7 +16,7 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// Monster Brain and Brain Boy for Game Boy Color and Game Boy Pocket,
+/// BrainBoy and Monster Brain for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
 /// </summary>
 public sealed class GbcMonsterBrainRom : AbstractCodec

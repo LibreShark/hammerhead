@@ -57,8 +57,6 @@ public sealed class N64XpRom : AbstractCodec
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
 
-    private readonly List<Code> _keyCodes = new();
-
     private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
     {

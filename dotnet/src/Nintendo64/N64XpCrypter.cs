@@ -13,6 +13,9 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
+/// <summary>
+/// Encrypts/decrypts cheat codes used by <see cref="N64XpRom"/> files.
+/// </summary>
 public static class N64XpCrypter
 {
     public static bool IsCodeEncrypted(IReadOnlyList<u8> code)

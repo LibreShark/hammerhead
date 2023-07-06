@@ -17,6 +17,10 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
+/// <summary>
+/// Plain-text cheat file format used by FCD's official N64 PC utils for the
+/// <see cref="N64XpRom"/>.
+/// </summary>
 public sealed class N64XpText : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;

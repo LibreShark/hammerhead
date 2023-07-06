@@ -3,6 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
+/// <summary>
+/// Detailed information about the version number, build date, and brand of an
+/// <see cref="N64GsRom"/> file.
+/// </summary>
 public partial class N64GsVersion
 {
     public static readonly CultureInfo ENGLISH_US = CultureInfo.GetCultureInfoByIetfLanguageTag("en-US");

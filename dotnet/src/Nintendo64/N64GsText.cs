@@ -17,6 +17,9 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
+/// <summary>
+/// Plain-text cheat file format used by Datel's official N64 PC Utils.
+/// </summary>
 public sealed class N64GsText : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;

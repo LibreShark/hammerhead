@@ -17,8 +17,19 @@ using f64 = Double;
 
 /// <summary>
 /// v3.X GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
-/// made by Datel/InterAct.
+/// made by Datel/InterAct in 2000 and 2001.
+///
+/// The 2000 release has a sticker on the box and cart that says "v3.1", while
+/// the PC software says "v0.80".
+///
+/// The 2001 release does not have any stickers on the box or cart, but the
+/// CD says "v4.10" and the PC software says "v4.00".
+///
+/// Both releases have semi-transparent clear plastic shells on the carts,
+/// and purple "GameShark" stickers.
 /// </summary>
+/// <seealso cref="GbcGsV3CodeDb"/>
+/// <seealso cref="GbcGsV3CodeFile"/>
 public sealed class GbcGsV3Rom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;

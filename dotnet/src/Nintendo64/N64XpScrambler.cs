@@ -12,8 +12,8 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// Unscrambles Xplorer 64 ROM files dumped directly from the two EEPROM chips,
-/// and re-scrambles them for flashing directly to the EEPROMs.
+/// Scrambles/unscrambles Xplorer 64 ROM files dumped directly from the two
+/// EEPROM chips, and re-scrambles them for flashing the EEPROMs directly.
 /// </summary>
 public static class N64XpScrambler
 {

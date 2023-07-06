@@ -18,8 +18,27 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// C:\Program Files\Interact\GameShark for GameBoy\gbdata\gbcheats.bin
+/// Cheat database from Datel's official PC software for
+/// GameShark and Action Replay for Game Boy Color, made in 2000 and 2001.
+///
+/// The 2000 release has a sticker on the box and cart that says "v3.1", while
+/// the PC software says "v0.80".
+///
+/// The 2001 release does not have any stickers on the box or cart, but the
+/// CD says "v4.10" and the PC software says "v4.00".
+///
+/// Both releases have semi-transparent clear plastic shells on the carts,
+/// and purple "GameShark" stickers.
+///
+/// The 2001 release has newer codes pre-installed on the cart and in the
+/// PC software's cheat database, but otherwise the PC software appears to be
+/// essentially identical.
+///
+/// File location:
+/// <c>C:\Program Files\Interact\GameShark for GameBoy\gbdata\gbcheats.bin</c>
 /// </summary>
+/// <seealso cref="GbcGsV3CodeFile"/>
+/// <seealso cref="GbcGsV3Rom"/>
 public sealed class GbcGsV3CodeDb : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;

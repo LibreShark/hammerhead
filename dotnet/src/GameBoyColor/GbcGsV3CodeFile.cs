@@ -15,10 +15,11 @@ using u64 = UInt64;
 using f64 = Double;
 
 /// <summary>
-/// "Game Boy Code File" (*.gcf) binary format for the official PC utils for
-/// v3.X GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
-/// made by Datel/InterAct.
+/// "GameBoy Codes File" (*.gcf) binary format for "cheat update files" used by
+/// the official PC utils for <see cref="GbcGsV3Rom"/>, made in 2000 and 2001.
 /// </summary>
+/// <seealso cref="GbcGsV3CodeDb"/>
+/// <seealso cref="GbcGsV3Rom"/>
 public sealed class GbcGsV3CodeFile : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.GameBoyColor;
