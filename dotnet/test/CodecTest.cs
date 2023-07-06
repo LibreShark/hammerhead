@@ -120,8 +120,6 @@ public class CodecTest
         List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
         List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
 
-        Game? activeGame = games.FirstOrDefault(game => game.IsGameActive);
-
         Assert.Multiple(() =>
         {
             Assert.That(codec.Metadata.CodecId, Is.EqualTo(CodecId.GbcGamesharkV3Rom));
@@ -140,6 +138,108 @@ public class CodecTest
             Assert.That(games[223].GameName.Value, Is.EqualTo("Wario Land II"));
             Assert.That(games[223].Cheats[0].CheatName.Value, Is.EqualTo("Quick Coins"));
             Assert.That(games[223].Cheats[0].Codes[1].Formatted, Is.EqualTo("01990FD5"));
+        });
+    }
+
+    [Test]
+    public void Test_GbcGsV4Rom_Read()
+    {
+        var api = new HammerheadApi();
+        List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
+        {
+            InputFiles = new FileInfo[]
+            {
+                new FileInfo("TestData/RomFiles/GBC/gbc-gs-v4.0.gbc"),
+            },
+        });
+
+        Assert.That(codecs, Has.Count.EqualTo(1));
+
+        ICodec codec = codecs.First();
+
+        List<Game> games = codec.Games.ToList();
+        games.Sort((game1, game2) => String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture));
+        List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
+        List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
+
+        Game? activeGame = games.FirstOrDefault(game => game.IsGameActive);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(codec.Metadata.CodecId, Is.EqualTo(CodecId.GbcGamesharkV4Rom));
+            Assert.That(codec.Metadata.ConsoleId, Is.EqualTo(ConsoleId.GameBoyColor));
+            Assert.That(codec.Metadata.BrandId, Is.EqualTo(BrandId.Gameshark));
+            Assert.That(codec.Metadata.DisplayVersion, Is.EqualTo("v4.00"));
+
+            Assert.That(activeGame, Is.Not.Null);
+            Assert.That(activeGame?.GameName.Value, Is.EqualTo("Spider Man"));
+
+            Assert.That(games, Has.Count.EqualTo(283));
+            Assert.That(cheats, Has.Count.EqualTo(947));
+            Assert.That(codes, Has.Count.EqualTo(1307));
+
+            Assert.That(games[0].GameName.Value, Is.EqualTo("102 Dalmations"));
+            Assert.That(games[0].Cheats[0].CheatName.Value, Is.EqualTo("Max Score*"));
+            Assert.That(games[0].Cheats[0].Codes[1].Formatted, Is.EqualTo("0199D9C0"));
+
+            Assert.That(games[280].GameName.Value, Is.EqualTo("X-Treme Sports"));
+            Assert.That(games[280].Cheats[2].CheatName.Value, Is.EqualTo("Max Points*"));
+            Assert.That(games[280].Cheats[2].Codes[4].Formatted, Is.EqualTo("0109FBC8"));
+        });
+    }
+
+    [Test]
+    public void Test_GbcSharkMxRom_Read()
+    {
+        var api = new HammerheadApi();
+        List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
+        {
+            InputFiles = new FileInfo[]
+            {
+                new FileInfo("TestData/RomFiles/GBC/gbc-shark-mx-v1.02-2000-dirty-SST39SF020PLCC32.gbc"),
+            },
+        });
+
+        Assert.That(codecs, Has.Count.EqualTo(1));
+
+        ICodec codec = codecs.First();
+
+        List<Game> games = codec.Games.ToList();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(codec.Metadata.CodecId, Is.EqualTo(CodecId.GbcSharkMxRom));
+            Assert.That(codec.Metadata.ConsoleId, Is.EqualTo(ConsoleId.GameBoyColor));
+            Assert.That(codec.Metadata.BrandId, Is.EqualTo(BrandId.SharkMx));
+            Assert.That(codec.Metadata.DisplayVersion, Is.EqualTo("v1.02 (US)"));
+
+            Assert.That(games, Has.Count.EqualTo(0));
+
+            ParsedFile parsedFile = codec.ToSlimProto();
+            Assert.That(parsedFile.GbcSmxData, Is.Not.Null);
+
+            // Registration codes
+            Assert.That(parsedFile.GbcSmxData.RegCode1.Value, Is.EqualTo("SHGGGGGGGGGGGGGQ"));
+            Assert.That(parsedFile.GbcSmxData.RegCode2.Value, Is.EqualTo("SHGGGGGGGGGGGGGQ"));
+            Assert.That(parsedFile.GbcSmxData.SecretPin.Value, Is.EqualTo("1234"));
+
+            // Time zones
+            Assert.That(parsedFile.GbcSmxData.Timezones, Has.Count.EqualTo(41));
+
+            // Contacts
+            Assert.That(parsedFile.GbcSmxData.Contacts, Has.Count.EqualTo(51));
+            Assert.That(parsedFile.GbcSmxData.Contacts[0].PersonName.Value, Is.EqualTo("RWeick"));
+            Assert.That(parsedFile.GbcSmxData.Contacts[0].EmailAddress.Value, Is.EqualTo("rweick@gmail.com"));
+            Assert.That(parsedFile.GbcSmxData.Contacts[0].PhoneNumber.Value, Is.EqualTo("12345678900"));
+            Assert.That(parsedFile.GbcSmxData.Contacts[0].StreetAddress.Value, Is.EqualTo("888 libreshark"));
+
+            // Messages
+            Assert.That(parsedFile.GbcSmxData.Messages, Has.Count.EqualTo(1));
+            Assert.That(parsedFile.GbcSmxData.Messages[0].Subject.Value, Is.EqualTo("hi"));
+            Assert.That(parsedFile.GbcSmxData.Messages[0].RecipientEmail.Value, Is.EqualTo("rweick@gmail.com"));
+            Assert.That(parsedFile.GbcSmxData.Messages[0].RawDate.Value, Is.EqualTo("02/09/2010"));
+            Assert.That(parsedFile.GbcSmxData.Messages[0].IsoDate, Is.EqualTo("2010-02-09T00:00:00"));
+            Assert.That(parsedFile.GbcSmxData.Messages[0].Message.Value, Is.EqualTo("yo"));
         });
     }
 }
