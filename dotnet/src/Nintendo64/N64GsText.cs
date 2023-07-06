@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
@@ -142,8 +143,7 @@ public sealed class N64GsText : AbstractCodec
 
     private void PrintWarning(Exception e)
     {
-        var printer = new TerminalPrinter(this);
-        printer.PrintWarning(e.Message);
+        Printer.PrintWarning(e.Message);
     }
 
     private string TruncateName(RomString romStr)
@@ -161,7 +161,7 @@ public sealed class N64GsText : AbstractCodec
         return name;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         var sb = new StringBuilder();
         sb.AppendLine($"""

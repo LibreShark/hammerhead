@@ -1,12 +1,13 @@
 using System.Globalization;
+using Google.Protobuf;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.IO;
+namespace LibreShark.Hammerhead.Cli;
 
-public class TerminalPrinter
+public class TerminalPrinter : ICliPrinter
 {
     #region Fields
 
@@ -14,7 +15,7 @@ public class TerminalPrinter
     public bool IsMarkdown => _printFormat == PrintFormatId.Markdown;
     public bool IsPlain => !IsColor && !IsMarkdown;
 
-    private readonly AbstractCodec _codec;
+    private readonly ICodec _codec;
     private readonly PrintFormatId _printFormat;
 
     #endregion
@@ -25,7 +26,7 @@ public class TerminalPrinter
         _printFormat = GetEffectivePrintFormatId(printFormat);
     }
 
-    public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat = PrintFormatId.Detect)
+    public TerminalPrinter(ICodec codec, PrintFormatId printFormat = PrintFormatId.Detect)
     {
         _codec = codec;
         _printFormat = GetEffectivePrintFormatId(printFormat);
@@ -107,6 +108,20 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
+    public void PrintError(string message)
+    {
+        if (!message.ToUpperInvariant().Contains("ERROR"))
+        {
+            message = $"ERROR: {message}";
+        }
+        if (IsColor)
+        {
+            AnsiConsole.Markup($"\n\n[red]{message.EscapeMarkup()}[/]\n\n\n");
+            return;
+        }
+        Console.Error.WriteLine($"\n{message}\n");
+    }
+
     public void PrintError(Exception e)
     {
         string message = e.ToString();
@@ -122,13 +137,19 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
+    public void PrintJson(JsonFormatter formatter, IMessage proto)
+    {
+        Console.WriteLine(formatter.Format(proto) + "\n");
+    }
+
     #endregion
 
     #region Printing sections
 
-    public void PrintBanner(CmdParams cmdParams)
+    public void PrintBanner(CliCmdParams cmdParams)
     {
-        if (cmdParams.HideBanner)
+        if (cmdParams.HideBanner ||
+            cmdParams.PrintFormatId is PrintFormatId.Json)
         {
             return;
         }
@@ -670,8 +691,8 @@ public class TerminalPrinter
 
     public void PrintCheatsCommand(
         string heading,
-        FileInfo inputFile, AbstractCodec inputCodec,
-        FileInfo outputFile, AbstractCodec outputCodec,
+        FileInfo inputFile, ICodec inputCodec,
+        FileInfo outputFile, ICodec outputCodec,
         Action action)
     {
         Console.WriteLine();

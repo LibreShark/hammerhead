@@ -176,7 +176,7 @@ public sealed class GbcGsV3Rom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -208,7 +208,7 @@ public sealed class GbcGsV3Rom : AbstractCodec
                bytes.Contains("ACTION REPLAY");
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

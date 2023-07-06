@@ -123,7 +123,7 @@ public sealed class GbaGsFcdRom : AbstractCodec
         Metadata.IsKnownVersion = KnownRawBuildDates.Contains(Metadata.BuildDateRaw.Value);
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -148,7 +148,7 @@ public sealed class GbaGsFcdRom : AbstractCodec
         return isMagicNumberMatch && isCopyrightMatch && isFcdFcdFcdMatch;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

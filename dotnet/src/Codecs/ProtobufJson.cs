@@ -43,7 +43,7 @@ public sealed class ProtobufJson : AbstractCodec
         Support.SupportsSmxMessages = true;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         var formatter = new JsonFormatter(
             JsonFormatter.Settings.Default

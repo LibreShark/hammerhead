@@ -32,7 +32,7 @@ public sealed class UnknownCodec : AbstractCodec
     {
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }

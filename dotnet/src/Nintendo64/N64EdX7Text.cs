@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.Codecs;
@@ -114,7 +113,7 @@ public sealed class N64EdX7Text : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         if (Games.Count > 1)
         {

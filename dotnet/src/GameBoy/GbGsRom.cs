@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
+using Spectre.Console;
 
 namespace LibreShark.Hammerhead.GameBoy;
 
@@ -190,7 +192,7 @@ public sealed class GbGsRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -216,7 +218,7 @@ public sealed class GbGsRom : AbstractCodec
                hasVer;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -231,17 +233,20 @@ public sealed class GbGsRom : AbstractCodec
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Cheat name lookup table");
-        Console.WriteLine();
+
+        Table table = printer.BuildTable();
+        table.AddColumn(new TableColumn(printer.HeaderCell("ID")));
+        table.AddColumn(new TableColumn(printer.HeaderCell("Cheat name")));
 
         for (int i = 0; i < _cheatNames.Count; i++)
         {
             RomString cheatName = _cheatNames[i];
-            Console.WriteLine($"[{i:D2}]: {cheatName.Value}");
+            table.AddRow(i.ToString("D2"), cheatName.Value);
         }
 
-        Console.WriteLine();
+        printer.PrintTable(table);
     }
 }

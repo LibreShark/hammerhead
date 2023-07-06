@@ -114,7 +114,7 @@ public sealed class GbcXpRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -131,7 +131,7 @@ public sealed class GbcXpRom : AbstractCodec
                bytes.Contains("Future Console Design!");
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

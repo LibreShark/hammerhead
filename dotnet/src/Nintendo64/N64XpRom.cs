@@ -277,7 +277,7 @@ public sealed class N64XpRom : AbstractCodec
         buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         Scribe.Seek(GameListAddr);
 
@@ -347,7 +347,7 @@ public sealed class N64XpRom : AbstractCodec
         return is256KiB && (DetectPlain(bytes) || DetectScrambled(bytes));
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

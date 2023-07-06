@@ -1,6 +1,6 @@
-using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
@@ -81,8 +81,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
             return;
         }
 
-        var printer = new TerminalPrinter(this);
-        printer.PrintWarning(e.Message);
+        Printer.PrintWarning(e.Message);
     }
 
     private void ReadGames()
@@ -189,7 +188,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -208,7 +207,7 @@ public sealed class GbcGsV3CodeDb : AbstractCodec
         }
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

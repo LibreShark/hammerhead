@@ -1,3 +1,4 @@
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
@@ -51,7 +52,7 @@ public sealed class N64GbHunterRom : AbstractCodec
         // Metadata.BrandId = BrandId.GbHunter;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -68,7 +69,7 @@ public sealed class N64GbHunterRom : AbstractCodec
         return is256KiB && bytes.FindAll("RLE01").Length == 6;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -78,14 +79,14 @@ public sealed class N64GbHunterRom : AbstractCodec
         return type == ThisCodecId;
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("RLE01 addresses");
         PrintRLE01Addrs(printer);
     }
 
     // ReSharper disable once InconsistentNaming
-    private void PrintRLE01Addrs(TerminalPrinter printer)
+    private void PrintRLE01Addrs(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Address"))

@@ -43,7 +43,7 @@ public sealed class GbaTvTunerRom : AbstractCodec
         Support.HasPristineUserPrefs = false;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -62,7 +62,7 @@ public sealed class GbaTvTunerRom : AbstractCodec
         return idStr == "GBA_Capture";
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

@@ -55,7 +55,7 @@ public sealed class GbcGsV3CodeFile : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -66,7 +66,7 @@ public sealed class GbcGsV3CodeFile : AbstractCodec
         return false;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

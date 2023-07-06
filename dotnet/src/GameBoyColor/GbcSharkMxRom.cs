@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf.WellKnownTypes;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
@@ -325,7 +326,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -344,7 +345,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         return bytes.Contains("GBMail");
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -359,13 +360,13 @@ public sealed class GbcSharkMxRom : AbstractCodec
         return new LittleEndianScribe(rawInput.ToArray());
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Registration");
         PrintRegistrationTable(printer, @params);
     }
 
-    public override void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomBody(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading($"Time zones ({Data.Timezones.Count})");
         PrintTimeZoneTable(printer, @params);
@@ -377,7 +378,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         PrintMessagesTable(printer, @params);
     }
 
-    private void PrintTimeZoneTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintTimeZoneTable(ICliPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Original name"))
@@ -404,7 +405,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private void PrintRegistrationTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintRegistrationTable(ICliPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Key"))
@@ -418,7 +419,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private void PrintContactsTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintContactsTable(ICliPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("#"))
@@ -458,7 +459,7 @@ public sealed class GbcSharkMxRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private void PrintMessagesTable(TerminalPrinter printer, InfoCmdParams @params)
+    private void PrintMessagesTable(ICliPrinter printer, InfoCmdParams @params)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Subject"))

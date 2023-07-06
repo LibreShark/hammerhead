@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
@@ -335,7 +336,7 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.WriteCString(str, 30);
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
@@ -374,7 +375,7 @@ public sealed class N64GsRom : AbstractCodec
         return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -419,7 +420,7 @@ public sealed class N64GsRom : AbstractCodec
         return new BigEndianScribe(output);
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Addresses");
         PrintAddressTable(printer);
@@ -440,7 +441,7 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
-    private void PrintAddressTable(TerminalPrinter printer)
+    private void PrintAddressTable(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Section"))
@@ -460,7 +461,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private void PrintKeyCodesTable(TerminalPrinter printer)
+    private void PrintKeyCodesTable(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Games (CIC chip)"))

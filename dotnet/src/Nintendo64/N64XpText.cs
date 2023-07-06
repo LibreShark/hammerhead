@@ -92,7 +92,7 @@ public sealed class N64XpText : AbstractCodec
         return games;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         var sb = new StringBuilder();
 

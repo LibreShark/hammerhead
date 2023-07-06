@@ -1,47 +1,9 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using LibreShark.Hammerhead.IO;
 
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Cli;
 
-public abstract class CmdParams : EventArgs
-{
-    public PrintFormatId PrintFormatId { get; set; }
-    public bool HideBanner { get; init; }
-    public bool Clean { get; init; }
-}
-
-public class InfoCmdParams : CmdParams
-{
-    public CodecId InputCodecId { get; init; }
-    public bool HideGames { get; init; }
-    public bool HideCheats { get; init; }
-    public bool HideCodes { get; init; }
-    public FileInfo[] InputFiles { get; init; }
-
-    public InfoCmdParams()
-    {
-        InputFiles = new FileInfo[] { };
-    }
-}
-
-public class RomCmdParams : CmdParams
-{
-    public FileInfo? InputFile { get; init; }
-    public FileInfo? OutputFile { get; set; }
-    public bool OverwriteExistingFiles { get; init; }
-    public CodecId OutputFormat { get; init; }
-}
-
-public class DumpCheatsCmdParams : CmdParams
-{
-    public FileInfo[]? InputFiles { get; init; }
-    public DirectoryInfo? OutputDir { get; set; }
-    public bool OverwriteExistingFiles { get; init; }
-    public CodecId OutputFormat { get; init; }
-}
-
-public class Cli
+public class CliCmd
 {
     #region Options and arguments
 
@@ -282,7 +244,9 @@ public class Cli
 
     #endregion
 
-    public event EventHandler<CmdParams>? Always;
+    #region Event handlers
+
+    public event EventHandler<CliCmdParams>? Always;
     public event EventHandler<InfoCmdParams>? OnInfo;
     public event EventHandler<RomCmdParams>? OnEncryptRom;
     public event EventHandler<RomCmdParams>? OnDecryptRom;
@@ -293,9 +257,11 @@ public class Cli
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
     public event EventHandler<RomCmdParams>? OnCopyCheats;
 
+    #endregion
+
     public RootCommand RootCommand => _rootCmd;
 
-    public Cli()
+    public CliCmd()
     {
         _rootCmd.AddGlobalOption(HideBannerOption);
         _rootCmd.AddGlobalOption(NoColorOption);
@@ -317,174 +283,196 @@ public class Cli
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
 
-        _infoCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new InfoCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific options
-                InputCodecId = InputFormatOption.GetValue(ctx),
-                HideGames = HideGamesOption.GetValue(ctx),
-                HideCheats = HideCheatsOption.GetValue(ctx),
-                HideCodes = HideCodesOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFiles = InputFilesArgument.GetValue(ctx)!,
-            };
-            Always?.Invoke(this, cmdParams);
-            OnInfo?.Invoke(this, cmdParams);
-        });
-
-        _encryptRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnEncryptRom?.Invoke(this, cmdParams);
-        });
-
-        _decryptRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnDecryptRom?.Invoke(this, cmdParams);
-        });
-
-        _scrambleRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnScrambleRom?.Invoke(this, cmdParams);
-        });
-
-        _unscrambleRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnUnscrambleRom?.Invoke(this, cmdParams);
-        });
-
-        _splitRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnSplitRom?.Invoke(this, cmdParams);
-        });
-
-        _combineRomCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileOption.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnCombineRom?.Invoke(this, cmdParams);
-        });
-
-        _dumpCheatsCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new DumpCheatsCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFiles = InputFilesArgument.GetValue(ctx)!,
-                OutputDir = OutputDirOption.GetValue(ctx),
-                OutputFormat = DumpCheatsOutputFormatOption.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnDumpCheats?.Invoke(this, cmdParams);
-        });
-
-        _copyCheatsCmd.Handler = new AnonymousCliCommandHandler((ctx) =>
-        {
-            var cmdParams = new RomCmdParams()
-            {
-                // Global options
-                PrintFormatId = GetPrintFormatId(ctx),
-                HideBanner = HideBannerOption.GetValue(ctx),
-                Clean = CleanOption.GetValue(ctx),
-
-                // Command-specific arguments
-                InputFile = InputFileArgument.GetValue(ctx)!,
-                OutputFile = OutputFileArgument.GetValue(ctx),
-                OutputFormat = CopyCheatsOutputFormatOption.GetValue(ctx),
-                OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            };
-            Always?.Invoke(this, cmdParams);
-            OnCopyCheats?.Invoke(this, cmdParams);
-        });
+        _infoCmd.Handler = new CliCmdHandler(Info);
+        _encryptRomCmd.Handler = new CliCmdHandler(EncryptRom);
+        _decryptRomCmd.Handler = new CliCmdHandler(DecryptRom);
+        _scrambleRomCmd.Handler = new CliCmdHandler(ScrambleRom);
+        _unscrambleRomCmd.Handler = new CliCmdHandler(UnscrambleRom);
+        _splitRomCmd.Handler = new CliCmdHandler(SplitRom);
+        _combineRomCmd.Handler = new CliCmdHandler(CombineRom);
+        _dumpCheatsCmd.Handler = new CliCmdHandler(DumpCheats);
+        _copyCheatsCmd.Handler = new CliCmdHandler(CopyCheats);
     }
+
+    #region `info` command
+
+    private void Info(InvocationContext ctx)
+    {
+        var cmdParams = new InfoCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific options
+            InputCodecId = InputFormatOption.GetValue(ctx),
+            HideGames = HideGamesOption.GetValue(ctx),
+            HideCheats = HideCheatsOption.GetValue(ctx),
+            HideCodes = HideCodesOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFiles = InputFilesArgument.GetValue(ctx)!,
+        };
+        Always?.Invoke(this, cmdParams);
+        OnInfo?.Invoke(this, cmdParams);
+    }
+
+    #endregion
+
+    #region `rom` commands
+
+    private void EncryptRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnEncryptRom?.Invoke(this, cmdParams);
+    }
+
+    private void DecryptRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnDecryptRom?.Invoke(this, cmdParams);
+    }
+
+    private void ScrambleRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnScrambleRom?.Invoke(this, cmdParams);
+    }
+
+    private void UnscrambleRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnUnscrambleRom?.Invoke(this, cmdParams);
+    }
+
+    private void SplitRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnSplitRom?.Invoke(this, cmdParams);
+    }
+
+    private void CombineRom(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileOption.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnCombineRom?.Invoke(this, cmdParams);
+    }
+
+    #endregion
+
+    #region `cheats` commands
+
+    private void DumpCheats(InvocationContext ctx)
+    {
+        var cmdParams = new DumpCheatsCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFiles = InputFilesArgument.GetValue(ctx)!,
+            OutputDir = OutputDirOption.GetValue(ctx),
+            OutputFormat = DumpCheatsOutputFormatOption.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnDumpCheats?.Invoke(this, cmdParams);
+    }
+
+    private void CopyCheats(InvocationContext ctx)
+    {
+        var cmdParams = new RomCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific arguments
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OutputFormat = CopyCheatsOutputFormatOption.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+        };
+        Always?.Invoke(this, cmdParams);
+        OnCopyCheats?.Invoke(this, cmdParams);
+    }
+
+    #endregion
 
     private static PrintFormatId GetPrintFormatId(InvocationContext ctx)
     {

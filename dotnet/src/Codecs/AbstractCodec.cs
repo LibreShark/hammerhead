@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
 using LibreShark.Hammerhead.GameBoyColor;
@@ -21,39 +22,8 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public abstract class AbstractCodec
+public abstract class AbstractCodec : ICodec
 {
-    public ImmutableArray<u8> RawInput { get; }
-
-    /// <summary>
-    /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
-    /// If the input file is encrypted/scrambled, it must be
-    /// decrypted/unscrambled immediately in the subclass constructor.
-    /// </summary>
-    public u8[] Buffer
-    {
-        get => Scribe.GetBufferCopy();
-        protected set => Scribe.ResetBuffer(value);
-    }
-
-    protected readonly HammerheadDump Dump;
-
-    protected ParsedFile Parsed
-    {
-        get => Dump.ParsedFiles.First();
-        set
-        {
-            Dump.ParsedFiles.Clear();
-            Dump.ParsedFiles.Add(value);
-        }
-    }
-
-    public FileMetadata Metadata => Parsed.Metadata;
-
-    public RepeatedField<Game> Games => Parsed.Games;
-
-    protected readonly AbstractBinaryScribe Scribe;
-
     private static readonly CodecFileFactory[] CodecFactories = new[] {
         // Game Boy (original and Pocket)
         GbGsRom.Factory,
@@ -86,9 +56,42 @@ public abstract class AbstractCodec
         UnknownCodec.Factory,
     };
 
+    public ImmutableArray<u8> RawInput { get; }
+
+    /// <summary>
+    /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
+    /// If the input file is encrypted/scrambled, it must be
+    /// decrypted/unscrambled immediately in the subclass constructor.
+    /// </summary>
+    public u8[] Buffer
+    {
+        get => Scribe.GetBufferCopy();
+        protected set => Scribe.ResetBuffer(value);
+    }
+
+    public FileMetadata Metadata => Parsed.Metadata;
+
+    public RepeatedField<Game> Games => Parsed.Games;
+
     public CodecFeatureSupport Support => Metadata.CodecFeatureSupport;
 
     public abstract CodecId DefaultCheatOutputCodec { get; }
+
+    protected readonly HammerheadDump Dump;
+
+    protected ParsedFile Parsed
+    {
+        get => Dump.ParsedFiles.First();
+        set
+        {
+            Dump.ParsedFiles.Clear();
+            Dump.ParsedFiles.Add(value);
+        }
+    }
+
+    protected readonly AbstractBinaryScribe Scribe;
+
+    protected ICliPrinter Printer;
 
     protected AbstractCodec(
         string filePath,
@@ -98,9 +101,10 @@ public abstract class AbstractCodec
         CodecId codecId
     )
     {
+        var entryAssembly = Assembly.GetEntryAssembly()!;
+
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        var entryAssembly = Assembly.GetEntryAssembly()!;
         Dump = new HammerheadDump()
         {
             AppInfo = new AppInfo()
@@ -124,13 +128,15 @@ public abstract class AbstractCodec
                 CodecFeatureSupport = new CodecFeatureSupport(),
             },
         };
+
+        Printer = new TerminalPrinter(this);
     }
 
     protected virtual void SanitizeCustomProtoFields(ParsedFile parsed)
     {
     }
 
-    public AbstractCodec ImportFromProto(ParsedFile parsed)
+    public ICodec ImportFromProto(ParsedFile parsed)
     {
         var old = Parsed;
         Parsed = new ParsedFile(parsed)
@@ -155,16 +161,16 @@ public abstract class AbstractCodec
         return normalized;
     }
 
-    public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
+    public virtual void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params) {}
 
-    public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params) {
+    public virtual void PrintGames(ICliPrinter printer, InfoCmdParams @params) {
         if (SupportsCheats() && !@params.HideGames)
         {
             printer.PrintGames(@params);
         }
     }
 
-    public virtual void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params) {}
+    public virtual void PrintCustomBody(ICliPrinter printer, InfoCmdParams @params) {}
 
     public void AddFileProps(Table table)
     {
@@ -254,7 +260,7 @@ public abstract class AbstractCodec
         return Buffer;
     }
 
-    public static AbstractCodec ReadFromFile(string romFilePath, CodecId codecId = CodecId.Auto)
+    public static ICodec ReadFromFile(string romFilePath, CodecId codecId = CodecId.Auto)
     {
         u8[] bytes = File.ReadAllBytes(romFilePath);
 
@@ -270,7 +276,7 @@ public abstract class AbstractCodec
         return factory.Create(romFilePath, bytes);
     }
 
-    public static AbstractCodec CreateFromId(string outputFilePath, CodecId codecId)
+    public static ICodec CreateFromId(string outputFilePath, CodecId codecId)
     {
         u8[] bytes = Array.Empty<byte>();
         CodecFileFactory? factory = CodecFactories.FirstOrDefault(factory => factory.IsCodec(codecId));
@@ -281,7 +287,7 @@ public abstract class AbstractCodec
         return factory.Create(outputFilePath, bytes);
     }
 
-    public abstract AbstractCodec WriteChangesToBuffer();
+    public abstract ICodec WriteChangesToBuffer();
 
     private static ParsedFile NormalizeProto(ParsedFile parsedFile)
     {
