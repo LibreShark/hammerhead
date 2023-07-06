@@ -20,6 +20,10 @@ using f64 = Double;
 /// <summary>
 /// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
 /// Nintendo 64, made by Datel/InterAct.
+///
+/// See
+/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/gameshark.us.yaml
+/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c#L619
 /// </summary>
 public sealed class N64GsRom : AbstractCodec
 {
