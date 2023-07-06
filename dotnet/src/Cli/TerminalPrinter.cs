@@ -189,6 +189,11 @@ public class TerminalPrinter : ICliPrinter
         Console.WriteLine();
     }
 
+    public void PrintFileInfo(string inputFilePath, InfoCmdParams infoParams)
+    {
+        PrintFileInfo(new FileInfo(inputFilePath), infoParams);
+    }
+
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams)
     {
         ConsoleId consoleId = _codec.Metadata.ConsoleId;

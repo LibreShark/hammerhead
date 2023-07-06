@@ -21,6 +21,7 @@ public interface ICodec
     CodecFeatureSupport Support { get; }
     CodecId DefaultCheatOutputCodec { get; }
     ICodec ImportFromProto(ParsedFile parsed);
+    ParsedFile ToFullProto();
     ParsedFile ToSlimProto();
     void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params);
     void PrintGames(ICliPrinter printer, InfoCmdParams @params);

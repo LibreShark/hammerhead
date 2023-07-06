@@ -77,17 +77,7 @@ public abstract class AbstractCodec : ICodec
 
     public abstract CodecId DefaultCheatOutputCodec { get; }
 
-    protected readonly HammerheadDump Dump;
-
-    protected ParsedFile Parsed
-    {
-        get => Dump.ParsedFiles.First();
-        set
-        {
-            Dump.ParsedFiles.Clear();
-            Dump.ParsedFiles.Add(value);
-        }
-    }
+    protected ParsedFile Parsed { get; private set; }
 
     protected readonly AbstractBinaryScribe Scribe;
 
@@ -101,22 +91,8 @@ public abstract class AbstractCodec : ICodec
         CodecId codecId
     )
     {
-        var entryAssembly = Assembly.GetEntryAssembly()!;
-
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        Dump = new HammerheadDump()
-        {
-            AppInfo = new AppInfo()
-            {
-                AppName = entryAssembly.GetName().Name,
-                SemanticVersion = GitVersionInformation.AssemblySemVer,
-                InformationalVersion = GitVersionInformation.InformationalVersion,
-                BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
-                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
-                SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
-            },
-        };
         Parsed = new ParsedFile()
         {
             Metadata = new FileMetadata()
@@ -128,7 +104,6 @@ public abstract class AbstractCodec : ICodec
                 CodecFeatureSupport = new CodecFeatureSupport(),
             },
         };
-
         Printer = new TerminalPrinter(this);
     }
 
@@ -153,12 +128,20 @@ public abstract class AbstractCodec : ICodec
         return this;
     }
 
+    public ParsedFile ToFullProto()
+    {
+        var proto = new ParsedFile(Parsed);
+        Format(proto);
+        return proto;
+    }
+
     public ParsedFile ToSlimProto()
     {
-        var parsed = new ParsedFile(Parsed);
-        ParsedFile normalized = NormalizeProto(parsed);
-        SanitizeCustomProtoFields(normalized);
-        return normalized;
+        var proto = new ParsedFile(Parsed);
+        SanitizeStandardProtoFields(proto);
+        SanitizeCustomProtoFields(proto);
+        Format(proto);
+        return proto;
     }
 
     public virtual void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params) {}
@@ -289,7 +272,21 @@ public abstract class AbstractCodec : ICodec
 
     public abstract ICodec WriteChangesToBuffer();
 
-    private static ParsedFile NormalizeProto(ParsedFile parsedFile)
+    private static void Format(ParsedFile parsedFile)
+    {
+        foreach (Game game in parsedFile.Games)
+        {
+            foreach (Cheat cheat in game.Cheats)
+            {
+                foreach (Code code in cheat.Codes)
+                {
+                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
+                }
+            }
+        }
+    }
+
+    private static void SanitizeStandardProtoFields(ParsedFile parsedFile)
     {
         RomString[] ids = parsedFile.Metadata.Identifiers
             .Select(rs => rs.WithoutAddress())
@@ -317,7 +314,6 @@ public abstract class AbstractCodec : ICodec
         }).ToArray();
         parsedFile.Games.Clear();
         parsedFile.Games.AddRange(games);
-        return parsedFile;
     }
 
     public bool IsValidFormat()

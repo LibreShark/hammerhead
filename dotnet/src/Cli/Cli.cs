@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead.Cli;
@@ -10,11 +11,13 @@ namespace LibreShark.Hammerhead.Cli;
 public class HammerheadCli
 {
     private readonly string[] _args;
+    private readonly HammerheadApi _api;
     private ICliPrinter _printer = new TerminalPrinter();
 
     public HammerheadCli(string[] args)
     {
         _args = args;
+        _api = new HammerheadApi();
     }
 
     public async Task<int> InvokeAsync()
@@ -31,66 +34,17 @@ public class HammerheadCli
         return await cli.RootCommand.InvokeAsync(_args);
     }
 
-    private T Try<T>(FileSystemInfo inputFile, Func<T> valueFactory)
-    {
-        T value;
-
-        try
-        {
-            value = valueFactory.Invoke();
-        }
-        catch
-        {
-            _printer.PrintError($"ERROR while reading file '{inputFile.FullName}'!");
-            throw;
-        }
-
-        return value;
-    }
-
     private void PrintBanner(CliCmdParams cmdParams)
     {
         _printer = new TerminalPrinter(printFormat: cmdParams.PrintFormatId);
         _printer.PrintBanner(cmdParams);
     }
 
-    private void PrintFileInfo(InfoCmdParams @params)
+    private void PrintFileInfo(InfoCmdParams cmdParams)
     {
-        var parsedFiles = new RepeatedField<ParsedFile>();
-
-        foreach (FileInfo inputFile in @params.InputFiles)
+        if (cmdParams.PrintFormatId is PrintFormatId.Json)
         {
-            ICodec codec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName, @params.InputCodecId));
-
-            if (@params.PrintFormatId is PrintFormatId.Json)
-            {
-                parsedFiles.Add(codec.ToSlimProto());
-            }
-            else
-            {
-                _printer = new TerminalPrinter(codec, @params.PrintFormatId);
-                _printer.PrintFileInfo(inputFile, @params);
-            }
-        }
-
-        if (@params.PrintFormatId is PrintFormatId.Json)
-        {
-            var entryAssembly = Assembly.GetEntryAssembly()!;
-            // TODO(CheatoBaggins): De-duplicate with ProtobufJson
-            var dump = new HammerheadDump()
-            {
-                AppInfo = new AppInfo()
-                {
-                    AppName = entryAssembly.GetName().Name,
-                    SemanticVersion = GitVersionInformation.AssemblySemVer,
-                    InformationalVersion = GitVersionInformation.InformationalVersion,
-                    BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
-                    WriteDateIso = DateTimeOffset.Now.ToIsoString(),
-                    SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
-                },
-            };
-            dump.ParsedFiles.AddRange(parsedFiles);
-            // TODO(CheatoBaggins): De-duplicate with ProtobufJson
+            HammerheadDump dump = _api.GetDump(cmdParams, full: false);
             var formatter = new JsonFormatter(
                 JsonFormatter.Settings.Default
                     .WithIndentation()
@@ -98,6 +52,15 @@ public class HammerheadCli
                     .WithPreserveProtoFieldNames(true)
             );
             _printer.PrintJson(formatter, dump);
+        }
+        else
+        {
+            List<ICodec> codecs = _api.ParseFiles(cmdParams);
+            foreach (ICodec codec in codecs)
+            {
+                _printer = new TerminalPrinter(codec, cmdParams.PrintFormatId);
+                _printer.PrintFileInfo(codec.Metadata.FilePath, cmdParams);
+            }
         }
     }
 
@@ -337,5 +300,22 @@ public class HammerheadCli
         }
 
         return new FileInfo(Path.Join(outFileDirPath, outFileName));
+    }
+
+    private T Try<T>(FileSystemInfo inputFile, Func<T> valueFactory)
+    {
+        T value;
+
+        try
+        {
+            value = valueFactory.Invoke();
+        }
+        catch
+        {
+            _printer.PrintError($"ERROR while reading file '{inputFile.FullName}'!");
+            throw;
+        }
+
+        return value;
     }
 }

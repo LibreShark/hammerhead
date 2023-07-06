@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Codecs;
@@ -51,7 +52,8 @@ public sealed class ProtobufJson : AbstractCodec
                 .WithFormatDefaultValues(false)
                 .WithPreserveProtoFieldNames(true)
         );
-        Buffer = $"{formatter.Format(Dump)}\n".ToUtf8Bytes();
+        var dump = new DumpFactory().Dumpify(new ParsedFile[] { Parsed });
+        Buffer = $"{formatter.Format(dump)}\n".ToUtf8Bytes();
         return this;
     }
 

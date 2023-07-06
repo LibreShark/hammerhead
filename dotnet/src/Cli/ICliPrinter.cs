@@ -17,6 +17,7 @@ public interface ICliPrinter
     void PrintJson(JsonFormatter formatter, IMessage proto);
     void PrintBanner(CliCmdParams cmdParams);
     void PrintHeading(string title);
+    void PrintFileInfo(string inputFilePath, InfoCmdParams infoParams);
     void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams);
     void PrintGames(InfoCmdParams @params);
     string White(string str);
