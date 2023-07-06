@@ -1,13 +1,13 @@
-namespace LibreShark.Hammerhead.Cli;
+namespace LibreShark.Hammerhead.Api;
 
-public abstract class CliCmdParams : EventArgs
+public abstract class CmdParams : EventArgs
 {
     public PrintFormatId PrintFormatId { get; set; }
     public bool HideBanner { get; init; }
     public bool Clean { get; init; }
 }
 
-public class InfoCmdParams : CliCmdParams
+public class InfoCmdParams : CmdParams
 {
     public CodecId InputCodecId { get; init; }
     public bool HideGames { get; init; }
@@ -21,7 +21,7 @@ public class InfoCmdParams : CliCmdParams
     }
 }
 
-public class RomCmdParams : CliCmdParams
+public class RomCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
@@ -29,7 +29,7 @@ public class RomCmdParams : CliCmdParams
     public CodecId OutputFormat { get; init; }
 }
 
-public class DumpCheatsCmdParams : CliCmdParams
+public class DumpCheatsCmdParams : CmdParams
 {
     public FileInfo[]? InputFiles { get; init; }
     public DirectoryInfo? OutputDir { get; set; }

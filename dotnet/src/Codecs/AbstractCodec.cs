@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;

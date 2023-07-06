@@ -1,4 +1,5 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 using Spectre.Console;
 
@@ -15,7 +16,7 @@ public interface ICliPrinter
     void PrintError(string message);
     void PrintError(Exception e);
     void PrintJson(JsonFormatter formatter, IMessage proto);
-    void PrintBanner(CliCmdParams cmdParams);
+    void PrintBanner(CmdParams cmdParams);
     void PrintHeading(string title);
     void PrintFileInfo(string inputFilePath, InfoCmdParams infoParams);
     void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams);

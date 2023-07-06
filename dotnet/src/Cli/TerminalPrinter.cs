@@ -1,6 +1,7 @@
 using System.Globalization;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
@@ -146,7 +147,7 @@ public class TerminalPrinter : ICliPrinter
 
     #region Printing sections
 
-    public void PrintBanner(CliCmdParams cmdParams)
+    public void PrintBanner(CmdParams cmdParams)
     {
         if (cmdParams.HideBanner ||
             cmdParams.PrintFormatId is PrintFormatId.Json)

@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using Spectre.Console;
 

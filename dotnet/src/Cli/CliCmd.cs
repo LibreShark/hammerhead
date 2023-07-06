@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using LibreShark.Hammerhead.Api;
 
 namespace LibreShark.Hammerhead.Cli;
 
@@ -246,7 +247,7 @@ public class CliCmd
 
     #region Event handlers
 
-    public event EventHandler<CliCmdParams>? Always;
+    public event EventHandler<CmdParams>? Always;
     public event EventHandler<InfoCmdParams>? OnInfo;
     public event EventHandler<RomCmdParams>? OnEncryptRom;
     public event EventHandler<RomCmdParams>? OnDecryptRom;
