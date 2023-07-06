@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Reflection;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
@@ -257,7 +256,18 @@ public abstract class AbstractCodec : ICodec
             throw new NotImplementedException($"ERROR: Unable to find codec factory for codec ID {codecId} ({codecId.ToDisplayString()}).");
         }
 
-        return factory.Create(romFilePath, bytes);
+        ICodec codec = factory.Create(romFilePath, bytes);
+        foreach (Game game in codec.Games)
+        {
+            foreach (Cheat cheat in game.Cheats)
+            {
+                foreach (Code code in cheat.Codes)
+                {
+                    code.Formatted = code.Bytes.ToCodeString(codec.Metadata.ConsoleId);
+                }
+            }
+        }
+        return codec;
     }
 
     public static ICodec CreateFromId(string outputFilePath, CodecId codecId)

@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
-using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 

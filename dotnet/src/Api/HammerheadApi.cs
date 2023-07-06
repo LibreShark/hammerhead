@@ -77,6 +77,8 @@ public class HammerheadApi
         }
 
         u8[] bytes = transform(fileParams);
+
+        // TODO(CheatoBaggins): Return bytes and output filename; do not write file here.
         File.WriteAllBytes(outputFile.FullName, bytes);
     }
 

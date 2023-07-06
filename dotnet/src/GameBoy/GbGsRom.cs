@@ -161,7 +161,7 @@ public sealed class GbGsRom : AbstractCodec
         u32 gameIdx = 0;
         while (!Scribe.IsPadding())
         {
-            RomString gameName = Scribe.ReadPrintableCString(16, false);
+            RomString gameName = Scribe.ReadPrintableCString(16, false).Trim();
             u8 cheatCount = Scribe.ReadU8();
             var game = new Game()
             {

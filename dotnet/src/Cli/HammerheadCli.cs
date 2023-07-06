@@ -1,8 +1,5 @@
 ﻿using System.CommandLine;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 

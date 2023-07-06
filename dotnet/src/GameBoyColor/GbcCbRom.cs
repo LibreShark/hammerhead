@@ -106,23 +106,33 @@ public sealed class GbcCbRom : AbstractCodec
                     continue;
                 }
 
-                var cheat = new Cheat()
+                RomString curCheatName =
+                    nameIdx == 0
+                        // TODO(CheatoBaggins): Are custom names stored in the ROM?
+                        ? "USR CSTM".ToRomString() // Custom, user-entered cheat
+                        : _cheatNames[nameIdx]; // Build-in cheat with standard name
+
+                Cheat curCheat;
+                Cheat? prevCheat = game.Cheats.LastOrDefault();
+                if (prevCheat?.CheatName.Value == curCheatName.Value)
                 {
-                    CheatIndex = cheatIdx,
-                    CheatName =
-                        nameIdx == 0
-                            // Custom, user-entered cheat
-                            // TODO(CheatoBaggins): Are custom names stored in the ROM?
-                            ? "USR CSTM".ToRomString()
-                            // Build-in cheat with standard name
-                            : _cheatNames[nameIdx],
-                };
-                cheat.Codes.Add(new Code()
+                    curCheat = prevCheat;
+                }
+                else
+                {
+                    curCheat = new Cheat()
+                    {
+                        CheatIndex = cheatIdx,
+                        CheatName = curCheatName,
+                    };
+                    game.Cheats.Add(curCheat);
+                }
+
+                curCheat.Codes.Add(new Code()
                 {
                     CodeIndex = 0,
                     Bytes = ByteString.CopyFrom(code),
                 });
-                game.Cheats.Add(cheat);
             }
 
             Games.Add(game);
