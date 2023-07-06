@@ -23,8 +23,8 @@ public class ExtensionMethodsTest
             Assert.That(new u8[] { 0 }.ToAsciiString(), Is.EqualTo("\0"));
             Assert.That(new u8[] { 1 }.ToAsciiString(), Is.EqualTo("\u0001"));
             Assert.That(new u8[] { 127 }.ToAsciiString(), Is.EqualTo("\u007f"));
-            Assert.That(new u8[] { 128 }.ToAsciiString(), Is.EqualTo("?"));
-            Assert.That(new u8[] { 255 }.ToAsciiString(), Is.EqualTo("?"));
+            Assert.That(new u8[] { 128 }.ToAsciiString(), Is.EqualTo("€"));
+            Assert.That(new u8[] { 255 }.ToAsciiString(), Is.EqualTo("ÿ"));
             Assert.That("abcd"u8.ToArray().ToAsciiString(), Is.EqualTo("abcd"));
         });
     }
