@@ -8,6 +8,17 @@ using LibreShark.Hammerhead.Codecs;
 
 namespace LibreShark.Hammerhead.Cli;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 public class HammerheadCli
 {
     private readonly string[] _args;
@@ -83,17 +94,20 @@ public class HammerheadCli
     private void TransformOneRomFile(
         string status,
         string fileSuffix,
-        RomCmdParams @params,
+        RomCmdParams romParams,
         Func<FileTransformParams, bool> isSupported,
-        Action<FileTransformParams> transform)
+        Func<FileTransformParams, u8[]> transform)
     {
-        FileInfo inputFile = @params.InputFile!;
-        FileInfo outputFile = @params.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
+        FileInfo inputFile = romParams.InputFile!;
+        FileInfo outputFile = romParams.OutputFile ?? GenerateOutputFile(null, inputFile, fileSuffix);
 
-        _printer = new TerminalPrinter(@params.PrintFormatId);
+        _printer = new TerminalPrinter(romParams.PrintFormatId);
         _printer.PrintRomCommand(status, inputFile, outputFile, () =>
         {
+            // When cheats are dumped/copied, the input and output codecs may be different, but
+            // when a ROM file is "transformed", the input codec and output codec are always the same.
             ICodec codec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName));
+
             var fileParams = new FileTransformParams(inputFile, outputFile, codec, _printer);
 
             if (!isSupported(fileParams))
@@ -104,7 +118,7 @@ public class HammerheadCli
                 return;
             }
 
-            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            if (outputFile.Exists && !romParams.OverwriteExistingFiles)
             {
                 _printer.PrintError(new InvalidOperationException(
                     $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
@@ -112,95 +126,96 @@ public class HammerheadCli
                 return;
             }
 
-            transform(fileParams);
+            u8[] bytes = transform(fileParams);
+            File.WriteAllBytes(outputFile.FullName, bytes);
         });
     }
 
-    private void EncryptRom(RomCmdParams @params)
+    private void EncryptRom(RomCmdParams romParams)
     {
         TransformOneRomFile(
             "Encrypting ROM file",
             "encrypted",
-            @params,
+            romParams,
             t => t.Codec.SupportsFileEncryption(),
-            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Encrypt())
+            t => t.Codec.Encrypt()
             );
     }
 
-    private void DecryptRom(RomCmdParams @params)
+    private void DecryptRom(RomCmdParams romParams)
     {
         TransformOneRomFile(
             "Decrypting ROM file",
             "decrypted",
-            @params,
+            romParams,
             t => t.Codec.SupportsFileEncryption(),
-            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Decrypt())
+            t => t.Codec.Decrypt()
         );
     }
 
-    private void ScrambleRom(RomCmdParams @params)
+    private void ScrambleRom(RomCmdParams romParams)
     {
         TransformOneRomFile(
             "Scrambling ROM file",
             "scrambled",
-            @params,
+            romParams,
             t => t.Codec.SupportsFileScrambling(),
-            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Scramble())
+            t => t.Codec.Scramble()
         );
     }
 
-    private void UnscrambleRom(RomCmdParams @params)
+    private void UnscrambleRom(RomCmdParams romParams)
     {
         TransformOneRomFile(
             "Unscrambling ROM file",
             "unscrambled",
-            @params,
+            romParams,
             t => t.Codec.SupportsFileScrambling(),
-            t => File.WriteAllBytes(t.OutputFile.FullName, t.Codec.Unscramble())
+            t => t.Codec.Unscramble()
         );
     }
 
-    private void DumpCheats(DumpCheatsCmdParams @params)
+    private void DumpCheats(DumpCheatsCmdParams dumpParams)
     {
-        foreach (FileInfo inputFile in @params.InputFiles!)
+        foreach (FileInfo inputFile in dumpParams.InputFiles!)
         {
             CopyCheats(new RomCmdParams()
             {
                 InputFile = inputFile,
-                PrintFormatId = @params.PrintFormatId,
-                OutputFormat = @params.OutputFormat,
-                OverwriteExistingFiles = @params.OverwriteExistingFiles,
-                Clean = @params.Clean,
-                HideBanner = @params.HideBanner,
+                PrintFormatId = dumpParams.PrintFormatId,
+                OutputFormat = dumpParams.OutputFormat,
+                OverwriteExistingFiles = dumpParams.OverwriteExistingFiles,
+                Clean = dumpParams.Clean,
+                HideBanner = dumpParams.HideBanner,
             });
         }
     }
 
-    private void CopyCheats(RomCmdParams @params)
+    private void CopyCheats(RomCmdParams romParams)
     {
-        FileInfo inputFile = @params.InputFile!;
+        FileInfo inputFile = romParams.InputFile!;
         ICodec inputCodec = Try(inputFile, () => AbstractCodec.ReadFromFile(inputFile.FullName));
-        _printer = new TerminalPrinter(inputCodec, @params.PrintFormatId);
+        _printer = new TerminalPrinter(inputCodec, romParams.PrintFormatId);
 
         FileInfo outputFile;
         ICodec outputCodec;
 
-        CodecId outputCodecId = @params.OutputFormat;
+        CodecId outputCodecId = romParams.OutputFormat;
         if (outputCodecId == CodecId.Auto)
         {
             outputCodecId = inputCodec.DefaultCheatOutputCodec;
         }
 
-        if (@params.OutputFile == null)
+        if (romParams.OutputFile == null)
         {
             string extension = outputCodecId.FileExtension();
             outputFile = GenerateOutputFile(null, inputFile, "cheats", extension);
             outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
         }
-        else if (@params.OutputFile.Exists)
+        else if (romParams.OutputFile.Exists)
         {
-            outputFile = @params.OutputFile;
-            if (@params.OutputFormat == CodecId.Auto)
+            outputFile = romParams.OutputFile;
+            if (romParams.OutputFormat == CodecId.Auto)
             {
                 outputCodec = Try(outputFile, () => AbstractCodec.ReadFromFile(outputFile.FullName));
                 outputCodecId = outputCodec.Metadata.CodecId;
@@ -212,7 +227,7 @@ public class HammerheadCli
         }
         else
         {
-            outputFile = @params.OutputFile;
+            outputFile = romParams.OutputFile;
             outputCodec = AbstractCodec.CreateFromId(outputFile.FullName, outputCodecId);
         }
 
@@ -240,7 +255,7 @@ public class HammerheadCli
                 ));
                 return;
             }
-            if (outputFile.Exists && !@params.OverwriteExistingFiles)
+            if (outputFile.Exists && !romParams.OverwriteExistingFiles)
             {
                 _printer.PrintError(new InvalidOperationException(
                     $"Output file '{outputFile.FullName}' already exists! Pass --overwrite to bypass this check."
@@ -256,7 +271,7 @@ public class HammerheadCli
                 return;
             }
 
-            outputCodec.ImportFromProto(inputCodec.ToSlimProto());
+            outputCodec.ImportFromProto(inputCodec.ToFullProto());
 
             File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
         });

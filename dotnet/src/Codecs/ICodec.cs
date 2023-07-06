@@ -5,16 +5,27 @@ using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
+
 public interface ICodec
 {
-    ImmutableArray<Byte> RawInput { get; }
+    ImmutableArray<u8> RawInput { get; }
 
     /// <summary>
     /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
     /// If the input file is encrypted/scrambled, it must be
     /// decrypted/unscrambled immediately in the subclass constructor.
     /// </summary>
-    Byte[] Buffer { get; }
+    u8[] Buffer { get; }
 
     FileMetadata Metadata { get; }
     RepeatedField<Game> Games { get; }
@@ -36,10 +47,10 @@ public interface ICodec
     bool IsFileScrambled();
     bool IsFirmwareCompressed();
     bool HasPristineUserPrefs();
-    Byte[] Encrypt();
-    Byte[] Decrypt();
-    Byte[] Scramble();
-    Byte[] Unscramble();
+    u8[] Encrypt();
+    u8[] Decrypt();
+    u8[] Scramble();
+    u8[] Unscramble();
     ICodec WriteChangesToBuffer();
     bool IsValidFormat();
     bool IsInvalidFormat();
