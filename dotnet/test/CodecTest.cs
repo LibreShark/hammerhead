@@ -259,17 +259,34 @@ public class CodecTest
     public void Test_N64GsRom_Lzari()
     {
         string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
-        var rom = N64GsRom.Create(romFilePath, File.ReadAllBytes(romFilePath));
-        List<CompressedFile> compressedFiles = rom.CompressedFiles;
-        Assert.That(compressedFiles, Has.Count.EqualTo(5));
+        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
+
+        var rom = N64GsRom.Create(romFilePath, romFileBytes);
         var lzari = new N64GsLzariEncoder();
 
-        u8[] actualCompressed = compressedFiles[0].CompressedBytes;
-        u8[] expectedCompressed = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/shell.bin");
-        Assert.That(actualCompressed, Is.EqualTo(expectedCompressed));
+        List<CompressedFile> compressedFiles = rom.CompressedFiles;
 
-        u8[] actualUncompressed = lzari.Decode(actualCompressed);
-        u8[] expectedUncompressed = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/shell.bin.dec.bin");
-        Assert.That(actualUncompressed, Is.EqualTo(expectedUncompressed));
+        Assert.That(compressedFiles, Has.Count.EqualTo(5));
+
+        foreach (CompressedFile file in compressedFiles)
+        {
+            string expectedCompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}";
+            string expectedUncompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}.dec.bin";
+            if (!File.Exists(expectedCompressedFilePath) || !File.Exists(expectedUncompressedFilePath))
+            {
+                continue;
+            }
+
+            // Test that the compressed input files are spliced correctly before
+            // decompressing.
+            u8[] actualCompressed = file.CompressedBytes;
+            u8[] expectedCompressed = File.ReadAllBytes(expectedCompressedFilePath);
+            Assert.That(actualCompressed, Is.EqualTo(expectedCompressed));
+
+            // Verify that decompression works correctly.
+            u8[] actualUncompressed = lzari.Decode(actualCompressed);
+            u8[] expectedUncompressed = File.ReadAllBytes(expectedUncompressedFilePath);
+            Assert.That(actualUncompressed, Is.EqualTo(expectedUncompressed));
+        }
     }
 }

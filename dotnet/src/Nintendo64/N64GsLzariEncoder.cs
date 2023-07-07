@@ -127,6 +127,10 @@ public class N64GsLzariEncoder
     int GetBit() {
         mask >>= 1;
         if (mask == 0) {
+            if (in_cursor >= infile.Length)
+            {
+                return 0;
+            }
             buffer = infile[in_cursor++];
             mask = 0x80;
         }
