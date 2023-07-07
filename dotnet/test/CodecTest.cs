@@ -1,7 +1,19 @@
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
+using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.Test;
+
+// ReSharper disable BuiltInTypeReferenceStyle
+using u8 = Byte;
+using s8 = SByte;
+using s16 = Int16;
+using u16 = UInt16;
+using s32 = Int32;
+using u32 = UInt32;
+using s64 = Int64;
+using u64 = UInt64;
+using f64 = Double;
 
 [TestFixture]
 public class CodecTest
@@ -241,5 +253,23 @@ public class CodecTest
             Assert.That(parsedFile.GbcSmxData.Messages[0].IsoDate, Is.EqualTo("2010-02-09T00:00:00"));
             Assert.That(parsedFile.GbcSmxData.Messages[0].Message.Value, Is.EqualTo("yo"));
         });
+    }
+
+    [Test]
+    public void Test_N64GsRom_Lzari()
+    {
+        string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
+        var rom = N64GsRom.Create(romFilePath, File.ReadAllBytes(romFilePath));
+        List<CompressedFile> compressedFiles = rom.CompressedFiles;
+        Assert.That(compressedFiles, Has.Count.EqualTo(5));
+        var lzari = new N64GsLzariEncoder();
+
+        u8[] actualCompressed = compressedFiles[0].CompressedBytes;
+        u8[] expectedCompressed = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/shell.bin");
+        Assert.That(actualCompressed, Is.EqualTo(expectedCompressed));
+
+        u8[] actualUncompressed = lzari.Decode(actualCompressed);
+        u8[] expectedUncompressed = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/shell.bin.dec.bin");
+        Assert.That(actualUncompressed, Is.EqualTo(expectedUncompressed));
     }
 }

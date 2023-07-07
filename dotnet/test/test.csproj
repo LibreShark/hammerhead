@@ -346,6 +346,46 @@
       <Content Include="TestData\RomFiles\N64\gspro-3.10-19990609-clean.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\Cheats.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\Cheats.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

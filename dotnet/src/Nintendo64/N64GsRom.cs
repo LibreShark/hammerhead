@@ -68,6 +68,15 @@ public sealed class N64GsRom : AbstractCodec
     private const u32 HeaderIdAddr       = 0x00000020;
     private const u32 BuildTimestampAddr = 0x00000030;
 
+    private const u32 ShellBinStrAddr   = 0x39C0; // shell.bin
+    private const u32 TrainerBinStrAddr = 0x39CC; // trainer.bin
+    private const u32 GsLogo3PalStrAddr = 0x39D8; // gslogo3.pal (US), arlogo3.pal (EU)
+    private const u32 GsLogo3BinStrAddr = 0x39E4; // gslogo3.bin (US), arlogo3.pal (EU)
+    private const u32 Tile1TgStrAddr    = 0x39F0; // tile1.tg~
+
+    // TODO(CheatoBaggins): Make this private
+    public List<CompressedFile> CompressedFiles = new List<CompressedFile>();
+
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
     private N64Data Data => Parsed.N64Data;
@@ -129,6 +138,25 @@ public sealed class N64GsRom : AbstractCodec
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
+
+        if (Support.IsFirmwareCompressed)
+        {
+            // u8[] fsBlob = Buffer[0x3B20..0x2F000];
+            Scribe.Seek(0x3B20);
+            while (Scribe.Position < 0x2F000 && !Scribe.IsPadding())
+            {
+                u32 structLen = Scribe.ReadU32();
+
+                // Account for the length (4 byte u32) and name (12 byte string).
+                u32 dataLen = structLen - 0x10;
+
+                string fileName = Scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
+                u8[] compressedBytes = Scribe.ReadBytes(dataLen);
+
+                var compressedFile = new CompressedFile(structLen, fileName, compressedBytes);
+                CompressedFiles.Add(compressedFile);
+            }
+        }
     }
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
