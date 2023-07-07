@@ -413,9 +413,9 @@ public sealed class GbcSharkMxRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("Value"))
             ;
 
-        table.AddRow("Reg code, copy #1", Data.RegCode1.Value);
-        table.AddRow("Reg code, copy #2", Data.RegCode2.Value);
-        table.AddRow("Secret PIN", Data.SecretPin.Value);
+        table.AddRow("Reg code, copy #1", Data.RegCode1.Value.EscapeMarkup());
+        table.AddRow("Reg code, copy #2", Data.RegCode2.Value.EscapeMarkup());
+        table.AddRow("Secret PIN", Data.SecretPin.Value.EscapeMarkup());
 
         printer.PrintTable(table);
     }
@@ -447,13 +447,13 @@ public sealed class GbcSharkMxRom : AbstractCodec
             }
 
             table.AddRow(
-                entryNumber,
-                personName,
-                emailAddress,
-                contact.UnknownField1.Value,
-                contact.UnknownField2.Value,
-                contact.PhoneNumber.Value,
-                contact.StreetAddress.Value
+                entryNumber.EscapeMarkup(),
+                personName.EscapeMarkup(),
+                emailAddress.EscapeMarkup(),
+                contact.UnknownField1.Value.EscapeMarkup(),
+                contact.UnknownField2.Value.EscapeMarkup(),
+                contact.PhoneNumber.Value.EscapeMarkup(),
+                contact.StreetAddress.Value.EscapeMarkup()
             );
         }
 
