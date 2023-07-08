@@ -42,9 +42,12 @@ public partial class N64GsVersion
         IsKnown = Brand != BrandId.UnknownBrand;
     }
 
-    public static N64GsVersion? From(string raw)
+    public static N64GsVersion? From(string raw, RomString? mainMenuTitle)
     {
-        return KnownVersion(raw) ?? UnknownVersion(raw);
+        N64GsVersion? version = KnownVersion(raw) ??
+                                UnknownVersion(raw, mainMenuTitle);
+        version?.SetMainMenuTitle(mainMenuTitle?.Value);
+        return version;
     }
 
     private static N64GsVersion Of(string raw, double number, string? disambiguator, DateTime buildTimestamp)
@@ -61,7 +64,7 @@ public partial class N64GsVersion
     private static N64GsVersion? KnownVersion(string raw)
     {
         // TODO: Find a v2.20 ROM and add its build timestamp here
-        return raw.Trim() switch
+        N64GsVersion? version = raw.Trim() switch
         {
             // Action Replay
             "14:56 Apr 15 98" => Of(raw, 1.11, null,       1998, 04, 15, 14, 56, 00, BrandId.ActionReplay, ENGLISH_UK),
@@ -84,7 +87,7 @@ public partial class N64GsVersion
             "13:57 Aug 25 98" => Of(raw, 2.10, null,       1998, 08, 25, 13, 57, 00, BrandId.Gameshark, ENGLISH_US),
             "12:47 Dec 18 98" => Of(raw, 2.21, null,       1998, 12, 18, 12, 47, 00, BrandId.Gameshark, ENGLISH_US),
             // TODO: Confirm v2.5 build timestamp
-            "12:58 May 4"     => Of(raw, 2.50, null,       1999, 05, 04, 12, 58, 00, BrandId.Gameshark, ENGLISH_US),
+            "12:58 May 4"     => Of(raw, 2.50, null,       2000, 05, 04, 12, 58, 00, BrandId.Gameshark, ENGLISH_US),
             "15:05 Apr 1 99"  => Of(raw, 3.00, null,       1999, 04, 01, 15, 05, 00, BrandId.Gameshark, ENGLISH_US),
             "16:50 Jun 9 99"  => Of(raw, 3.10, null,       1999, 06, 09, 16, 50, 00, BrandId.Gameshark, ENGLISH_US),
             "18:45 Jun 22 99" => Of(raw, 3.20, null,       1999, 06, 22, 18, 45, 00, BrandId.Gameshark, ENGLISH_US),
@@ -103,12 +106,13 @@ public partial class N64GsVersion
             // Unknown
             _                 => null,
         };
+        return version;
     }
 
     [GeneratedRegex("(?<HH>\\d\\d):(?<mm>\\d\\d) (?<MMM>\\w\\w\\w) (?<dd>\\d\\d?)(?: (?<yy>\\d\\d)?)?")]
     private static partial Regex TimestampRegex();
 
-    private static N64GsVersion? UnknownVersion(string raw)
+    private static N64GsVersion? UnknownVersion(string raw, RomString? mainMenuTitle)
     {
         string trimmed = raw.Trim();
         var match = TimestampRegex().Match(trimmed);
@@ -123,17 +127,15 @@ public partial class N64GsVersion
         var MMM = match.Groups["MMM"].Value;
         var dd = match.Groups["dd"].Value;
 
-        // Equalizer vX.XX contains either a typo or corrupted data.
-        // TODO(CheatoBaggins): Dump more Equalizer ROMs for comparison
-        if (MMM == "J5l")
-        {
-            MMM = "Jul";
-        }
-
         // Versions 2.5, 3.21, and 3.3 omit the year from the end of the timestamp.
         // We specifically handle those cases above, but we're still missing dumps of v1.01, v1.02, and v2.03.
         // The missing dumps were likely made in 1997, so we default to that.
-        var yyyy = match.Groups["yy"].Success ? $"19{match.Groups["yy"].Value}" : "1997";
+        var yyyy =
+            match.Groups["yy"].Success
+                ? $"19{match.Groups["yy"].Value}"
+                : mainMenuTitle?.Value.Contains("LibreShark") ?? false
+                    ? "2023"
+                    : "2000";
 
         trimmed = $"{HH}:{mm} {MMM} {dd} {yyyy}";
         if (!Is(trimmed, "HH:mm MMM d yyyy", out var timestamp))
@@ -157,40 +159,49 @@ public partial class N64GsVersion
                $", built on {BuildTimestamp:yyyy-MM-dd HH:mm} ('{RawTimestamp}') - {Locale}";
     }
 
-    public N64GsVersion WithTitleVersionNumber(string? titleVersionStr)
+    private N64GsVersion SetMainMenuTitle(string? mainMenuTitle)
     {
-        RawTitleVersionNumber = titleVersionStr;
-        if (Brand == BrandId.UnknownBrand && titleVersionStr != null)
+        RawTitleVersionNumber = mainMenuTitle;
+
+        if (Brand != BrandId.UnknownBrand || mainMenuTitle == null)
         {
-            var match = Regex.Match(titleVersionStr, "(?:N64 )?(?<brand>.+) Version (?<vernum>[0-9.]+)");
-            if (match.Success)
+            return this;
+        }
+
+        var match = Regex.Match(mainMenuTitle, "(?:N64 )?(?<brand>.+) Version (?<vernum>[0-9.]+)");
+        if (match.Success)
+        {
+            string brand = match.Groups["brand"].Value;
+            string vernum = match.Groups["vernum"].Value;
+            Number = double.Parse(vernum);
+            switch (brand)
             {
-                string brand = match.Groups["brand"].Value;
-                string vernum = match.Groups["vernum"].Value;
-                Number = double.Parse(vernum);
-                switch (brand)
-                {
-                    case "GameShark":
-                    case "GameShark Pro":
-                        Brand = BrandId.Gameshark;
-                        Locale = ENGLISH_US;
-                        break;
-                    case "Action Replay":
-                    case "Action Replay Pro":
-                        Brand = BrandId.ActionReplay;
-                        Locale = ENGLISH_UK;
-                        break;
-                    case "Equalizer":
-                        Brand = BrandId.Equalizer;
-                        Locale = ENGLISH_UK;
-                        break;
-                    case "Game Buster":
-                        Brand = BrandId.GameBuster;
-                        Locale = GERMAN_GERMANY;
-                        break;
-                }
+                case "GameShark":
+                case "GameShark Pro":
+                    Brand = BrandId.Gameshark;
+                    Locale = ENGLISH_US;
+                    break;
+                case "Action Replay":
+                case "Action Replay Pro":
+                    Brand = BrandId.ActionReplay;
+                    Locale = ENGLISH_UK;
+                    break;
+                case "Equalizer":
+                    Brand = BrandId.Equalizer;
+                    Locale = ENGLISH_UK;
+                    break;
+                case "Game Buster":
+                    Brand = BrandId.GameBuster;
+                    Locale = GERMAN_GERMANY;
+                    break;
+                case "LibreShark":
+                case "LibreShark Pro":
+                    Brand = BrandId.Libreshark;
+                    Locale = ENGLISH_US;
+                    break;
             }
         }
+
         return this;
     }
 }

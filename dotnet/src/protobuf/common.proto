@@ -284,6 +284,10 @@ enum BrandId {
   SHARK_MX      = 0x0D;
   XPLODER       = 0x0E;
   XPLORER       = 0x0F;
+
+  // Unofficial (hacked) ROMs
+  PERFECT_TRAIN = 0x10;
+  LIBRESHARK    = 0x11;
 }
 
 // Output format for printing to the terminal (stdout).

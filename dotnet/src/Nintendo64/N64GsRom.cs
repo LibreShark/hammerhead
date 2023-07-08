@@ -332,23 +332,31 @@ public sealed class N64GsRom : AbstractCodec
         return keyCodes;
     }
 
+    // TODO(CheatoBaggins): Move this method to the N64GsVersion class
     private N64GsVersion ReadVersion()
     {
-        // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
-        RomString? titleVersionNumberStr = ReadMainMenuTitle("N64 GameShark Version ") ??
-                                           ReadMainMenuTitle("GameShark Pro Version ") ??
-                                           ReadMainMenuTitle("N64 Action Replay Version ") ??
-                                           ReadMainMenuTitle("Action Replay Pro Version ") ??
-                                           ReadMainMenuTitle("N64 Equalizer Version ") ??
-                                           ReadMainMenuTitle("N64 Game Buster Version ");
+        RomString? titleVersionNumberStr =
+            // Original brands
+            ReadMainMenuTitle("N64 GameShark Version ") ??
+            ReadMainMenuTitle("GameShark Pro Version ") ??
+            ReadMainMenuTitle("N64 Action Replay Version ") ??
+            ReadMainMenuTitle("Action Replay Pro Version ") ??
+            ReadMainMenuTitle("N64 Equalizer Version ") ??
+            ReadMainMenuTitle("N64 Game Buster Version ") ??
+            // LibreShark
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            // Unknown
+            null;
 
         if (titleVersionNumberStr != null)
         {
             Metadata.Identifiers.Add(titleVersionNumberStr);
         }
 
-        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value)?
-            .WithTitleVersionNumber(titleVersionNumberStr?.Value);
+        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, titleVersionNumberStr);
         if (version == null)
         {
             throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
@@ -458,7 +466,13 @@ public sealed class N64GsRom : AbstractCodec
                      first4Bytes.SequenceEqual(new u8[] { 0x80, 0x37, 0x12, 0x00 });
         const string v1Or2Header = "(C) DATEL D&D ";
         const string v3ProHeader = "(C) MUSHROOM &";
-        return isN64 && (bytes.Contains(v1Or2Header) || bytes.Contains(v3ProHeader));
+        const string libreShark = "(C) Jhynjhiruu";
+        return isN64 && (
+            bytes.Contains(v1Or2Header) ||
+            bytes.Contains(v3ProHeader) ||
+            bytes.Contains(libreShark) ||
+            false
+        );
     }
 
     private static bool DetectEncrypted(u8[] bytes)
