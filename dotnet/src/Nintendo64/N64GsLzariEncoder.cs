@@ -62,36 +62,35 @@ public class N64GsLzariEncoder
 
     const int N_CHAR = 256 - THRESHOLD + F;
 
-    uint mask;            // 0x00000000
-    u32 mask_putbit;      // 0x00000000
-    int[] sym_to_char;    // 0x00000000
-    int[] char_to_sym;    // 0x00000000
-    int in_cursor;        // 0x00000000
-    uint buffer;          // 0x00000000
-    u32 buffer_putbit;    // 0x00000000
-    int match_length;     // 0x00000000
-    uint[] sym_cum;       // 0x00000000
-    uint[] position_cum;  // 0x00000000
-    int[] dad;            // 0x00000000
-    u8[] infile;          // 0x00000000
-    int out_cursor;       // 0x00000000
-    int uncompressed_len; // 0x00000000
-    u8[] text_buf;        // 0x00000000
-    uint[] sym_freq;      // 0x00000000
-    int[] lson;           // 0x00000000
+    uint mask = 0;                     // 0x00000000
+    u32 mask_putbit = 0;               // 0x00000000
+    int[] sym_to_char = new int[0];    // 0x00000000
+    int[] char_to_sym = new int[0];    // 0x00000000
+    int in_cursor = 0;                 // 0x00000000
+    uint buffer = 0;                   // 0x00000000
+    u32 buffer_putbit;                 // 0x00000000
+    int match_length = 0;              // 0x00000000
+    uint[] sym_cum = new uint[0];      // 0x00000000
+    uint[] position_cum = new uint[0]; // 0x00000000
+    int[] dad = new int[0];            // 0x00000000
+    u8[] infile = new u8[0];           // 0x00000000
+    int out_cursor = 0;                // 0x00000000
+    int uncompressed_len = 0;          // 0x00000000
+    u8[] text_buf = new u8[0];         // 0x00000000
+    uint[] sym_freq = new uint[0];     // 0x00000000
+    int[] lson = new int[0];           // 0x00000000
 
-    u8[] outfile;         // 0x00000000
-    int[] rson;           // 0x00000000
-    int outfile_len;      // 0x00000000
-    int match_position;   // 0x00000000
+    u8[] outfile = new u8[0];          // 0x00000000
+    int[] rson = new int[0];           // 0x00000000
+    int outfile_len = 0;               // 0x00000000
+    int match_position = 0;            // 0x00000000
 
-    ulong textsize;       // 0x00000000
-    ulong codesize;       // 0x00000000
-    ulong printcount;     // 0x00000000
-    u32 low;              // 0x00000000
-    u32 high;             // 0x00020000
-    s32 value;            // 0x00000000
-    s32 shifts;           // 0x00000000
+    ulong textsize = 0;                // 0x00000000
+    ulong codesize = 0;                // 0x00000000
+    u32 low = 0;                       // 0x00000000
+    u32 high = 0;                      // 0x00020000
+    s32 value = 0;                     // 0x00000000
+    s32 shifts = 0;                    // 0x00000000
 
     const string D_80042A20 = "WRITE ERROR";
 
@@ -477,7 +476,6 @@ public class N64GsLzariEncoder
         position_cum = new uint[N + 1];
         textsize = 0;
         codesize = 0;
-        printcount = 0;
         buffer_putbit = 0;
         mask_putbit = 0x80;
         buffer = 0;
@@ -583,7 +581,6 @@ public class N64GsLzariEncoder
         position_cum = new uint[N + 1];
         textsize = 0;
         codesize = 0;
-        printcount = 0;
         buffer_putbit = 0;
         mask_putbit = 0x80;
         buffer = 0;
