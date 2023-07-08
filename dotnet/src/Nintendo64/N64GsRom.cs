@@ -145,18 +145,32 @@ public sealed class N64GsRom : AbstractCodec
 
     private u8[] ReadShell()
     {
-        // TODO(CheatoBaggins): Figure out where the shell actually begins
-        // and ends in v2.4 and earlier.
         // The range below (1080..0x2E000) is imprecise and only useful for
         // searching for UI strings (e.g., the main menu title).
+        // TODO(CheatoBaggins): Figure out where the shell actually begins
+        // and ends in v2.4 and earlier.
         u8[] shell = Buffer[1080..0x2E000];
 
         if (Support.IsFirmwareCompressed)
         {
             var decoder = new N64GsLzariEncoder();
 
-            // u8[] fsBlob = Buffer[0x3B20..0x2F000];
-            Scribe.Seek(0x3B20);
+            // The first occurrence of "shell.bin" is used internally by the
+            // GS firmware to look up the location of the embedded file in the
+            // fsblob section.
+            //
+            // The second occurrence of "shell.bin" is found in the fsblob,
+            // and marks the start of the embedded file.
+            //
+            // Each file is stored as a struct containing the byte length of the
+            // entire struct (encoded as a big endian u32), the name of the file
+            // as a C string, and finally the actual (compressed) contents of
+            // the file.
+            int[] shellBinStrOffsets = Buffer.FindAll("shell.bin");
+            int shellFileStructOffset = shellBinStrOffsets[1] - 4;
+
+            Scribe.Seek(shellFileStructOffset);
+
             while (Scribe.Position < 0x2F000 && !Scribe.IsPadding())
             {
                 u32 structLen = Scribe.ReadU32();
