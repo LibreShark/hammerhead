@@ -28,6 +28,23 @@ public struct CompressedFile
     }
 }
 
+/// <summary>
+/// This is a C# port of
+/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c
+/// which was decompiled from an N64 GameShark Pro v3.30 (April) ROM.
+///
+/// The GameShark source code is in turn based on
+/// https://github.com/e-n-f/lzss/blob/f370a64a7ce5e4c54cfe122ca441671c3faccc24/LZARI.C
+/// 4/7/1989 by Haruhiko Okumura.
+///
+/// N64 GameShark v2.50 and above used this compression algorithm in their
+/// firmware to store several files more compactly:
+/// - shell.bin                          : Main UI
+/// - trainer.bin                        : Code Generator
+/// - gslogo3.pal (US), arlogo3.pal (EU) : Startup logo PALETTE
+/// - gslogo3.bin (US), arlogo3.bin (EU) : Startup logo IMAGE DATA
+/// - tile1.tg~                          : Background tiles, maybe?
+/// </summary>
 public class N64GsLzariEncoder
 {
     /// <summary>
