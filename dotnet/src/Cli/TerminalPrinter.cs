@@ -361,13 +361,21 @@ public class TerminalPrinter : ICliPrinter
 
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
-            table.AddRow(
-                KeyCell($"0x{id.Addr?.StartIndex:X8}"),
-                KeyCell($"0x{id.Addr?.EndIndex:X8}"),
-                KeyCell($"0x{id.Addr?.Length:X}"),
-                KeyCell($"{id.Addr?.Length}"),
-                id.Value.EscapeMarkup()
-            );
+            string str = id.Value.EscapeMarkup();
+            if (id.Addr == null)
+            {
+                table.AddRow("", "", "", "", str);
+            }
+            else
+            {
+                table.AddRow(
+                    KeyCell($"0x{id.Addr.StartIndex:X8}"),
+                    KeyCell($"0x{id.Addr.EndIndex:X8}"),
+                    KeyCell($"0x{id.Addr.Length:X}"),
+                    KeyCell($"{id.Addr.Length}"),
+                    str
+                );
+            }
         }
 
         AnsiConsole.Write(table);
