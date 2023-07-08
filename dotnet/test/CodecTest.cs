@@ -258,7 +258,7 @@ public class CodecTest
     [Test]
     public void Test_N64GsRom_Lzari()
     {
-        string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
+        const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
 
         var rom = N64GsRom.Create(romFilePath, romFileBytes);
@@ -288,6 +288,20 @@ public class CodecTest
             u8[] expectedUncompressed = File.ReadAllBytes(expectedUncompressedFilePath);
             Assert.That(actualUncompressed, Is.EqualTo(expectedUncompressed));
         }
+    }
+
+    [Test]
+    public void Test_N64GsRom_LibreShark()
+    {
+        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.02-20230708.bin";
+        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
+
+        var rom = N64GsRom.Create(romFilePath, romFileBytes);
+        Assert.Multiple(() =>
+        {
+            Assert.That(rom.Metadata.BrandId, Is.EqualTo(BrandId.Libreshark));
+            Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.00));
+        });
     }
 
     [Test]
