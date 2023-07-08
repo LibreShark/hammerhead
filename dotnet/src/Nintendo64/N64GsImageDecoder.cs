@@ -13,6 +13,53 @@ using f64 = Double;
 
 public class N64GsImageDecoder
 {
+    public Image<Rgba32> DecodeStartupTile(u8[] imageBytes)
+    {
+        var pixels = new List<Rgba32>();
+        for (int i = 0; i < imageBytes.Length;)
+        {
+            u8 b1 = imageBytes[i++];
+            u8 b2 = imageBytes[i++];
+
+            u16 rawRgba5551 = (u16)((b1 << 8) | b2);
+
+            u32 val1 = (u32)rawRgba5551 >> 7;
+            u32 val2 = (u32)rawRgba5551 & 0x7F;
+            u32 val3 = val2 << 9;
+            u32 val4 = (val1 | val3) >> 1;
+            u32 val5 = val4 & 0x7BDE;
+            u16 realRgba5551 = (u16)val5;
+
+            u8 r5 = (u8)((realRgba5551 >> 11) & 0x3E);
+            u8 g5 = (u8)((realRgba5551 >>  6) & 0x3E);
+            u8 b5 = (u8)((realRgba5551 >>  1) & 0x3E);
+            u8 a1 = (u8)((realRgba5551 >>  0) & 0x01);
+            u8 r8 = Rgb5ToRgb8(r5);
+            u8 g8 = Rgb5ToRgb8(g5);
+            u8 b8 = Rgb5ToRgb8(b5);
+            bool isTransparent = a1 == 0;
+            u8 a8 = (u8)(isTransparent ? 0xFF : 0);
+            pixels.Add(new Rgba32(r8, g8, b8, a8));
+        }
+        var image = new Image<Rgba32>(0x40, 0x30);
+        int pixelPos = 0;
+        for (int y = 0; y < 0x30; y++)
+        {
+            for (int x = 0; x < 0x40; x++)
+            {
+                // TODO(CheatoBaggins): Figure out why the number of pixels
+                // does not match the expected dimensions of the image,
+                // and remove this entire `if` statement.
+                if (pixelPos >= pixels.Count)
+                {
+                    return image;
+                }
+                image[x, y] = pixels[pixelPos++];
+            }
+        }
+        return image;
+    }
+
     public Image<Rgba32> DecodeStartupLogo(
         u8[] paletteBytes,
         u8[] imageBytes,
@@ -60,6 +107,7 @@ public class N64GsImageDecoder
     private static u8 Rgb5ToRgb8(u8 rgb5Channel)
     {
         // See
+        // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/
         // https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
         double rgb8Channel = (double)rgb5Channel * 255 / 31;
         return (u8)rgb8Channel;

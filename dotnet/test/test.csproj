@@ -395,6 +395,10 @@
       <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.02-20230708-cheato.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

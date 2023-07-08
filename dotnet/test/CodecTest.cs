@@ -306,7 +306,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_N64GsRom_ImageDecoder()
+    public void Test_N64GsRom_ReadStartupLogo()
     {
         var paletteBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.pal.dec.bin");
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.bin.dec.bin");
@@ -315,6 +315,18 @@ public class CodecTest
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
         u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
+        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+    }
+
+    [Test]
+    public void Test_N64GsRom_ReadStartupTile()
+    {
+        var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
+        var decoder = new N64GsImageDecoder();
+        using Image<Rgba32> image = decoder.DecodeStartupTile(imageBytes);
+        image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
+        u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");
+        u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
         Assert.That(actualBytes, Is.EqualTo(expectedBytes));
     }
 }
