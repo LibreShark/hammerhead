@@ -37,6 +37,7 @@ public class HammerheadCli
         cli.OnDecryptRom += (_, cmdParams) => _api.DecryptRom(cmdParams);
         cli.OnScrambleRom += (_, cmdParams) => _api.ScrambleRom(cmdParams);
         cli.OnUnscrambleRom += (_, cmdParams) => _api.UnscrambleRom(cmdParams);
+        cli.OnSplitRom += (_, cmdParams) => _api.SplitRom(cmdParams);
         cli.OnDumpCheats += (_, cmdParams) => _api.DumpCheats(cmdParams);
         cli.OnCopyCheats += (_, cmdParams) => _api.CopyCheats(cmdParams);
         return await cli.RootCommand.InvokeAsync(_args);

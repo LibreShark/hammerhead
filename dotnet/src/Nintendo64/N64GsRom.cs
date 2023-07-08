@@ -91,6 +91,7 @@ public sealed class N64GsRom : AbstractCodec
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
+        Support.SupportsFileSplitting = true;
         Support.SupportsFileEncryption = true;
 
         Support.HasCheats = true;

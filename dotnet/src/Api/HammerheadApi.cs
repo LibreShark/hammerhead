@@ -143,6 +143,18 @@ public class HammerheadApi
         );
     }
 
+    public void SplitRom(RomCmdParams romParams)
+    {
+        // TODO(CheatoBaggins): Create new CmdParams subclass for this
+        TransformOneRomFile(
+            "Splitting ROM file",
+            "split",
+            romParams,
+            t => t.Codec.SupportsFileSplitting(),
+            t => t.Codec.Split()
+        );
+    }
+
     public ICodec[] DumpCheats(DumpCheatsCmdParams dumpParams)
     {
         var outputCodecs = new List<ICodec>();
