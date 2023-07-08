@@ -103,7 +103,7 @@ public sealed class N64GsRom : AbstractCodec
         // - https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/tools/splat_ext/fsblob.py
 
         _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
-        _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);
+        _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(16, true);
 
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);

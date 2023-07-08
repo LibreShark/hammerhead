@@ -109,7 +109,7 @@ public partial class N64GsVersion
         return version;
     }
 
-    [GeneratedRegex("(?<HH>\\d\\d):(?<mm>\\d\\d) (?<MMM>\\w\\w\\w) (?<dd>\\d\\d?)(?: (?<yy>\\d\\d)?)?")]
+    [GeneratedRegex("(?<HH>\\d\\d):(?<mm>\\d\\d) (?<MMM>\\w\\w\\w) (?<dd>\\d\\d?)(?: (?<yy>\\d{2,4})?)?")]
     private static partial Regex TimestampRegex();
 
     private static N64GsVersion? UnknownVersion(string raw, RomString? mainMenuTitle)
@@ -132,10 +132,10 @@ public partial class N64GsVersion
         // The missing dumps were likely made in 1997, so we default to that.
         var yyyy =
             match.Groups["yy"].Success
-                ? $"19{match.Groups["yy"].Value}"
-                : mainMenuTitle?.Value.Contains("LibreShark") ?? false
-                    ? "2023"
-                    : "2000";
+                ? match.Groups["yy"].Value.Length == 2
+                    ? $"19{match.Groups["yy"].Value}"
+                    : match.Groups["yy"].Value
+                : "2000";
 
         trimmed = $"{HH}:{mm} {MMM} {dd} {yyyy}";
         if (!Is(trimmed, "HH:mm MMM d yyyy", out var timestamp))
