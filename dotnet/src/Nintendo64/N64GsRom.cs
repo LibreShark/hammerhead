@@ -145,6 +145,12 @@ public sealed class N64GsRom : AbstractCodec
 
     private u8[] ReadShell()
     {
+        // TODO(CheatoBaggins): Figure out where the shell actually begins
+        // and ends in v2.4 and earlier.
+        // The range below (1080..0x2E000) is imprecise and only useful for
+        // searching for UI strings (e.g., the main menu title).
+        u8[] shell = Buffer[1080..0x2E000];
+
         if (Support.IsFirmwareCompressed)
         {
             var decoder = new N64GsLzariEncoder();
@@ -165,16 +171,12 @@ public sealed class N64GsRom : AbstractCodec
                 CompressedFiles.Add(compressedFile);
                 if (compressedFile.FileName == "shell.bin")
                 {
-                    return decoder.Decode(compressedFile.CompressedBytes);
+                    shell = decoder.Decode(compressedFile.CompressedBytes);
                 }
             }
         }
 
-        // TODO(CheatoBaggins): Figure out where the shell actually begins
-        // and ends in v2.4 and earlier.
-        // The range below (1080..0x2E000) is imprecise and only useful for
-        // searching for UI strings (e.g., the main menu title).
-        return Buffer[1080..0x2E000];
+        return shell;
     }
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
