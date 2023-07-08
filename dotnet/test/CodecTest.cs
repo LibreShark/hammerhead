@@ -310,8 +310,8 @@ public class CodecTest
     {
         var paletteBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.pal.dec.bin");
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.bin.dec.bin");
-        var decoder = new N64GsLogoDecoder();
-        using Image<Rgba32> image = decoder.Decode(paletteBytes, imageBytes, true, new Rgb24(0, 0, 0));
+        var decoder = new N64GsImageDecoder();
+        using Image<Rgba32> image = decoder.DecodeStartupLogo(paletteBytes, imageBytes, true, new Rgb24(0, 0, 0));
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
         u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");

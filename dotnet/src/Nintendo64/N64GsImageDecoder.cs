@@ -11,24 +11,22 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-/// <summary>
-///
-/// </summary>
-public class N64GsLogoDecoder
+public class N64GsImageDecoder
 {
-    private const int POS_X = 24;
-    private const int POS_Y = 40;
-
-    private const int WIDTH = 320;
-    private const int HEIGHT = 224;
-
-    public Image<Rgba32> Decode(
+    public Image<Rgba32> DecodeStartupLogo(
         u8[] paletteBytes,
         u8[] imageBytes,
         bool transparency = false,
         Rgb24 transparentColor = new Rgb24()
     )
     {
+        // ReSharper disable InconsistentNaming
+        const int POS_X = 24;
+        const int POS_Y = 40;
+        const int WIDTH = 320;
+        const int HEIGHT = 224;
+        // ReSharper enable InconsistentNaming
+
         var indexedColors = new List<Rgba32>();
         for (int i = 0; i < paletteBytes.Length; )
         {
@@ -55,14 +53,15 @@ public class N64GsLogoDecoder
     }
 
     /// <summary>
-    /// See
-    /// https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
+    /// Convert a 5-bit RGB channel value to 8-bit.
     /// </summary>
     /// <param name="rgb5Channel"></param>
     /// <returns></returns>
     private static u8 Rgb5ToRgb8(u8 rgb5Channel)
     {
-        double x = (double)rgb5Channel * 255 / 31;
-        return (u8)x;
+        // See
+        // https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
+        double rgb8Channel = (double)rgb5Channel * 255 / 31;
+        return (u8)rgb8Channel;
     }
 }
