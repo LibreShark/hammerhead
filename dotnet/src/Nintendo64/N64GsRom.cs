@@ -74,12 +74,14 @@ public sealed class N64GsRom : AbstractCodec
     private const u32 GsLogo3BinStrAddr = 0x39E4; // gslogo3.bin (US), arlogo3.pal (EU)
     private const u32 Tile1TgStrAddr    = 0x39F0; // tile1.tg~
 
-    // TODO(CheatoBaggins): Make this private
-    public List<CompressedFile> CompressedFiles = new List<CompressedFile>();
-
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
     private N64Data Data => Parsed.N64Data;
+
+    // TODO(CheatoBaggins): Make this private
+    public List<CompressedFile> CompressedFiles = new List<CompressedFile>();
+
+    private readonly u8[] _shellBytes;
 
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
@@ -105,9 +107,12 @@ public sealed class N64GsRom : AbstractCodec
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);
 
-        _version = ReadVersion();
+        Support.SupportsFirmwareCompression = DetectCompressed(rawInput);
+        Support.IsFirmwareCompressed        = DetectCompressed(rawInput);
+        Support.IsFileEncrypted             = DetectEncrypted(rawInput);
 
-        Support.SupportsFirmwareCompression = _version.Number >= 2.5;
+        _shellBytes = ReadShell();
+        _version = ReadVersion();
 
         Metadata.BrandId = _version.Brand;
         Metadata.BuildDateRaw = _rawTimestamp;
@@ -132,22 +137,25 @@ public sealed class N64GsRom : AbstractCodec
         Data.KeyCodes.AddRange(ReadKeyCodes());
         _activeKeyCode = ReadActiveKeyCode();
 
-        Support.IsFileEncrypted      = DetectEncrypted(rawInput);
-        Support.IsFirmwareCompressed = DetectCompressed(rawInput);
         Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
+    }
 
+    private u8[] ReadShell()
+    {
         if (Support.IsFirmwareCompressed)
         {
+            var decoder = new N64GsLzariEncoder();
+
             // u8[] fsBlob = Buffer[0x3B20..0x2F000];
             Scribe.Seek(0x3B20);
             while (Scribe.Position < 0x2F000 && !Scribe.IsPadding())
             {
                 u32 structLen = Scribe.ReadU32();
 
-                // Account for the length (4 byte u32) and name (12 byte string).
+                // Account for the length (4-byte u32) and name (12-byte string) fields.
                 u32 dataLen = structLen - 0x10;
 
                 string fileName = Scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
@@ -155,8 +163,18 @@ public sealed class N64GsRom : AbstractCodec
 
                 var compressedFile = new CompressedFile(structLen, fileName, compressedBytes);
                 CompressedFiles.Add(compressedFile);
+                if (compressedFile.FileName == "shell.bin")
+                {
+                    return decoder.Decode(compressedFile.CompressedBytes);
+                }
             }
         }
+
+        // TODO(CheatoBaggins): Figure out where the shell actually begins
+        // and ends in v2.4 and earlier.
+        // The range below (1080..0x2E000) is imprecise and only useful for
+        // searching for UI strings (e.g., the main menu title).
+        return Buffer[1080..0x2E000];
     }
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
@@ -317,12 +335,12 @@ public sealed class N64GsRom : AbstractCodec
     private N64GsVersion ReadVersion()
     {
         // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
-        RomString? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
-                                           ReadTitleVersion("GameShark Pro Version ") ??
-                                           ReadTitleVersion("N64 Action Replay Version ") ??
-                                           ReadTitleVersion("Action Replay Pro Version ") ??
-                                           ReadTitleVersion("N64 Equalizer Version ") ??
-                                           ReadTitleVersion("N64 Game Buster Version ");
+        RomString? titleVersionNumberStr = ReadMainMenuTitle("N64 GameShark Version ") ??
+                                           ReadMainMenuTitle("GameShark Pro Version ") ??
+                                           ReadMainMenuTitle("N64 Action Replay Version ") ??
+                                           ReadMainMenuTitle("Action Replay Pro Version ") ??
+                                           ReadMainMenuTitle("N64 Equalizer Version ") ??
+                                           ReadMainMenuTitle("N64 Game Buster Version ");
 
         if (titleVersionNumberStr != null)
         {
@@ -339,20 +357,32 @@ public sealed class N64GsRom : AbstractCodec
         return version;
     }
 
-    private RomString? ReadTitleVersion(string needle)
+    private RomString? ReadMainMenuTitle(string needle)
     {
-        u8[] haystack = Buffer[..0x30000];
-        s32 titleVersionPos = haystack.Find(needle);
-        bool isCompressed = titleVersionPos == -1;
-        if (isCompressed)
+        s32 titleLength = needle.Length + 5;
+
+        if (IsFirmwareCompressed())
         {
-            return null;
+            s32 titleVersionPos = _shellBytes.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
+
+            u8[] titleBytes = _shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
+            return titleBytes.ToAsciiString().ToRomString();
         }
+        else
+        {
+            u8[] haystack = Buffer[..0x30000];
+            s32 titleVersionPos = haystack.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
 
-        // Uncomment to return ONLY the number (e.g., "2.21")
-        // titleVersionPos += needle.Length;
-
-        return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
+            return Scribe.Seek(titleVersionPos).ReadPrintableCString((u32)titleLength, true).Trim();
+        }
     }
 
     private void WriteName(string str)
@@ -440,7 +470,7 @@ public sealed class N64GsRom : AbstractCodec
     {
         // The main menu title is stored in the firmware section of the ROM,
         // so the title will not be found in plain text in compressed files.
-        return !bytes.Contains(" Version ");
+        return bytes.Contains("shell.bin");
     }
 
     public override u8[] Encrypt()
