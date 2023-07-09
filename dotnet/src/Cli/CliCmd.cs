@@ -201,8 +201,8 @@ public class CliCmd
         "and write each section to a separate output file.")
     {
         OverwriteOption,
-        InputFileArgument,
-        OutputFileArgument,
+        InputFilesArgument,
+        OutputFileOption,
     };
 
     private readonly Command _combineRomCmd = new Command(

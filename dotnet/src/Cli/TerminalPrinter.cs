@@ -85,6 +85,11 @@ public class TerminalPrinter : ICliPrinter
 
     #region Printing text
 
+    public void PrintLine(string message)
+    {
+        Console.WriteLine(message);
+    }
+
     public void PrintHint(string message)
     {
         if (IsColor)

@@ -11,6 +11,7 @@ public interface ICliPrinter
     bool IsMarkdown { get; }
     bool IsPlain { get; }
     Table BuildTable(TableBorder? colorBorderStyle = null);
+    void PrintLine(string message);
     void PrintHint(string message);
     void PrintWarning(string message);
     void PrintError(string message);

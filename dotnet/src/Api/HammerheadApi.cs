@@ -149,11 +149,40 @@ public class HammerheadApi
         foreach (FileInfo inputFile in romParams.InputFiles!)
         {
             ICodec codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-            foreach (EmbeddedFile file in codec.EmbeddedFiles)
+            _printer = new TerminalPrinter(codec, romParams.PrintFormatId);
+            foreach (EmbeddedFile embeddedFile in codec.EmbeddedFiles)
             {
-                ;
+                FileInfo outputFile = GetEmbeddedOutputFilePath(inputFile, romParams.OutputDir, embeddedFile.FileName);
+                _printer.PrintLine($"Extracting embedded file to: {outputFile.FullName}");
+                using FileStream outputFileStream = outputFile.OpenWrite();
+                outputFileStream.Write(embeddedFile.UncompressedBytes);
+            }
+            foreach (EmbeddedImage embeddedImage in codec.EmbeddedImages)
+            {
+                string embeddedFileName = Path.ChangeExtension(embeddedImage.FileName, ".png");
+                FileInfo outputFile = GetEmbeddedOutputFilePath(inputFile, romParams.OutputDir, embeddedFileName);
+                _printer.PrintLine($"Extracting embedded file to: {outputFile.FullName}");
+                using FileStream outputFileStream = outputFile.OpenWrite();
+                embeddedImage.Image.SaveAsPng(outputFileStream);
             }
         }
+    }
+
+    private static FileInfo GetEmbeddedOutputFilePath(
+        FileInfo inputFile, DirectoryInfo? outputDir, string embeddedFileName)
+    {
+        string outDirName = Path.GetFileNameWithoutExtension(inputFile.Name);
+        FileInfo fakeEmbeddedFile = new FileInfo(Path.Join(inputFile.DirectoryName, outDirName, embeddedFileName));
+        FileInfo outputFile = GetOutputFilePath(fakeEmbeddedFile, outputDir, embeddedFileName);
+        string originalOutputFilePath = outputFile.FullName;
+        string ext = outputFile.Extension;
+        int i = 1;
+        while (outputFile.Exists)
+        {
+            outputFile = new FileInfo(
+                Path.ChangeExtension(originalOutputFilePath, $"{i++}{ext}"));
+        }
+        return outputFile;
     }
 
     public ICodec[] DumpCheats(DumpCheatsCmdParams dumpParams)
@@ -297,6 +326,7 @@ public class HammerheadApi
 
         try
         {
+            Directory.CreateDirectory(outFileDirPath);
             string testFilePath = Path.Join(outFileDirPath, Path.GetRandomFileName());
             File.WriteAllText(testFilePath, "test");
             File.Delete(testFilePath);
