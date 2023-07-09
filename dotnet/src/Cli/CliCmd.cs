@@ -195,23 +195,13 @@ public class CliCmd
         OutputFileArgument,
     };
 
-    private readonly Command _splitRomCmd = new Command(
-        "split",
-        "Split a ROM file into sections (e.g., header, firmware, key codes, user prefs, and cheat list) " +
-        "and write each section to a separate output file.")
+    private readonly Command _extractRomCmd = new Command(
+        "extract",
+        "Extract embedded files from the given ROM(s).")
     {
         OverwriteOption,
         InputFilesArgument,
         OutputFileOption,
-    };
-
-    private readonly Command _combineRomCmd = new Command(
-        "combine",
-        "Combine ROM sections into a single ROM file.")
-    {
-        OutputFileOption,
-        OverwriteOption,
-        InputFilesArgument,
     };
 
     #endregion
@@ -253,8 +243,7 @@ public class CliCmd
     public event EventHandler<RomCmdParams>? OnDecryptRom;
     public event EventHandler<RomCmdParams>? OnScrambleRom;
     public event EventHandler<RomCmdParams>? OnUnscrambleRom;
-    public event EventHandler<SplitRomCmdParams>? OnSplitRom;
-    public event EventHandler<RomCmdParams>? OnCombineRom;
+    public event EventHandler<ExtractRomCmdParams>? OnExtractRom;
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
     public event EventHandler<RomCmdParams>? OnCopyCheats;
 
@@ -278,8 +267,7 @@ public class CliCmd
         _romCmd.AddCommand(_decryptRomCmd);
         _romCmd.AddCommand(_scrambleRomCmd);
         _romCmd.AddCommand(_unscrambleRomCmd);
-        _romCmd.AddCommand(_splitRomCmd);
-        _romCmd.AddCommand(_combineRomCmd);
+        _romCmd.AddCommand(_extractRomCmd);
 
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
@@ -289,8 +277,7 @@ public class CliCmd
         _decryptRomCmd.Handler = new CliCmdHandler(DecryptRom);
         _scrambleRomCmd.Handler = new CliCmdHandler(ScrambleRom);
         _unscrambleRomCmd.Handler = new CliCmdHandler(UnscrambleRom);
-        _splitRomCmd.Handler = new CliCmdHandler(SplitRom);
-        _combineRomCmd.Handler = new CliCmdHandler(CombineRom);
+        _extractRomCmd.Handler = new CliCmdHandler(ExtractRom);
         _dumpCheatsCmd.Handler = new CliCmdHandler(DumpCheats);
         _copyCheatsCmd.Handler = new CliCmdHandler(CopyCheats);
     }
@@ -395,9 +382,9 @@ public class CliCmd
         OnUnscrambleRom?.Invoke(this, cmdParams);
     }
 
-    private void SplitRom(InvocationContext ctx)
+    private void ExtractRom(InvocationContext ctx)
     {
-        var cmdParams = new SplitRomCmdParams()
+        var cmdParams = new ExtractRomCmdParams()
         {
             // Global options
             PrintFormatId = GetPrintFormatId(ctx),
@@ -410,25 +397,7 @@ public class CliCmd
             OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
-        OnSplitRom?.Invoke(this, cmdParams);
-    }
-
-    private void CombineRom(InvocationContext ctx)
-    {
-        var cmdParams = new RomCmdParams()
-        {
-            // Global options
-            PrintFormatId = GetPrintFormatId(ctx),
-            HideBanner = HideBannerOption.GetValue(ctx),
-            Clean = CleanOption.GetValue(ctx),
-
-            // Command-specific arguments
-            InputFile = InputFileArgument.GetValue(ctx)!,
-            OutputFile = OutputFileOption.GetValue(ctx),
-            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-        };
-        Always?.Invoke(this, cmdParams);
-        OnCombineRom?.Invoke(this, cmdParams);
+        OnExtractRom?.Invoke(this, cmdParams);
     }
 
     #endregion

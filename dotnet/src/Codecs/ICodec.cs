@@ -43,7 +43,7 @@ public interface ICodec
     void PrintCustomBody(ICliPrinter printer, InfoCmdParams @params);
     void AddFileProps(Table table);
     bool SupportsCheats();
-    bool SupportsFileSplitting();
+    bool SupportsFileExtraction();
     bool SupportsFileEncryption();
     bool SupportsFileScrambling();
     bool SupportsFirmwareCompression();
@@ -56,8 +56,6 @@ public interface ICodec
     u8[] Decrypt();
     u8[] Scramble();
     u8[] Unscramble();
-    // TODO(CheatoBaggins): What should this return?
-    u8[] Split();
     ICodec WriteChangesToBuffer();
     bool IsValidFormat();
     bool IsInvalidFormat();

@@ -188,9 +188,9 @@ public abstract class AbstractCodec : ICodec
         return Metadata.CodecFeatureSupport.SupportsCheats;
     }
 
-    public bool SupportsFileSplitting()
+    public bool SupportsFileExtraction()
     {
-        return Metadata.CodecFeatureSupport.SupportsFileSplitting;
+        return Metadata.CodecFeatureSupport.SupportsFileExtraction;
     }
 
     public bool SupportsFileEncryption()
@@ -250,12 +250,6 @@ public abstract class AbstractCodec : ICodec
 
     public virtual u8[] Unscramble()
     {
-        return Buffer;
-    }
-
-    public virtual u8[] Split()
-    {
-        // TODO(CheatoBaggins): What should this return?
         return Buffer;
     }
 

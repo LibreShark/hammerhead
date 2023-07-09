@@ -55,6 +55,8 @@ public class N64GsImageDecoder
         }
         var image = new Image<Rgba32>(0x40, 0x30);
         int pixelPos = 0;
+        // TODO(CheatoBaggins): Determine dimensions automatically?
+        // Non-tile images like `bits.tg~` and `menuf.tg~` have different sizes.
         for (int y = 0; y < 0x30; y++)
         {
             for (int x = 0; x < 0x40; x++)

@@ -29,7 +29,7 @@ public class RomCmdParams : CmdParams
     public CodecId OutputFormat { get; init; }
 }
 
-public class SplitRomCmdParams : CmdParams
+public class ExtractRomCmdParams : CmdParams
 {
     public FileInfo[]? InputFiles { get; init; }
     public DirectoryInfo? OutputDir { get; set; }

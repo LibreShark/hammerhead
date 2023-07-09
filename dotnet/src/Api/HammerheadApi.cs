@@ -144,7 +144,7 @@ public class HammerheadApi
         );
     }
 
-    public void SplitRom(SplitRomCmdParams romParams)
+    public void ExtractRom(ExtractRomCmdParams romParams)
     {
         foreach (FileInfo inputFile in romParams.InputFiles!)
         {

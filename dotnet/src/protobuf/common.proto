@@ -114,7 +114,7 @@ message CodecFeatureSupport {
   bool supports_cheats = 1;
   bool supports_firmware = 2;
   bool supports_user_prefs = 3;
-  bool supports_file_splitting = 4;
+  bool supports_file_extraction = 4;
   bool supports_file_encryption = 5;
   bool supports_file_scrambling = 6;
   bool supports_firmware_compression = 7;
