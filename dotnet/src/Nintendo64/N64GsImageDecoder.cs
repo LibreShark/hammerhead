@@ -13,7 +13,12 @@ using f64 = Double;
 
 public class N64GsImageDecoder
 {
-    public Image<Rgba32> DecodeStartupTile(u8[] imageBytes)
+    /// <summary>
+    /// Decodes a background tile image.
+    /// </summary>
+    /// <param name="imageBytes">Decompressed <c>tile1.tg~</c> bytes</param>
+    /// <returns>Decoded tile image</returns>
+    public Image<Rgba32> DecodeBackgroundTile(u8[] imageBytes)
     {
         var pixels = new List<Rgba32>();
         for (int i = 0; i < imageBytes.Length;)
@@ -23,11 +28,18 @@ public class N64GsImageDecoder
 
             u16 rawRgba5551 = (u16)((b1 << 8) | b2);
 
+            // 16-bit RGBA colors are are stored in an encoded form in GameShark
+            // ROMs for some reason.
+            // The series of transformations below is exactly what the real
+            // GameShark firmware does when it reads images from the fsblob.
             u32 val1 = (u32)rawRgba5551 >> 7;
             u32 val2 = (u32)rawRgba5551 & 0x7F;
             u32 val3 = val2 << 9;
             u32 val4 = (val1 | val3) >> 1;
             u32 val5 = val4 & 0x7BDE;
+
+            // 16-bit RGBA color. See
+            // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/#16-bit
             u16 realRgba5551 = (u16)val5;
 
             u8 r5 = (u8)((realRgba5551 >> 11) & 0x3E);
@@ -60,6 +72,14 @@ public class N64GsImageDecoder
         return image;
     }
 
+    /// <summary>
+    /// Decodes the startup logo.
+    /// </summary>
+    /// <param name="paletteBytes">Decompressed <c>gslogo3.pal</c> bytes</param>
+    /// <param name="imageBytes">Decompressed <c>gslogo3.bin</c> bytes</param>
+    /// <param name="transparency">Optionally enable transparent backgrounds</param>
+    /// <param name="transparentColor">Color that will be replaced by a transparent pixel</param>
+    /// <returns>Decoded logo image</returns>
     public Image<Rgba32> DecodeStartupLogo(
         u8[] paletteBytes,
         u8[] imageBytes,
@@ -67,6 +87,8 @@ public class N64GsImageDecoder
         Rgb24 transparentColor = new Rgb24()
     )
     {
+        // TODO(CheatoBaggins): Confirm if other ROM brands (AR/EQ/GB)
+        // use the same dimensions.
         // ReSharper disable InconsistentNaming
         const int POS_X = 24;
         const int POS_Y = 40;
@@ -100,16 +122,16 @@ public class N64GsImageDecoder
     }
 
     /// <summary>
-    /// Convert a 5-bit RGB channel value to 8-bit.
+    /// Converts a 5-bit RGB channel value to the equivalent 8-bit value.
     /// </summary>
-    /// <param name="rgb5Channel"></param>
-    /// <returns></returns>
-    private static u8 Rgb5ToRgb8(u8 rgb5Channel)
+    /// <param name="fiveBitChannel">5-bit color value (RGB5, 0-31)</param>
+    /// <returns>Equivalent 8-bit color value (RGB8, 0-255)</returns>
+    private static u8 Rgb5ToRgb8(u8 fiveBitChannel)
     {
         // See
         // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/
         // https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
-        double rgb8Channel = (double)rgb5Channel * 255 / 31;
-        return (u8)rgb8Channel;
+        double eightBitChannel = (double)fiveBitChannel * 255 / 31;
+        return (u8)eightBitChannel;
     }
 }

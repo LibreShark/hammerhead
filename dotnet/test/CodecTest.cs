@@ -323,7 +323,7 @@ public class CodecTest
     {
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
         var decoder = new N64GsImageDecoder();
-        using Image<Rgba32> image = decoder.DecodeStartupTile(imageBytes);
+        using Image<Rgba32> image = decoder.DecodeBackgroundTile(imageBytes);
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");
         u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
