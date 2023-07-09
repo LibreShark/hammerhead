@@ -72,11 +72,30 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ### Extract embedded files from ROMs
 
-Decompress all embedded files inside a ROM and write them to disk:
+Decompress all embedded files from N64 GameShark, Action Replay, Equalizer, and Game Buster ROMs:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
-    info *.bin
+    rom extract n64-*.bin
+
+bits.png
+bits.tg~
+gslogo2.bin
+gslogo2.pal
+gslogo2.png
+menuf.png
+menuf.tg~
+shell.bin
+tile1.1.png
+tile1.1.tg~
+tile1.png
+tile1.tg~
+tile3.png
+tile3.tg~
+tile4.png
+tile4.tg~
+
+...
 ```
 
 ## Supported file formats
