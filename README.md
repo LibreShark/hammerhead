@@ -8,6 +8,17 @@ Written in cross-platform C# and .NET.
 
 ## Usage examples
 
+### View parsed ROM data
+
+View all information extracted by Hammerhead from a directory of ROM and cheat text files:
+
+```bash
+dotnet run --project dotnet/src/src.csproj -- \
+    info *.{bin,enc}
+```
+
+![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
+
 ### Dump cheats from ROM files to plain text
 
 Dump the cheats from all supported input files to their default text file formats:
@@ -47,17 +58,6 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-rom-encrypt-n64-gs.png)
 
-### View parsed ROM data
-
-View all information extracted by Hammerhead from a directory of ROM and cheat text files:
-
-```bash
-dotnet run --project dotnet/src/src.csproj -- \
-    info *.{bin,enc}
-```
-
-![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
-
 ### Dump Shark MX data to JSON
 
 Dump GBC Shark MX contacts/messages to JSON:
@@ -70,16 +70,25 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-gbc-smx.png)
 
+### Extract embedded files from ROMs
+
+Decompress all embedded files inside a ROM and write them to disk:
+
+```bash
+dotnet run --project dotnet/src/src.csproj -- \
+    info *.bin
+```
+
 ## Supported file formats
 
 Full support:
 
 | File format                | Detect | Read | Write | Extract |
 |:-------------------------- |:------ |:---- |:----- |:------- |
-| N64 GameShark Datel cheats | Yes    | Yes  | Yes   | _N/A_   |
 | N64 GameShark ROMs         | Yes    | Yes  | Yes   | Yes     |
-| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   | _N/A_   |
+| N64 GameShark Datel cheats | Yes    | Yes  | Yes   | _N/A_   |
 | N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |         |
+| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   | _N/A_   |
 | Hammerhead JSON cheats     | Yes    | Yes  | Yes   | _N/A_   |
 | N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   | _N/A_   |
 
