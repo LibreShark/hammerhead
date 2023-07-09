@@ -14,20 +14,6 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public struct CompressedFile
-{
-    public u32 StructSize;
-    public string FileName;
-    public u8[] CompressedBytes;
-
-    public CompressedFile(u32 structSize, string fileName, u8[] compressedBytes)
-    {
-        StructSize = structSize;
-        FileName = fileName;
-        CompressedBytes = compressedBytes;
-    }
-}
-
 /// <summary>
 /// This is a C# port of
 /// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c

@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
@@ -32,6 +34,8 @@ public sealed class N64GsRom : AbstractCodec
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
+
+    private static readonly Regex FileNameRegex = new Regex(@"^[\w~.]+$");
 
     /// <summary>
     /// The GS firmware will silently truncate names beyond this length.
@@ -79,9 +83,10 @@ public sealed class N64GsRom : AbstractCodec
     private N64Data Data => Parsed.N64Data;
 
     // TODO(CheatoBaggins): Make this private
-    public List<CompressedFile> CompressedFiles = new List<CompressedFile>();
+    public List<EmbeddedFile> RootCompressedFiles;
+    public List<EmbeddedFile> ShellCompressedFiles;
 
-    private readonly u8[] _shellBytes;
+    public EmbeddedFile? ShellFile => RootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
 
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
@@ -112,7 +117,9 @@ public sealed class N64GsRom : AbstractCodec
         Support.IsFirmwareCompressed        = DetectCompressed(rawInput);
         Support.IsFileEncrypted             = DetectEncrypted(rawInput);
 
-        _shellBytes = ReadShell();
+        RootCompressedFiles = ReadRootFiles();
+        ShellCompressedFiles = ReadShellFiles();
+
         _version = ReadVersion();
 
         Metadata.BrandId = _version.Brand;
@@ -142,56 +149,148 @@ public sealed class N64GsRom : AbstractCodec
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
+
+        EmbeddedFiles.AddRange(RootCompressedFiles);
+        EmbeddedFiles.AddRange(ShellCompressedFiles);
+        EmbeddedImages.AddRange(ParseLogoImages(RootCompressedFiles));
+        EmbeddedImages.AddRange(ParseTileImages(RootCompressedFiles));
+        EmbeddedImages.AddRange(ParseTileImages(ShellCompressedFiles));
     }
 
-    private u8[] ReadShell()
+    private List<Image<Rgba32>> ParseLogoImages(List<EmbeddedFile> files)
     {
-        // The range below (1080..0x2E000) is imprecise and only useful for
-        // searching for UI strings (e.g., the main menu title).
-        // TODO(CheatoBaggins): Figure out where the shell actually begins
-        // and ends in v2.4 and earlier.
-        u8[] shell = Buffer[1080..0x2E000];
+        var decoder = new N64GsImageDecoder();
+        var images = new List<Image<Rgba32>>();
 
-        if (Support.IsFirmwareCompressed)
+        List<EmbeddedFile> paletteFiles = files.Where(file => file.FileName.EndsWith(".pal")).ToList();
+
+        foreach (EmbeddedFile paletteFile in paletteFiles)
         {
-            var decoder = new N64GsLzariEncoder();
-
-            // The first occurrence of "shell.bin" is used internally by the
-            // GS firmware to look up the location of the embedded file in the
-            // fsblob section.
-            //
-            // The second occurrence of "shell.bin" is found in the fsblob,
-            // and marks the start of the embedded file.
-            //
-            // Each file is stored as a struct containing the byte length of the
-            // entire struct (encoded as a big endian u32), the name of the file
-            // as a C string, and finally the actual (compressed) contents of
-            // the file.
-            int[] shellBinStrOffsets = Buffer.FindAll("shell.bin");
-            int shellFileStructOffset = shellBinStrOffsets[1] - 4;
-
-            Scribe.Seek(shellFileStructOffset);
-
-            while (Scribe.Position < 0x2F000 && !Scribe.IsPadding())
+            EmbeddedFile? imageFile =
+                files.FirstOrDefault(file => file.FileName == paletteFile.FileName.Replace(".pal", ".bin"));
+            if (!imageFile.HasValue)
             {
-                u32 structLen = Scribe.ReadU32();
-
-                // Account for the length (4-byte u32) and name (12-byte string) fields.
-                u32 dataLen = structLen - 0x10;
-
-                string fileName = Scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
-                u8[] compressedBytes = Scribe.ReadBytes(dataLen);
-
-                var compressedFile = new CompressedFile(structLen, fileName, compressedBytes);
-                CompressedFiles.Add(compressedFile);
-                if (compressedFile.FileName == "shell.bin")
-                {
-                    shell = decoder.Decode(compressedFile.CompressedBytes);
-                }
+                continue;
             }
+
+            Image<Rgba32> image = decoder.DecodeStartupLogo(
+                paletteFile.UncompressedBytes,
+                imageFile.Value.UncompressedBytes,
+                true,
+                new Rgb24(0, 0, 0));
+            images.Add(image);
         }
 
-        return shell;
+        return images;
+    }
+
+    private List<Image<Rgba32>> ParseTileImages(List<EmbeddedFile> files)
+    {
+        var decoder = new N64GsImageDecoder();
+        return files.Where(file => file.FileName.EndsWith(".tg~")).Select(
+            file =>
+            {
+                Image<Rgba32> image = decoder.DecodeBackgroundTile(file.UncompressedBytes);
+                return image;
+            }
+        ).ToList();
+    }
+
+    private List<EmbeddedFile> ReadRootFiles()
+    {
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed)
+        {
+            return new List<EmbeddedFile>();
+        }
+        return ReadAllFiles(Buffer);
+    }
+
+    private List<EmbeddedFile> ReadShellFiles()
+    {
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed)
+        {
+            return new List<EmbeddedFile>();
+        }
+
+        if (!ShellFile.HasValue)
+        {
+            return new List<EmbeddedFile>();
+        }
+
+        return ReadAllFiles(ShellFile.Value.UncompressedBytes);
+    }
+
+    private List<EmbeddedFile> ReadAllFiles(u8[] fsblob)
+    {
+        var files = new List<EmbeddedFile>();
+
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed || fsblob.Length == 0)
+        {
+            return files;
+        }
+
+        var scribe = new BigEndianScribe(fsblob);
+        var decoder = new N64GsLzariEncoder();
+
+        // The first occurrence of each filename is used internally by the
+        // GS firmware to look up the location of the embedded file in the
+        // fsblob section.
+        //
+        // The second occurrence of each filename is found inside the fsblob,
+        // and marks the start of the embedded file.
+        //
+        // Each file is stored as a struct containing the byte length of the
+        // entire struct (encoded as a big endian u32), the name of the file
+        // as a C string, and finally the actual (compressed) contents of
+        // the file.
+        //
+        // shell.bin is always the first file stored in the ROM,
+        // and tile1.tg~ is always the first file stored in the shell.
+        int[] nameOffsets = fsblob.FindAll("shell.bin");
+        if (nameOffsets.Length == 0)
+        {
+            nameOffsets = fsblob.FindAll("tile1.tg~");
+        }
+        if (nameOffsets.Length == 0)
+        {
+            return files;
+        }
+
+        int structOffset = nameOffsets[1] - 4;
+
+        scribe.Seek(structOffset);
+
+        while (true)
+        {
+            if (scribe.EndReached ||
+                scribe.Position >= fsblob.Length - 0x10 ||
+                scribe.IsPadding())
+            {
+                break;
+            }
+            u32 structLen = scribe.ReadU32();
+
+            // Account for the length (4-byte u32) and name (12-byte string) fields.
+            u32 dataLen = structLen - 0x10;
+
+            string curFileName = scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
+            if (!FileNameRegex.IsMatch(curFileName))
+            {
+                break;
+            }
+
+            u8[] compressedBytes = scribe.ReadBytes(dataLen);
+            var file = new EmbeddedFile(curFileName, compressedBytes, decoder.Decode(compressedBytes));
+            files.Add(file);
+        }
+
+        return files;
     }
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
@@ -386,15 +485,16 @@ public sealed class N64GsRom : AbstractCodec
     {
         s32 titleLength = needle.Length + 5;
 
-        if (IsFirmwareCompressed())
+        if (IsFirmwareCompressed() && ShellFile.HasValue)
         {
-            s32 titleVersionPos = _shellBytes.Find(needle);
+            u8[] shellBytes = ShellFile.Value.UncompressedBytes;
+            s32 titleVersionPos = shellBytes.Find(needle);
             if (titleVersionPos == -1)
             {
                 return null;
             }
 
-            u8[] titleBytes = _shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
+            u8[] titleBytes = shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
             return titleBytes.ToAsciiString().ToRomString();
         }
         else

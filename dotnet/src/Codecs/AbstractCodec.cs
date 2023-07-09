@@ -77,6 +77,9 @@ public abstract class AbstractCodec : ICodec
 
     public abstract CodecId DefaultCheatOutputCodec { get; }
 
+    public readonly List<EmbeddedFile> EmbeddedFiles = new List<EmbeddedFile>();
+    public readonly List<Image<Rgba32>> EmbeddedImages = new List<Image<Rgba32>>();
+
     protected ParsedFile Parsed { get; private set; }
 
     protected readonly AbstractBinaryScribe Scribe;
