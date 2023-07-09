@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
+using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Api;
 
@@ -143,16 +144,16 @@ public class HammerheadApi
         );
     }
 
-    public void SplitRom(RomCmdParams romParams)
+    public void SplitRom(SplitRomCmdParams romParams)
     {
-        // TODO(CheatoBaggins): Create new CmdParams subclass for this
-        TransformOneRomFile(
-            "Splitting ROM file",
-            "split",
-            romParams,
-            t => t.Codec.SupportsFileSplitting(),
-            t => t.Codec.Split()
-        );
+        foreach (FileInfo inputFile in romParams.InputFiles!)
+        {
+            ICodec codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            foreach (EmbeddedFile file in codec.EmbeddedFiles)
+            {
+                ;
+            }
+        }
     }
 
     public ICodec[] DumpCheats(DumpCheatsCmdParams dumpParams)
@@ -286,7 +287,13 @@ public class HammerheadApi
             outFileName = Path.ChangeExtension(inFileName, newExt);
         }
 
-        string outFileDirPath = outputDir?.FullName ?? inFileDirPath;
+        return GetOutputFilePath(inputFile, outputDir, outFileName);
+    }
+
+    private static FileInfo GetOutputFilePath(
+        FileInfo inputFile, DirectoryInfo? outputDir, string outFileName)
+    {
+        string outFileDirPath = outputDir?.FullName ?? inputFile.DirectoryName!;
 
         try
         {

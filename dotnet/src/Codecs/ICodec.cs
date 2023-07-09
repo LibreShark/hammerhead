@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
+using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
@@ -32,6 +33,8 @@ public interface ICodec
     RepeatedField<Game> Games { get; }
     CodecFeatureSupport Support { get; }
     CodecId DefaultCheatOutputCodec { get; }
+    List<EmbeddedFile> EmbeddedFiles { get; }
+    List<EmbeddedImage> EmbeddedImages { get; }
     ICodec ImportFromProto(ParsedFile parsed);
     ParsedFile ToFullProto();
     ParsedFile ToSlimProto();

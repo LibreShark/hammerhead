@@ -11,16 +11,14 @@ using s64 = Int64;
 using u64 = UInt64;
 using f64 = Double;
 
-public struct EmbeddedFile
+public struct EmbeddedImage
 {
     public readonly string FileName;
-    public readonly u8[] RawBytes;
-    public readonly u8[] UncompressedBytes;
+    public readonly Image<Rgba32> Image;
 
-    public EmbeddedFile(string fileName, u8[] rawBytes, u8[]? uncompressedBytes = null)
+    public EmbeddedImage(string fileName, Image<Rgba32> image)
     {
         FileName = fileName;
-        RawBytes = rawBytes;
-        UncompressedBytes = uncompressedBytes ?? rawBytes;
+        Image = image;
     }
 }

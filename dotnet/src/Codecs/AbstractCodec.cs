@@ -77,8 +77,8 @@ public abstract class AbstractCodec : ICodec
 
     public abstract CodecId DefaultCheatOutputCodec { get; }
 
-    public readonly List<EmbeddedFile> EmbeddedFiles = new List<EmbeddedFile>();
-    public readonly List<Image<Rgba32>> EmbeddedImages = new List<Image<Rgba32>>();
+    public List<EmbeddedFile> EmbeddedFiles { get; }
+    public List<EmbeddedImage> EmbeddedImages { get; }
 
     protected ParsedFile Parsed { get; private set; }
 
@@ -108,6 +108,8 @@ public abstract class AbstractCodec : ICodec
             },
         };
         Printer = new TerminalPrinter(this);
+        EmbeddedFiles = new List<EmbeddedFile>();
+        EmbeddedImages = new List<EmbeddedImage>();
     }
 
     protected virtual void SanitizeCustomProtoFields(ParsedFile parsed)

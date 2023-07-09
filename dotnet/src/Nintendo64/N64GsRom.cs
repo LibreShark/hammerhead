@@ -157,10 +157,10 @@ public sealed class N64GsRom : AbstractCodec
         EmbeddedImages.AddRange(ParseTileImages(ShellCompressedFiles));
     }
 
-    private List<Image<Rgba32>> ParseLogoImages(List<EmbeddedFile> files)
+    private List<EmbeddedImage> ParseLogoImages(List<EmbeddedFile> files)
     {
         var decoder = new N64GsImageDecoder();
-        var images = new List<Image<Rgba32>>();
+        var images = new List<EmbeddedImage>();
 
         List<EmbeddedFile> paletteFiles = files.Where(file => file.FileName.EndsWith(".pal")).ToList();
 
@@ -178,20 +178,20 @@ public sealed class N64GsRom : AbstractCodec
                 imageFile.Value.UncompressedBytes,
                 true,
                 new Rgb24(0, 0, 0));
-            images.Add(image);
+            images.Add(new EmbeddedImage(paletteFile.FileName, image));
         }
 
         return images;
     }
 
-    private List<Image<Rgba32>> ParseTileImages(List<EmbeddedFile> files)
+    private List<EmbeddedImage> ParseTileImages(List<EmbeddedFile> files)
     {
         var decoder = new N64GsImageDecoder();
         return files.Where(file => file.FileName.EndsWith(".tg~")).Select(
             file =>
             {
                 Image<Rgba32> image = decoder.DecodeBackgroundTile(file.UncompressedBytes);
-                return image;
+                return new EmbeddedImage(file.FileName, image);
             }
         ).ToList();
     }

@@ -29,6 +29,13 @@ public class RomCmdParams : CmdParams
     public CodecId OutputFormat { get; init; }
 }
 
+public class SplitRomCmdParams : CmdParams
+{
+    public FileInfo[]? InputFiles { get; init; }
+    public DirectoryInfo? OutputDir { get; set; }
+    public bool OverwriteExistingFiles { get; init; }
+}
+
 public class DumpCheatsCmdParams : CmdParams
 {
     public FileInfo[]? InputFiles { get; init; }

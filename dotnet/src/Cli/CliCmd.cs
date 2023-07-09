@@ -253,7 +253,7 @@ public class CliCmd
     public event EventHandler<RomCmdParams>? OnDecryptRom;
     public event EventHandler<RomCmdParams>? OnScrambleRom;
     public event EventHandler<RomCmdParams>? OnUnscrambleRom;
-    public event EventHandler<RomCmdParams>? OnSplitRom;
+    public event EventHandler<SplitRomCmdParams>? OnSplitRom;
     public event EventHandler<RomCmdParams>? OnCombineRom;
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
     public event EventHandler<RomCmdParams>? OnCopyCheats;
@@ -397,7 +397,7 @@ public class CliCmd
 
     private void SplitRom(InvocationContext ctx)
     {
-        var cmdParams = new RomCmdParams()
+        var cmdParams = new SplitRomCmdParams()
         {
             // Global options
             PrintFormatId = GetPrintFormatId(ctx),
@@ -405,8 +405,8 @@ public class CliCmd
             Clean = CleanOption.GetValue(ctx),
 
             // Command-specific arguments
-            InputFile = InputFileArgument.GetValue(ctx)!,
-            OutputFile = OutputFileArgument.GetValue(ctx),
+            InputFiles = InputFilesArgument.GetValue(ctx)!,
+            OutputDir = OutputDirOption.GetValue(ctx),
             OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
