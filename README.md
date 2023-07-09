@@ -105,11 +105,11 @@ Full support:
 | File format                | Detect | Read | Write | Extract |
 |:-------------------------- |:------ |:---- |:----- |:------- |
 | N64 GameShark ROMs         | Yes    | Yes  | Yes   | Yes     |
-| N64 GameShark Datel cheats | Yes    | Yes  | Yes   | _N/A_   |
+| N64 GameShark Datel cheats | Yes    | Yes  | Yes   | -       |
 | N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |         |
-| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   | _N/A_   |
-| Hammerhead JSON cheats     | Yes    | Yes  | Yes   | _N/A_   |
-| N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   | _N/A_   |
+| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   | -       |
+| Hammerhead JSON cheats     | Yes    | Yes  | Yes   | -       |
+| N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   | -       |
 
 In progress:
 
@@ -128,10 +128,10 @@ Planned:
 
 | File format                        | Detect | Read | Write | Extract |
 |:---------------------------------- |:------ |:---- |:----- |:------- |
-| GBC GameShark v3.x cheats (\*.gcf) |        |      |       | _N/A_   |
-| OpenEmu XML cheats                 |        |      |       | _N/A_   |
-| N64 Project 64 v1.x cheats         |        |      |       | _N/A_   |
-| N64 Project 64 v3.x cheats         |        |      |       | _N/A_   |
+| GBC GameShark v3.x cheats (\*.gcf) |        |      |       | -       |
+| OpenEmu XML cheats                 |        |      |       | -       |
+| N64 Project 64 v1.x cheats         |        |      |       | -       |
+| N64 Project 64 v3.x cheats         |        |      |       | -       |
 
 Limited support:
 
