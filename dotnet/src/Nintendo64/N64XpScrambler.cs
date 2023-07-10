@@ -1,16 +1,5 @@
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// Scrambles/unscrambles Xplorer 64 ROM files dumped directly from the two
 /// EEPROM chips, and re-scrambles them for flashing the EEPROMs directly.

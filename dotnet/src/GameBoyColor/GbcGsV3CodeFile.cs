@@ -3,17 +3,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// "GameBoy Codes File" (*.gcf) binary format for "cheat update files" used by
 /// the official PC utils for <see cref="GbcGsV3Rom"/>, made in 2000 and 2001.

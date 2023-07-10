@@ -8,17 +8,6 @@ using Spectre.Console;
 
 namespace LibreShark.Hammerhead.GameBoy;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// GameShark and Action Replay for the original Game Boy and Game Boy Pocket,
 /// made by Datel/InterAct.

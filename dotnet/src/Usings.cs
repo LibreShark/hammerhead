@@ -1,4 +1,3 @@
-// ReSharper disable BuiltInTypeReferenceStyle
 global using u8 = System.Byte;
 global using s8 = System.SByte;
 global using s16 = System.Int16;

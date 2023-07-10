@@ -3,17 +3,6 @@ using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.Test;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 [TestFixture]
 public class N64GsRomEmbeddedFileTest
 {

@@ -2,17 +2,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// EXPERIMENTAL (UNTESTED) RLE01 decoder for N64 GB Hunter and Game Booster ROM asset compression.
 /// Adapted from https://segaxtreme.net/threads/action-replay-save-format.24708/post-180339
