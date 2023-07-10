@@ -579,11 +579,13 @@ public sealed class N64GsRom : AbstractCodec
                      first4Bytes.SequenceEqual(new u8[] { 0x80, 0x37, 0x12, 0x00 });
         const string v1Or2Header = "(C) DATEL D&D ";
         const string v3ProHeader = "(C) MUSHROOM &";
-        const string libreShark = "(C) Jhynjhiruu";
+        const string libreShark1 = "(C) Jhynjhiruu"; // First few builds
+        const string libreShark2 = "(C) LibreShark"; // All later builds
         return isN64 && (
             bytes.Contains(v1Or2Header) ||
             bytes.Contains(v3ProHeader) ||
-            bytes.Contains(libreShark) ||
+            bytes.Contains(libreShark1) ||
+            bytes.Contains(libreShark2) ||
             false
         );
     }
