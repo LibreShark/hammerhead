@@ -28,4 +28,4 @@ jobs:
       shell: bash
       run: |
         dotnet tool install --global dotnet-releaser
-        dotnet-releaser run --github-token "${{secrets.GITHUB_TOKEN}}" dotnet-releaser.toml
+        dotnet-releaser publish --github-token "${{secrets.GITHUB_TOKEN}}" dotnet-releaser.toml
