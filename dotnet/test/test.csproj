@@ -387,16 +387,12 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.02-20230708.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.02-20230708.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.02-20230708-cheato.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.02-20230708-cheato.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.png" />
       <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

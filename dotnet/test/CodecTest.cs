@@ -294,7 +294,7 @@ public class CodecTest
     [Test]
     public void Test_N64GsRom_LibreShark()
     {
-        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.02-20230708-cheato.bin";
+        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
 
         var rom = N64GsRom.Create(romFilePath, romFileBytes);
@@ -409,7 +409,7 @@ public class CodecTest
     [Test]
     public void Test_N64GsRom_ParseEmbeddedFiles_LibreSharkV4XX()
     {
-        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.02-20230708-cheato.bin";
+        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
 
         var rom = N64GsRom.Create(romFilePath, romFileBytes);

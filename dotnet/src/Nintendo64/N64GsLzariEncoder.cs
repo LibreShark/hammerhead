@@ -16,20 +16,21 @@ using f64 = Double;
 
 /// <summary>
 /// <para>
+/// N64 GameShark firmware v2.50 and above use this compression algorithm
+/// firmware to store embedded files more compactly.
+/// </para>
+///
+/// <para>
 /// This is a C# port of
 /// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c
-/// which was decompiled from an N64 GameShark Pro v3.30 (April) ROM.
+/// which was decompiled to C from an N64 GameShark Pro v3.30 (April) ROM by
+/// Jhynjhiruu.
 /// </para>
 ///
 /// <para>
 /// The GameShark source code is in turn based on
-/// https://github.com/e-n-f/lzss/blob/f370a64a7ce5e4c54cfe122ca441671c3faccc24/LZARI.C
-/// 4/7/1989 by Haruhiko Okumura.
-/// </para>
-///
-/// <para>
-/// N64 GameShark v2.50 and above used this compression algorithm in their
-/// firmware to store embedded files more compactly:
+/// https://github.com/e-n-f/lzss/blob/f370a64a7ce5e4c54cfe122ca441671c3faccc24/LZARI.C,
+/// <c>1989-04-07</c> by Haruhiko Okumura.
 /// </para>
 ///
 /// <list type="table">
@@ -43,21 +44,23 @@ using f64 = Double;
 ///   </item>
 ///   <item>
 ///     <term>
-///       <c>gslogo2.pal</c> (US v2.50) or <br></br>
-///       <c>gslogo3.pal</c> (US v3.xx) or <br></br>
-///       <c>arlogo3.pal</c> (EU v3.xx) or <br></br>
-///       <c>equal3.pal</c> (EU v3.xx) or <br></br>
-///       <c>gblogo3.pal</c> (DE v3.xx)
+///       <c>lslogo4.pal</c> (US - LibreShark Pro v4.xx) or <br></br>
+///       <c>gslogo2.pal</c> (US - GameShark v2.50) or <br></br>
+///       <c>gslogo3.pal</c> (US - GameShark Pro v3.xx) or <br></br>
+///       <c>arlogo3.pal</c> (EU - Action Replay Pro v3.xx) or <br></br>
+///       <c>equal3.pal</c> (EU - Equalizer v3.xx) or <br></br>
+///       <c>gblogo3.pal</c> (DE - Game Buster v3.xx)
 ///     </term>
 ///     <description>Startup logo PALETTE</description>
 ///   </item>
 ///   <item>
 ///     <term>
-///       <c>gslogo2.bin</c> (US v2.50) or <br></br>
-///       <c>gslogo3.bin</c> (US v3.xx) or <br></br>
-///       <c>arlogo3.bin</c> (EU v3.xx) or <br></br>
-///       <c>equal3.bin</c> (EU v3.xx) or <br></br>
-///       <c>gblogo3.bin</c> (DE v3.xx)
+///       <c>lslogo4.bin</c> (US - LibreShark Pro v4.xx) or <br></br>
+///       <c>gslogo2.bin</c> (US - GameShark v2.50) or <br></br>
+///       <c>gslogo3.bin</c> (US - GameShark Pro v3.xx) or <br></br>
+///       <c>arlogo3.bin</c> (EU - Action Replay Pro v3.xx) or <br></br>
+///       <c>equal3.bin</c> (EU - Equalizer v3.xx) or <br></br>
+///       <c>gblogo3.bin</c> (DE - Game Buster v3.xx)
 ///     </term>
 ///     <description>Startup logo IMAGE DATA</description>
 ///   </item>
