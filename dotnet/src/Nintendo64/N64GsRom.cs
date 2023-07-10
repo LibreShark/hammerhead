@@ -395,7 +395,7 @@ public sealed class N64GsRom : AbstractCodec
         };
 
         u8[] keyCodeBytes = activeCrcBytes.Concat(activePcBytes).ToArray();
-        u8 checkDigit = new N64GsChecksum().GetCheckDigit(Buffer, keyCodeBytes);
+        u8 checkDigit = N64GsChecksum.GetCheckDigit(Buffer, keyCodeBytes);
         keyCodeBytes = keyCodeBytes.Concat(new u8[] { checkDigit }).ToArray();
         kc.Bytes = ByteString.CopyFrom(keyCodeBytes);
 

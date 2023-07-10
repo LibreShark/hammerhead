@@ -765,8 +765,8 @@ public class TerminalPrinter : ICliPrinter
         name = $"[green b u]{name}[/]";
 
         AnsiConsole.Markup($"""
-[dim]                   ┏IPL3 CRC━┓ ┏F/W CRC━━┓  ┏PC Addr━┓ CD
-                   ┃         ┃ ┃         ┃  ┃        ┃  ┃[/]
+[dim]                   ┏━IPL3 CRC┓ ┏━F/W CRC━┓ ┏━PC Addr━┓ CD
+                   ┃         ┃ ┃         ┃ ┃         ┃  ┃[/]
 Active key code: [[ {formatted} ]] - {name}
 
 """);
