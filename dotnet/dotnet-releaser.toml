@@ -6,6 +6,7 @@ project = "dotnet.sln"
 [github]
 user = "LibreShark"
 repo = "hammerhead"
+version_prefix = "v"
 
 [nuget]
 publish = false
