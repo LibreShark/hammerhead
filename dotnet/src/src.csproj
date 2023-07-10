@@ -20,6 +20,7 @@
         <RepositoryType>git</RepositoryType>
         <Company>LibreShark project</Company>
         <Product>Hammerhead</Product>
+        <Version>1.0.0.0</Version>
         <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
