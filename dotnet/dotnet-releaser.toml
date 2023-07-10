@@ -8,6 +8,9 @@ user = "LibreShark"
 repo = "hammerhead"
 version_prefix = "v"
 
+[changelog]
+publish = false
+
 [nuget]
 publish = false
 
