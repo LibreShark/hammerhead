@@ -17,14 +17,14 @@ using u64 = UInt64;
 using f64 = Double;
 
 [TestFixture]
-public class CodecTest
+public class RomReadTest
 {
     private static readonly Comparison<Game> GameNameComparator =
         (game1, game2) =>
             String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture);
 
     [Test]
-    public void Test_GbGsV2_Read()
+    public void Test_GbGsRom()
     {
         var api = new HammerheadApi();
         List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
@@ -67,7 +67,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_GbcCbRom_Read()
+    public void Test_GbcCbRom()
     {
         var api = new HammerheadApi();
         List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
@@ -117,7 +117,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_GbcGsV3Rom_Read()
+    public void Test_GbcGsV3Rom()
     {
         var api = new HammerheadApi();
         List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
@@ -159,7 +159,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_GbcGsV4Rom_Read()
+    public void Test_GbcGsV4Rom()
     {
         var api = new HammerheadApi();
         List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
@@ -206,7 +206,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_GbcSharkMxRom_Read()
+    public void Test_GbcSharkMxRom()
     {
         var api = new HammerheadApi();
         List<ICodec> codecs = api.ParseFiles(new InfoCmdParams()
@@ -245,58 +245,25 @@ public class CodecTest
 
             // Contacts
             Assert.That(parsedFile.GbcSmxData.Contacts, Has.Count.EqualTo(51));
-            Assert.That(parsedFile.GbcSmxData.Contacts[0].PersonName.Value, Is.EqualTo("RWeick"));
-            Assert.That(parsedFile.GbcSmxData.Contacts[0].EmailAddress.Value, Is.EqualTo("rweick@gmail.com"));
-            Assert.That(parsedFile.GbcSmxData.Contacts[0].PhoneNumber.Value, Is.EqualTo("12345678900"));
-            Assert.That(parsedFile.GbcSmxData.Contacts[0].StreetAddress.Value, Is.EqualTo("888 libreshark"));
+            GbcSmxContact firstContact = parsedFile.GbcSmxData.Contacts[0];
+            Assert.That(firstContact.PersonName.Value, Is.EqualTo("RWeick"));
+            Assert.That(firstContact.EmailAddress.Value, Is.EqualTo("rweick@gmail.com"));
+            Assert.That(firstContact.PhoneNumber.Value, Is.EqualTo("12345678900"));
+            Assert.That(firstContact.StreetAddress.Value, Is.EqualTo("888 libreshark"));
 
             // Messages
             Assert.That(parsedFile.GbcSmxData.Messages, Has.Count.EqualTo(1));
-            Assert.That(parsedFile.GbcSmxData.Messages[0].Subject.Value, Is.EqualTo("hi"));
-            Assert.That(parsedFile.GbcSmxData.Messages[0].RecipientEmail.Value, Is.EqualTo("rweick@gmail.com"));
-            Assert.That(parsedFile.GbcSmxData.Messages[0].RawDate.Value, Is.EqualTo("02/09/2010"));
-            Assert.That(parsedFile.GbcSmxData.Messages[0].IsoDate, Is.EqualTo("2010-02-09T00:00:00"));
-            Assert.That(parsedFile.GbcSmxData.Messages[0].Message.Value, Is.EqualTo("yo"));
+            GbcSmxMessage firstMessage = parsedFile.GbcSmxData.Messages[0];
+            Assert.That(firstMessage.Subject.Value, Is.EqualTo("hi"));
+            Assert.That(firstMessage.RecipientEmail.Value, Is.EqualTo("rweick@gmail.com"));
+            Assert.That(firstMessage.RawDate.Value, Is.EqualTo("02/09/2010"));
+            Assert.That(firstMessage.IsoDate, Is.EqualTo("2010-02-09T00:00:00"));
+            Assert.That(firstMessage.Message.Value, Is.EqualTo("yo"));
         });
     }
 
     [Test]
-    public void Test_N64GsRom_Lzari_Decompression()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        var lzari = new N64GsLzariEncoder();
-
-        List<EmbeddedFile> compressedFiles = rom.EmbeddedFiles;
-
-        Assert.That(compressedFiles, Has.Count.EqualTo(10));
-
-        foreach (EmbeddedFile file in compressedFiles)
-        {
-            string expectedCompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}";
-            string expectedUncompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}.dec.bin";
-            if (!File.Exists(expectedCompressedFilePath) || !File.Exists(expectedUncompressedFilePath))
-            {
-                continue;
-            }
-
-            // Test that the compressed input files are spliced correctly before
-            // decompressing.
-            u8[] actualCompressed = file.RawBytes;
-            u8[] expectedCompressed = File.ReadAllBytes(expectedCompressedFilePath);
-            Assert.That(actualCompressed, Is.EqualTo(expectedCompressed));
-
-            // Verify that decompression works correctly.
-            u8[] actualUncompressed = lzari.Decode(actualCompressed);
-            u8[] expectedUncompressed = File.ReadAllBytes(expectedUncompressedFilePath);
-            Assert.That(actualUncompressed, Is.EqualTo(expectedUncompressed));
-        }
-    }
-
-    [Test]
-    public void Test_N64GsRom_LibreShark_Rom()
+    public void Test_N64GsRom_LibreShark()
     {
         const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -307,121 +274,6 @@ public class CodecTest
             Assert.That(rom.Metadata.BrandId, Is.EqualTo(BrandId.Libreshark));
             Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.00));
             Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-10T04:27:00+00:00"));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ReadStartupLogo()
-    {
-        var paletteBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.pal.dec.bin");
-        var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.bin.dec.bin");
-        var decoder = new N64GsImageDecoder();
-        using Image<Rgba32> image = decoder.DecodeStartupLogo(paletteBytes, imageBytes, true, new Rgb24(0, 0, 0));
-        image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
-        u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
-        u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
-    }
-
-    [Test]
-    public void Test_N64GsRom_ReadStartupTile()
-    {
-        var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
-        var decoder = new N64GsImageDecoder();
-        using Image<Rgba32> image = decoder.Decode16BitRgba(imageBytes);
-        image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
-        u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");
-        u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_GameSharkV250()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/gs-2.50-xxxx0504-v3.3-codes.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(9));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("gslogo2")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_GameSharkV330()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("gslogo3")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_ActionReplayV330()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/arpro-3.3-20000418-dirty.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("arlogo3")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_EqualizerV300()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/eq-3.00-19990720-dirty-dump1.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("equal3")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_GameBusterV321()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/gb-3.21-19990805-dirty.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("gblogo3")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
-        });
-    }
-
-    [Test]
-    public void Test_N64GsRom_ParseEmbeddedFiles_LibreSharkV4XX()
-    {
-        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
-        u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-
-        var rom = N64GsRom.Create(romFilePath, romFileBytes);
-        Assert.Multiple(() =>
-        {
-            Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("lslogo4")), Has.Count.EqualTo(2));
-            Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
         });
     }
 }
