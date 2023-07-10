@@ -152,48 +152,44 @@ public sealed class N64GsRom : AbstractCodec
 
         EmbeddedFiles.AddRange(RootCompressedFiles);
         EmbeddedFiles.AddRange(ShellCompressedFiles);
-        EmbeddedImages.AddRange(ParseLogoImages(RootCompressedFiles));
-        EmbeddedImages.AddRange(ParseTileImages(RootCompressedFiles));
-        EmbeddedImages.AddRange(ParseTileImages(ShellCompressedFiles));
+        EmbeddedImages.AddRange(GetLogoImages(RootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(RootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(ShellCompressedFiles));
     }
 
-    private List<EmbeddedImage> ParseLogoImages(List<EmbeddedFile> files)
+    private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
     {
         var decoder = new N64GsImageDecoder();
-        var images = new List<EmbeddedImage>();
 
         List<EmbeddedFile> paletteFiles = files.Where(file => file.FileName.EndsWith(".pal")).ToList();
 
-        foreach (EmbeddedFile paletteFile in paletteFiles)
-        {
-            EmbeddedFile? imageFile =
-                files.FirstOrDefault(file => file.FileName == paletteFile.FileName.Replace(".pal", ".bin"));
-            if (!imageFile.HasValue)
-            {
-                continue;
-            }
-
-            Image<Rgba32> image = decoder.DecodeStartupLogo(
+        return (
+            from paletteFile in paletteFiles
+            let imageFile = files.First(
+                curFile => curFile.FileName == paletteFile.FileName.Replace(".pal", ".bin")
+            )
+            let image = decoder.DecodeStartupLogo(
                 paletteFile.UncompressedBytes,
-                imageFile.Value.UncompressedBytes,
+                imageFile.UncompressedBytes,
                 true,
-                new Rgb24(0, 0, 0));
-            images.Add(new EmbeddedImage(paletteFile.FileName, image));
-        }
-
-        return images;
+                new Rgb24(0, 0, 0)
+            )
+            select new EmbeddedImage(paletteFile.FileName, image)
+        ).ToList();
     }
 
-    private List<EmbeddedImage> ParseTileImages(List<EmbeddedFile> files)
+    private List<EmbeddedImage> GetTileImages(List<EmbeddedFile> files)
     {
         var decoder = new N64GsImageDecoder();
-        return files.Where(file => file.FileName.EndsWith(".tg~")).Select(
-            file =>
-            {
-                Image<Rgba32> image = decoder.DecodeBackgroundTile(file.UncompressedBytes);
-                return new EmbeddedImage(file.FileName, image);
-            }
-        ).ToList();
+        return files
+            .Where(file => file.FileName.EndsWith(".tg~"))
+            .Select(file =>
+                {
+                    Image<Rgba32> image = decoder.Decode16BitRgba(file.UncompressedBytes, file.FileName);
+                    return new EmbeddedImage(file.FileName, image);
+                }
+            )
+            .ToList();
     }
 
     private List<EmbeddedFile> ReadRootFiles()

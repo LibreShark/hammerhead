@@ -174,14 +174,6 @@ public class HammerheadApi
         string outDirName = Path.GetFileNameWithoutExtension(inputFile.Name);
         FileInfo fakeEmbeddedFile = new FileInfo(Path.Join(inputFile.DirectoryName, outDirName, embeddedFileName));
         FileInfo outputFile = GetOutputFilePath(fakeEmbeddedFile, outputDir, embeddedFileName);
-        string originalOutputFilePath = outputFile.FullName;
-        string ext = outputFile.Extension;
-        int i = 1;
-        while (outputFile.Exists)
-        {
-            outputFile = new FileInfo(
-                Path.ChangeExtension(originalOutputFilePath, $"{i++}{ext}"));
-        }
         return outputFile;
     }
 

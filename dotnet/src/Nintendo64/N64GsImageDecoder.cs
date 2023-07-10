@@ -17,8 +17,11 @@ public class N64GsImageDecoder
     /// Decodes a background tile image.
     /// </summary>
     /// <param name="imageBytes">Decompressed <c>tile1.tg~</c> bytes</param>
+    /// <param name="fileName">Name of the embedded file (e.g., <c>tile1.tg~</c>)</param>
+    /// <param name="width">Force a specific image width</param>
+    /// <param name="height">Force a specific image height</param>
     /// <returns>Decoded tile image</returns>
-    public Image<Rgba32> DecodeBackgroundTile(u8[] imageBytes)
+    public Image<Rgba32> Decode16BitRgba(u8[] imageBytes, string fileName = "", int width = 0, int height = 0)
     {
         var pixels = new List<Rgba32>();
         for (int i = 0; i < imageBytes.Length;)
@@ -53,19 +56,48 @@ public class N64GsImageDecoder
             u8 a8 = (u8)(isTransparent ? 0xFF : 0);
             pixels.Add(new Rgba32(r8, g8, b8, a8));
         }
-        var image = new Image<Rgba32>(0x40, 0x30);
-        int pixelPos = 0;
-        // TODO(CheatoBaggins): Determine dimensions automatically?
-        // Non-tile images like `bits.tg~` and `menuf.tg~` have different sizes.
-        for (int y = 0; y < 0x30; y++)
+
+        if (width == 0 || height == 0)
         {
-            for (int x = 0; x < 0x40; x++)
+            // Background tiles (e.g., "tile1.tg~")
+            if (pixels.Count == 3072)
+            {
+                width = 64;
+                height = 48;
+            }
+            // "menuf.tg~"
+            else if (pixels.Count == 3120)
+            {
+                // TODO(CheatoBaggins): Verify that filename is "menuf.tg~"?
+                width = 48;
+                height = 65;
+            }
+            // "bits.tg~"
+            else if (pixels.Count == 576)
+            {
+                // TODO(CheatoBaggins): Verify that filename is "bits.tg~"?
+                width = 72;
+                height = 8;
+            }
+            else
+            {
+                Console.WriteLine();
+            }
+        }
+
+        var image = new Image<Rgba32>(width, height);
+        int pixelPos = 0;
+        // Non-tile images like `bits.tg~` and `menuf.tg~` have different sizes.
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
             {
                 // TODO(CheatoBaggins): Figure out why the number of pixels
                 // does not match the expected dimensions of the image,
                 // and remove this entire `if` statement.
                 if (pixelPos >= pixels.Count)
                 {
+                    Console.Error.WriteLine($"WARNING: pixelPos ({pixelPos:X4}) must be less than pixels.Count ({pixels.Count}).");
                     return image;
                 }
                 image[x, y] = pixels[pixelPos++];
@@ -75,7 +107,9 @@ public class N64GsImageDecoder
     }
 
     /// <summary>
-    /// Decodes the startup logo.
+    /// Decodes the startup logo, which is stored as two separate files:
+    /// a palette (.pal file) and image data (.bin file).
+    /// This is a simple form of compression called "indexed color".
     /// </summary>
     /// <param name="paletteBytes">Decompressed <c>gslogo3.pal</c> bytes</param>
     /// <param name="imageBytes">Decompressed <c>gslogo3.bin</c> bytes</param>
@@ -89,14 +123,10 @@ public class N64GsImageDecoder
         Rgb24 transparentColor = new Rgb24()
     )
     {
-        // TODO(CheatoBaggins): Confirm if other ROM brands (AR/EQ/GB)
-        // use the same dimensions.
-        // ReSharper disable InconsistentNaming
-        const int POS_X = 24;
-        const int POS_Y = 40;
-        const int WIDTH = 320;
-        const int HEIGHT = 224;
-        // ReSharper enable InconsistentNaming
+        const int posX = 24;
+        const int posY = 40;
+        const int width = 320;
+        const int height = 224;
 
         var indexedColors = new List<Rgba32>();
         for (int i = 0; i < paletteBytes.Length; )
@@ -111,11 +141,11 @@ public class N64GsImageDecoder
         }
 
         Rgba32[] pixels = imageBytes.Select(colorIndex => indexedColors[colorIndex]).ToArray();
-        var image = new Image<Rgba32>(WIDTH, HEIGHT);
+        var image = new Image<Rgba32>(width, height);
         int pixelPos = 0;
-        for (int y = POS_Y + 1; y < HEIGHT - POS_Y + 1; y++)
+        for (int y = posY + 1; y < height - posY + 1; y++)
         {
-            for (int x = POS_X; x < WIDTH - POS_X; x++)
+            for (int x = posX; x < width - posX; x++)
             {
                 image[x, y] = pixels[pixelPos++];
             }
