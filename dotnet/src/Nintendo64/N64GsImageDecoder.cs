@@ -59,47 +59,33 @@ public class N64GsImageDecoder
 
         if (width == 0 || height == 0)
         {
-            // Background tiles (e.g., "tile1.tg~")
             if (pixels.Count == 3072)
             {
+                // Background tiles:
+                // "tile1.tg~", "tile2.tg~", "tile3.tg~", "tile4.tg~"
                 width = 64;
                 height = 48;
             }
-            // "menuf.tg~"
             else if (pixels.Count == 3120)
             {
-                // TODO(CheatoBaggins): Verify that filename is "menuf.tg~"?
+                // UI menu border image sprite: "menuf.tg~"
                 width = 48;
                 height = 65;
             }
-            // "bits.tg~"
             else if (pixels.Count == 576)
             {
-                // TODO(CheatoBaggins): Verify that filename is "bits.tg~"?
+                // Unknown: "bits.tg~"
                 width = 72;
                 height = 8;
-            }
-            else
-            {
-                Console.WriteLine();
             }
         }
 
         var image = new Image<Rgba32>(width, height);
         int pixelPos = 0;
-        // Non-tile images like `bits.tg~` and `menuf.tg~` have different sizes.
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                // TODO(CheatoBaggins): Figure out why the number of pixels
-                // does not match the expected dimensions of the image,
-                // and remove this entire `if` statement.
-                if (pixelPos >= pixels.Count)
-                {
-                    Console.Error.WriteLine($"WARNING: pixelPos ({pixelPos:X4}) must be less than pixels.Count ({pixels.Count}).");
-                    return image;
-                }
                 image[x, y] = pixels[pixelPos++];
             }
         }

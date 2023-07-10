@@ -19,6 +19,10 @@ using f64 = Double;
 [TestFixture]
 public class CodecTest
 {
+    private static readonly Comparison<Game> GameNameComparator =
+        (game1, game2) =>
+            String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture);
+
     [Test]
     public void Test_GbGsV2_Read()
     {
@@ -36,7 +40,7 @@ public class CodecTest
         ICodec codec = codecs.First();
 
         List<Game> games = codec.Games.ToList();
-        games.Sort((game1, game2) => String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture));
+        games.Sort(GameNameComparator);
         List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
         List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
 
@@ -79,7 +83,7 @@ public class CodecTest
         ICodec codec = codecs.First();
 
         List<Game> games = codec.Games.ToList();
-        games.Sort((game1, game2) => String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture));
+        games.Sort(GameNameComparator);
         List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
         List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
 
@@ -129,7 +133,7 @@ public class CodecTest
         ICodec codec = codecs.First();
 
         List<Game> games = codec.Games.ToList();
-        games.Sort((game1, game2) => String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture));
+        games.Sort(GameNameComparator);
         List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
         List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
 
@@ -171,7 +175,7 @@ public class CodecTest
         ICodec codec = codecs.First();
 
         List<Game> games = codec.Games.ToList();
-        games.Sort((game1, game2) => String.Compare(game1.GameName.Value, game2.GameName.Value, StringComparison.InvariantCulture));
+        games.Sort(GameNameComparator);
         List<Cheat> cheats = games.SelectMany(game => game.Cheats).ToList();
         List<Code> codes = cheats.SelectMany(cheat => cheat.Codes).ToList();
 
@@ -257,7 +261,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_N64GsRom_Lzari()
+    public void Test_N64GsRom_Lzari_Decompression()
     {
         const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -292,7 +296,7 @@ public class CodecTest
     }
 
     [Test]
-    public void Test_N64GsRom_LibreShark()
+    public void Test_N64GsRom_LibreShark_Rom()
     {
         const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -302,7 +306,7 @@ public class CodecTest
         {
             Assert.That(rom.Metadata.BrandId, Is.EqualTo(BrandId.Libreshark));
             Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.00));
-            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-08T08:47:00+00:00"));
+            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-10T04:27:00+00:00"));
         });
     }
 
@@ -416,7 +420,7 @@ public class CodecTest
         Assert.Multiple(() =>
         {
             Assert.That(rom.EmbeddedFiles, Has.Count.EqualTo(10));
-            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("lslogo3")), Has.Count.EqualTo(2));
+            Assert.That(rom.EmbeddedFiles.FindAll(file => file.FileName.Contains("lslogo4")), Has.Count.EqualTo(2));
             Assert.That(rom.EmbeddedImages, Has.Count.EqualTo(7));
         });
     }
