@@ -744,28 +744,32 @@ public class TerminalPrinter : ICliPrinter
         AnsiConsole.Write(table);
     }
 
+    public string FormatN64KeyCodeName(Code kc)
+    {
+        string name = kc.CodeName.Value;
+        return IsColor && kc.IsActiveKeyCode ? $"[green b u]{name.EscapeMarkup()}[/]" : name;
+    }
+
     public void PrintN64ActiveKeyCode(Code kc)
     {
+        string name = kc.CodeName.Value;
         string formatted = FormatN64KeyCodeBytes(kc, kc);
 
         if (!IsColor)
         {
             Console.WriteLine(
-                $"Active key code: [ {formatted} ] - {kc.CodeName.Value}");
+                $"Active key code: [ {formatted} ] - {name}");
             return;
         }
 
+        name = $"[green b u]{name}[/]";
 
         AnsiConsole.Markup($"""
-Active key code: [[ {formatted} ]] - {kc.CodeName.Value}
+[dim]                   ┏IPL3 CRC━┓ ┏F/W CRC━━┓  ┏PC Addr━┓ CD
+                   ┃         ┃ ┃         ┃  ┃        ┃  ┃[/]
+Active key code: [[ {formatted} ]] - {name}
 
 """);
-    }
-
-    public string FormatN64KeyCodeName(Code kc)
-    {
-        string name = kc.CodeName.Value;
-        return IsColor && kc.IsActiveKeyCode ? $"[green u]{name.EscapeMarkup()}[/]" : name;
     }
 
     public string FormatN64KeyCodeBytes(Code curKey, Code activeKey)
