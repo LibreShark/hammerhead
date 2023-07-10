@@ -743,4 +743,49 @@ public class TerminalPrinter : ICliPrinter
     {
         AnsiConsole.Write(table);
     }
+
+    public void PrintN64ActiveKeyCode(Code kc)
+    {
+        if (!IsColor)
+        {
+            Console.WriteLine(
+                $"Active key code: [ {kc.Formatted} ] - {kc.CodeName.Value}");
+            return;
+        }
+
+        string formatted = FormatN64KeyCodeBytes(kc);
+
+        AnsiConsole.Markup($"""
+Active key code: [[ {formatted} ]] - {kc.CodeName.Value}
+
+""");
+    }
+
+    public string FormatN64KeyCodeName(Code kc)
+    {
+        string name = kc.CodeName.Value;
+        return IsColor && kc.IsActiveKeyCode ? $"[green u]{name.EscapeMarkup()}[/]" : name;
+    }
+
+    public string FormatN64KeyCodeBytes(Code kc)
+    {
+        u8[] bytes = kc.Bytes.ToByteArray();
+
+        string crc1 = bytes[..4].ToHexString(" ");
+        string crc2 = bytes[4..8].ToHexString(" ");
+        string crc3 = bytes.Length > 9 ? bytes[8..12].ToHexString(" ") : bytes.Length.ToString();
+        string crc4 = new u8[] { bytes.Last() }.ToHexString();
+
+        string sp = crc3.Length > 0 ? " " : "";
+
+        if (IsColor && kc.IsActiveKeyCode)
+        {
+            crc1 = $"[green u]{crc1}[/]";
+            crc2 = $"[red u]{crc2}[/]";
+            crc3 = $"[yellow u]{crc3}[/]";
+            crc4 = $"[blue u]{crc4}[/]";
+        }
+
+        return $"{crc1} {crc2}{sp}{crc3} {crc4}";
+    }
 }

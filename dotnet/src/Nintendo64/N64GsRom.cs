@@ -380,20 +380,26 @@ public sealed class N64GsRom : AbstractCodec
         RomString? name = null;
         if (Data.KeyCodes.Count > 0)
         {
-            Code? activeKeyCode = Data.KeyCodes.ToList().Find(kc =>
+            Code? matchingKeyCodeInList = Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
             });
-            name = activeKeyCode?.CodeName;
+            name = matchingKeyCodeInList?.CodeName;
         }
 
-        return new Code()
+        var kc = new Code()
         {
             CodeName = name ?? "probably CIC-NUS-6102".ToRomString(),
-            Bytes = ByteString.CopyFrom(activeCrcBytes.Concat(activePcBytes).ToArray()),
             IsActiveKeyCode = true,
         };
+
+        u8[] keyCodeBytes = activeCrcBytes.Concat(activePcBytes).ToArray();
+        u8 checkDigit = new N64GsChecksum().GetCheckDigit(Buffer, keyCodeBytes);
+        keyCodeBytes = keyCodeBytes.Concat(new u8[] { checkDigit }).ToArray();
+        kc.Bytes = ByteString.CopyFrom(keyCodeBytes);
+
+        return kc;
     }
 
     private List<Code> ReadKeyCodes()
@@ -546,7 +552,7 @@ public sealed class N64GsRom : AbstractCodec
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
-        return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
+        return is256KiB && (DetectDecrypted(bytes) || DetectEncrypted(bytes));
     }
 
     public static bool Is(ICodec codec)
@@ -559,7 +565,7 @@ public sealed class N64GsRom : AbstractCodec
         return type == ThisCodecId;
     }
 
-    private static bool DetectPlain(u8[] bytes)
+    private static bool DetectDecrypted(u8[] bytes)
     {
         u8[] first4Bytes = bytes[..4];
         bool isN64 = first4Bytes.SequenceEqual(new u8[] { 0x80, 0x37, 0x12, 0x40 }) ||
@@ -584,8 +590,9 @@ public sealed class N64GsRom : AbstractCodec
 
     private static bool DetectCompressed(u8[] bytes)
     {
-        // The main menu title is stored in the firmware section of the ROM,
-        // so the title will not be found in plain text in compressed files.
+        // GameShark v2.50 and later use LZARI compression to store parts of
+        // the firmware as embedded files. Filename strings are only present
+        // in ROM versions that use compression.
         return bytes.Contains("shell.bin");
     }
 
@@ -610,7 +617,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintHeading("Key codes");
         string hexString = _activeKeyCode.Bytes.ToHexString(" ");
         string nameStr = _activeKeyCode.CodeName.Value;
-        Console.WriteLine($"Active key code: {hexString} {nameStr}");
+        printer.PrintN64ActiveKeyCode(_activeKeyCode);
         Console.WriteLine();
 
         if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
@@ -652,11 +659,11 @@ public sealed class N64GsRom : AbstractCodec
 
         foreach (Code keyCode in Data.KeyCodes)
         {
-            string keyCodeName = keyCode.CodeName.Value.EscapeMarkup();
-            string hexString = keyCode.Bytes.ToHexString(" ");
+            string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
+            string hexString = printer.FormatN64KeyCodeBytes(keyCode);
             table.AddRow(
                 keyCode.IsActiveKeyCode
-                    ? $"> [green underline]{keyCodeName}[/]" + " [ACTIVE]".EscapeMarkup()
+                    ? $"> {keyCodeName}" + " [ACTIVE]".EscapeMarkup()
                     : $"  {keyCodeName}",
                 hexString
             );

@@ -1,6 +1,5 @@
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
-using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.Test;

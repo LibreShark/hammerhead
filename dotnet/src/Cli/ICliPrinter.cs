@@ -53,4 +53,7 @@ public interface ICliPrinter
         Action action);
 
     void PrintTable(Table table);
+    void PrintN64ActiveKeyCode(Code kc);
+    string FormatN64KeyCodeName(Code kc);
+    string FormatN64KeyCodeBytes(Code kc);
 }
