@@ -153,8 +153,7 @@ public class CliCmd
         "encrypt",
         "Encrypt a ROM file " +
         "for compatibility with chip flashers and the manufacturer's official PC update utilities.\n" +
-        "If the ROM format does not support encryption, " +
-        "the output file will be a 1:1 copy of the input.")
+        "Not all ROM formats support encryption.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -164,8 +163,7 @@ public class CliCmd
     private readonly Command _decryptRomCmd = new Command(
         "decrypt",
         "Decrypt a ROM file so that it may be edited directly.\n" +
-        "If the ROM format does not support encryption, " +
-        "the output file will be a 1:1 copy of the input.")
+        "Not all ROM formats support encryption.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -176,8 +174,7 @@ public class CliCmd
         "scramble",
         "Scramble (reorder) the bytes in a ROM file " +
         "for compatibility with official PC update utilities and chip writers.\n" +
-        "If the ROM format does not support scrambling, " +
-        "the output file will be a 1:1 copy of the input.")
+        "Not all ROM formats support scrambling.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -187,8 +184,7 @@ public class CliCmd
     private readonly Command _unscrambleRomCmd = new Command(
         "unscramble",
         "Unscramble (reorder) the bytes in a ROM file.\n" +
-        "If the ROM format does not support scrambling, " +
-        "the output file will be a 1:1 copy of the input.")
+        "Not all ROM formats support scrambling.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -197,7 +193,8 @@ public class CliCmd
 
     private readonly Command _extractRomCmd = new Command(
         "extract",
-        "Extract embedded files from the given ROM(s).")
+        "Extract embedded files from the given ROM(s).\n" +
+        "Not all ROM formats support extraction.")
     {
         OverwriteOption,
         InputFilesArgument,
