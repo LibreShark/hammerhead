@@ -55,5 +55,5 @@ public interface ICliPrinter
     void PrintTable(Table table);
     void PrintN64ActiveKeyCode(Code kc);
     string FormatN64KeyCodeName(Code kc);
-    string FormatN64KeyCodeBytes(Code kc);
+    string FormatN64KeyCodeBytes(Code curCode, Code activeCode);
 }

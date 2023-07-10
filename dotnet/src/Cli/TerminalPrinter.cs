@@ -746,14 +746,15 @@ public class TerminalPrinter : ICliPrinter
 
     public void PrintN64ActiveKeyCode(Code kc)
     {
+        string formatted = FormatN64KeyCodeBytes(kc, kc);
+
         if (!IsColor)
         {
             Console.WriteLine(
-                $"Active key code: [ {kc.Formatted} ] - {kc.CodeName.Value}");
+                $"Active key code: [ {formatted} ] - {kc.CodeName.Value}");
             return;
         }
 
-        string formatted = FormatN64KeyCodeBytes(kc);
 
         AnsiConsole.Markup($"""
 Active key code: [[ {formatted} ]] - {kc.CodeName.Value}
@@ -767,23 +768,27 @@ Active key code: [[ {formatted} ]] - {kc.CodeName.Value}
         return IsColor && kc.IsActiveKeyCode ? $"[green u]{name.EscapeMarkup()}[/]" : name;
     }
 
-    public string FormatN64KeyCodeBytes(Code kc)
+    public string FormatN64KeyCodeBytes(Code curKey, Code activeKey)
     {
-        u8[] bytes = kc.Bytes.ToByteArray();
+        u8[] bytes = curKey.Bytes.ToByteArray();
 
         string crc1 = bytes[..4].ToHexString(" ");
         string crc2 = bytes[4..8].ToHexString(" ");
-        string crc3 = bytes.Length > 9 ? bytes[8..12].ToHexString(" ") : bytes.Length.ToString();
+        string crc3 = bytes.Length > 9 ? bytes[8..12].ToHexString(" ") : "";
         string crc4 = new u8[] { bytes.Last() }.ToHexString();
 
         string sp = crc3.Length > 0 ? " " : "";
 
-        if (IsColor && kc.IsActiveKeyCode)
+        if (IsColor && curKey.IsActiveKeyCode)
         {
             crc1 = $"[green u]{crc1}[/]";
             crc2 = $"[red u]{crc2}[/]";
-            crc3 = $"[yellow u]{crc3}[/]";
             crc4 = $"[blue u]{crc4}[/]";
+        }
+
+        if (IsColor && bytes.Length > 9 && activeKey.Bytes.ToByteArray().Contains(bytes[8..12]))
+        {
+            crc3 = $"[yellow u]{crc3}[/]";
         }
 
         return $"{crc1} {crc2}{sp}{crc3} {crc4}";

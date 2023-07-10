@@ -660,7 +660,7 @@ public sealed class N64GsRom : AbstractCodec
         foreach (Code keyCode in Data.KeyCodes)
         {
             string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
-            string hexString = printer.FormatN64KeyCodeBytes(keyCode);
+            string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);
             table.AddRow(
                 keyCode.IsActiveKeyCode
                     ? $"> {keyCodeName}" + " [ACTIVE]".EscapeMarkup()

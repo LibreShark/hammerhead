@@ -4,7 +4,7 @@ namespace LibreShark.Hammerhead.Nintendo64;
 
 public class N64GsChecksum
 {
-    public u8 GetCheckDigit(u8[] romFile, u8[] kcBytes)
+    public u8 GetCheckDigit(u8[] romFile, u8[] keyCodeBytes)
     {
         var fileScribe = new BigEndianScribe(romFile);
         fileScribe.Seek(0x30);
@@ -15,8 +15,8 @@ public class N64GsChecksum
 
         u32 checksum = n1 + n2 + n3 + n4;
 
-        var kcScribe = new BigEndianScribe(kcBytes);
-        while (kcScribe.Position <= kcBytes.Length - 4)
+        var kcScribe = new BigEndianScribe(keyCodeBytes);
+        while (kcScribe.Position <= keyCodeBytes.Length - 4)
         {
             u32 num = kcScribe.ReadU32();
             checksum += num;
