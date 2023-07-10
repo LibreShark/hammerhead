@@ -79,10 +79,12 @@ public class N64GsChecksum
                 $"{data.Length} (0x{data.Length:X} or {PrettySize.Format(data.Length)})");
         }
 
-        // TODO(CheatoBaggins): Is this right? Python version does `words.byteswap()`
-        Array.Reverse(data, 0, PROGRAM_SIZE);
-        u32[] words = new u32[PROGRAM_SIZE / 4];
-        Buffer.BlockCopy(data, 0, words, 0, PROGRAM_SIZE);
+        var scribe = new BigEndianScribe(data);
+        var words = new List<u32>();
+        while (!scribe.EndReached)
+        {
+            words.Add(scribe.ReadU32());
+        }
 
         u32 checksum;
         switch (cic)

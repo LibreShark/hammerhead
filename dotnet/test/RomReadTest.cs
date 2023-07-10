@@ -272,7 +272,6 @@ public class RomReadTest
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
         string computedKeyCode = N64GsChecksum.ComputeKeyCode(romFileBytes, N64Cic.CIC6102_Mario).ToHexString(" ");
         string expectedKeyCode = "EA 6D 5B F8 E2 B4 69 6C 80 18 00 00 2B";
-        // TODO(CheatoBaggins): Fix this failing test and uncomment this line
-        // Assert.That(computedKeyCode, Is.EqualTo(expectedKeyCode));
+        Assert.That(computedKeyCode, Is.EqualTo(expectedKeyCode));
     }
 }

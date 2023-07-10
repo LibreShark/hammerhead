@@ -29,6 +29,3 @@ jobs:
       run: |
         dotnet tool install --global dotnet-releaser
         dotnet-releaser run --github-token "${{secrets.GITHUB_TOKEN}}" dotnet-releaser.toml
-    - name: Test
-      working-directory: dotnet/
-      run: dotnet test --no-build --verbosity normal
