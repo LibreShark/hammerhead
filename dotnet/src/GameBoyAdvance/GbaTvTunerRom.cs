@@ -3,17 +3,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyAdvance;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// TV Tuner for Game Boy Advance, made by Blaze and Pelican Accessories.
 /// There are NTSC and PAL variants.
@@ -43,7 +32,7 @@ public sealed class GbaTvTunerRom : AbstractCodec
         Support.HasPristineUserPrefs = false;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -62,7 +51,7 @@ public sealed class GbaTvTunerRom : AbstractCodec
         return idStr == "GBA_Capture";
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

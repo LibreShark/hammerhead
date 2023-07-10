@@ -8,19 +8,11 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
-/// Encrypt or decrypt a GameShark ROM image used with the official N64Utils program.
+/// Encrypt or decrypt a GameShark ROM image for use with Datel's official
+/// N64 Utils PC program, which requires encrypted ROMs.
+///
+/// See also: https://github.com/Jhynjhiruu/gsdec/blob/10a97456fb07d1d3f0d643426893462cbde95a17/src/main.rs
 /// </summary>
 class N64GsCrypter
 {

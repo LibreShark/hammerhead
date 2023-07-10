@@ -2,17 +2,9 @@ using System.Collections.Immutable;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
+/// <summary>
+/// Encrypts/decrypts cheat codes used by <see cref="N64XpRom"/> files.
+/// </summary>
 public static class N64XpCrypter
 {
     public static bool IsCodeEncrypted(IReadOnlyList<u8> code)

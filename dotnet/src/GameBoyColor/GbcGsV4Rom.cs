@@ -4,17 +4,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// v4.x GameShark and Action Replay for Game Boy Color and Game Boy Pocket,
 /// made by Datel/InterAct.
@@ -163,7 +152,7 @@ public sealed class GbcGsV4Rom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -206,7 +195,7 @@ public sealed class GbcGsV4Rom : AbstractCodec
         return -1;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

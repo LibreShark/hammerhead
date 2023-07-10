@@ -1,24 +1,20 @@
+using System.Text.RegularExpressions;
 using Google.Protobuf;
+using LibreShark.Hammerhead.Api;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// GameShark (USA/CAN), Action Replay (UK/EU), Equalizer (UK/EU), and Game Buster (Germany) for
 /// Nintendo 64, made by Datel/InterAct.
+///
+/// See
+/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/gameshark.us.yaml
+/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c#L619
 /// </summary>
 public sealed class N64GsRom : AbstractCodec
 {
@@ -26,6 +22,8 @@ public sealed class N64GsRom : AbstractCodec
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
+
+    private static readonly Regex FileNameRegex = new Regex(@"^[\w~.]+$");
 
     /// <summary>
     /// The GS firmware will silently truncate names beyond this length.
@@ -66,6 +64,11 @@ public sealed class N64GsRom : AbstractCodec
 
     private N64Data Data => Parsed.N64Data;
 
+    private readonly List<EmbeddedFile> _rootCompressedFiles;
+    private readonly List<EmbeddedFile> _shellCompressedFiles;
+
+    private EmbeddedFile? ShellFile => _rootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
+
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
     {
@@ -74,22 +77,26 @@ public sealed class N64GsRom : AbstractCodec
         Support.SupportsCheats = true;
         Support.SupportsKeyCodes = true;
         Support.SupportsFirmware = true;
+        Support.SupportsFileExtraction = true;
         Support.SupportsFileEncryption = true;
 
         Support.HasCheats = true;
         Support.HasFirmware = true;
 
-        // TODO(CheatoBaggins): Decompress v3.x ROM files
-
         _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
-        _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(15, true);
+        _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(16, true);
 
         Metadata.Identifiers.Add(_headerId);
         Metadata.Identifiers.Add(_rawTimestamp);
 
-        _version = ReadVersion();
+        Support.SupportsFirmwareCompression = DetectCompressed(rawInput);
+        Support.IsFirmwareCompressed        = DetectCompressed(rawInput);
+        Support.IsFileEncrypted             = DetectEncrypted(rawInput);
 
-        Support.SupportsFirmwareCompression = _version.Number >= 2.5;
+        _rootCompressedFiles = ReadRootFiles();
+        _shellCompressedFiles = ReadShellFiles();
+
+        _version = ReadVersion();
 
         Metadata.BrandId = _version.Brand;
         Metadata.BuildDateRaw = _rawTimestamp;
@@ -114,12 +121,148 @@ public sealed class N64GsRom : AbstractCodec
         Data.KeyCodes.AddRange(ReadKeyCodes());
         _activeKeyCode = ReadActiveKeyCode();
 
-        Support.IsFileEncrypted      = DetectEncrypted(rawInput);
-        Support.IsFirmwareCompressed = DetectCompressed(rawInput);
         Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
         Games.AddRange(ReadGames());
+
+        EmbeddedFiles.AddRange(_rootCompressedFiles);
+        EmbeddedFiles.AddRange(_shellCompressedFiles);
+        EmbeddedImages.AddRange(GetLogoImages(_rootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(_rootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(_shellCompressedFiles));
+    }
+
+    private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
+    {
+        var decoder = new N64GsImageDecoder();
+
+        List<EmbeddedFile> paletteFiles = files.Where(file => file.FileName.EndsWith(".pal")).ToList();
+
+        return (
+            from paletteFile in paletteFiles
+            let imageFile = files.First(
+                curFile => curFile.FileName == paletteFile.FileName.Replace(".pal", ".bin")
+            )
+            let image = decoder.DecodeStartupLogo(
+                paletteFile.UncompressedBytes,
+                imageFile.UncompressedBytes,
+                true,
+                new Rgb24(0, 0, 0)
+            )
+            select new EmbeddedImage(paletteFile.FileName, image)
+        ).ToList();
+    }
+
+    private List<EmbeddedImage> GetTileImages(List<EmbeddedFile> files)
+    {
+        var decoder = new N64GsImageDecoder();
+        return files
+            .Where(file => file.FileName.EndsWith(".tg~"))
+            .Select(file =>
+                {
+                    Image<Rgba32> image = decoder.Decode16BitRgba(file.UncompressedBytes, file.FileName);
+                    return new EmbeddedImage(file.FileName, image);
+                }
+            )
+            .ToList();
+    }
+
+    private List<EmbeddedFile> ReadRootFiles()
+    {
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed)
+        {
+            return new List<EmbeddedFile>();
+        }
+        return ReadAllFiles(Buffer);
+    }
+
+    private List<EmbeddedFile> ReadShellFiles()
+    {
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed)
+        {
+            return new List<EmbeddedFile>();
+        }
+
+        if (!ShellFile.HasValue)
+        {
+            return new List<EmbeddedFile>();
+        }
+
+        return ReadAllFiles(ShellFile.Value.UncompressedBytes);
+    }
+
+    private List<EmbeddedFile> ReadAllFiles(u8[] fsblob)
+    {
+        var files = new List<EmbeddedFile>();
+
+        // TODO(CheatoBaggins): Figure out how to read images from
+        // uncompressed ROMs (v2.4 and earlier).
+        if (!Support.IsFirmwareCompressed || fsblob.Length == 0)
+        {
+            return files;
+        }
+
+        var scribe = new BigEndianScribe(fsblob);
+        var decoder = new N64GsLzariEncoder();
+
+        // The first occurrence of each filename is used internally by the
+        // GS firmware to look up the location of the embedded file in the
+        // fsblob section.
+        //
+        // The second occurrence of each filename is found inside the fsblob,
+        // and marks the start of the embedded file.
+        //
+        // Each file is stored as a struct containing the byte length of the
+        // entire struct (encoded as a big endian u32), the name of the file
+        // as a C string, and finally the actual (compressed) contents of
+        // the file.
+        //
+        // shell.bin is always the first file stored in the ROM,
+        // and tile1.tg~ is always the first file stored in the shell.
+        int[] nameOffsets = fsblob.FindAll("shell.bin");
+        if (nameOffsets.Length == 0)
+        {
+            nameOffsets = fsblob.FindAll("tile1.tg~");
+        }
+        if (nameOffsets.Length == 0)
+        {
+            return files;
+        }
+
+        int structOffset = nameOffsets[1] - 4;
+
+        scribe.Seek(structOffset);
+
+        while (true)
+        {
+            if (scribe.EndReached ||
+                scribe.Position >= fsblob.Length - 0x10 ||
+                scribe.IsPadding())
+            {
+                break;
+            }
+            u32 structLen = scribe.ReadU32();
+
+            // Account for the length (4-byte u32) and name (12-byte string) fields.
+            u32 dataLen = structLen - 0x10;
+
+            string curFileName = scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
+            if (!FileNameRegex.IsMatch(curFileName))
+            {
+                break;
+            }
+
+            u8[] compressedBytes = scribe.ReadBytes(dataLen);
+            var file = new EmbeddedFile(curFileName, compressedBytes, decoder.Decode(compressedBytes));
+            files.Add(file);
+        }
+
+        return files;
     }
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
@@ -226,20 +369,26 @@ public sealed class N64GsRom : AbstractCodec
         RomString? name = null;
         if (Data.KeyCodes.Count > 0)
         {
-            Code? activeKeyCode = Data.KeyCodes.ToList().Find(kc =>
+            Code? matchingKeyCodeInList = Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
             });
-            name = activeKeyCode?.CodeName;
+            name = matchingKeyCodeInList?.CodeName;
         }
 
-        return new Code()
+        var kc = new Code()
         {
             CodeName = name ?? "probably CIC-NUS-6102".ToRomString(),
-            Bytes = ByteString.CopyFrom(activeCrcBytes.Concat(activePcBytes).ToArray()),
             IsActiveKeyCode = true,
         };
+
+        u8[] keyCodeBytes = activeCrcBytes.Concat(activePcBytes).ToArray();
+        u8 checkDigit = N64GsChecksum.GetCheckDigit(Buffer, keyCodeBytes);
+        keyCodeBytes = keyCodeBytes.Concat(new u8[] { checkDigit }).ToArray();
+        kc.Bytes = ByteString.CopyFrom(keyCodeBytes);
+
+        return kc;
     }
 
     private List<Code> ReadKeyCodes()
@@ -277,23 +426,31 @@ public sealed class N64GsRom : AbstractCodec
         return keyCodes;
     }
 
+    // TODO(CheatoBaggins): Move this method to the N64GsVersion class
     private N64GsVersion ReadVersion()
     {
-        // TODO(CheatoBaggins): Decompress v2.5+ firmware before scanning
-        RomString? titleVersionNumberStr = ReadTitleVersion("N64 GameShark Version ") ??
-                                           ReadTitleVersion("GameShark Pro Version ") ??
-                                           ReadTitleVersion("N64 Action Replay Version ") ??
-                                           ReadTitleVersion("Action Replay Pro Version ") ??
-                                           ReadTitleVersion("N64 Equalizer Version ") ??
-                                           ReadTitleVersion("N64 Game Buster Version ");
+        RomString? titleVersionNumberStr =
+            // Original brands
+            ReadMainMenuTitle("N64 GameShark Version ") ??
+            ReadMainMenuTitle("GameShark Pro Version ") ??
+            ReadMainMenuTitle("N64 Action Replay Version ") ??
+            ReadMainMenuTitle("Action Replay Pro Version ") ??
+            ReadMainMenuTitle("N64 Equalizer Version ") ??
+            ReadMainMenuTitle("N64 Game Buster Version ") ??
+            // LibreShark
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            // Unknown
+            null;
 
         if (titleVersionNumberStr != null)
         {
             Metadata.Identifiers.Add(titleVersionNumberStr);
         }
 
-        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value)?
-            .WithTitleVersionNumber(titleVersionNumberStr?.Value);
+        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, titleVersionNumberStr);
         if (version == null)
         {
             throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
@@ -302,20 +459,33 @@ public sealed class N64GsRom : AbstractCodec
         return version;
     }
 
-    private RomString? ReadTitleVersion(string needle)
+    private RomString? ReadMainMenuTitle(string needle)
     {
-        u8[] haystack = Buffer[..0x30000];
-        s32 titleVersionPos = haystack.Find(needle);
-        bool isCompressed = titleVersionPos == -1;
-        if (isCompressed)
+        s32 titleLength = needle.Length + 5;
+
+        if (IsFirmwareCompressed() && ShellFile.HasValue)
         {
-            return null;
+            u8[] shellBytes = ShellFile.Value.UncompressedBytes;
+            s32 titleVersionPos = shellBytes.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
+
+            u8[] titleBytes = shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
+            return titleBytes.ToAsciiString().ToRomString();
         }
+        else
+        {
+            u8[] haystack = Buffer[..0x30000];
+            s32 titleVersionPos = haystack.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
 
-        // Uncomment to return ONLY the number (e.g., "2.21")
-        // titleVersionPos += needle.Length;
-
-        return Scribe.Seek((u32)titleVersionPos).ReadPrintableCString((u32)needle.Length + 5, true).Trim();
+            return Scribe.Seek(titleVersionPos).ReadPrintableCString((u32)titleLength, true).Trim();
+        }
     }
 
     private void WriteName(string str)
@@ -335,7 +505,7 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.WriteCString(str, 30);
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
@@ -371,10 +541,10 @@ public sealed class N64GsRom : AbstractCodec
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
-        return is256KiB && (DetectPlain(bytes) || DetectEncrypted(bytes));
+        return is256KiB && (DetectDecrypted(bytes) || DetectEncrypted(bytes));
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -384,14 +554,22 @@ public sealed class N64GsRom : AbstractCodec
         return type == ThisCodecId;
     }
 
-    private static bool DetectPlain(u8[] bytes)
+    private static bool DetectDecrypted(u8[] bytes)
     {
         u8[] first4Bytes = bytes[..4];
         bool isN64 = first4Bytes.SequenceEqual(new u8[] { 0x80, 0x37, 0x12, 0x40 }) ||
                      first4Bytes.SequenceEqual(new u8[] { 0x80, 0x37, 0x12, 0x00 });
         const string v1Or2Header = "(C) DATEL D&D ";
         const string v3ProHeader = "(C) MUSHROOM &";
-        return isN64 && (bytes.Contains(v1Or2Header) || bytes.Contains(v3ProHeader));
+        const string libreShark1 = "(C) Jhynjhiruu"; // First few builds
+        const string libreShark2 = "(C) LibreShark"; // All later builds
+        return isN64 && (
+            bytes.Contains(v1Or2Header) ||
+            bytes.Contains(v3ProHeader) ||
+            bytes.Contains(libreShark1) ||
+            bytes.Contains(libreShark2) ||
+            false
+        );
     }
 
     private static bool DetectEncrypted(u8[] bytes)
@@ -401,9 +579,10 @@ public sealed class N64GsRom : AbstractCodec
 
     private static bool DetectCompressed(u8[] bytes)
     {
-        // The main menu title is stored in the firmware section of the ROM,
-        // so the title will not be found in plain text in compressed files.
-        return !bytes.Contains(" Version ");
+        // GameShark v2.50 and later use LZARI compression to store parts of
+        // the firmware as embedded files. Filename strings are only present
+        // in ROM versions that use compression.
+        return bytes.Contains("shell.bin");
     }
 
     public override u8[] Encrypt()
@@ -419,7 +598,7 @@ public sealed class N64GsRom : AbstractCodec
         return new BigEndianScribe(output);
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("Addresses");
         PrintAddressTable(printer);
@@ -427,7 +606,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintHeading("Key codes");
         string hexString = _activeKeyCode.Bytes.ToHexString(" ");
         string nameStr = _activeKeyCode.CodeName.Value;
-        Console.WriteLine($"Active key code: {hexString} {nameStr}");
+        printer.PrintN64ActiveKeyCode(_activeKeyCode);
         Console.WriteLine();
 
         if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
@@ -440,7 +619,7 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
-    private void PrintAddressTable(TerminalPrinter printer)
+    private void PrintAddressTable(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Section"))
@@ -460,7 +639,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private void PrintKeyCodesTable(TerminalPrinter printer)
+    private void PrintKeyCodesTable(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Games (CIC chip)"))
@@ -469,11 +648,11 @@ public sealed class N64GsRom : AbstractCodec
 
         foreach (Code keyCode in Data.KeyCodes)
         {
-            string keyCodeName = keyCode.CodeName.Value.EscapeMarkup();
-            string hexString = keyCode.Bytes.ToHexString(" ");
+            string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
+            string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);
             table.AddRow(
                 keyCode.IsActiveKeyCode
-                    ? $"> [green underline]{keyCodeName}[/]" + " [ACTIVE]".EscapeMarkup()
+                    ? $"> {keyCodeName}" + " [ACTIVE]".EscapeMarkup()
                     : $"  {keyCodeName}",
                 hexString
             );

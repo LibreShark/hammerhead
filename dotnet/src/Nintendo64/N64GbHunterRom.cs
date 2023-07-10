@@ -1,19 +1,10 @@
+using LibreShark.Hammerhead.Api;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Nintendo64;
-
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
 
 /// <summary>
 /// GB Hunter (aka Game Booster in the UK),
@@ -51,7 +42,7 @@ public sealed class N64GbHunterRom : AbstractCodec
         // Metadata.BrandId = BrandId.GbHunter;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -68,7 +59,7 @@ public sealed class N64GbHunterRom : AbstractCodec
         return is256KiB && bytes.FindAll("RLE01").Length == 6;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
@@ -78,14 +69,14 @@ public sealed class N64GbHunterRom : AbstractCodec
         return type == ThisCodecId;
     }
 
-    public override void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params)
+    public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
         printer.PrintHeading("RLE01 addresses");
         PrintRLE01Addrs(printer);
     }
 
     // ReSharper disable once InconsistentNaming
-    private void PrintRLE01Addrs(TerminalPrinter printer)
+    private void PrintRLE01Addrs(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
                 .AddColumn(printer.HeaderCell("Address"))

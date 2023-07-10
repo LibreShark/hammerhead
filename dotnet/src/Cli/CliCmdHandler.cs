@@ -3,17 +3,17 @@
 
 using System.CommandLine.Invocation;
 
-namespace LibreShark.Hammerhead;
+namespace LibreShark.Hammerhead.Cli;
 
-public class AnonymousCliCommandHandler : ICommandHandler
+public class CliCmdHandler : ICommandHandler
 {
     private readonly Func<InvocationContext, Task>? _asyncHandle;
     private readonly Action<InvocationContext>? _syncHandle;
 
-    public AnonymousCliCommandHandler(Func<InvocationContext, Task> handle)
+    public CliCmdHandler(Func<InvocationContext, Task> handle)
         => _asyncHandle = handle ?? throw new ArgumentNullException(nameof(handle));
 
-    public AnonymousCliCommandHandler(Action<InvocationContext> handle)
+    public CliCmdHandler(Action<InvocationContext> handle)
         => _syncHandle = handle ?? throw new ArgumentNullException(nameof(handle));
 
     public int Invoke(InvocationContext context)

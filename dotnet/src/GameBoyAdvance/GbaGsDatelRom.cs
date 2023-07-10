@@ -129,7 +129,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -148,7 +148,7 @@ public sealed class GbaGsDatelRom : AbstractCodec
         return hasMagicNumber && hasMagicText;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

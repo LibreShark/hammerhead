@@ -6,17 +6,9 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
+/// <summary>
+/// Plain-text cheat file format used by Datel's official N64 PC Utils.
+/// </summary>
 public sealed class N64GsText : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
@@ -139,8 +131,7 @@ public sealed class N64GsText : AbstractCodec
 
     private void PrintWarning(Exception e)
     {
-        var printer = new TerminalPrinter(this);
-        printer.PrintWarning(e.Message);
+        Printer.PrintWarning(e.Message);
     }
 
     private string TruncateName(RomString romStr)
@@ -158,7 +149,7 @@ public sealed class N64GsText : AbstractCodec
         return name;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         var sb = new StringBuilder();
         sb.AppendLine($"""

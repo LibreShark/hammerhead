@@ -1,0 +1,18 @@
+# configuration file for dotnet-releaser
+
+[msbuild]
+project = "dotnet.sln"
+
+[github]
+user = "LibreShark"
+repo = "hammerhead"
+version_prefix = "v"
+
+[nuget]
+publish = false
+
+[brew]
+publish = false
+
+[scoop]
+publish = false

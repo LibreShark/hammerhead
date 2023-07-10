@@ -1,18 +1,8 @@
 using Google.Protobuf;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Codecs;
-
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
 
 public sealed class ProtobufJson : AbstractCodec
 {
@@ -43,7 +33,7 @@ public sealed class ProtobufJson : AbstractCodec
         Support.SupportsSmxMessages = true;
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         var formatter = new JsonFormatter(
             JsonFormatter.Settings.Default
@@ -51,7 +41,8 @@ public sealed class ProtobufJson : AbstractCodec
                 .WithFormatDefaultValues(false)
                 .WithPreserveProtoFieldNames(true)
         );
-        Buffer = $"{formatter.Format(Dump)}\n".ToUtf8Bytes();
+        var dump = new DumpFactory().Dumpify(new ParsedFile[] { Parsed });
+        Buffer = $"{formatter.Format(dump)}\n".ToUtf8Bytes();
         return this;
     }
 

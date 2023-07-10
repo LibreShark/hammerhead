@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
-using System.Reflection;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
+using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.GameBoy;
 using LibreShark.Hammerhead.GameBoyAdvance;
 using LibreShark.Hammerhead.GameBoyColor;
@@ -10,50 +11,8 @@ using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
-public abstract class AbstractCodec
+public abstract class AbstractCodec : ICodec
 {
-    public ImmutableArray<u8> RawInput { get; }
-
-    /// <summary>
-    /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
-    /// If the input file is encrypted/scrambled, it must be
-    /// decrypted/unscrambled immediately in the subclass constructor.
-    /// </summary>
-    public u8[] Buffer
-    {
-        get => Scribe.GetBufferCopy();
-        protected set => Scribe.ResetBuffer(value);
-    }
-
-    protected readonly HammerheadDump Dump;
-
-    protected ParsedFile Parsed
-    {
-        get => Dump.ParsedFiles.First();
-        set
-        {
-            Dump.ParsedFiles.Clear();
-            Dump.ParsedFiles.Add(value);
-        }
-    }
-
-    public FileMetadata Metadata => Parsed.Metadata;
-
-    public RepeatedField<Game> Games => Parsed.Games;
-
-    protected readonly AbstractBinaryScribe Scribe;
-
     private static readonly CodecFileFactory[] CodecFactories = new[] {
         // Game Boy (original and Pocket)
         GbGsRom.Factory,
@@ -86,9 +45,35 @@ public abstract class AbstractCodec
         UnknownCodec.Factory,
     };
 
+    public ImmutableArray<u8> RawInput { get; }
+
+    /// <summary>
+    /// Plain, unencrypted, unobfuscated copy of the internal ROM bytes.
+    /// If the input file is encrypted/scrambled, it must be
+    /// decrypted/unscrambled immediately in the subclass constructor.
+    /// </summary>
+    public u8[] Buffer
+    {
+        get => Scribe.GetBufferCopy();
+        protected set => Scribe.ResetBuffer(value);
+    }
+
+    public FileMetadata Metadata => Parsed.Metadata;
+
+    public RepeatedField<Game> Games => Parsed.Games;
+
     public CodecFeatureSupport Support => Metadata.CodecFeatureSupport;
 
     public abstract CodecId DefaultCheatOutputCodec { get; }
+
+    public List<EmbeddedFile> EmbeddedFiles { get; }
+    public List<EmbeddedImage> EmbeddedImages { get; }
+
+    protected ParsedFile Parsed { get; private set; }
+
+    protected readonly AbstractBinaryScribe Scribe;
+
+    protected ICliPrinter Printer;
 
     protected AbstractCodec(
         string filePath,
@@ -100,19 +85,6 @@ public abstract class AbstractCodec
     {
         Scribe = scribe;
         RawInput = rawInput.ToImmutableArray();
-        var entryAssembly = Assembly.GetEntryAssembly()!;
-        Dump = new HammerheadDump()
-        {
-            AppInfo = new AppInfo()
-            {
-                AppName = entryAssembly.GetName().Name,
-                SemanticVersion = GitVersionInformation.AssemblySemVer,
-                InformationalVersion = GitVersionInformation.InformationalVersion,
-                BuildDateIso = entryAssembly.GetBuildDate().ToIsoString(),
-                WriteDateIso = DateTimeOffset.Now.ToIsoString(),
-                SourceCodeUrl = "https://github.com/LibreShark/hammerhead",
-            },
-        };
         Parsed = new ParsedFile()
         {
             Metadata = new FileMetadata()
@@ -124,13 +96,16 @@ public abstract class AbstractCodec
                 CodecFeatureSupport = new CodecFeatureSupport(),
             },
         };
+        Printer = new TerminalPrinter(this);
+        EmbeddedFiles = new List<EmbeddedFile>();
+        EmbeddedImages = new List<EmbeddedImage>();
     }
 
     protected virtual void SanitizeCustomProtoFields(ParsedFile parsed)
     {
     }
 
-    public AbstractCodec ImportFromProto(ParsedFile parsed)
+    public ICodec ImportFromProto(ParsedFile parsed)
     {
         var old = Parsed;
         Parsed = new ParsedFile(parsed)
@@ -147,24 +122,32 @@ public abstract class AbstractCodec
         return this;
     }
 
-    public ParsedFile ToSlimProto()
+    public ParsedFile ToFullProto()
     {
-        var parsed = new ParsedFile(Parsed);
-        ParsedFile normalized = NormalizeProto(parsed);
-        SanitizeCustomProtoFields(normalized);
-        return normalized;
+        var proto = new ParsedFile(Parsed);
+        Format(proto);
+        return proto;
     }
 
-    public virtual void PrintCustomHeader(TerminalPrinter printer, InfoCmdParams @params) {}
+    public ParsedFile ToSlimProto()
+    {
+        var proto = new ParsedFile(Parsed);
+        SanitizeStandardProtoFields(proto);
+        SanitizeCustomProtoFields(proto);
+        Format(proto);
+        return proto;
+    }
 
-    public virtual void PrintGames(TerminalPrinter printer, InfoCmdParams @params) {
+    public virtual void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params) {}
+
+    public virtual void PrintGames(ICliPrinter printer, InfoCmdParams @params) {
         if (SupportsCheats() && !@params.HideGames)
         {
             printer.PrintGames(@params);
         }
     }
 
-    public virtual void PrintCustomBody(TerminalPrinter printer, InfoCmdParams @params) {}
+    public virtual void PrintCustomBody(ICliPrinter printer, InfoCmdParams @params) {}
 
     public void AddFileProps(Table table)
     {
@@ -192,6 +175,11 @@ public abstract class AbstractCodec
     public bool SupportsCheats()
     {
         return Metadata.CodecFeatureSupport.SupportsCheats;
+    }
+
+    public bool SupportsFileExtraction()
+    {
+        return Metadata.CodecFeatureSupport.SupportsFileExtraction;
     }
 
     public bool SupportsFileEncryption()
@@ -249,12 +237,12 @@ public abstract class AbstractCodec
         return Buffer;
     }
 
-    public u8[] Unscramble()
+    public virtual u8[] Unscramble()
     {
         return Buffer;
     }
 
-    public static AbstractCodec ReadFromFile(string romFilePath, CodecId codecId = CodecId.Auto)
+    public static ICodec ReadFromFile(string romFilePath, CodecId codecId = CodecId.Auto)
     {
         u8[] bytes = File.ReadAllBytes(romFilePath);
 
@@ -267,10 +255,21 @@ public abstract class AbstractCodec
             throw new NotImplementedException($"ERROR: Unable to find codec factory for codec ID {codecId} ({codecId.ToDisplayString()}).");
         }
 
-        return factory.Create(romFilePath, bytes);
+        ICodec codec = factory.Create(romFilePath, bytes);
+        foreach (Game game in codec.Games)
+        {
+            foreach (Cheat cheat in game.Cheats)
+            {
+                foreach (Code code in cheat.Codes)
+                {
+                    code.Formatted = code.Bytes.ToCodeString(codec.Metadata.ConsoleId);
+                }
+            }
+        }
+        return codec;
     }
 
-    public static AbstractCodec CreateFromId(string outputFilePath, CodecId codecId)
+    public static ICodec CreateFromId(string outputFilePath, CodecId codecId)
     {
         u8[] bytes = Array.Empty<byte>();
         CodecFileFactory? factory = CodecFactories.FirstOrDefault(factory => factory.IsCodec(codecId));
@@ -281,9 +280,23 @@ public abstract class AbstractCodec
         return factory.Create(outputFilePath, bytes);
     }
 
-    public abstract AbstractCodec WriteChangesToBuffer();
+    public abstract ICodec WriteChangesToBuffer();
 
-    private static ParsedFile NormalizeProto(ParsedFile parsedFile)
+    private static void Format(ParsedFile parsedFile)
+    {
+        foreach (Game game in parsedFile.Games)
+        {
+            foreach (Cheat cheat in game.Cheats)
+            {
+                foreach (Code code in cheat.Codes)
+                {
+                    code.Formatted = code.Bytes.ToCodeString(parsedFile.Metadata.ConsoleId);
+                }
+            }
+        }
+    }
+
+    private static void SanitizeStandardProtoFields(ParsedFile parsedFile)
     {
         RomString[] ids = parsedFile.Metadata.Identifiers
             .Select(rs => rs.WithoutAddress())
@@ -311,7 +324,6 @@ public abstract class AbstractCodec
         }).ToArray();
         parsedFile.Games.Clear();
         parsedFile.Games.AddRange(games);
-        return parsedFile;
     }
 
     public bool IsValidFormat()

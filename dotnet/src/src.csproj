@@ -12,15 +12,15 @@
         <Title>Hammerhead</Title>
         <Authors>LibreShark project contributors</Authors>
         <Description>Hammerhead is a Swiss Army Knife for ROM files: it supports reading, writing, encrypting, and decrypting ROM/firmware dumps from 1990s-2000s era video game enhancers (GameShark, Action Replay, Code Breaker, Xplorer/Xploder, etc.).</Description>
-        <Copyright>MIT license</Copyright>
+        <Copyright>LibreShark contributors</Copyright>
         <PackageProjectUrl>https://github.com/LibreShark/hammerhead</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/LibreShark/hammerhead/blob/main/LICENSE</PackageLicenseUrl>
+        <PackageLicenseExpression>bsd-3-clause-clear</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/LibreShark/hammerhead</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Company>LibreShark project</Company>
         <Product>Hammerhead</Product>
         <NeutralLanguage>en-US</NeutralLanguage>
-        <Version>0.9.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,9 +40,15 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="log4net" Version="2.0.15" />
       <PackageReference Include="NeoSmart.PrettySize" Version="3.1.1" />
+      <PackageReference Include="Ninject" Version="4.0.0-beta.1" />
+      <PackageReference Include="Ninject.Extensions.Factory" Version="3.3.3" />
+      <PackageReference Include="Ninject.Extensions.Logging" Version="3.3.0" />
+      <PackageReference Include="Ninject.Extensions.Logging.Log4net" Version="3.3.0" />
       <PackageReference Include="NUnit" Version="3.13.3" />
       <PackageReference Include="Protobuf.Text" Version="0.7.0" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
       <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
       <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
       <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
@@ -51,6 +57,9 @@
       <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
       <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
       <PackageReference Include="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1" />
+      <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
+      <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="19.2.29" />
+      <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="1.0.42" />
     </ItemGroup>
 
     <ItemGroup>

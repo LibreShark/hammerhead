@@ -6,14 +6,22 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>LibreShark.Hammerhead.Test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="log4net" Version="2.0.15" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+        <PackageReference Include="Ninject" Version="4.0.0-beta.1" />
+        <PackageReference Include="Ninject.Extensions.Factory" Version="3.3.3" />
+        <PackageReference Include="Ninject.Extensions.Logging" Version="3.3.0" />
+        <PackageReference Include="Ninject.Extensions.Logging.Log4net" Version="3.3.0" />
         <PackageReference Include="NUnit" Version="3.13.3" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
         <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
         <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
         <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
         <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
@@ -22,6 +30,9 @@
         <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1" />
+        <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
+        <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="19.2.29" />
+        <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="1.0.42" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,6 +41,365 @@
 
     <ItemGroup>
       <Folder Include="TestData\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="TestData\CheatFiles\mac-openemu-cheats.xml" />
+      <Content Include="TestData\CheatFiles\mac-openemu-cheats.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-datel-v3.30-custom-cheats.txt" />
+      <Content Include="TestData\CheatFiles\n64-datel-v3.30-custom-cheats.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-datel-v3.30-default-cheats.txt" />
+      <Content Include="TestData\CheatFiles\n64-datel-v3.30-default-cheats.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-edx7-pd-v1.1-cheats.txt" />
+      <Content Include="TestData\CheatFiles\n64-edx7-pd-v1.1-cheats.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-fcd-v1.067g-default-cheats.txt" />
+      <Content Include="TestData\CheatFiles\n64-fcd-v1.067g-default-cheats.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-fcd-v1.067g-pokemon-cheats.txt" />
+      <Content Include="TestData\CheatFiles\n64-fcd-v1.067g-pokemon-cheats.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-pj64-v1.6-cheats.cht" />
+      <Content Include="TestData\CheatFiles\n64-pj64-v1.6-cheats.cht">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\CheatFiles\n64-pj64-v3.0-cheats.cht" />
+      <Content Include="TestData\CheatFiles\n64-pj64-v3.0-cheats.cht">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-xploder-SST29EE020-PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-xploder-SST29EE020-PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-gs-v1.0-SST39VF200A-TSOP48-usbtypeb.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-gs-v1.0-SST39VF200A-TSOP48-usbtypeb.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.067e-b2515-20000505-orange.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.067e-b2515-20000505-orange.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.10-19980825-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.10-19980825-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.067e-b2510-19991123.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.067e-b2510-19991123.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-ar-v3.3-SST39VF200A-TSOP48-usbtypeb.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-ar-v3.3-SST39VF200A-TSOP48-usbtypeb.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.000e-b1772-19990507-green.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.000e-b1772-19990507-green.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-cblite-r1-prototype-20011019-SST39VF100.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-cblite-r1-prototype-20011019-SST39VF100.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gameshark-pc,cd=v4.10,options=v4.00,20010917,gbcheats.bin" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gameshark-pc,cd=v4.10,options=v4.00,20010917,gbcheats.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.02-19970801-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.02-19970801-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.05-19970904-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.05-19970904-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.0-19990324-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.0-19990324-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-gspro-sp-karabiner-20060614-SST39VF800ATSOP48.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-gspro-sp-karabiner-20060614-SST39VF800ATSOP48.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1.bin" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\ar3.enc.bin" />
+      <Content Include="TestData\RomFiles\N64\ar3.enc.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gs-crystal-v4.2.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gs-crystal-v4.2.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-shark-mx-v1.02-2000-dirty-SST39SF020PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-shark-mx-v1.02-2000-dirty-SST39SF020PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.067g-b1930-19991124.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.067g-b1930-19991124.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-codebreaker-v1.0c-SST29EE020PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-codebreaker-v1.0c-SST29EE020PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-cblite-r1-prototype-20011019-valid.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-cblite-r1-prototype-20011019-valid.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.21-19981218-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.21-19981218-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\ar-1.11-19980415-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\ar-1.11-19980415-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.00-19980406-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.00-19980406-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-working.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-working.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-blaze-tv-tuner-tvap-0.txt" />
+      <Content Include="TestData\RomFiles\GBA\gba-blaze-tv-tuner-tvap-0.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-shark-mx-v1.02-2000-pristine.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-shark-mx-v1.02-2000-pristine.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-monsterbrain-v3.6-W29C022-PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-monsterbrain-v3.6-W29C022-PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-corrupted.txt" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-corrupted.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-ar-v5.8-SST39VF400A-TSOP48-usbtypeb.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-ar-v5.8-SST39VF400A-TSOP48-usbtypeb.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.20-19990622-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.20-19990622-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.00-19990401-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.00-19990401-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.08-19971124-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.08-19971124-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gs-v4.0.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gs-v4.0.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-xploder-vX.XX-xxxxxxxx-dirty.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-xploder-vX.XX-xxxxxxxx-dirty.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.00-19980305-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.00-19980305-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gbh-1998-pristine.bin" />
+      <Content Include="TestData\RomFiles\N64\gbh-1998-pristine.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\perfect_trainer-1.0b-20030618.bin" />
+      <Content Include="TestData\RomFiles\N64\perfect_trainer-1.0b-20030618.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.04-19970819-valid-codes.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.04-19970819-valid-codes.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-corrupted.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-corrupted.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GB\gb-gs-v2.1-1997-NM27C010-PLCC32.gb" />
+      <Content Include="TestData\RomFiles\GB\gb-gs-v2.1-1997-NM27C010-PLCC32.gb">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.07-19971107-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.07-19971107-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-ar-crystal-v4.2.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-ar-crystal-v4.2.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000327-pristine.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000327-pristine.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.08-19971208-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.08-19971208-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gs-v4.2-SST39SF010.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gs-v4.2-SST39SF010.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-blaze-tv-tuner-tvap-0.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-blaze-tv-tuner-tvap-0.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-pelican-tv-tuner-MBM29LV400TCTSOP48.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-pelican-tv-tuner-MBM29LV400TCTSOP48.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-xploder-r1-lite-prototype-20021115-corrupt.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-xploder-r1-lite-prototype-20021115-corrupt.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gameshark-pc,cd=vX.XX,options=v0.80,20000829,gbcheats.bin" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gameshark-pc,cd=vX.XX,options=v0.80,20000829,gbcheats.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-working.txt" />
+      <Content Include="TestData\RomFiles\GBC\gbc-gspro-v3.0-sticker-working.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.000e-b1834-19990816-green.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.000e-b1834-19990816-green.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-ar-v4.2.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-ar-v4.2.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.09-19980105-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.09-19980105-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.07-19971027-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.07-19971027-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-ar-v4.01.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-ar-v4.01.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\xplorer64-v1.000e-b1772-19990507-green.20230628T142705.unscrambled.bin" />
+      <Content Include="TestData\RomFiles\N64\xplorer64-v1.000e-b1772-19990507-green.20230628T142705.unscrambled.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.05-19970905-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.05-19970905-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump2.bin" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump2.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-monsterbrain-v2.0-W29C022-PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-monsterbrain-v2.0-W29C022-PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-1.06-19970919-dirty.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-1.06-19970919-dirty.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBA\gba-gspro-sp-madcatz-20030821-SST39VF100.gba" />
+      <Content Include="TestData\RomFiles\GBA\gba-gspro-sp-madcatz-20030821-SST39VF100.gba">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\GBC\gbc-monsterbrain-v1.1-SST28LF040-PLCC32.gbc" />
+      <Content Include="TestData\RomFiles\GBC\gbc-monsterbrain-v1.1-SST28LF040-PLCC32.gbc">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.21-20000104-pristine.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.21-20000104-pristine.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.10-19990609-clean.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.10-19990609-clean.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\Cheats.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\Cheats.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

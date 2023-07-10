@@ -8,6 +8,17 @@ Written in cross-platform C# and .NET.
 
 ## Usage examples
 
+### View parsed ROM data
+
+View all information extracted by Hammerhead from a directory of ROM and cheat text files:
+
+```bash
+dotnet run --project dotnet/src/src.csproj -- \
+    info *.{bin,enc}
+```
+
+![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
+
 ### Dump cheats from ROM files to plain text
 
 Dump the cheats from all supported input files to their default text file formats:
@@ -47,17 +58,6 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-rom-encrypt-n64-gs.png)
 
-### View parsed ROM data
-
-View all information extracted by Hammerhead from a directory of ROM and cheat text files:
-
-```bash
-dotnet run --project dotnet/src/src.csproj -- \
-    info *.{bin,enc}
-```
-
-![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-n64-gs.png)
-
 ### Dump Shark MX data to JSON
 
 Dump GBC Shark MX contacts/messages to JSON:
@@ -70,48 +70,76 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-info-gbc-smx.png)
 
+### Extract embedded files from ROMs
+
+Decompress all embedded files from N64 GameShark, Action Replay, Equalizer, and Game Buster ROMs:
+
+```bash
+dotnet run --project dotnet/src/src.csproj -- \
+    rom extract n64-*.bin
+
+bits.png
+bits.tg~
+gslogo2.bin
+gslogo2.pal
+gslogo2.png
+menuf.png
+menuf.tg~
+shell.bin
+tile1.1.png
+tile1.1.tg~
+tile1.png
+tile1.tg~
+tile3.png
+tile3.tg~
+tile4.png
+tile4.tg~
+
+...
+```
+
 ## Supported file formats
 
 Full support:
 
-| File format                | Detect | Read | Write |
-|:-------------------------- |:------ |:---- |:----- |
-| N64 GameShark Datel cheats | Yes    | Yes  | Yes   |
-| N64 GameShark ROMs         | Yes    | Yes  | Yes   |
-| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   |
-| N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |
-| Hammerhead JSON cheats     | Yes    | Yes  | Yes   |
-| N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   |
+| File format                | Detect | Read | Write | Extract |
+|:-------------------------- |:------ |:---- |:----- |:------- |
+| N64 GameShark ROMs         | Yes    | Yes  | Yes   | Yes     |
+| N64 GameShark Datel cheats | Yes    | Yes  | Yes   | -       |
+| N64 Xplorer 64 ROMs        | Yes    | Yes  | Yes   |         |
+| N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   | -       |
+| Hammerhead JSON cheats     | Yes    | Yes  | Yes   | -       |
+| N64 EverDrive-64 X7 cheats | Yes    | Yes  | Yes   | -       |
 
 In progress:
 
-| File format                           | Detect | Read | Write |
-|:------------------------------------- |:------ |:---- |:----- |
-| GB GameShark v2.x ROMs                | Yes    | Yes  |       |
-| GBC Code Breaker ROMs                 | Yes    | Yes  |       |
-| GBC GameShark v3.x ROMs               | Yes    | Yes  |       |
-| GBC GameShark v4.x ROMs               | Yes    | Yes  |       |
-| GBC Shark MX ROMs                     | Yes    | Yes  |       |
-| GBC Xploder ROMs                      | Yes    | Yes  |       |
-| GBA Datel GameShark ROMs              | Yes    | Yes  |       |
-| GBA FCD GameShark & Code Breaker ROMs | Yes    | Yes  |       |
+| File format                           | Detect | Read | Write | Extract |
+|:------------------------------------- |:------ |:---- |:----- |:------- |
+| GB GameShark v2.x ROMs                | Yes    | Yes  |       |         |
+| GBC Code Breaker ROMs                 | Yes    | Yes  |       |         |
+| GBC GameShark v3.x ROMs               | Yes    | Yes  |       |         |
+| GBC GameShark v4.x ROMs               | Yes    | Yes  |       |         |
+| GBC Shark MX ROMs                     | Yes    | Yes  |       |         |
+| GBC Xploder ROMs                      | Yes    | Yes  |       |         |
+| GBA Datel GameShark ROMs              | Yes    | Yes  |       |         |
+| GBA FCD GameShark & Code Breaker ROMs | Yes    | Yes  |       |         |
 
 Planned:
 
-| File format                        | Detect | Read | Write |
-|:---------------------------------- |:------ |:---- |:----- |
-| GBC GameShark v3.x cheats (\*.gcf) |        |      |       |
-| OpenEmu XML cheats                 |        |      |       |
-| N64 Project 64 v1.x cheats         |        |      |       |
-| N64 Project 64 v3.x cheats         |        |      |       |
+| File format                        | Detect | Read | Write | Extract |
+|:---------------------------------- |:------ |:---- |:----- |:------- |
+| GBC GameShark v3.x cheats (\*.gcf) |        |      |       | -       |
+| OpenEmu XML cheats                 |        |      |       | -       |
+| N64 Project 64 v1.x cheats         |        |      |       | -       |
+| N64 Project 64 v3.x cheats         |        |      |       | -       |
 
 Limited support:
 
-| File format                       | Detect | Read | Write |
-|:--------------------------------- |:------ |:---- |:----- |
-| GBC BrainBoy / Monster Brain ROMs | Yes    |      |       |
-| GBA TV Tuner ROMs                 | Yes    |      |       |
-| N64 GB Hunter ROMs                | Yes    |      |       |
+| File format                       | Detect | Read | Write | Extract |
+|:--------------------------------- |:------ |:---- |:----- |:------- |
+| GBC BrainBoy / Monster Brain ROMs | Yes    |      |       |         |
+| GBA TV Tuner ROMs                 | Yes    |      |       |         |
+| N64 GB Hunter ROMs                | Yes    |      |       |         |
 
 ## Usage
 

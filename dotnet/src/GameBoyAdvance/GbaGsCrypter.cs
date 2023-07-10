@@ -20,20 +20,11 @@
 
 namespace LibreShark.Hammerhead.GameBoyAdvance;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
-/// From https://gist.github.com/Bl4ckSh4rk/941e451a11dd62e5a5feee5479c2ab1d
-/// "GSAcrypt.c - Gameboy Advance AR Crypto Program by Parasyte"
+/// Encrypts/decrypts cheat codes from a <see cref="GbaGsFcdRom"/> file.
+///
+/// Ported from "GSAcrypt.c - Gameboy Advance AR Crypto Program by Parasyte"
+/// https://gist.github.com/Bl4ckSh4rk/941e451a11dd62e5a5feee5479c2ab1d
 /// </summary>
 public class GbaGsCrypter
 {

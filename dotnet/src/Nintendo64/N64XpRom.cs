@@ -6,17 +6,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// Xplorer 64 for Nintendo 64,
 /// made by Blaze and Future Console Design (FCD).
@@ -56,8 +45,6 @@ public sealed class N64XpRom : AbstractCodec
     };
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64Xplorer64Text;
-
-    private readonly List<Code> _keyCodes = new();
 
     private N64XpRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Unobfuscate(rawInput), ThisConsoleId, ThisCodecId)
@@ -279,7 +266,7 @@ public sealed class N64XpRom : AbstractCodec
         buildDateIso = buildDateTimeWithTz.ToIsoString();
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         Scribe.Seek(GameListAddr);
 
@@ -349,7 +336,7 @@ public sealed class N64XpRom : AbstractCodec
         return is256KiB && (DetectPlain(bytes) || DetectScrambled(bytes));
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

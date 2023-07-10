@@ -5,17 +5,6 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
 /// Code Breaker for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
@@ -106,23 +95,33 @@ public sealed class GbcCbRom : AbstractCodec
                     continue;
                 }
 
-                var cheat = new Cheat()
+                RomString curCheatName =
+                    nameIdx == 0
+                        // TODO(CheatoBaggins): Are custom names stored in the ROM?
+                        ? "USR CSTM".ToRomString() // Custom, user-entered cheat
+                        : _cheatNames[nameIdx]; // Build-in cheat with standard name
+
+                Cheat curCheat;
+                Cheat? prevCheat = game.Cheats.LastOrDefault();
+                if (prevCheat?.CheatName.Value == curCheatName.Value)
                 {
-                    CheatIndex = cheatIdx,
-                    CheatName =
-                        nameIdx == 0
-                            // Custom, user-entered cheat
-                            // TODO(CheatoBaggins): Are custom names stored in the ROM?
-                            ? "USR CSTM".ToRomString()
-                            // Build-in cheat with standard name
-                            : _cheatNames[nameIdx],
-                };
-                cheat.Codes.Add(new Code()
+                    curCheat = prevCheat;
+                }
+                else
+                {
+                    curCheat = new Cheat()
+                    {
+                        CheatIndex = cheatIdx,
+                        CheatName = curCheatName,
+                    };
+                    game.Cheats.Add(curCheat);
+                }
+
+                curCheat.Codes.Add(new Code()
                 {
                     CodeIndex = 0,
                     Bytes = ByteString.CopyFrom(code),
                 });
-                game.Cheats.Add(cheat);
             }
 
             Games.Add(game);
@@ -157,7 +156,7 @@ public sealed class GbcCbRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -184,7 +183,7 @@ public sealed class GbcCbRom : AbstractCodec
         return BrandId.UnknownBrand;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }

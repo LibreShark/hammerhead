@@ -114,11 +114,12 @@ message CodecFeatureSupport {
   bool supports_cheats = 1;
   bool supports_firmware = 2;
   bool supports_user_prefs = 3;
-  bool supports_file_encryption = 4;
-  bool supports_file_scrambling = 5;
-  bool supports_firmware_compression = 6;
-  bool supports_key_codes = 7;
-  bool supports_smx_messages = 8;
+  bool supports_file_extraction = 4;
+  bool supports_file_encryption = 5;
+  bool supports_file_scrambling = 6;
+  bool supports_firmware_compression = 7;
+  bool supports_key_codes = 8;
+  bool supports_smx_messages = 9;
 
   bool has_cheats = 101;
   bool has_firmware = 102;
@@ -284,6 +285,10 @@ enum BrandId {
   SHARK_MX      = 0x0D;
   XPLODER       = 0x0E;
   XPLORER       = 0x0F;
+
+  // Unofficial (hacked) ROMs
+  PERFECT_TRAIN = 0x10;
+  LIBRESHARK    = 0x11;
 }
 
 // Output format for printing to the terminal (stdout).

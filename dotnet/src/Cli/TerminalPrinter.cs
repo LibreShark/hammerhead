@@ -1,12 +1,14 @@
 using System.Globalization;
+using Google.Protobuf;
 using Google.Protobuf.Collections;
+using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 using NeoSmart.PrettySize;
 using Spectre.Console;
 
-namespace LibreShark.Hammerhead.IO;
+namespace LibreShark.Hammerhead.Cli;
 
-public class TerminalPrinter
+public class TerminalPrinter : ICliPrinter
 {
     #region Fields
 
@@ -14,7 +16,7 @@ public class TerminalPrinter
     public bool IsMarkdown => _printFormat == PrintFormatId.Markdown;
     public bool IsPlain => !IsColor && !IsMarkdown;
 
-    private readonly AbstractCodec _codec;
+    private readonly ICodec _codec;
     private readonly PrintFormatId _printFormat;
 
     #endregion
@@ -25,7 +27,7 @@ public class TerminalPrinter
         _printFormat = GetEffectivePrintFormatId(printFormat);
     }
 
-    public TerminalPrinter(AbstractCodec codec, PrintFormatId printFormat = PrintFormatId.Detect)
+    public TerminalPrinter(ICodec codec, PrintFormatId printFormat = PrintFormatId.Detect)
     {
         _codec = codec;
         _printFormat = GetEffectivePrintFormatId(printFormat);
@@ -83,6 +85,11 @@ public class TerminalPrinter
 
     #region Printing text
 
+    public void PrintLine(string message)
+    {
+        Console.WriteLine(message);
+    }
+
     public void PrintHint(string message)
     {
         if (IsColor)
@@ -107,6 +114,20 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
+    public void PrintError(string message)
+    {
+        if (!message.ToUpperInvariant().Contains("ERROR"))
+        {
+            message = $"ERROR: {message}";
+        }
+        if (IsColor)
+        {
+            AnsiConsole.Markup($"\n\n[red]{message.EscapeMarkup()}[/]\n\n\n");
+            return;
+        }
+        Console.Error.WriteLine($"\n{message}\n");
+    }
+
     public void PrintError(Exception e)
     {
         string message = e.ToString();
@@ -122,13 +143,19 @@ public class TerminalPrinter
         Console.Error.WriteLine($"\n{message}\n");
     }
 
+    public void PrintJson(JsonFormatter formatter, IMessage proto)
+    {
+        Console.WriteLine(formatter.Format(proto) + "\n");
+    }
+
     #endregion
 
     #region Printing sections
 
     public void PrintBanner(CmdParams cmdParams)
     {
-        if (cmdParams.HideBanner)
+        if (cmdParams.HideBanner ||
+            cmdParams.PrintFormatId is PrintFormatId.Json)
         {
             return;
         }
@@ -166,6 +193,11 @@ public class TerminalPrinter
             AnsiConsole.Write(panel);
         }
         Console.WriteLine();
+    }
+
+    public void PrintFileInfo(string inputFilePath, InfoCmdParams infoParams)
+    {
+        PrintFileInfo(new FileInfo(inputFilePath), infoParams);
     }
 
     public void PrintFileInfo(FileInfo inputFile, InfoCmdParams infoParams)
@@ -334,13 +366,21 @@ public class TerminalPrinter
 
         foreach (RomString id in _codec.Metadata.Identifiers)
         {
-            table.AddRow(
-                KeyCell($"0x{id.Addr?.StartIndex:X8}"),
-                KeyCell($"0x{id.Addr?.EndIndex:X8}"),
-                KeyCell($"0x{id.Addr?.Length:X}"),
-                KeyCell($"{id.Addr?.Length}"),
-                id.Value.EscapeMarkup()
-            );
+            string str = id.Value.EscapeMarkup();
+            if (id.Addr == null)
+            {
+                table.AddRow("", "", "", "", str);
+            }
+            else
+            {
+                table.AddRow(
+                    KeyCell($"0x{id.Addr.StartIndex:X8}"),
+                    KeyCell($"0x{id.Addr.EndIndex:X8}"),
+                    KeyCell($"0x{id.Addr.Length:X}"),
+                    KeyCell($"{id.Addr.Length}"),
+                    str
+                );
+            }
         }
 
         AnsiConsole.Write(table);
@@ -455,7 +495,14 @@ public class TerminalPrinter
                 {
                     cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
                 }
-                table.AddRow($"  - {cheatName}", codeCount.ToString(), "");
+
+                string cheatNameCell =
+                    string.IsNullOrWhiteSpace(cheatName)
+                        ? ""
+                        : cheatName.StartsWith("-")
+                            ? $"  {cheatName}"
+                            : $"  - {cheatName}";
+                table.AddRow(cheatNameCell, codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
                     continue;
@@ -670,8 +717,8 @@ public class TerminalPrinter
 
     public void PrintCheatsCommand(
         string heading,
-        FileInfo inputFile, AbstractCodec inputCodec,
-        FileInfo outputFile, AbstractCodec outputCodec,
+        FileInfo inputFile, ICodec inputCodec,
+        FileInfo outputFile, ICodec outputCodec,
         Action action)
     {
         Console.WriteLine();
@@ -695,5 +742,59 @@ public class TerminalPrinter
     public void PrintTable(Table table)
     {
         AnsiConsole.Write(table);
+    }
+
+    public string FormatN64KeyCodeName(Code kc)
+    {
+        string name = kc.CodeName.Value;
+        return IsColor && kc.IsActiveKeyCode ? $"[green b u]{name.EscapeMarkup()}[/]" : name;
+    }
+
+    public void PrintN64ActiveKeyCode(Code kc)
+    {
+        string name = kc.CodeName.Value;
+        string formatted = FormatN64KeyCodeBytes(kc, kc);
+
+        if (!IsColor)
+        {
+            Console.WriteLine(
+                $"Active key code: [ {formatted} ] - {name}");
+            return;
+        }
+
+        name = $"[green b u]{name}[/]";
+
+        AnsiConsole.Markup($"""
+[dim]                   ┏━IPL3 CRC┓ ┏━F/W CRC━┓ ┏━PC Addr━┓ CD
+                   ┃         ┃ ┃         ┃ ┃         ┃  ┃[/]
+Active key code: [[ {formatted} ]] - {name}
+
+""");
+    }
+
+    public string FormatN64KeyCodeBytes(Code curKey, Code activeKey)
+    {
+        u8[] bytes = curKey.Bytes.ToByteArray();
+
+        string crc1 = bytes[..4].ToHexString(" ");
+        string crc2 = bytes[4..8].ToHexString(" ");
+        string crc3 = bytes.Length > 9 ? bytes[8..12].ToHexString(" ") : "";
+        string crc4 = new u8[] { bytes.Last() }.ToHexString();
+
+        string sp = crc3.Length > 0 ? " " : "";
+
+        if (IsColor && curKey.IsActiveKeyCode)
+        {
+            crc1 = $"[green u]{crc1}[/]";
+            crc2 = $"[red u]{crc2}[/]";
+            crc4 = $"[blue u]{crc4}[/]";
+        }
+
+        if (IsColor && bytes.Length > 9 && activeKey.Bytes.ToByteArray().Contains(bytes[8..12]))
+        {
+            crc3 = $"[yellow u]{crc3}[/]";
+        }
+
+        return $"{crc1} {crc2}{sp}{crc3} {crc4}";
     }
 }

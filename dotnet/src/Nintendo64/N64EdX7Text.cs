@@ -1,21 +1,9 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
-
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
 
 /// <summary>
 /// EverDrive-64 X7 compatible cheat code file, in plain text.
@@ -114,7 +102,7 @@ public sealed class N64EdX7Text : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         if (Games.Count > 1)
         {

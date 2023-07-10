@@ -4,19 +4,8 @@ using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.GameBoyColor;
 
-// ReSharper disable BuiltInTypeReferenceStyle
-using u8 = Byte;
-using s8 = SByte;
-using s16 = Int16;
-using u16 = UInt16;
-using s32 = Int32;
-using u32 = UInt32;
-using s64 = Int64;
-using u64 = UInt64;
-using f64 = Double;
-
 /// <summary>
-/// Monster Brain and Brain Boy for Game Boy Color and Game Boy Pocket,
+/// BrainBoy and Monster Brain for Game Boy Color and Game Boy Pocket,
 /// made by Future Console Design (FCD) and Pelican Accessories.
 /// </summary>
 public sealed class GbcMonsterBrainRom : AbstractCodec
@@ -73,7 +62,7 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
         }
     }
 
-    public override AbstractCodec WriteChangesToBuffer()
+    public override ICodec WriteChangesToBuffer()
     {
         throw new NotImplementedException();
     }
@@ -104,7 +93,7 @@ public sealed class GbcMonsterBrainRom : AbstractCodec
         return BrandId.UnknownBrand;
     }
 
-    public static bool Is(AbstractCodec codec)
+    public static bool Is(ICodec codec)
     {
         return codec.Metadata.CodecId == ThisCodecId;
     }
