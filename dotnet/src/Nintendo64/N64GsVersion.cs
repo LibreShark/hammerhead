@@ -109,7 +109,7 @@ public partial class N64GsVersion
         return version;
     }
 
-    [GeneratedRegex("(?<HH>\\d\\d):(?<mm>\\d\\d) (?<MMM>\\w\\w\\w) (?<dd>\\d\\d?)(?: (?<yy>\\d{2,4})?)?")]
+    [GeneratedRegex(@"(?<HH>\d\d):(?<mm>\d\d) (?<MMM>\w\w\w) (?<dd>\d\d?)(?: '?(?<yy>\d{2,4})?)?")]
     private static partial Regex TimestampRegex();
 
     private static N64GsVersion? UnknownVersion(string raw, RomString? mainMenuTitle)
@@ -130,11 +130,19 @@ public partial class N64GsVersion
         // Versions 2.5, 3.21, and 3.3 omit the year from the end of the timestamp.
         // We specifically handle those cases above, but we're still missing dumps of v1.01, v1.02, and v2.03.
         // The missing dumps were likely made in 1997, so we default to that.
-        var yyyy =
-            match.Groups["yy"].Success
-                ? match.Groups["yy"].Value.Length == 2
-                    ? $"19{match.Groups["yy"].Value}"
-                    : match.Groups["yy"].Value
+        Group yy = match.Groups["yy"];
+        string yyyy =
+            yy.Success
+                ? yy.Value.Length == 4
+                    ? yy.Value
+                    : mainMenuTitle?.Value.Contains("LibreShark") ?? false
+                        // LibreShark builds began in 2023.
+                        ? $"20{yy.Value}"
+                        // All remaining undiscovered OEM ROMs were built in the
+                        // late 1990s.
+                        : $"19{yy.Value}"
+                // ROMs built in 2000 do not contain a year in their
+                // header date stamp.
                 : "2000";
 
         trimmed = $"{HH}:{mm} {MMM} {dd} {yyyy}";
