@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using LibreShark.Hammerhead.Api;
@@ -72,21 +71,14 @@ public sealed class N64GsRom : AbstractCodec
     private const u32 HeaderIdAddr       = 0x00000020;
     private const u32 BuildTimestampAddr = 0x00000030;
 
-    private const u32 ShellBinStrAddr   = 0x39C0; // shell.bin
-    private const u32 TrainerBinStrAddr = 0x39CC; // trainer.bin
-    private const u32 GsLogo3PalStrAddr = 0x39D8; // gslogo3.pal (US), arlogo3.pal (EU)
-    private const u32 GsLogo3BinStrAddr = 0x39E4; // gslogo3.bin (US), arlogo3.pal (EU)
-    private const u32 Tile1TgStrAddr    = 0x39F0; // tile1.tg~
-
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
     private N64Data Data => Parsed.N64Data;
 
-    // TODO(CheatoBaggins): Make this private
-    public List<EmbeddedFile> RootCompressedFiles;
-    public List<EmbeddedFile> ShellCompressedFiles;
+    private readonly List<EmbeddedFile> _rootCompressedFiles;
+    private readonly List<EmbeddedFile> _shellCompressedFiles;
 
-    public EmbeddedFile? ShellFile => RootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
+    private EmbeddedFile? ShellFile => _rootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
 
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
@@ -102,11 +94,6 @@ public sealed class N64GsRom : AbstractCodec
         Support.HasCheats = true;
         Support.HasFirmware = true;
 
-        // TODO(CheatoBaggins): Decompress v3.x ROM files
-        // See:
-        // - https://github.com/Jhynjhiruu/fsblob/blob/716e921e97b95ca075bf86b96589b89f7ef75b17/src/lib.rs
-        // - https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/tools/splat_ext/fsblob.py
-
         _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
         _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(16, true);
 
@@ -117,8 +104,8 @@ public sealed class N64GsRom : AbstractCodec
         Support.IsFirmwareCompressed        = DetectCompressed(rawInput);
         Support.IsFileEncrypted             = DetectEncrypted(rawInput);
 
-        RootCompressedFiles = ReadRootFiles();
-        ShellCompressedFiles = ReadShellFiles();
+        _rootCompressedFiles = ReadRootFiles();
+        _shellCompressedFiles = ReadShellFiles();
 
         _version = ReadVersion();
 
@@ -150,11 +137,11 @@ public sealed class N64GsRom : AbstractCodec
 
         Games.AddRange(ReadGames());
 
-        EmbeddedFiles.AddRange(RootCompressedFiles);
-        EmbeddedFiles.AddRange(ShellCompressedFiles);
-        EmbeddedImages.AddRange(GetLogoImages(RootCompressedFiles));
-        EmbeddedImages.AddRange(GetTileImages(RootCompressedFiles));
-        EmbeddedImages.AddRange(GetTileImages(ShellCompressedFiles));
+        EmbeddedFiles.AddRange(_rootCompressedFiles);
+        EmbeddedFiles.AddRange(_shellCompressedFiles);
+        EmbeddedImages.AddRange(GetLogoImages(_rootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(_rootCompressedFiles));
+        EmbeddedImages.AddRange(GetTileImages(_shellCompressedFiles));
     }
 
     private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)

@@ -265,9 +265,9 @@ public class CodecTest
         var rom = N64GsRom.Create(romFilePath, romFileBytes);
         var lzari = new N64GsLzariEncoder();
 
-        List<EmbeddedFile> compressedFiles = rom.RootCompressedFiles;
+        List<EmbeddedFile> compressedFiles = rom.EmbeddedFiles;
 
-        Assert.That(compressedFiles, Has.Count.EqualTo(5));
+        Assert.That(compressedFiles, Has.Count.EqualTo(10));
 
         foreach (EmbeddedFile file in compressedFiles)
         {
