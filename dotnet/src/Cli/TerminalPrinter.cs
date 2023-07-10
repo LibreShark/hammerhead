@@ -495,7 +495,14 @@ public class TerminalPrinter : ICliPrinter
                 {
                     cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
                 }
-                table.AddRow($"  - {cheatName}", codeCount.ToString(), "");
+
+                string cheatNameCell =
+                    string.IsNullOrWhiteSpace(cheatName)
+                        ? ""
+                        : cheatName.StartsWith("-")
+                            ? $"  {cheatName}"
+                            : $"  - {cheatName}";
+                table.AddRow(cheatNameCell, codeCount.ToString(), "");
                 if (@params.HideCodes)
                 {
                     continue;
