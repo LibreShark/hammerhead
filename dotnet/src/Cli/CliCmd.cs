@@ -334,7 +334,6 @@ public class CliCmd
                 return cic;
             }).ToArray(),
         };
-        Console.WriteLine(N64KeyCodeOrderOption.GetValue(ctx));
         Always?.Invoke(this, cmdParams);
         OnReorderKeycodes?.Invoke(this, cmdParams);
     }
