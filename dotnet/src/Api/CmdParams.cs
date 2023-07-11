@@ -46,10 +46,18 @@ public class DumpCheatsCmdParams : CmdParams
     public CodecId OutputFormat { get; init; }
 }
 
-public class ReorderKeycodeCmdParams : CmdParams
+public class N64GsSetPrefsCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
     public bool OverwriteExistingFiles { get; init; }
     public N64KeyCodeId[]? KeyCodeIds { get; init; }
+    public string? SelectedGame { get; init; }
+    public bool? IsSoundEnabled { get; init; }
+    public bool? IsMenuScrollEnabled { get; init; }
+    public bool? IsBgScrollEnabled { get; init; }
+    public Nn64GsBgPatternId? BgPattern { get; init; }
+    public Nn64GsBgColorId? BgColor { get; init; }
+    public bool? UpdateTimestamp { get; init; }
+    public bool? RenameKeyCodes { get; init; }
 }

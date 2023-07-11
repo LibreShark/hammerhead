@@ -338,22 +338,33 @@ public class HammerheadApi
         return value;
     }
 
-    public void ReorderKeycodes(ReorderKeycodeCmdParams cmdParams)
+    public void N64GsSetPrefs(N64GsSetPrefsCmdParams cmdParams)
     {
         FileInfo inputFile = cmdParams.InputFile!;
-        FileInfo outputFile = cmdParams.OutputFile ?? GenerateOutputFile(null, inputFile, "keycodes");
+        FileInfo outputFile = cmdParams.OutputFile ?? GenerateOutputFile(null, inputFile, "prefs");
 
-        _printer.PrintRomCommand("Reordering and recalculating key codes", inputFile, outputFile, () =>
+        _printer.PrintRomCommand("Setting user preferences", inputFile, outputFile, () =>
         {
             ICodec codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-            if (!codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
+
+            if (codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
             {
-                string codecName = codec.Metadata.CodecId.ToDisplayString();
-                _printer.PrintError($"'{codecName}' files do not support key codes!");
-                return;
+                codec.RecalculateKeyCodes(cmdParams.KeyCodeIds);
+            }
+            else
+            {
+                _printer.PrintHint("This firmware version does not support key codes.");
             }
 
-            codec.RecalculateKeyCodes(cmdParams.KeyCodeIds);
+            if (codec.Metadata.CodecFeatureSupport.SupportsUserPrefs)
+            {
+                // TODO(CheatoBaggins): Write other user prefs
+            }
+            else
+            {
+                _printer.PrintHint("This firmware version does not support custom user preferences.");
+            }
+
             codec.WriteChangesToBuffer();
             File.WriteAllBytes(outputFile.FullName, codec.Buffer);
         });

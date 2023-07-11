@@ -29,7 +29,7 @@ public class HammerheadCli
         cli.OnExtractRom += (_, cmdParams) => _api.ExtractRom(cmdParams);
         cli.OnDumpCheats += (_, cmdParams) => _api.DumpCheats(cmdParams);
         cli.OnCopyCheats += (_, cmdParams) => _api.CopyCheats(cmdParams);
-        cli.OnReorderKeycodes += (_, cmdParams) => _api.ReorderKeycodes(cmdParams);
+        cli.OnN64GsSetPrefs += (_, cmdParams) => _api.N64GsSetPrefs(cmdParams);
         return await cli.RootCommand.InvokeAsync(_args);
     }
 
