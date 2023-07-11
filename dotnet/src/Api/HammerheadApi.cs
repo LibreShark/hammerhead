@@ -353,7 +353,7 @@ public class HammerheadApi
                 return;
             }
 
-            codec.ReorderKeyCodes(cmdParams.KeyCodeIds!);
+            codec.RecalculateKeyCodes(cmdParams.KeyCodeIds);
             codec.WriteChangesToBuffer();
             File.WriteAllBytes(outputFile.FullName, codec.Buffer);
         });

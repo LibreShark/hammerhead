@@ -495,13 +495,19 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
-    public override void ReorderKeyCodes(N64KeyCodeId[] newCicLIst)
+    public override void RecalculateKeyCodes(N64KeyCodeId[]? newCics = null)
     {
         List<Code> oldKeyCodes = Data.KeyCodes.ToList();
-        List<N64KeyCodeId> oldCics = oldKeyCodes.Select(GetCicId).ToList();
+        N64KeyCodeId[] oldCics = oldKeyCodes.Select(GetCicId).ToArray();
+
+        if (newCics == null || newCics.Length == 0 ||
+            newCics.SequenceEqual(new [] { N64KeyCodeId.UnspecifiedKeyCodeId }))
+        {
+            newCics = oldCics;
+        }
 
         var oldCicSet = new HashSet<N64KeyCodeId>(oldCics);
-        var newCicSet = new HashSet<N64KeyCodeId>(newCicLIst);
+        var newCicSet = new HashSet<N64KeyCodeId>(newCics);
 
         if (!newCicSet.SetEquals(oldCicSet))
         {
@@ -514,9 +520,9 @@ public sealed class N64GsRom : AbstractCodec
         }
 
         var newIdx = 0;
-        var newKeyCodes = newCicLIst.Select(cic =>
+        var newKeyCodes = newCics.Select(cic =>
         {
-            var oldIdx = oldCics.IndexOf(cic);
+            var oldIdx = oldCics.ToList().IndexOf(cic);
             var oldKC = oldKeyCodes[oldIdx];
             var newKC = new Code(oldKC)
             {

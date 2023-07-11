@@ -138,7 +138,7 @@ public abstract class AbstractCodec : ICodec
         return proto;
     }
 
-    public virtual void ReorderKeyCodes(N64KeyCodeId[] newKeyCodeIds)
+    public virtual void RecalculateKeyCodes(N64KeyCodeId[]? newKeyCodeIds = null)
     {
         throw new NotImplementedException(
             $"'{Metadata.CodecId.ToDisplayString()}' files do not support " +

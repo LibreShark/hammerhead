@@ -46,7 +46,7 @@ public interface ICodec
     u8[] Decrypt();
     u8[] Scramble();
     u8[] Unscramble();
-    void ReorderKeyCodes(N64KeyCodeId[] newKeyCodeIds);
+    void RecalculateKeyCodes(N64KeyCodeId[]? newKeyCodeIds = null);
     ICodec WriteChangesToBuffer();
     bool IsValidFormat();
     bool IsInvalidFormat();
