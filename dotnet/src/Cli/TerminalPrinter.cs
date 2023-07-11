@@ -765,8 +765,8 @@ public class TerminalPrinter : ICliPrinter
         name = $"[green b u]{name}[/]";
 
         AnsiConsole.Markup($"""
-[dim]                   ┏━IPL3 CRC┓ ┏━F/W CRC━┓ ┏━PC Addr━┓ CD
-                   ┃         ┃ ┃         ┃ ┃         ┃  ┃[/]
+[dim]                   ┏━━ 64-bit checksum ━━┓ ┏ EntryPt ┓ Chk
+                   ┃                     ┃ ┃         ┃  ┃[/]
 Active key code: [[ {formatted} ]] - {name}
 
 """);
@@ -786,8 +786,8 @@ Active key code: [[ {formatted} ]] - {name}
         if (IsColor && curKey.IsActiveKeyCode)
         {
             crc1 = $"[green u]{crc1}[/]";
-            crc2 = $"[red u]{crc2}[/]";
-            crc4 = $"[blue u]{crc4}[/]";
+            crc2 = $"[green u]{crc2}[/]";
+            crc4 = $"[red u]{crc4}[/]";
         }
 
         if (IsColor && bytes.Length > 9 && activeKey.Bytes.ToByteArray().Contains(bytes[8..12]))
