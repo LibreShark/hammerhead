@@ -2,7 +2,7 @@ using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.Nintendo64;
 
-namespace LibreShark.Hammerhead.Test;
+namespace LibreShark.Hammerhead.Test.Codecs;
 
 [TestFixture]
 public class RomReadTest
