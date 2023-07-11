@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.Api;
 
@@ -335,5 +336,57 @@ public class HammerheadApi
         }
 
         return value;
+    }
+
+    public void ReorderKeycodes(ReorderKeycodeCmdParams cmdParams)
+    {
+        var codec = AbstractCodec.ReadFromFile(cmdParams.InputFile!.FullName);
+        if (!codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
+        {
+            string codecName = codec.Metadata.CodecId.ToDisplayString();
+            _printer.PrintError($"'{codecName}' files do not support key codes!");
+            return;
+        }
+
+        List<Code> curKeyCodes = codec.ToFullProto().N64Data.KeyCodes.ToList();
+        List<N64KeyCodeId> oldKeyCodeIds = curKeyCodes.Select(kc =>
+        {
+            string kcName = kc.CodeName.Value;
+            if (kcName.StartsWith("Diddy"))
+                return N64KeyCodeId.Diddy;
+            if (kcName.StartsWith("Yoshi"))
+                return N64KeyCodeId.Yoshi;
+            if (kcName.StartsWith("Zelda"))
+                return N64KeyCodeId.Zelda;
+            else
+                return N64KeyCodeId.Mario;
+        }).ToList();
+
+        N64KeyCodeId[] newKeyCodeIds = cmdParams.KeyCodeIds!;
+        int actualCount = newKeyCodeIds.Length;
+        int expectedCount = oldKeyCodeIds.Count;
+        if (actualCount != expectedCount)
+        {
+            _printer.PrintError(
+                $"This ROM only supports {expectedCount} key codes, but got {actualCount}: " +
+                string.Join(", ", newKeyCodeIds) + ".");
+            return;
+        }
+
+        var oldKeyCodeIdSet = new HashSet<N64KeyCodeId>(oldKeyCodeIds);
+        var newKeyCodeIdSet = new HashSet<N64KeyCodeId>(newKeyCodeIds);
+
+        if (!newKeyCodeIdSet.SetEquals(oldKeyCodeIdSet))
+        {
+            _printer.PrintError(
+                $"This ROM supports {expectedCount} distinct key codes " +
+                $"({string.Join(", ", oldKeyCodeIds)}), but got {actualCount}: " +
+                string.Join(", ", newKeyCodeIds) + ".");
+            return;
+        }
+
+        var newKeyCodes = new List<Code>();
+
+        // TODO(CheatoBaggins): Implement.
     }
 }

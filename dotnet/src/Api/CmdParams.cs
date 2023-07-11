@@ -1,3 +1,5 @@
+using LibreShark.Hammerhead.Nintendo64;
+
 namespace LibreShark.Hammerhead.Api;
 
 public abstract class CmdParams : EventArgs
@@ -42,4 +44,12 @@ public class DumpCheatsCmdParams : CmdParams
     public DirectoryInfo? OutputDir { get; set; }
     public bool OverwriteExistingFiles { get; init; }
     public CodecId OutputFormat { get; init; }
+}
+
+public class ReorderKeycodeCmdParams : CmdParams
+{
+    public FileInfo? InputFile { get; init; }
+    public FileInfo? OutputFile { get; set; }
+    public bool OverwriteExistingFiles { get; init; }
+    public N64KeyCodeId[]? KeyCodeIds { get; init; }
 }

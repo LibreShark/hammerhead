@@ -6,14 +6,14 @@ namespace LibreShark.Hammerhead.Nintendo64;
 public enum N64Cic
 {
     // NTSC
-    CIC6101_StarFox,
+    CIC6101_StarFox, // Identical to CIC6102 for the purposes of CRCs and key codes
     CIC6102_Mario,
     CIC6103_Diddy,
     CIC6105_Yoshi,
     CIC6106_Zelda,
 
     // PAL
-    CIC7102_Mario,
+    CIC7102_Mario, // Identical to CIC6102 for the purposes of CRCs and key codes
 }
 
 /// <summary>
