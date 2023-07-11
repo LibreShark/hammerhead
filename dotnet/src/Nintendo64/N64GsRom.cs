@@ -587,8 +587,11 @@ public sealed class N64GsRom : AbstractCodec
 
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
         Code activeKC = Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
-        Scribe.Seek(ActiveKeyCodeAddr).WriteBytes(activeKC.Bytes.ToByteArray()[..8]);
-        Scribe.Seek(ProgramCounterAddr).WriteBytes(activeKC.Bytes.ToByteArray()[8..12]);
+        u8[] kcBytes = activeKC.Bytes.ToByteArray();
+        u8[] checksums = kcBytes[..8];
+        u8[] ipl3Addr = kcBytes[8..12];
+        Scribe.Seek(ActiveKeyCodeAddr).WriteBytes(checksums);
+        Scribe.Seek(ProgramCounterAddr).WriteBytes(ipl3Addr);
 
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
