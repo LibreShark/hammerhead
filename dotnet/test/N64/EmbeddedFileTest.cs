@@ -1,10 +1,10 @@
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.Nintendo64;
 
-namespace LibreShark.Hammerhead.Test;
+namespace LibreShark.Hammerhead.Test.N64;
 
 [TestFixture]
-public class N64GsRomEmbeddedFileTest
+public class EmbeddedFileTest
 {
     [Test]
     public void Test_Lzari_Decompression()
