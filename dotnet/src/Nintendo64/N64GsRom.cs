@@ -125,6 +125,8 @@ public sealed class N64GsRom : AbstractCodec
         Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
+        Data.UserPrefs = ReadUserPrefs();
+
         Games.AddRange(ReadGames());
 
         EmbeddedFiles.AddRange(_rootCompressedFiles);
@@ -132,6 +134,48 @@ public sealed class N64GsRom : AbstractCodec
         EmbeddedImages.AddRange(GetLogoImages(_rootCompressedFiles));
         EmbeddedImages.AddRange(GetTileImages(_rootCompressedFiles));
         EmbeddedImages.AddRange(GetTileImages(_shellCompressedFiles));
+    }
+
+    private N64GsUserPrefs? ReadUserPrefs()
+    {
+        if (!Support.SupportsUserPrefs)
+        {
+            return null;
+        }
+        if (Support.HasPristineUserPrefs)
+        {
+            return new N64GsUserPrefs()
+            {
+                // -1 indicates that no game is selected.
+                SelectedGameIndex = -1,
+                BgPatternId = Nn64GsBgPatternId.Silk,
+                BgColorId = Nn64GsBgColorId.Grey,
+                IsSoundEnabled = true,
+                IsBackgroundScrollEnabled = true,
+                IsMenuScrollEnabled = true,
+            };
+        }
+
+        Scribe.Seek(_userPrefsAddr);
+        // Ignore magic "GT" bytes
+        Scribe.Skip(2);
+        bool isSoundEnabled = Scribe.ReadBool();
+        var bgPattern = Scribe.ReadEnum8<Nn64GsBgPatternId>();
+        var bgColor = Scribe.ReadEnum8<Nn64GsBgColorId>();
+        u8 selectedGameIndexStartingAt1 = Scribe.ReadU8();
+        Scribe.Skip(1);
+        bool isBackgroundScrollEnabled = Scribe.ReadBool();
+        Scribe.Skip(0x64);
+        bool isMenuScrollEnabled = Scribe.ReadBool();
+        return new N64GsUserPrefs()
+        {
+            SelectedGameIndex = selectedGameIndexStartingAt1 == 0 ? -1 : selectedGameIndexStartingAt1 - 1,
+            BgPatternId = bgPattern,
+            BgColorId = bgColor,
+            IsSoundEnabled = isSoundEnabled,
+            IsBackgroundScrollEnabled = isBackgroundScrollEnabled,
+            IsMenuScrollEnabled = isMenuScrollEnabled,
+        };
     }
 
     private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
@@ -696,11 +740,8 @@ public sealed class N64GsRom : AbstractCodec
         PrintAddressTable(printer);
 
         printer.PrintHeading("Key codes");
-        string hexString = _activeKeyCode.Bytes.ToHexString(" ");
-        string nameStr = _activeKeyCode.CodeName.Value;
         printer.PrintN64ActiveKeyCode(_activeKeyCode);
         Console.WriteLine();
-
         if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
         {
             PrintKeyCodesTable(printer);
@@ -709,6 +750,39 @@ public sealed class N64GsRom : AbstractCodec
         {
             printer.PrintHint("This firmware version does not support additional key codes.");
         }
+
+        printer.PrintHeading("User preferences");
+        if (Support.SupportsUserPrefs)
+        {
+            PrintUserPrefsTable(printer);
+        }
+        else
+        {
+            printer.PrintHint("This firmware version does not support user preferences.");
+        }
+    }
+
+    private void PrintUserPrefsTable(ICliPrinter printer)
+    {
+        var table = printer.BuildTable();
+        table.AddColumns("Name", "Value");
+        N64GsUserPrefs prefs = Data.UserPrefs;
+        int selectedGameIndex = prefs.SelectedGameIndex;
+        string selectedGameName =
+            selectedGameIndex == -1
+                ? ""
+                : Games.FirstOrDefault(game => game.GameIndex == selectedGameIndex)?.GameName.Value ?? "";
+        if (string.IsNullOrEmpty(selectedGameName))
+        {
+            selectedGameName = printer.Dim("No game selected");
+        }
+        table.AddRow("Selected game", selectedGameName);
+        table.AddRow("Background pattern", prefs.BgPatternId.ToString());
+        table.AddRow("Background color", prefs.BgColorId.ToString());
+        table.AddRow("Sound", prefs.IsSoundEnabled ? "Enabled" : "Disabled");
+        table.AddRow("Background scrolling", prefs.IsBackgroundScrollEnabled ? "Enabled" : "Disabled");
+        table.AddRow("Menu scrolling", prefs.IsMenuScrollEnabled ? "Enabled" : "Disabled");
+        printer.PrintTable(table);
     }
 
     private void PrintAddressTable(ICliPrinter printer)

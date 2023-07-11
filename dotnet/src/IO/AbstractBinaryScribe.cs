@@ -203,6 +203,18 @@ public abstract class AbstractBinaryScribe
         return WriteU8((u8)value);
     }
 
+    public bool ReadBool()
+    {
+        u8 b = ReadU8();
+        return b != 0;
+    }
+
+    public TEnum ReadEnum8<TEnum>() where TEnum : Enum
+    {
+        u8 b = ReadU8();
+        return (TEnum)Enum.ToObject(typeof(TEnum), b);
+    }
+
     #endregion
 
     #region Integers: 16-bit
