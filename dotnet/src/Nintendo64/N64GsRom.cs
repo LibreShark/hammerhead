@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
@@ -398,7 +399,13 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.Seek(_keyCodeListAddr);
         u8[] listBytes = Scribe.PeekBytes(0xA0);
         u32 maxPos = Scribe.Position + (u32)listBytes.Length;
-        s32 keyCodeByteLength = listBytes.Find("Mario World 64 & Others");
+        s32 keyCodeByteLength = new s32[]
+        {
+            listBytes.Find("Mario"),
+            listBytes.Find("Diddy"),
+            listBytes.Find("Yoshi"),
+            listBytes.Find("Zelda"),
+        }.Min();
 
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
@@ -488,6 +495,56 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
+    public override void ReorderKeyCodes(N64KeyCodeId[] newCicLIst)
+    {
+        List<Code> oldKeyCodes = Data.KeyCodes.ToList();
+        List<N64KeyCodeId> oldCics = oldKeyCodes.Select(GetCicId).ToList();
+
+        var oldCicSet = new HashSet<N64KeyCodeId>(oldCics);
+        var newCicSet = new HashSet<N64KeyCodeId>(newCicLIst);
+
+        if (!newCicSet.SetEquals(oldCicSet))
+        {
+            string oldKeyCodeList = string.Join(", ", oldCicSet);
+            string newKeyCodeList = string.Join(", ", newCicSet);
+            Printer.PrintError(
+                $"This ROM requires [{oldKeyCodeList}] key codes, " +
+                $"but got [{newKeyCodeList}].");
+            return;
+        }
+
+        var newIdx = 0;
+        var newKeyCodes = newCicLIst.Select(cic =>
+        {
+            var oldIdx = oldCics.IndexOf(cic);
+            var oldKC = oldKeyCodes[oldIdx];
+            var newKC = new Code(oldKC)
+            {
+                CodeIndex = (u32)newIdx,
+                // Reset active key code to the default (first one in the list).
+                IsActiveKeyCode = newIdx == 0,
+            };
+            newIdx++;
+            return newKC;
+        }).ToList();
+
+        Data.KeyCodes.Clear();
+        Data.KeyCodes.AddRange(newKeyCodes);
+    }
+
+    private static N64KeyCodeId GetCicId(Code kc)
+    {
+        string kcName = kc.CodeName.Value;
+        if (kcName.StartsWith("Diddy"))
+            return N64KeyCodeId.Diddy;
+        if (kcName.StartsWith("Yoshi"))
+            return N64KeyCodeId.Yoshi;
+        if (kcName.StartsWith("Zelda"))
+            return N64KeyCodeId.Zelda;
+        else
+            return N64KeyCodeId.Mario;
+    }
+
     private void WriteName(string str)
     {
         str = str
@@ -507,6 +564,32 @@ public sealed class N64GsRom : AbstractCodec
 
     public override ICodec WriteChangesToBuffer()
     {
+        // Recalculate CRCs and write key codes to list
+        // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
+        Scribe.Seek(_keyCodeListAddr);
+        foreach (Code kc in Data.KeyCodes)
+        {
+            u8[] bytes = N64GsChecksum.ComputeKeyCode(Buffer, GetCicId(kc));
+
+            kc.Bytes = ByteString.CopyFrom(bytes);
+            kc.Formatted = kc.Bytes.ToCodeString(ThisConsoleId);
+
+            u32 startAddr = Scribe.Position;
+            Scribe.WriteBytes(bytes);
+            Scribe.WriteCString(kc.CodeName);
+
+            // Each key code entry is padded to 0x2C bytes long.
+            while (Scribe.Position < startAddr + 0x2C)
+            {
+                Scribe.WriteU8(0);
+            }
+        }
+
+        // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
+        Code activeKC = Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
+        Scribe.Seek(ActiveKeyCodeAddr).WriteBytes(activeKC.Bytes.ToByteArray()[..8]);
+        Scribe.Seek(ProgramCounterAddr).WriteBytes(activeKC.Bytes.ToByteArray()[8..12]);
+
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
         foreach (Game game in Games)

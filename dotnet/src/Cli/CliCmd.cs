@@ -115,7 +115,7 @@ public class CliCmd
         Arity = ArgumentArity.ZeroOrOne,
     };
 
-    private static readonly Option<N64KeyCodeId[]> N64KeyCodeOrderOption = new Option<N64KeyCodeId[]>(
+    private static readonly Option<string> N64KeyCodeOrderOption = new Option<string>(
         aliases: new string[] { "--order" },
         "Comma-separated list of key code IDs. E.g., 'zelda,mario,diddy,yoshi'.")
     {
@@ -328,8 +328,13 @@ public class CliCmd
             InputFile = InputFileArgument.GetValue(ctx)!,
             OutputFile = OutputFileArgument.GetValue(ctx),
             OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            KeyCodeIds = N64KeyCodeOrderOption.GetValue(ctx)!,
+            KeyCodeIds = (N64KeyCodeOrderOption.GetValue(ctx) ?? "").Split(",").Select(str =>
+            {
+                Enum.TryParse(str, ignoreCase: true, result: out N64KeyCodeId cic);
+                return cic;
+            }).ToArray(),
         };
+        Console.WriteLine(N64KeyCodeOrderOption.GetValue(ctx));
         Always?.Invoke(this, cmdParams);
         OnReorderKeycodes?.Invoke(this, cmdParams);
     }

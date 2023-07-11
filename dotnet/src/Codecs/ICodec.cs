@@ -3,6 +3,7 @@ using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.IO;
+using LibreShark.Hammerhead.Nintendo64;
 using Spectre.Console;
 
 namespace LibreShark.Hammerhead.Codecs;
@@ -45,6 +46,7 @@ public interface ICodec
     u8[] Decrypt();
     u8[] Scramble();
     u8[] Unscramble();
+    void ReorderKeyCodes(N64KeyCodeId[] newKeyCodeIds);
     ICodec WriteChangesToBuffer();
     bool IsValidFormat();
     bool IsInvalidFormat();

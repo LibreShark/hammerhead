@@ -340,53 +340,22 @@ public class HammerheadApi
 
     public void ReorderKeycodes(ReorderKeycodeCmdParams cmdParams)
     {
-        var codec = AbstractCodec.ReadFromFile(cmdParams.InputFile!.FullName);
-        if (!codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
+        FileInfo inputFile = cmdParams.InputFile!;
+        FileInfo outputFile = cmdParams.OutputFile ?? GenerateOutputFile(null, inputFile, "keycodes");
+
+        _printer.PrintRomCommand("Reordering and recalculating key codes", inputFile, outputFile, () =>
         {
-            string codecName = codec.Metadata.CodecId.ToDisplayString();
-            _printer.PrintError($"'{codecName}' files do not support key codes!");
-            return;
-        }
+            ICodec codec = AbstractCodec.ReadFromFile(inputFile.FullName);
+            if (!codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
+            {
+                string codecName = codec.Metadata.CodecId.ToDisplayString();
+                _printer.PrintError($"'{codecName}' files do not support key codes!");
+                return;
+            }
 
-        List<Code> curKeyCodes = codec.ToFullProto().N64Data.KeyCodes.ToList();
-        List<N64KeyCodeId> oldKeyCodeIds = curKeyCodes.Select(kc =>
-        {
-            string kcName = kc.CodeName.Value;
-            if (kcName.StartsWith("Diddy"))
-                return N64KeyCodeId.Diddy;
-            if (kcName.StartsWith("Yoshi"))
-                return N64KeyCodeId.Yoshi;
-            if (kcName.StartsWith("Zelda"))
-                return N64KeyCodeId.Zelda;
-            else
-                return N64KeyCodeId.Mario;
-        }).ToList();
-
-        N64KeyCodeId[] newKeyCodeIds = cmdParams.KeyCodeIds!;
-        int actualCount = newKeyCodeIds.Length;
-        int expectedCount = oldKeyCodeIds.Count;
-        if (actualCount != expectedCount)
-        {
-            _printer.PrintError(
-                $"This ROM only supports {expectedCount} key codes, but got {actualCount}: " +
-                string.Join(", ", newKeyCodeIds) + ".");
-            return;
-        }
-
-        var oldKeyCodeIdSet = new HashSet<N64KeyCodeId>(oldKeyCodeIds);
-        var newKeyCodeIdSet = new HashSet<N64KeyCodeId>(newKeyCodeIds);
-
-        if (!newKeyCodeIdSet.SetEquals(oldKeyCodeIdSet))
-        {
-            _printer.PrintError(
-                $"This ROM supports {expectedCount} distinct key codes " +
-                $"({string.Join(", ", oldKeyCodeIds)}), but got {actualCount}: " +
-                string.Join(", ", newKeyCodeIds) + ".");
-            return;
-        }
-
-        var newKeyCodes = new List<Code>();
-
-        // TODO(CheatoBaggins): Implement.
+            codec.ReorderKeyCodes(cmdParams.KeyCodeIds!);
+            codec.WriteChangesToBuffer();
+            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
+        });
     }
 }
