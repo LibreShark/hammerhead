@@ -1,5 +1,19 @@
 # configuration file for dotnet-releaser
 
+profile = "custom"
+
+# Create zip files only for Windows platforms
+[[pack]]
+#rid = ["win-x64", "win-arm", "win-arm64"]
+rid = ["win-x64", "win-arm64"]
+kinds = ["zip"]
+
+# Default targets for macOS, only tar files for this platform
+[[pack]]
+#rid = ["osx-x64", "osx-arm64"]
+rid = ["osx-arm64"]
+kinds = ["zip"]
+
 [msbuild]
 project = "dotnet.sln"
 
