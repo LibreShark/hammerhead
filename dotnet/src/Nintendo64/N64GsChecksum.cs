@@ -173,8 +173,8 @@ public class N64GsChecksum
         u32 pcEntryAddr = cic switch
         {
             N64KeyCodeId.Diddy => 0x80201000,
-            N64KeyCodeId.Zelda => 0x80200400,
-            N64KeyCodeId.Yoshi => 0x80190000,
+            N64KeyCodeId.Zelda => 0x80190000,
+            N64KeyCodeId.Yoshi => 0x80200400,
             _                  => 0x80180000,
         };
         scribe.WriteU32(pcEntryAddr);
