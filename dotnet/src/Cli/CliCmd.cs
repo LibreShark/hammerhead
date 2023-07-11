@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using LibreShark.Hammerhead.Api;
+using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.Cli;
 
@@ -112,6 +113,13 @@ public class CliCmd
         "as the corresponding input file.")
     {
         Arity = ArgumentArity.ZeroOrOne,
+    };
+
+    private static readonly Option<N64KeyCodeId[]> N64KeyCodeOrderOption = new Option<N64KeyCodeId[]>(
+        aliases: new string[] { "--order" },
+        "Comma-separated list of key code IDs. E.g., 'zelda,mario,diddy,yoshi'.")
+    {
+        Arity = ArgumentArity.ExactlyOne,
     };
 
     #endregion
@@ -232,6 +240,28 @@ public class CliCmd
 
     #endregion
 
+    #region `n64` commands
+
+    private readonly Command _n64Cmd = new Command(
+        "n64",
+        "Nintendo 64-specific utilities.");
+
+    private readonly Command _n64GsCmd = new Command(
+        "gs",
+        "GameShark-specific utilities.");
+
+    private readonly Command _reorderKeycodesCmd = new Command(
+        "reorder-keycodes",
+        "Reorder the list of key codes in a ROM file. The first key code will be the default.")
+    {
+        OverwriteOption,
+        InputFileArgument,
+        OutputFileArgument,
+        N64KeyCodeOrderOption,
+    };
+
+    #endregion
+
     #region Event handlers
 
     public event EventHandler<CmdParams>? Always;
@@ -243,6 +273,7 @@ public class CliCmd
     public event EventHandler<ExtractRomCmdParams>? OnExtractRom;
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
     public event EventHandler<RomCmdParams>? OnCopyCheats;
+    public event EventHandler<ReorderKeycodeCmdParams>? OnReorderKeycodes;
 
     #endregion
 
@@ -259,6 +290,7 @@ public class CliCmd
         _rootCmd.AddCommand(_infoCmd);
         _rootCmd.AddCommand(_romCmd);
         _rootCmd.AddCommand(_cheatsCmd);
+        _rootCmd.AddCommand(_n64Cmd);
 
         _romCmd.AddCommand(_encryptRomCmd);
         _romCmd.AddCommand(_decryptRomCmd);
@@ -269,6 +301,9 @@ public class CliCmd
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
 
+        _n64Cmd.AddCommand(_n64GsCmd);
+        _n64GsCmd.AddCommand(_reorderKeycodesCmd);
+
         _infoCmd.Handler = new CliCmdHandler(Info);
         _encryptRomCmd.Handler = new CliCmdHandler(EncryptRom);
         _decryptRomCmd.Handler = new CliCmdHandler(DecryptRom);
@@ -277,6 +312,26 @@ public class CliCmd
         _extractRomCmd.Handler = new CliCmdHandler(ExtractRom);
         _dumpCheatsCmd.Handler = new CliCmdHandler(DumpCheats);
         _copyCheatsCmd.Handler = new CliCmdHandler(CopyCheats);
+        _reorderKeycodesCmd.Handler = new CliCmdHandler(ReorderKeyCodes);
+    }
+
+    private void ReorderKeyCodes(InvocationContext ctx)
+    {
+        var cmdParams = new ReorderKeycodeCmdParams()
+        {
+            // Global options
+            PrintFormatId = GetPrintFormatId(ctx),
+            HideBanner = HideBannerOption.GetValue(ctx),
+            Clean = CleanOption.GetValue(ctx),
+
+            // Command-specific options
+            InputFile = InputFileArgument.GetValue(ctx)!,
+            OutputFile = OutputFileArgument.GetValue(ctx),
+            OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
+            KeyCodeIds = N64KeyCodeOrderOption.GetValue(ctx)!,
+        };
+        Always?.Invoke(this, cmdParams);
+        OnReorderKeycodes?.Invoke(this, cmdParams);
     }
 
     #region `info` command

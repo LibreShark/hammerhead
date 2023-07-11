@@ -41,3 +41,11 @@ message N64GsVersionProto {
   string disambiguator = 5;
   .google.protobuf.Timestamp build_timestamp = 6;
 }
+
+enum N64KeyCodeId {
+  UNSPECIFIED_KEY_CODE_ID = 0;
+  MARIO = 1;
+  DIDDY = 2;
+  YOSHI = 3;
+  ZELDA = 4;
+}

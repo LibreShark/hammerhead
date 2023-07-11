@@ -4,8 +4,9 @@
 name: .NET Publish
 
 on:
-  release:
-    types: [ "published" ]
+  push:
+    tags:
+      - v1.**
 
 jobs:
   build:
@@ -22,7 +23,7 @@ jobs:
     - name: Restore dependencies
       working-directory: dotnet/
       run: dotnet restore
-    - name: Build, Tests, Cover, Pack and Publish (on push tag)
+    - name: Build, Test, Pack, and Publish compiled artifacts to a GitHub Release
       working-directory: dotnet/
       shell: bash
       run: |
