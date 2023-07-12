@@ -721,9 +721,11 @@ public sealed class N64GsRom : AbstractCodec
     public override ICodec WriteChangesToBuffer()
     {
         WriteHeader();
-        WriteKeyCodes();
         WriteUserPrefs();
         WriteGames();
+        // This must happen last because it calculates checksums from the ROM
+        // file bytes.
+        WriteKeyCodes();
         return this;
     }
 
