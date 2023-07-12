@@ -239,7 +239,7 @@ public sealed class N64GsRom : AbstractCodec
         u8 selectedGameIndexStartingAt1 = Scribe.ReadU8();
         Scribe.Skip(1);
         bool isBgScrollEnabled = Scribe.ReadBool();
-        Scribe.Skip(0x64);
+        Scribe.Skip(100);
         bool isMenuScrollEnabled = Scribe.ReadBool();
         return new N64GsUserPrefs()
         {
@@ -792,16 +792,23 @@ public sealed class N64GsRom : AbstractCodec
             Support.HasPristineUserPrefs = false;
         }
 
-        Scribe.Seek(_userPrefsAddr);
-        Scribe.WriteCString("GT", 2, false);
-        Scribe.WriteBool(prefs.IsSoundEnabled);
-        Scribe.WriteU8((u8)prefs.BgPatternId);
-        Scribe.WriteU8((u8)prefs.BgColorId);
-        Scribe.WriteU8((u8)(prefs.SelectedGameIndex + 1)); // value is 1-indexed
-        Scribe.Skip(1);
-        Scribe.WriteBool(prefs.IsBgScrollEnabled);
-        Scribe.Skip(0x64);
-        Scribe.WriteBool(prefs.IsMenuScrollEnabled);
+        Scribe.Seek(_userPrefsAddr)
+            .WriteCString("GT", 2, false)
+            .WriteBool(prefs.IsSoundEnabled)
+            .WriteU8((u8)prefs.BgPatternId)
+            .WriteU8((u8)prefs.BgColorId)
+            .WriteU8((u8)(prefs.SelectedGameIndex + 1)) // value is 1-indexed
+            .Skip(1)
+            .WriteBool(prefs.IsBgScrollEnabled)
+            .Skip(3)
+            .WriteBytes(new u8[] { 0x01, 0x01 }) // TODO(CheatoBaggins): What is this?
+            .Skip(9)
+            .WriteBytes(new u8[] { 0x01, 0x01 }) // TODO(CheatoBaggins): What is this?
+            .Skip(8)
+            .WriteBytes(new u8[] { 0x01, 0x01 }) // TODO(CheatoBaggins): What is this?
+            .Skip(74)
+            .WriteBool(prefs.IsMenuScrollEnabled)
+            ;
     }
 
     private void WriteGames()

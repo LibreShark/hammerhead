@@ -256,7 +256,7 @@ public class TerminalPrinter : ICliPrinter
         var ruleStart = new Rule(Green(shortName))
         {
             Justification = Justify.Left,
-            Style = new Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
+            Style = new Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold),
         };
         Console.WriteLine();
         AnsiConsole.Write(ruleStart);
