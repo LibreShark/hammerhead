@@ -50,7 +50,7 @@ Encrypt a GameShark ROM file for use with Datel's official N64 Utils:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
-    rom encrypt \
+    n64 gs encrypt \
         gspro-3.30-20000404-custom-cheats.bin \
         ar3.enc \
         --overwrite
@@ -97,7 +97,7 @@ Decompress all embedded files from N64 GameShark, Action Replay, Equalizer, and 
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
-    rom extract n64-*.bin
+    n64 gs extract n64-*.bin
 
 bits.png
 bits.tg~
