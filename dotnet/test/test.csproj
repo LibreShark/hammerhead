@@ -391,20 +391,16 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin">
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.png" />
       <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
