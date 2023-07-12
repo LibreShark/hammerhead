@@ -209,6 +209,12 @@ public abstract class AbstractBinaryScribe
         return b != 0;
     }
 
+    public AbstractBinaryScribe WriteBool(bool value)
+    {
+        WriteU8((u8)(value ? 1 : 0));
+        return this;
+    }
+
     public TEnum ReadEnum8<TEnum>() where TEnum : Enum
     {
         u8 b = ReadU8();

@@ -338,7 +338,7 @@ public class HammerheadApi
         return value;
     }
 
-    public void N64GsSetPrefs(N64GsSetPrefsCmdParams cmdParams)
+    public void N64GsConfigure(N64GsConfigureCmdParams cmdParams)
     {
         FileInfo inputFile = cmdParams.InputFile!;
         FileInfo outputFile = cmdParams.OutputFile ?? GenerateOutputFile(null, inputFile, "prefs");
@@ -346,27 +346,34 @@ public class HammerheadApi
         _printer.PrintRomCommand("Setting user preferences", inputFile, outputFile, () =>
         {
             ICodec codec = AbstractCodec.ReadFromFile(inputFile.FullName);
-
-            if (codec.Metadata.CodecFeatureSupport.SupportsKeyCodes)
+            if (codec is not N64GsRom gsRom)
             {
-                codec.RecalculateKeyCodes(cmdParams.KeyCodeIds);
+                _printer.PrintError(
+                    $"{codec.Metadata.CodecId.ToDisplayString()} does not support N64 GS preferences.");
+                return;
+            }
+
+            CodecFeatureSupport support = gsRom.Metadata.CodecFeatureSupport;
+            if (support.SupportsKeyCodes)
+            {
+                gsRom.RecalculateKeyCodes(cmdParams.KeyCodeIds);
             }
             else
             {
                 _printer.PrintHint("This firmware version does not support key codes.");
             }
 
-            if (codec.Metadata.CodecFeatureSupport.SupportsUserPrefs)
+            if (support.SupportsUserPrefs)
             {
-                // TODO(CheatoBaggins): Write other user prefs
+                gsRom.UpdateUserPrefs(cmdParams);
             }
             else
             {
                 _printer.PrintHint("This firmware version does not support custom user preferences.");
             }
 
-            codec.WriteChangesToBuffer();
-            File.WriteAllBytes(outputFile.FullName, codec.Buffer);
+            gsRom.WriteChangesToBuffer();
+            File.WriteAllBytes(outputFile.FullName, gsRom.Buffer);
         });
     }
 }

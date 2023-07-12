@@ -56,7 +56,7 @@ message N64Data {
 
 message N64GsUserPrefs {
   bool is_sound_enabled = 1;
-  bool is_background_scroll_enabled = 2;
+  bool is_bg_scroll_enabled = 2;
   bool is_menu_scroll_enabled = 3;
   Nn64GsBgPatternId bg_pattern_id = 4;
   Nn64GsBgColorId bg_color_id = 5;

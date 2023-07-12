@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
@@ -37,6 +38,14 @@ public sealed class N64GsRom : AbstractCodec
     /// The official PC utils will crash if you try to use longer names.
     /// </summary>
     private const u8 CheatNameMaxDisplayLen = 30;
+
+    private const u8 KeyCodeNameMaxLen = 30;
+
+    /// <summary>
+    /// The user preferences section of the ROM file stores the
+    /// selected game index as a single byte.
+    /// </summary>
+    private const u8 MaxGameCount = 255;
 
     public static N64GsRom Create(string filePath, u8[] rawInput)
     {
@@ -144,16 +153,7 @@ public sealed class N64GsRom : AbstractCodec
         }
         if (Support.HasPristineUserPrefs)
         {
-            return new N64GsUserPrefs()
-            {
-                // -1 indicates that no game is selected.
-                SelectedGameIndex = -1,
-                BgPatternId = Nn64GsBgPatternId.Silk,
-                BgColorId = Nn64GsBgColorId.Grey,
-                IsSoundEnabled = true,
-                IsBackgroundScrollEnabled = true,
-                IsMenuScrollEnabled = true,
-            };
+            return MakePristinePrefs();
         }
 
         Scribe.Seek(_userPrefsAddr);
@@ -164,7 +164,7 @@ public sealed class N64GsRom : AbstractCodec
         var bgColor = Scribe.ReadEnum8<Nn64GsBgColorId>();
         u8 selectedGameIndexStartingAt1 = Scribe.ReadU8();
         Scribe.Skip(1);
-        bool isBackgroundScrollEnabled = Scribe.ReadBool();
+        bool isBgScrollEnabled = Scribe.ReadBool();
         Scribe.Skip(0x64);
         bool isMenuScrollEnabled = Scribe.ReadBool();
         return new N64GsUserPrefs()
@@ -173,9 +173,113 @@ public sealed class N64GsRom : AbstractCodec
             BgPatternId = bgPattern,
             BgColorId = bgColor,
             IsSoundEnabled = isSoundEnabled,
-            IsBackgroundScrollEnabled = isBackgroundScrollEnabled,
+            IsBgScrollEnabled = isBgScrollEnabled,
             IsMenuScrollEnabled = isMenuScrollEnabled,
         };
+    }
+
+    private static N64GsUserPrefs MakePristinePrefs()
+    {
+        return new N64GsUserPrefs()
+        {
+            // -1 indicates that no game is selected.
+            SelectedGameIndex = -1,
+            BgPatternId = Nn64GsBgPatternId.Silk,
+            BgColorId = Nn64GsBgColorId.Grey,
+            IsSoundEnabled = true,
+            IsBgScrollEnabled = true,
+            IsMenuScrollEnabled = true,
+        };
+    }
+
+    public void UpdateUserPrefs(N64GsConfigureCmdParams cmdParams)
+    {
+        if (!Support.SupportsUserPrefs)
+            return;
+
+        if (cmdParams.ResetUserPrefs.HasValue && cmdParams.ResetUserPrefs.Value)
+        {
+            Data.UserPrefs = MakePristinePrefs();
+            SetSelectedGameIndex(-1);
+            return;
+        }
+
+        string selectedGame = cmdParams.SelectedGame ?? "";
+        if (Regex.IsMatch(selectedGame, "^-?[0-9]+$"))
+        {
+            int gameIndex = Convert.ToInt32(selectedGame, 10) - 1;
+            SetSelectedGameIndex(gameIndex);
+        }
+        else if (Regex.IsMatch(selectedGame, "^(?:0x)?[0-9a-f]+$", RegexOptions.IgnoreCase))
+        {
+            int gameIndex = Convert.ToInt32(selectedGame, 16);
+            SetSelectedGameIndex(gameIndex);
+        }
+        else if (selectedGame.Length > 0)
+        {
+            SetSelectedGameName(selectedGame);
+        }
+
+        N64GsUserPrefs prefs = Data.UserPrefs ?? MakePristinePrefs();
+
+        prefs.SelectedGameIndex =
+            Games
+                .Where(game => game.IsGameActive)
+                .Select(game => (int)game.GameIndex)
+                .FirstOrDefault(-1)
+            ;
+
+        if (cmdParams.IsSoundEnabled.HasValue)
+            prefs.IsSoundEnabled = cmdParams.IsSoundEnabled.Value;
+        if (cmdParams.IsBgScrollEnabled.HasValue)
+            prefs.IsBgScrollEnabled = cmdParams.IsBgScrollEnabled.Value;
+        if (cmdParams.IsMenuScrollEnabled.HasValue)
+            prefs.IsMenuScrollEnabled = cmdParams.IsMenuScrollEnabled.Value;
+        if (cmdParams.BgPattern.HasValue)
+            prefs.BgPatternId = cmdParams.BgPattern.Value;
+        if (cmdParams.BgColor.HasValue)
+            prefs.BgColorId = cmdParams.BgColor.Value;
+        if (cmdParams.UpdateTimestamp.HasValue && cmdParams.UpdateTimestamp.Value)
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            // Raw value must be 16 bytes or less to fit inside the ROM header.
+            Metadata.BuildDateRaw.Value = now.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+
+            // Full ISO format
+            Metadata.BuildDateIso = now.ToIsoString();
+        }
+        if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
+        {
+            foreach (Code kc in Data.KeyCodes)
+            {
+                string codeName = kc.CodeName.Value;
+                if (codeName.Contains("Mario"))
+                    kc.CodeName = "Mario 64, GoldenEye, & Others".ToRomString();
+                if (codeName.Contains("Diddy"))
+                    kc.CodeName = "Diddy, Banjo-Kazooie,SmashBros".ToRomString();
+                if (codeName.Contains("Yoshi"))
+                    kc.CodeName = "Yoshi's Story, F-Zero, Cruis'n".ToRomString();
+                if (codeName.Contains("Zelda"))
+                    kc.CodeName = "Zelda, Perfect Dark, Tooie, DK".ToRomString();
+            }
+        }
+    }
+
+    private void SetSelectedGameName(string selectedGame)
+    {
+        foreach (Game game in Games)
+        {
+            game.IsGameActive = game.GameName.Value.Equals(selectedGame, StringComparison.CurrentCultureIgnoreCase);
+        }
+    }
+
+    private void SetSelectedGameIndex(s32 gameIndex)
+    {
+        foreach (Game game in Games)
+        {
+            game.IsGameActive = game.GameIndex == gameIndex;
+        }
     }
 
     private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
@@ -336,6 +440,7 @@ public sealed class N64GsRom : AbstractCodec
         {
             GameIndex = gameIdx,
             GameName = ReadName(),
+            IsGameActive = gameIdx == Data.UserPrefs.SelectedGameIndex,
         };
         u8 cheatCount = Scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
@@ -584,12 +689,13 @@ public sealed class N64GsRom : AbstractCodec
 
     private static N64KeyCodeId GetCicId(Code kc)
     {
-        string kcName = kc.CodeName.Value;
-        if (kcName.StartsWith("Diddy"))
+        string name = kc.CodeName.Value.ToUpperInvariant();
+
+        if (name.Contains("DIDDY"))
             return N64KeyCodeId.Diddy;
-        if (kcName.StartsWith("Yoshi"))
+        if (name.Contains("YOSHI"))
             return N64KeyCodeId.Yoshi;
-        if (kcName.StartsWith("Zelda"))
+        if (name.Contains("ZELDA"))
             return N64KeyCodeId.Zelda;
         else
             return N64KeyCodeId.Mario;
@@ -614,6 +720,20 @@ public sealed class N64GsRom : AbstractCodec
 
     public override ICodec WriteChangesToBuffer()
     {
+        WriteHeader();
+        WriteKeyCodes();
+        WriteUserPrefs();
+        WriteGames();
+        return this;
+    }
+
+    private void WriteHeader()
+    {
+        Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw, 16);
+    }
+
+    private void WriteKeyCodes()
+    {
         // Recalculate CRCs and write key codes to list
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
         Scribe.Seek(_keyCodeListAddr);
@@ -626,7 +746,7 @@ public sealed class N64GsRom : AbstractCodec
 
             u32 startAddr = Scribe.Position;
             Scribe.WriteBytes(bytes);
-            Scribe.WriteCString(kc.CodeName);
+            Scribe.WriteCString(kc.CodeName, KeyCodeNameMaxLen, true);
 
             // Each key code entry is padded to 0x2C bytes long.
             while (Scribe.Position < startAddr + 0x2C)
@@ -642,7 +762,52 @@ public sealed class N64GsRom : AbstractCodec
         u8[] entrypoint = kcBytes[8..12];
         Scribe.Seek(ActiveKeyCodeAddr).WriteBytes(checksum);
         Scribe.Seek(ProgramCounterAddr).WriteBytes(entrypoint);
+    }
 
+    private void WriteUserPrefs()
+    {
+        N64GsUserPrefs? prefs = Data.UserPrefs;
+        if (!Support.SupportsUserPrefs)
+        {
+            return;
+        }
+
+        // Perform a factory reset
+        if (prefs == null || prefs.Equals(MakePristinePrefs()))
+        {
+            var padding = new u8[109];
+            for (int i = 0; i < padding.Length; i++)
+            {
+                padding[i] = 0xFF;
+            }
+            Scribe.Seek(_userPrefsAddr);
+            Scribe.WriteBytes(padding);
+            return;
+        }
+
+        if (Support.HasPristineUserPrefs)
+        {
+            // A pristine user prefs section contains all 0xFF bytes.
+            // Write null bytes to signal that the user has configured settings.
+            Scribe.Seek(_userPrefsAddr);
+            Scribe.WriteBytes(new u8[109]);
+            Support.HasPristineUserPrefs = false;
+        }
+
+        Scribe.Seek(_userPrefsAddr);
+        Scribe.WriteCString("GT", 2, false);
+        Scribe.WriteBool(prefs.IsSoundEnabled);
+        Scribe.WriteU8((u8)prefs.BgPatternId);
+        Scribe.WriteU8((u8)prefs.BgColorId);
+        Scribe.WriteU8((u8)(prefs.SelectedGameIndex + 1)); // value is 1-indexed
+        Scribe.Skip(1);
+        Scribe.WriteBool(prefs.IsBgScrollEnabled);
+        Scribe.Skip(0x64);
+        Scribe.WriteBool(prefs.IsMenuScrollEnabled);
+    }
+
+    private void WriteGames()
+    {
         Scribe.Seek(_gameListAddr);
         Scribe.WriteU32((u32)Games.Count);
         foreach (Game game in Games)
@@ -657,6 +822,7 @@ public sealed class N64GsRom : AbstractCodec
                 {
                     codeCount |= 0x80;
                 }
+
                 Scribe.WriteU8(codeCount);
                 foreach (Code code in cheat.Codes)
                 {
@@ -670,8 +836,6 @@ public sealed class N64GsRom : AbstractCodec
         {
             Scribe.WriteU8(pad);
         }
-
-        return this;
     }
 
     public static bool Is(u8[] bytes)
@@ -780,7 +944,7 @@ public sealed class N64GsRom : AbstractCodec
         table.AddRow("Background pattern", prefs.BgPatternId.ToString());
         table.AddRow("Background color", prefs.BgColorId.ToString());
         table.AddRow("Sound", prefs.IsSoundEnabled ? "Enabled" : "Disabled");
-        table.AddRow("Background scrolling", prefs.IsBackgroundScrollEnabled ? "Enabled" : "Disabled");
+        table.AddRow("Background scrolling", prefs.IsBgScrollEnabled ? "Enabled" : "Disabled");
         table.AddRow("Menu scrolling", prefs.IsMenuScrollEnabled ? "Enabled" : "Disabled");
         printer.PrintTable(table);
     }

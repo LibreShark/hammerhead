@@ -46,7 +46,7 @@ public class DumpCheatsCmdParams : CmdParams
     public CodecId OutputFormat { get; init; }
 }
 
-public class N64GsSetPrefsCmdParams : CmdParams
+public class N64GsConfigureCmdParams : CmdParams
 {
     public FileInfo? InputFile { get; init; }
     public FileInfo? OutputFile { get; set; }
@@ -60,4 +60,5 @@ public class N64GsSetPrefsCmdParams : CmdParams
     public Nn64GsBgColorId? BgColor { get; init; }
     public bool? UpdateTimestamp { get; init; }
     public bool? RenameKeyCodes { get; init; }
+    public bool? ResetUserPrefs { get; init; }
 }

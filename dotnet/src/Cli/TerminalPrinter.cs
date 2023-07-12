@@ -467,7 +467,7 @@ public class TerminalPrinter : ICliPrinter
 
         List<Game> sortedGames = _codec.Games.ToList();
         sortedGames.Sort((g1, g2) =>
-            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.InvariantCulture));
+            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.CurrentCulture));
 
         foreach (Game game in sortedGames)
         {
