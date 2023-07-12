@@ -94,7 +94,7 @@ public class TerminalPrinter : ICliPrinter
     {
         if (IsColor)
         {
-            AnsiConsole.Write($"\n[i dim]{message}[/]\n");
+            AnsiConsole.Markup($"\n[i dim]{message}[/]\n");
             return;
         }
         Console.Error.WriteLine($"\n{message}\n");
@@ -313,6 +313,10 @@ public class TerminalPrinter : ICliPrinter
         table.AddRow("Platform", OrUnknown(_codec.Metadata.ConsoleId.ToDisplayString().EscapeMarkup()));
         table.AddRow("Brand", OrUnknown(GetDisplayBrand().EscapeMarkup()));
         table.AddRow("Locale", OrUnknown(GetDisplayLocale().EscapeMarkup()));
+        if (_codec.Metadata.TvStandard != TvStandardId.UnspecifiedTvStandard)
+        {
+            table.AddRow("TV standard", _codec.Metadata.TvStandard.ToString().ToUpperInvariant());
+        }
         table.AddRow("", "");
         table.AddRow("Version (internal)", OrUnknown(_codec.Metadata.DisplayVersion.EscapeMarkup()));
         table.AddRow("Build date", OrUnknown(buildDateDisplay.EscapeMarkup()));

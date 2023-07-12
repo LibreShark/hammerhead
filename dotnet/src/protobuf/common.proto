@@ -52,7 +52,6 @@ message ParsedFile {
 message N64Data {
   repeated Code key_codes = 1;
   N64GsUserPrefs gs_user_prefs = 2;
-  TvStandardId tv_standard = 3;
 }
 
 enum TvStandardId {
@@ -143,6 +142,8 @@ message FileMetadata {
   bool is_known_version = 16;
 
   repeated RomRange file_sections = 17;
+
+  TvStandardId tv_standard = 18;
 }
 
 message CodecFeatureSupport {
