@@ -399,6 +399,14 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
