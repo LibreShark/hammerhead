@@ -256,10 +256,24 @@ public sealed class N64GsRom : AbstractCodec
 
     private TvStandardId ReadTvStandard()
     {
+        // Detect the machine code generated from this line in main.c:
+        //     vi_regs[6] = 525;
+        // https://github.com/Jhynjhiruu/gameshark/blob/8d082808b4eb4e7f4de9b1a91d5452bf18a00eb8/src/main.c#L127
+        //
+        // v2.50 and above ONLY!
+        // Earlier firmwares use different (as yet undiscovered) machine code.
         if (Buffer.Contains("2403020DAC430018".HexToBytes()))
             return TvStandardId.Ntsc;
+
+        // Detect the machine code generated from this line in main.c:
+        //     vi_regs[6] = 625;
+        // https://github.com/Jhynjhiruu/gameshark/blob/8d082808b4eb4e7f4de9b1a91d5452bf18a00eb8/src/main.c#L135
+        //
+        // v2.50 and above ONLY!
+        // Earlier firmwares use different (as yet undiscovered) machine code.
         if (Buffer.Contains("24030271AC430018".HexToBytes()))
             return TvStandardId.Pal;
+
         return TvStandardId.UnspecifiedTvStandard;
     }
 
