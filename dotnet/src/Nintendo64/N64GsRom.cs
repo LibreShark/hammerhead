@@ -262,7 +262,8 @@ public sealed class N64GsRom : AbstractCodec
         //
         // v2.50 and above ONLY!
         // Earlier firmwares use different (as yet undiscovered) machine code.
-        if (Buffer.Contains("2403020DAC430018".HexToBytes()))
+        bool isV3RomNtsc = Buffer.Contains("2403020DAC430018".HexToBytes());
+        if (isV3RomNtsc)
             return TvStandardId.Ntsc;
 
         // Detect the machine code generated from this line in main.c:
@@ -271,7 +272,8 @@ public sealed class N64GsRom : AbstractCodec
         //
         // v2.50 and above ONLY!
         // Earlier firmwares use different (as yet undiscovered) machine code.
-        if (Buffer.Contains("24030271AC430018".HexToBytes()))
+        bool isV3RomPal = Buffer.Contains("24030271AC430018".HexToBytes());
+        if (isV3RomPal)
             return TvStandardId.Pal;
 
         return TvStandardId.UnspecifiedTvStandard;
