@@ -1072,19 +1072,31 @@ public sealed class N64GsRom : AbstractCodec
     private void PrintKeyCodesTable(ICliPrinter printer)
     {
         Table table = printer.BuildTable()
-                .AddColumn(printer.HeaderCell("Games (CIC chip)"))
+                .AddColumn(printer.HeaderCell("Games"))
                 .AddColumn(printer.HeaderCell("Key code"))
+                .AddColumn(printer.HeaderCell("CIC chips"))
             ;
 
         foreach (Code keyCode in Data.KeyCodes)
         {
             string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
             string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);
+            string codeName = keyCode.CodeName.Value;
+            string cicChips = "";
+            if (codeName.Contains("Diddy"))
+                cicChips = "6103, 7103";
+            else if (codeName.Contains("Yoshi"))
+                cicChips = "6106, 7106";
+            else if (codeName.Contains("Zelda"))
+                cicChips = "6105, 7105";
+            else
+                cicChips = "6101, 6102, 7101, 7102";
             table.AddRow(
                 keyCode.IsActiveKeyCode
                     ? $"> {keyCodeName} " + printer.Italic("(active)")
                     : $"  {keyCodeName}",
-                hexString
+                hexString,
+                cicChips
             );
         }
 
