@@ -1,7 +1,11 @@
+using LibreShark.Hammerhead.IO;
+
 namespace LibreShark.Hammerhead.Nintendo64;
 
 public class N64GsImageEncoder
 {
+    #region Tile images
+
     /// <summary>
     /// Decodes a background tile image.
     /// </summary>
@@ -18,21 +22,32 @@ public class N64GsImageEncoder
             u8 b1 = imageBytes[i++];
             u8 b2 = imageBytes[i++];
 
-            u16 rawRgba5551 = (u16)((b1 << 8) | b2);
+            u16 encodedRgba5551 = (u16)((b1 << 8) | b2);
 
             // 16-bit RGBA colors are are stored in an encoded form in GameShark
             // ROMs for some reason.
+            //
             // The series of transformations below is exactly what the real
             // GameShark firmware does when it reads images from the fsblob.
-            u32 val1 = (u32)rawRgba5551 >> 7;
-            u32 val2 = (u32)rawRgba5551 & 0x7F;
-            u32 val3 = val2 << 9;
-            u32 val4 = (val1 | val3) >> 1;
-            u32 val5 = val4 & 0x7BDE;
+
+            // Swap the first 9 bits with the last 7 bits.
+            u32 encodedFirst9Bits = (u32)(encodedRgba5551 & 0xFF80); // 0xFF80 = 1111 1111 1000 0000
+            u32 encodedLast7Bits = (u32)(encodedRgba5551 & 0x007F);  // 0x007F = 0000 0000 0111 1111
+            u32 decodedFirst7Bits = encodedLast7Bits << 9;
+            u32 decodedLast9Bits = encodedFirst9Bits >> 7;
+            u32 decodedAllBits = (decodedFirst7Bits | decodedLast9Bits) >> 1;
+
+            // Clear the first bit of every channel and disable transparency.
+            //
+            //          b[0] b[1] b[2] b[3]
+            // 0x7BDE = 0111 1011 1101 1110
+            //        = 01111 01111 01111 0
+            //            R     G     B   A
+            u32 finalVal = decodedAllBits & 0x7BDE;
 
             // 16-bit RGBA color. See
             // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/#16-bit
-            u16 realRgba5551 = (u16)val5;
+            u16 realRgba5551 = (u16)finalVal;
 
             u8 r5 = (u8)((realRgba5551 >> 11) & 0x3E);
             u8 g5 = (u8)((realRgba5551 >>  6) & 0x3E);
@@ -81,6 +96,10 @@ public class N64GsImageEncoder
         return image;
     }
 
+    #endregion
+
+    #region Logo image
+
     /// <summary>
     /// Decodes the startup logo, which is stored as two separate files:
     /// a palette (.pal file) and image data (.bin file).
@@ -127,6 +146,8 @@ public class N64GsImageEncoder
         }
         return image;
     }
+
+    #endregion
 
     /// <summary>
     /// Converts a 5-bit RGB channel value to the equivalent 8-bit value.
