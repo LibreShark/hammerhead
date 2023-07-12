@@ -889,7 +889,7 @@ public sealed class N64GsRom : AbstractCodec
         {
             // -1 indicates that no game is selected.
             SelectedGameIndex = -1,
-            BgPatternId = Nn64GsBgPatternId.Silk,
+            BgPatternId = Nn64GsBgPatternId.Rough,
             BgColorId = Nn64GsBgColorId.Grey,
             IsSoundEnabled = true,
             IsBgScrollEnabled = true,

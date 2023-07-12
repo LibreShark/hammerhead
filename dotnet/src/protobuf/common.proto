@@ -72,9 +72,9 @@ message N64GsUserPrefs {
 }
 
 enum Nn64GsBgPatternId {
-  ROUGH = 0x00;
-  SOFT = 0x01;
-  LOGO = 0x02;
+  ROUGH  = 0x00;
+  SMOOTH = 0x01;
+  LOGO   = 0x02;
 };
 
 enum Nn64GsBgColorId {
