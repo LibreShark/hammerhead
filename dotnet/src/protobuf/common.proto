@@ -72,8 +72,8 @@ message N64GsUserPrefs {
 }
 
 enum Nn64GsBgPatternId {
-  SILK = 0x00;
-  ROCK = 0x01;
+  ROUGH = 0x00;
+  SOFT = 0x01;
   LOGO = 0x02;
 };
 

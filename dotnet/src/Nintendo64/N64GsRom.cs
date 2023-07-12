@@ -1048,16 +1048,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private string BgPattern(Nn64GsBgPatternId patternId)
     {
-        var str = patternId.ToString();
-        if (patternId == Nn64GsBgPatternId.Logo)
-        {
-            return $"🦈 {str}";
-        }
-        if (patternId == Nn64GsBgPatternId.Rock)
-        {
-            return $"🪨 {str}";
-        }
-        return $"🌫️ {str}";
+        return patternId.ToString();
     }
 
     private string BgColor(Nn64GsBgColorId colorId)
