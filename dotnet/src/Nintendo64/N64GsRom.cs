@@ -1040,7 +1040,7 @@ public sealed class N64GsRom : AbstractCodec
         }
         if (colorId == Nn64GsBgColorId.Pink)
         {
-            return $"[pink]{str}[/]";
+            return $"[bold red]{str}[/]";
         }
         if (colorId == Nn64GsBgColorId.Tan)
         {
