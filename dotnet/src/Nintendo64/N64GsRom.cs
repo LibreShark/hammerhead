@@ -985,13 +985,68 @@ public sealed class N64GsRom : AbstractCodec
         {
             selectedGameName = printer.Dim("No game selected");
         }
+        else
+        {
+            selectedGameName = printer.BoldUnderline(printer.Green(selectedGameName));
+        }
+
+        string enabled = "Enabled";
+        string disabled = printer.Dim("Disabled");
         table.AddRow("Selected game", selectedGameName);
-        table.AddRow("Background pattern", prefs.BgPatternId.ToString());
-        table.AddRow("Background color", prefs.BgColorId.ToString());
-        table.AddRow("Sound", prefs.IsSoundEnabled ? "Enabled" : "Disabled");
-        table.AddRow("Background scrolling", prefs.IsBgScrollEnabled ? "Enabled" : "Disabled");
-        table.AddRow("Menu scrolling", prefs.IsMenuScrollEnabled ? "Enabled" : "Disabled");
+        table.AddRow("Background pattern", BgPattern(prefs.BgPatternId));
+        table.AddRow("Background color", BgColor(prefs.BgColorId));
+        table.AddRow("Sound", prefs.IsSoundEnabled ? enabled : disabled);
+        table.AddRow("Background scrolling", prefs.IsBgScrollEnabled ? enabled : disabled);
+        table.AddRow("Menu scrolling", prefs.IsMenuScrollEnabled ? enabled : disabled);
         printer.PrintTable(table);
+    }
+
+    private string BgPattern(Nn64GsBgPatternId patternId)
+    {
+        var str = patternId.ToString();
+        if (patternId == Nn64GsBgPatternId.Logo)
+        {
+            return $"🦈 {str}";
+        }
+        if (patternId == Nn64GsBgPatternId.Rock)
+        {
+            return $"🪨 {str}";
+        }
+        return $"🌫️ {str}";
+    }
+
+    private string BgColor(Nn64GsBgColorId colorId)
+    {
+        var str = colorId.ToString();
+        if (colorId == Nn64GsBgColorId.Grey)
+        {
+            return $"[gray]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Blue)
+        {
+            return $"[blue]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Green)
+        {
+            return $"[green]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Red)
+        {
+            return $"[red]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Yellow)
+        {
+            return $"[yellow]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Pink)
+        {
+            return $"[pink]{str}[/]";
+        }
+        if (colorId == Nn64GsBgColorId.Tan)
+        {
+            return $"[tan]{str}[/]";
+        }
+        return str;
     }
 
     private void PrintAddressTable(ICliPrinter printer)
