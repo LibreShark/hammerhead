@@ -1,6 +1,6 @@
 namespace LibreShark.Hammerhead.Nintendo64;
 
-public class N64GsImageDecoder
+public class N64GsImageEncoder
 {
     /// <summary>
     /// Decodes a background tile image.

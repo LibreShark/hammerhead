@@ -136,7 +136,7 @@ public class EmbeddedFileTest
     {
         var paletteBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.pal.dec.bin");
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.bin.dec.bin");
-        var decoder = new N64GsImageDecoder();
+        var decoder = new N64GsImageEncoder();
         using Image<Rgba32> image = decoder.DecodeStartupLogo(paletteBytes, imageBytes, true, new Rgb24(0, 0, 0));
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
@@ -148,7 +148,7 @@ public class EmbeddedFileTest
     public void Test_StartupTile()
     {
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
-        var decoder = new N64GsImageDecoder();
+        var decoder = new N64GsImageEncoder();
         using Image<Rgba32> image = decoder.Decode16BitRgba(imageBytes);
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");

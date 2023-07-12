@@ -285,7 +285,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
     {
-        var decoder = new N64GsImageDecoder();
+        var decoder = new N64GsImageEncoder();
 
         List<EmbeddedFile> paletteFiles = files.Where(file => file.FileName.EndsWith(".pal")).ToList();
 
@@ -306,7 +306,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private List<EmbeddedImage> GetTileImages(List<EmbeddedFile> files)
     {
-        var decoder = new N64GsImageDecoder();
+        var decoder = new N64GsImageEncoder();
         return files
             .Where(file => file.FileName.EndsWith(".tg~"))
             .Select(file =>
