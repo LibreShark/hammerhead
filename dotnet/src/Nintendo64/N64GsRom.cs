@@ -1,7 +1,5 @@
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
@@ -27,6 +25,12 @@ public sealed class N64GsRom : AbstractCodec
 
     private static readonly Regex FileNameRegex = new Regex(@"^[\w~.]+$");
 
+    public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
+
+    private EmbeddedFile? ShellFile => _rootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
+
+    #region Constants
+
     /// <summary>
     /// The GS firmware will silently truncate names beyond this length.
     /// The official PC utils will crash if you try to use longer names.
@@ -47,10 +51,14 @@ public sealed class N64GsRom : AbstractCodec
     /// </summary>
     private const u8 MaxGameCount = 255;
 
-    public static N64GsRom Create(string filePath, u8[] rawInput)
-    {
-        return new N64GsRom(filePath, rawInput);
-    }
+    private const u32 ProgramCounterAddr = 0x00000008;
+    private const u32 ActiveKeyCodeAddr  = 0x00000010;
+    private const u32 HeaderIdAddr       = 0x00000020;
+    private const u32 BuildTimestampAddr = 0x00000030;
+
+    #endregion
+
+    #region Member vars
 
     private readonly bool _isV3Firmware;
     private readonly bool _isV1GameList;
@@ -65,19 +73,19 @@ public sealed class N64GsRom : AbstractCodec
     private readonly N64GsVersion _version;
     private readonly Code _activeKeyCode;
 
-    private const u32 ProgramCounterAddr = 0x00000008;
-    private const u32 ActiveKeyCodeAddr  = 0x00000010;
-    private const u32 HeaderIdAddr       = 0x00000020;
-    private const u32 BuildTimestampAddr = 0x00000030;
-
-    public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
-
     private N64Data Data => Parsed.N64Data;
 
     private readonly List<EmbeddedFile> _rootCompressedFiles;
     private readonly List<EmbeddedFile> _shellCompressedFiles;
 
-    private EmbeddedFile? ShellFile => _rootCompressedFiles.FirstOrDefault(file => file.FileName == "shell.bin");
+    #endregion
+
+    #region Constructor
+
+    public static N64GsRom Create(string filePath, u8[] rawInput)
+    {
+        return new N64GsRom(filePath, rawInput);
+    }
 
     private N64GsRom(string filePath, u8[] rawInput)
         : base(filePath, rawInput, Decrypt(rawInput), ThisConsoleId, ThisCodecId)
@@ -145,6 +153,72 @@ public sealed class N64GsRom : AbstractCodec
         EmbeddedImages.AddRange(GetTileImages(_shellCompressedFiles));
     }
 
+    #endregion
+
+    #region Reading metadata & user prefs
+
+    // TODO(CheatoBaggins): Move this method to the N64GsVersion class
+    private N64GsVersion ReadVersion()
+    {
+        RomString? titleVersionNumberStr =
+            // Original brands
+            ReadMainMenuTitle("N64 GameShark Version ") ??
+            ReadMainMenuTitle("GameShark Pro Version ") ??
+            ReadMainMenuTitle("N64 Action Replay Version ") ??
+            ReadMainMenuTitle("Action Replay Pro Version ") ??
+            ReadMainMenuTitle("N64 Equalizer Version ") ??
+            ReadMainMenuTitle("N64 Game Buster Version ") ??
+            // LibreShark
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            // Unknown
+            null;
+
+        if (titleVersionNumberStr != null)
+        {
+            Metadata.Identifiers.Add(titleVersionNumberStr);
+        }
+
+        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, titleVersionNumberStr);
+        if (version == null)
+        {
+            throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
+        }
+
+        return version;
+    }
+
+    private RomString? ReadMainMenuTitle(string needle)
+    {
+        s32 titleLength = needle.Length + 5;
+
+        if (IsFirmwareCompressed() && ShellFile.HasValue)
+        {
+            u8[] shellBytes = ShellFile.Value.UncompressedBytes;
+            s32 titleVersionPos = shellBytes.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
+
+            u8[] titleBytes = shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
+            return titleBytes.ToAsciiString().ToRomString();
+        }
+        else
+        {
+            u8[] haystack = Buffer[..0x30000];
+            s32 titleVersionPos = haystack.Find(needle);
+            if (titleVersionPos == -1)
+            {
+                return null;
+            }
+
+            return Scribe.Seek(titleVersionPos).ReadPrintableCString((u32)titleLength, true).Trim();
+        }
+    }
+
     private N64GsUserPrefs? ReadUserPrefs()
     {
         if (!Support.SupportsUserPrefs)
@@ -178,109 +252,9 @@ public sealed class N64GsRom : AbstractCodec
         };
     }
 
-    private static N64GsUserPrefs MakePristinePrefs()
-    {
-        return new N64GsUserPrefs()
-        {
-            // -1 indicates that no game is selected.
-            SelectedGameIndex = -1,
-            BgPatternId = Nn64GsBgPatternId.Silk,
-            BgColorId = Nn64GsBgColorId.Grey,
-            IsSoundEnabled = true,
-            IsBgScrollEnabled = true,
-            IsMenuScrollEnabled = true,
-        };
-    }
+    #endregion
 
-    public void UpdateUserPrefs(N64GsConfigureCmdParams cmdParams)
-    {
-        if (!Support.SupportsUserPrefs)
-            return;
-
-        if (cmdParams.ResetUserPrefs.HasValue && cmdParams.ResetUserPrefs.Value)
-        {
-            Data.UserPrefs = MakePristinePrefs();
-            SetSelectedGameIndex(-1);
-            return;
-        }
-
-        string selectedGame = cmdParams.SelectedGame ?? "";
-        if (Regex.IsMatch(selectedGame, "^-?[0-9]+$"))
-        {
-            int gameIndex = Convert.ToInt32(selectedGame, 10) - 1;
-            SetSelectedGameIndex(gameIndex);
-        }
-        else if (Regex.IsMatch(selectedGame, "^(?:0x)?[0-9a-f]+$", RegexOptions.IgnoreCase))
-        {
-            int gameIndex = Convert.ToInt32(selectedGame, 16);
-            SetSelectedGameIndex(gameIndex);
-        }
-        else if (selectedGame.Length > 0)
-        {
-            SetSelectedGameName(selectedGame);
-        }
-
-        N64GsUserPrefs prefs = Data.UserPrefs ?? MakePristinePrefs();
-
-        prefs.SelectedGameIndex =
-            Games
-                .Where(game => game.IsGameActive)
-                .Select(game => (int)game.GameIndex)
-                .FirstOrDefault(-1)
-            ;
-
-        if (cmdParams.IsSoundEnabled.HasValue)
-            prefs.IsSoundEnabled = cmdParams.IsSoundEnabled.Value;
-        if (cmdParams.IsBgScrollEnabled.HasValue)
-            prefs.IsBgScrollEnabled = cmdParams.IsBgScrollEnabled.Value;
-        if (cmdParams.IsMenuScrollEnabled.HasValue)
-            prefs.IsMenuScrollEnabled = cmdParams.IsMenuScrollEnabled.Value;
-        if (cmdParams.BgPattern.HasValue)
-            prefs.BgPatternId = cmdParams.BgPattern.Value;
-        if (cmdParams.BgColor.HasValue)
-            prefs.BgColorId = cmdParams.BgColor.Value;
-        if (cmdParams.UpdateTimestamp.HasValue && cmdParams.UpdateTimestamp.Value)
-        {
-            DateTimeOffset now = DateTimeOffset.Now;
-
-            // Raw value must be 16 bytes or less to fit inside the ROM header.
-            Metadata.BuildDateRaw.Value = now.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
-
-            // Full ISO format
-            Metadata.BuildDateIso = now.ToIsoString();
-        }
-        if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
-        {
-            foreach (Code kc in Data.KeyCodes)
-            {
-                string codeName = kc.CodeName.Value;
-                if (codeName.Contains("Mario"))
-                    kc.CodeName = "Mario 64, GoldenEye, & Others".ToRomString();
-                if (codeName.Contains("Diddy"))
-                    kc.CodeName = "Diddy, Banjo-Kazooie,SmashBros".ToRomString();
-                if (codeName.Contains("Yoshi"))
-                    kc.CodeName = "Yoshi's Story, F-Zero, Cruis'n".ToRomString();
-                if (codeName.Contains("Zelda"))
-                    kc.CodeName = "Zelda, Perfect Dark, Tooie, DK".ToRomString();
-            }
-        }
-    }
-
-    private void SetSelectedGameName(string selectedGame)
-    {
-        foreach (Game game in Games)
-        {
-            game.IsGameActive = game.GameName.Value.Equals(selectedGame, StringComparison.CurrentCultureIgnoreCase);
-        }
-    }
-
-    private void SetSelectedGameIndex(s32 gameIndex)
-    {
-        foreach (Game game in Games)
-        {
-            game.IsGameActive = game.GameIndex == gameIndex;
-        }
-    }
+    #region Reading embedded files/images
 
     private List<EmbeddedImage> GetLogoImages(List<EmbeddedFile> files)
     {
@@ -421,6 +395,10 @@ public sealed class N64GsRom : AbstractCodec
             kc.CodeName = kc.CodeName.WithoutAddress();
         }
     }
+
+    #endregion
+
+    #region Reading games/cheats/codes
 
     private List<Game> ReadGames()
     {
@@ -582,65 +560,97 @@ public sealed class N64GsRom : AbstractCodec
         return keyCodes;
     }
 
-    // TODO(CheatoBaggins): Move this method to the N64GsVersion class
-    private N64GsVersion ReadVersion()
+    #endregion
+
+    #region Writing
+
+    public void UpdateUserPrefs(N64GsConfigureCmdParams cmdParams)
     {
-        RomString? titleVersionNumberStr =
-            // Original brands
-            ReadMainMenuTitle("N64 GameShark Version ") ??
-            ReadMainMenuTitle("GameShark Pro Version ") ??
-            ReadMainMenuTitle("N64 Action Replay Version ") ??
-            ReadMainMenuTitle("Action Replay Pro Version ") ??
-            ReadMainMenuTitle("N64 Equalizer Version ") ??
-            ReadMainMenuTitle("N64 Game Buster Version ") ??
-            // LibreShark
-            ReadMainMenuTitle("LibreShark Version ") ??
-            ReadMainMenuTitle("LibreShark Pro Version ") ??
-            ReadMainMenuTitle("LibreShark Version ") ??
-            ReadMainMenuTitle("LibreShark Pro Version ") ??
-            // Unknown
-            null;
+        if (!Support.SupportsUserPrefs)
+            return;
 
-        if (titleVersionNumberStr != null)
+        if (cmdParams.ResetUserPrefs.HasValue && cmdParams.ResetUserPrefs.Value)
         {
-            Metadata.Identifiers.Add(titleVersionNumberStr);
+            Data.UserPrefs = MakePristinePrefs();
+            SetSelectedGameIndex(-1);
+            return;
         }
 
-        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, titleVersionNumberStr);
-        if (version == null)
+        string selectedGame = cmdParams.SelectedGame ?? "";
+        if (Regex.IsMatch(selectedGame, "^-?[0-9]+$"))
         {
-            throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
+            int gameIndex = Convert.ToInt32(selectedGame, 10) - 1;
+            SetSelectedGameIndex(gameIndex);
+        }
+        else if (Regex.IsMatch(selectedGame, "^(?:0x)?[0-9a-f]+$", RegexOptions.IgnoreCase))
+        {
+            int gameIndex = Convert.ToInt32(selectedGame, 16);
+            SetSelectedGameIndex(gameIndex);
+        }
+        else if (selectedGame.Length > 0)
+        {
+            SetSelectedGameName(selectedGame);
         }
 
-        return version;
+        N64GsUserPrefs prefs = Data.UserPrefs ?? MakePristinePrefs();
+
+        prefs.SelectedGameIndex =
+            Games
+                .Where(game => game.IsGameActive)
+                .Select(game => (int)game.GameIndex)
+                .FirstOrDefault(-1)
+            ;
+
+        if (cmdParams.IsSoundEnabled.HasValue)
+            prefs.IsSoundEnabled = cmdParams.IsSoundEnabled.Value;
+        if (cmdParams.IsBgScrollEnabled.HasValue)
+            prefs.IsBgScrollEnabled = cmdParams.IsBgScrollEnabled.Value;
+        if (cmdParams.IsMenuScrollEnabled.HasValue)
+            prefs.IsMenuScrollEnabled = cmdParams.IsMenuScrollEnabled.Value;
+        if (cmdParams.BgPattern.HasValue)
+            prefs.BgPatternId = cmdParams.BgPattern.Value;
+        if (cmdParams.BgColor.HasValue)
+            prefs.BgColorId = cmdParams.BgColor.Value;
+        if (cmdParams.UpdateTimestamp.HasValue && cmdParams.UpdateTimestamp.Value)
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            // Raw value must be 16 bytes or less to fit inside the ROM header.
+            Metadata.BuildDateRaw.Value = now.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+
+            // Full ISO format
+            Metadata.BuildDateIso = now.ToIsoString();
+        }
+        if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
+        {
+            foreach (Code kc in Data.KeyCodes)
+            {
+                string codeName = kc.CodeName.Value;
+                if (codeName.Contains("Mario"))
+                    kc.CodeName = "Mario 64, GoldenEye, & Others".ToRomString();
+                if (codeName.Contains("Diddy"))
+                    kc.CodeName = "Diddy, Banjo-Kazooie,SmashBros".ToRomString();
+                if (codeName.Contains("Yoshi"))
+                    kc.CodeName = "Yoshi's Story, F-Zero, Cruis'n".ToRomString();
+                if (codeName.Contains("Zelda"))
+                    kc.CodeName = "Zelda, Perfect Dark, Tooie, DK".ToRomString();
+            }
+        }
     }
 
-    private RomString? ReadMainMenuTitle(string needle)
+    private void SetSelectedGameName(string selectedGame)
     {
-        s32 titleLength = needle.Length + 5;
-
-        if (IsFirmwareCompressed() && ShellFile.HasValue)
+        foreach (Game game in Games)
         {
-            u8[] shellBytes = ShellFile.Value.UncompressedBytes;
-            s32 titleVersionPos = shellBytes.Find(needle);
-            if (titleVersionPos == -1)
-            {
-                return null;
-            }
-
-            u8[] titleBytes = shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
-            return titleBytes.ToAsciiString().ToRomString();
+            game.IsGameActive = game.GameName.Value.Equals(selectedGame, StringComparison.CurrentCultureIgnoreCase);
         }
-        else
-        {
-            u8[] haystack = Buffer[..0x30000];
-            s32 titleVersionPos = haystack.Find(needle);
-            if (titleVersionPos == -1)
-            {
-                return null;
-            }
+    }
 
-            return Scribe.Seek(titleVersionPos).ReadPrintableCString((u32)titleLength, true).Trim();
+    private void SetSelectedGameIndex(s32 gameIndex)
+    {
+        foreach (Game game in Games)
+        {
+            game.IsGameActive = game.GameIndex == gameIndex;
         }
     }
 
@@ -685,20 +695,6 @@ public sealed class N64GsRom : AbstractCodec
 
         Data.KeyCodes.Clear();
         Data.KeyCodes.AddRange(newKeyCodes);
-    }
-
-    private static N64KeyCodeId GetCicId(Code kc)
-    {
-        string name = kc.CodeName.Value.ToUpperInvariant();
-
-        if (name.Contains("DIDDY"))
-            return N64KeyCodeId.Diddy;
-        if (name.Contains("YOSHI"))
-            return N64KeyCodeId.Yoshi;
-        if (name.Contains("ZELDA"))
-            return N64KeyCodeId.Zelda;
-        else
-            return N64KeyCodeId.Mario;
     }
 
     private void WriteName(string str)
@@ -840,6 +836,38 @@ public sealed class N64GsRom : AbstractCodec
         }
     }
 
+    private static N64GsUserPrefs MakePristinePrefs()
+    {
+        return new N64GsUserPrefs()
+        {
+            // -1 indicates that no game is selected.
+            SelectedGameIndex = -1,
+            BgPatternId = Nn64GsBgPatternId.Silk,
+            BgColorId = Nn64GsBgColorId.Grey,
+            IsSoundEnabled = true,
+            IsBgScrollEnabled = true,
+            IsMenuScrollEnabled = true,
+        };
+    }
+
+    private static N64KeyCodeId GetCicId(Code kc)
+    {
+        string name = kc.CodeName.Value.ToUpperInvariant();
+
+        if (name.Contains("DIDDY"))
+            return N64KeyCodeId.Diddy;
+        if (name.Contains("YOSHI"))
+            return N64KeyCodeId.Yoshi;
+        if (name.Contains("ZELDA"))
+            return N64KeyCodeId.Zelda;
+        else
+            return N64KeyCodeId.Mario;
+    }
+
+    #endregion
+
+    #region Detection
+
     public static bool Is(u8[] bytes)
     {
         bool is256KiB = bytes.IsKiB(256);
@@ -887,6 +915,10 @@ public sealed class N64GsRom : AbstractCodec
         return bytes.Contains("shell.bin");
     }
 
+    #endregion
+
+    #region Encryption/decryption
+
     public override u8[] Encrypt()
     {
         return N64GsCrypter.Encrypt(Buffer);
@@ -899,6 +931,10 @@ public sealed class N64GsRom : AbstractCodec
             : input.ToArray();
         return new BigEndianScribe(output);
     }
+
+    #endregion
+
+    #region Printing
 
     public override void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params)
     {
@@ -992,4 +1028,6 @@ public sealed class N64GsRom : AbstractCodec
 
         printer.PrintTable(table);
     }
+
+    #endregion
 }
