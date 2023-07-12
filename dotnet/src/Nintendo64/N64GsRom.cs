@@ -1008,9 +1008,9 @@ public sealed class N64GsRom : AbstractCodec
 
         printer.PrintHeading("Key codes");
         printer.PrintN64ActiveKeyCode(_activeKeyCode);
-        Console.WriteLine();
         if (Support.HasKeyCodes)
         {
+            Console.WriteLine();
             PrintKeyCodesTable(printer);
         }
         else
