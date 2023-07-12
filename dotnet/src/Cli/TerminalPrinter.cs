@@ -474,13 +474,14 @@ public class TerminalPrinter : ICliPrinter
             string gameName = game.GameName.Value.EscapeMarkup();
             if (game.IsGameActive)
             {
-                gameName = BoldUnderline(Green(gameName)) + " [ACTIVE]".EscapeMarkup();
+                gameName = BoldUnderline(Green(gameName)) + " " + Italic("(active)");
             }
             else
             {
-                gameName = Underline(gameName);
+                gameName = BoldUnderline(gameName);
             }
             table.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
+            table.AddRow("", "", "");
 
             if (@params.HideCheats)
             {
@@ -493,7 +494,7 @@ public class TerminalPrinter : ICliPrinter
                 string cheatName = cheat.CheatName.Value.EscapeMarkup();
                 if (cheat.IsCheatActive)
                 {
-                    cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
+                    cheatName = Bold(Green(cheatName)) + Italic((" (active)".EscapeMarkup()));
                 }
 
                 string cheatNameCell =
@@ -516,6 +517,11 @@ public class TerminalPrinter : ICliPrinter
                         : Dim(codeString);
                     table.AddRow($"        {codeStringFormatted}{Dim(codeComment)}", "", "");
                 }
+            }
+
+            if (game != sortedGames.Last())
+            {
+                table.AddRow("", "", "");
             }
         }
 

@@ -1020,7 +1020,7 @@ public sealed class N64GsRom : AbstractCodec
             string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);
             table.AddRow(
                 keyCode.IsActiveKeyCode
-                    ? $"> {keyCodeName}" + " [ACTIVE]".EscapeMarkup()
+                    ? $"> {keyCodeName} " + printer.Italic("(active)")
                     : $"  {keyCodeName}",
                 hexString
             );
