@@ -73,7 +73,7 @@ public sealed class N64GsRom : AbstractCodec
     private readonly N64GsVersion _version;
     private readonly Code _activeKeyCode;
 
-    private N64Data Data => Parsed.N64Data;
+    private N64Data N64Data => Parsed.N64Data;
 
     private readonly List<EmbeddedFile> _rootCompressedFiles;
     private readonly List<EmbeddedFile> _shellCompressedFiles;
@@ -136,13 +136,14 @@ public sealed class N64GsRom : AbstractCodec
         _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        Data.KeyCodes.AddRange(ReadKeyCodes());
+        N64Data.KeyCodes.AddRange(ReadKeyCodes());
         _activeKeyCode = ReadActiveKeyCode();
 
         Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
-        Data.UserPrefs = ReadUserPrefs();
+        N64Data.GsUserPrefs = ReadUserPrefs();
+        N64Data.TvStandard = ReadTvStandard();
 
         Games.AddRange(ReadGames());
 
@@ -250,6 +251,12 @@ public sealed class N64GsRom : AbstractCodec
             IsBgScrollEnabled = isBgScrollEnabled,
             IsMenuScrollEnabled = isMenuScrollEnabled,
         };
+    }
+
+    private TvStandardId ReadTvStandard()
+    {
+        // TODO(CheatoBaggins): Implement
+        return TvStandardId.Ntsc;
     }
 
     #endregion
@@ -418,7 +425,7 @@ public sealed class N64GsRom : AbstractCodec
         {
             GameIndex = gameIdx,
             GameName = ReadName(),
-            IsGameActive = gameIdx == Data.UserPrefs.SelectedGameIndex,
+            IsGameActive = gameIdx == N64Data.GsUserPrefs.SelectedGameIndex,
         };
         u8 cheatCount = Scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
@@ -495,9 +502,9 @@ public sealed class N64GsRom : AbstractCodec
         u8[] activePcBytes = Scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
         RomString? name = null;
-        if (Data.KeyCodes.Count > 0)
+        if (N64Data.KeyCodes.Count > 0)
         {
-            Code? matchingKeyCodeInList = Data.KeyCodes.ToList().Find(kc =>
+            Code? matchingKeyCodeInList = N64Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
@@ -571,7 +578,7 @@ public sealed class N64GsRom : AbstractCodec
 
         if (cmdParams.ResetUserPrefs.HasValue && cmdParams.ResetUserPrefs.Value)
         {
-            Data.UserPrefs = MakePristinePrefs();
+            N64Data.GsUserPrefs = MakePristinePrefs();
             SetSelectedGameIndex(-1);
             return;
         }
@@ -592,7 +599,7 @@ public sealed class N64GsRom : AbstractCodec
             SetSelectedGameName(selectedGame);
         }
 
-        N64GsUserPrefs prefs = Data.UserPrefs ?? MakePristinePrefs();
+        N64GsUserPrefs prefs = N64Data.GsUserPrefs ?? MakePristinePrefs();
 
         prefs.SelectedGameIndex =
             Games
@@ -623,7 +630,7 @@ public sealed class N64GsRom : AbstractCodec
         }
         if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
         {
-            foreach (Code kc in Data.KeyCodes)
+            foreach (Code kc in N64Data.KeyCodes)
             {
                 string codeName = kc.CodeName.Value;
                 if (codeName.Contains("Mario"))
@@ -656,7 +663,7 @@ public sealed class N64GsRom : AbstractCodec
 
     public override void RecalculateKeyCodes(N64KeyCodeId[]? newCics = null)
     {
-        List<Code> oldKeyCodes = Data.KeyCodes.ToList();
+        List<Code> oldKeyCodes = N64Data.KeyCodes.ToList();
         N64KeyCodeId[] oldCics = oldKeyCodes.Select(GetCicId).ToArray();
 
         if (newCics == null || newCics.Length == 0 ||
@@ -693,8 +700,8 @@ public sealed class N64GsRom : AbstractCodec
             return newKC;
         }).ToList();
 
-        Data.KeyCodes.Clear();
-        Data.KeyCodes.AddRange(newKeyCodes);
+        N64Data.KeyCodes.Clear();
+        N64Data.KeyCodes.AddRange(newKeyCodes);
     }
 
     private void WriteName(string str)
@@ -735,7 +742,7 @@ public sealed class N64GsRom : AbstractCodec
         // Recalculate CRCs and write key codes to list
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
         Scribe.Seek(_keyCodeListAddr);
-        foreach (Code kc in Data.KeyCodes)
+        foreach (Code kc in N64Data.KeyCodes)
         {
             u8[] bytes = N64GsChecksum.ComputeKeyCode(Buffer, GetCicId(kc));
 
@@ -754,7 +761,7 @@ public sealed class N64GsRom : AbstractCodec
         }
 
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
-        Code activeKC = Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
+        Code activeKC = N64Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
         u8[] kcBytes = activeKC.Bytes.ToByteArray();
         u8[] checksum = kcBytes[..8];
         u8[] entrypoint = kcBytes[8..12];
@@ -764,7 +771,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private void WriteUserPrefs()
     {
-        N64GsUserPrefs? prefs = Data.UserPrefs;
+        N64GsUserPrefs? prefs = N64Data.GsUserPrefs;
         if (!Support.SupportsUserPrefs)
         {
             return;
@@ -975,7 +982,7 @@ public sealed class N64GsRom : AbstractCodec
     {
         var table = printer.BuildTable();
         table.AddColumns("Name", "Value");
-        N64GsUserPrefs prefs = Data.UserPrefs;
+        N64GsUserPrefs prefs = N64Data.GsUserPrefs;
         int selectedGameIndex = prefs.SelectedGameIndex;
         string selectedGameName =
             selectedGameIndex == -1
@@ -1077,7 +1084,7 @@ public sealed class N64GsRom : AbstractCodec
                 .AddColumn(printer.HeaderCell("CIC chips"))
             ;
 
-        foreach (Code keyCode in Data.KeyCodes)
+        foreach (Code keyCode in N64Data.KeyCodes)
         {
             string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
             string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);

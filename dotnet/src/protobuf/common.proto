@@ -51,7 +51,14 @@ message ParsedFile {
 
 message N64Data {
   repeated Code key_codes = 1;
-  N64GsUserPrefs user_prefs = 2;
+  N64GsUserPrefs gs_user_prefs = 2;
+  TvStandardId tv_standard = 3;
+}
+
+enum TvStandardId {
+  UNSPECIFIED_TV_STANDARD = 0;
+  NTSC = 1;
+  PAL = 2;
 }
 
 message N64GsUserPrefs {
