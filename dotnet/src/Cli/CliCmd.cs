@@ -78,10 +78,7 @@ public class CliCmd
 
     private static readonly Argument<FileInfo> InputFileArgument = new Argument<FileInfo>(
         "input_file",
-        "Path to an input file to read.")
-    {
-        Arity = ArgumentArity.ExactlyOne,
-    };
+        "Path to an input file to read.");
 
     private static readonly Argument<FileInfo[]> InputFilesArgument = new Argument<FileInfo[]>(
         "input_files",
@@ -115,12 +112,47 @@ public class CliCmd
         Arity = ArgumentArity.ZeroOrOne,
     };
 
-    private static readonly Option<N64KeyCodeId[]> N64KeyCodeOrderOption = new Option<N64KeyCodeId[]>(
-        aliases: new string[] { "--order" },
-        "Comma-separated list of key code IDs. E.g., 'zelda,mario,diddy,yoshi'.")
-    {
-        Arity = ArgumentArity.ExactlyOne,
-    };
+    private static readonly Option<string> N64KeyCodeOrderOption = new Option<string>(
+        aliases: new string[] { "--keycode-order" },
+        "Comma-separated list of key code IDs. E.g., 'zelda,mario,diddy,yoshi'.");
+
+    private static readonly Option<string> N64SelectedGameOption = new Option<string>(
+        aliases: new string[] { "--selected-game" },
+        "Specify the name or zero-based index of a game " +
+        "to automatically select when the user turns on the GS. " +
+        "Pass -1 to reset the selected game to none.");
+
+    private static readonly Option<bool?> N64SoundOption = new Option<bool?>(
+        aliases: new string[] { "--sound" },
+        "Enable or disable menu sounds in the UI.");
+
+    private static readonly Option<bool?> N64MenuScrollOption = new Option<bool?>(
+        aliases: new string[] { "--menu-scroll" },
+        "Enable or disable menu scrolling in the UI.");
+
+    private static readonly Option<bool?> N64BgScrollOption = new Option<bool?>(
+        aliases: new string[] { "--bg-scroll" },
+        "Enable or disable background scrolling in the UI.");
+
+    private static readonly Option<Nn64GsBgPatternId?> N64BgPatternOption = new Option<Nn64GsBgPatternId?>(
+        aliases: new string[] { "--bg-pattern" },
+        "Set the background tile pattern in the UI.");
+
+    private static readonly Option<Nn64GsBgColorId?> N64BgColorOption = new Option<Nn64GsBgColorId?>(
+        aliases: new string[] { "--bg-color" },
+        "Set the background tile color in the UI.");
+
+    private static readonly Option<bool?> N64UpdateTimestampOption = new Option<bool?>(
+        aliases: new string[] { "--update-timestamp" },
+        "Enable or disable updating the build date timestamp in the ROM file header.");
+
+    private static readonly Option<bool?> N64RenameKeyCodesOption = new Option<bool?>(
+        aliases: new string[] { "--rename-keycodes" },
+        "Enable or disable automatically renaming key codes to be clearer.");
+
+    private static readonly Option<bool?> N64ResetUserPrefsOption = new Option<bool?>(
+        aliases: new string[] { "--reset-prefs" },
+        "Clear all user-configurable preferences and restore them to factory defaults.");
 
     #endregion
 
@@ -153,15 +185,10 @@ public class CliCmd
 
     #region `rom` commands
 
-    private readonly Command _romCmd = new Command(
-        "rom",
-        "Read, write, encrypt, decrypt, and edit ROM files (firmware dumps).");
-
     private readonly Command _encryptRomCmd = new Command(
         "encrypt",
         "Encrypt a ROM file " +
-        "for compatibility with chip flashers and the manufacturer's official PC update utilities.\n" +
-        "Not all ROM formats support encryption.")
+        "for compatibility with chip flashers and the manufacturer's official PC update utilities.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -170,8 +197,8 @@ public class CliCmd
 
     private readonly Command _decryptRomCmd = new Command(
         "decrypt",
-        "Decrypt a ROM file so that it may be edited directly.\n" +
-        "Not all ROM formats support encryption.")
+        "Decrypt a ROM file so that it can be viewed in a hex editor " +
+        "or manipulated by other tools that don't support encryption.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -181,8 +208,7 @@ public class CliCmd
     private readonly Command _scrambleRomCmd = new Command(
         "scramble",
         "Scramble (reorder) the bytes in a ROM file " +
-        "for compatibility with official PC update utilities and chip writers.\n" +
-        "Not all ROM formats support scrambling.")
+        "for compatibility with official PC update utilities and chip writers.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -191,8 +217,7 @@ public class CliCmd
 
     private readonly Command _unscrambleRomCmd = new Command(
         "unscramble",
-        "Unscramble (reorder) the bytes in a ROM file.\n" +
-        "Not all ROM formats support scrambling.")
+        "Unscramble (reorder) the bytes in a ROM file.")
     {
         OverwriteOption,
         InputFileArgument,
@@ -201,8 +226,7 @@ public class CliCmd
 
     private readonly Command _extractRomCmd = new Command(
         "extract",
-        "Extract embedded files from the given ROM(s).\n" +
-        "Not all ROM formats support extraction.")
+        "Extract embedded files from the given ROM(s).")
     {
         OverwriteOption,
         InputFilesArgument,
@@ -250,14 +274,27 @@ public class CliCmd
         "gs",
         "GameShark-specific utilities.");
 
-    private readonly Command _reorderKeycodesCmd = new Command(
-        "reorder-keycodes",
-        "Reorder the list of key codes in a ROM file. The first key code will be the default.")
+    private readonly Command _n64XpCmd = new Command(
+        "xp",
+        "Xplorer 64-specific utilities.");
+
+    private readonly Command _n64GsConfigureCmd = new Command(
+        "config",
+        "Configure user preferences.")
     {
         OverwriteOption,
         InputFileArgument,
         OutputFileArgument,
         N64KeyCodeOrderOption,
+        N64ResetUserPrefsOption,
+        N64SelectedGameOption,
+        N64SoundOption,
+        N64MenuScrollOption,
+        N64BgScrollOption,
+        N64BgPatternOption,
+        N64BgColorOption,
+        N64UpdateTimestampOption,
+        N64RenameKeyCodesOption,
     };
 
     #endregion
@@ -273,7 +310,7 @@ public class CliCmd
     public event EventHandler<ExtractRomCmdParams>? OnExtractRom;
     public event EventHandler<DumpCheatsCmdParams>? OnDumpCheats;
     public event EventHandler<RomCmdParams>? OnCopyCheats;
-    public event EventHandler<ReorderKeycodeCmdParams>? OnReorderKeycodes;
+    public event EventHandler<N64GsConfigureCmdParams>? OnN64GsConfigure;
 
     #endregion
 
@@ -288,21 +325,21 @@ public class CliCmd
         _rootCmd.AddGlobalOption(CleanOption);
 
         _rootCmd.AddCommand(_infoCmd);
-        _rootCmd.AddCommand(_romCmd);
         _rootCmd.AddCommand(_cheatsCmd);
         _rootCmd.AddCommand(_n64Cmd);
-
-        _romCmd.AddCommand(_encryptRomCmd);
-        _romCmd.AddCommand(_decryptRomCmd);
-        _romCmd.AddCommand(_scrambleRomCmd);
-        _romCmd.AddCommand(_unscrambleRomCmd);
-        _romCmd.AddCommand(_extractRomCmd);
 
         _cheatsCmd.AddCommand(_dumpCheatsCmd);
         _cheatsCmd.AddCommand(_copyCheatsCmd);
 
         _n64Cmd.AddCommand(_n64GsCmd);
-        _n64GsCmd.AddCommand(_reorderKeycodesCmd);
+        _n64GsCmd.AddCommand(_n64GsConfigureCmd);
+        _n64GsCmd.AddCommand(_encryptRomCmd);
+        _n64GsCmd.AddCommand(_decryptRomCmd);
+        _n64GsCmd.AddCommand(_extractRomCmd);
+
+        _n64Cmd.AddCommand(_n64XpCmd);
+        _n64XpCmd.AddCommand(_scrambleRomCmd);
+        _n64XpCmd.AddCommand(_unscrambleRomCmd);
 
         _infoCmd.Handler = new CliCmdHandler(Info);
         _encryptRomCmd.Handler = new CliCmdHandler(EncryptRom);
@@ -312,12 +349,12 @@ public class CliCmd
         _extractRomCmd.Handler = new CliCmdHandler(ExtractRom);
         _dumpCheatsCmd.Handler = new CliCmdHandler(DumpCheats);
         _copyCheatsCmd.Handler = new CliCmdHandler(CopyCheats);
-        _reorderKeycodesCmd.Handler = new CliCmdHandler(ReorderKeyCodes);
+        _n64GsConfigureCmd.Handler = new CliCmdHandler(N64GsConfigure);
     }
 
-    private void ReorderKeyCodes(InvocationContext ctx)
+    private void N64GsConfigure(InvocationContext ctx)
     {
-        var cmdParams = new ReorderKeycodeCmdParams()
+        var cmdParams = new N64GsConfigureCmdParams()
         {
             // Global options
             PrintFormatId = GetPrintFormatId(ctx),
@@ -328,10 +365,24 @@ public class CliCmd
             InputFile = InputFileArgument.GetValue(ctx)!,
             OutputFile = OutputFileArgument.GetValue(ctx),
             OverwriteExistingFiles = OverwriteOption.GetValue(ctx),
-            KeyCodeIds = N64KeyCodeOrderOption.GetValue(ctx)!,
+            KeyCodeIds = (N64KeyCodeOrderOption.GetValue(ctx) ?? "").Split(",").Select(str =>
+            {
+                Enum.TryParse(str, ignoreCase: true, result: out N64KeyCodeId cic);
+                return cic;
+            }).ToArray(),
+
+            SelectedGame = N64SelectedGameOption.GetValue(ctx),
+            IsSoundEnabled = N64SoundOption.GetValue(ctx),
+            IsMenuScrollEnabled = N64MenuScrollOption.GetValue(ctx),
+            IsBgScrollEnabled = N64BgScrollOption.GetValue(ctx),
+            BgPattern = N64BgPatternOption.GetValue(ctx),
+            BgColor = N64BgColorOption.GetValue(ctx),
+            UpdateTimestamp = N64UpdateTimestampOption.GetValue(ctx),
+            RenameKeyCodes = N64RenameKeyCodesOption.GetValue(ctx),
+            ResetUserPrefs = N64ResetUserPrefsOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
-        OnReorderKeycodes?.Invoke(this, cmdParams);
+        OnN64GsConfigure?.Invoke(this, cmdParams);
     }
 
     #region `info` command

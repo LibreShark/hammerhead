@@ -42,10 +42,102 @@ message N64GsVersionProto {
   .google.protobuf.Timestamp build_timestamp = 6;
 }
 
+// NTSC and PAL variants of the CIC chips are identical for the purposes of
+// checksum calculation and key codes.
+//
+// For more information about GameShark key codes, see:
+//
+// - https://gameshark.fandom.com/wiki/Nintendo_64#Key_codes
+// - https://n64brew.dev/wiki/CIC-NUS
 enum N64KeyCodeId {
   UNSPECIFIED_KEY_CODE_ID = 0;
+
+  // Named "Mario World 64 & Others" in the GameShark UI.
+  //
+  // This is the default and most common key code in OEM Datel firmwares because
+  // it works with Super Mario 64, Mario Kart 64, GoldenEye, and most other
+  // titles (~88% of commercial games).
+  //
+  // Compatible CIC chips:
+  //
+  // - CIC-6101 (NTSC) Star Fox 64
+  // - CIC-6102 (NTSC) Most games
+  // - CIC-7101 (PAL) Most games
+  // - CIC-7102 (PAL) Lylat Wars
+  //
+  // IPL3 game entrypoint: u32 @ 0x08.
   MARIO = 1;
+
+  // Named "Diddy, 1080, Banjo, Griffey" in the GameShark UI.
+  //
+  // This is the third most commonly-used key code.
+  // It works with the following games:
+  //
+  // - 1080 Snowboarding
+  // - Banjo-Kazooie
+  // - Diddy Kong Racing
+  // - Excitebike 64
+  // - Ken Griffey Jr's Slugfest
+  // - Kirby 64: The Crystal Shards
+  // - Kobe Bryant in NBA Courtside
+  // - Major League Baseball featuring Ken Griffey Jr.
+  // - Paper Mario
+  // - Pocket Monsters Stadium (JPN)
+  // - Pokemon Snap
+  // - Pokemon Stadium
+  // - Pokemon Stadium 2
+  // - Super Smash Bros.
+  //
+  // Compatible CIC chips:
+  //
+  // - CIC-6103 (NTSC)
+  // - CIC-7103 (PAL)
+  //
+  // IPL3 game entrypoint: u32 @ 0x08 - 0x100000.
   DIDDY = 2;
+
+  // Named "Yoshis, F-Zero, C'World" in the GameShark UI.
+  //
+  // This is the last commonly-used key code.
+  // It only works with 3 games:
+  //
+  // - Cruis'n World
+  // - F-Zero X
+  // - Yoshi's Story
+  //
+  // Compatible CIC chips:
+  //
+  // - CIC-6106 (NTSC)
+  // - CIC-7106 (PAL)
+  //
+  // IPL3 game entrypoint: u32 @ 0x08 - 0x200000.
+  //
+  // The second part of IPL3 is ciphered. No junk byte at the end.
   YOSHI = 3;
+
+  // Named "Zelda" in the GameShark UI.
+  //
+  // This is the second most commonly-used key code after "Mario".
+  // It works with the following games:
+  //
+  // - Banjo-Tooie
+  // - Conker's Bad Fur Day
+  // - Donkey Kong 64
+  // - Jet Force Gemini
+  // - Legend of Zelda: Majora's Mask
+  // - Legend of Zelda: Ocarina of Time
+  // - Mickey's Speedway USA
+  // - Perfect Dark
+  //
+  // Compatible CIC chips:
+  //
+  // - CIC-6105 (NTSC)
+  // - CIC-7105 (PAL)
+  //
+  // IPL3 game entrypoint: u32 @ 0x08.
+  //
+  // More complex protection scheme which involves the RSP at boot,
+  // plus a special challenge/response security protocol that is
+  // invoked by the CPU during gameplay.
   ZELDA = 4;
 }

@@ -270,7 +270,7 @@ public class RomReadTest
     {
         const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
-        string computedKeyCode = N64GsChecksum.ComputeKeyCode(romFileBytes, N64Cic.CIC6102_Mario).ToHexString(" ");
+        string computedKeyCode = N64GsChecksum.ComputeKeyCode(romFileBytes, N64KeyCodeId.Mario).ToHexString(" ");
         string expectedKeyCode = "EA 6D 5B F8 E2 B4 69 6C 80 18 00 00 2B";
         Assert.That(computedKeyCode, Is.EqualTo(expectedKeyCode));
     }

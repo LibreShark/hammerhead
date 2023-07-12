@@ -138,6 +138,13 @@ public abstract class AbstractCodec : ICodec
         return proto;
     }
 
+    public virtual void RecalculateKeyCodes(N64KeyCodeId[]? newKeyCodeIds = null)
+    {
+        throw new NotImplementedException(
+            $"'{Metadata.CodecId.ToDisplayString()}' files do not support " +
+            "N64 GameShark key codes.");
+    }
+
     public virtual void PrintCustomHeader(ICliPrinter printer, InfoCmdParams @params) {}
 
     public virtual void PrintGames(ICliPrinter printer, InfoCmdParams @params) {

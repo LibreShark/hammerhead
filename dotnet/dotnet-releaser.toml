@@ -16,6 +16,9 @@ kinds = ["zip"]
 
 [msbuild]
 project = "dotnet.sln"
+configuration = "Debug"
+[msbuild.properties]
+PublishTrimmed = false
 
 [github]
 user = "LibreShark"

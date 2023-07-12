@@ -203,6 +203,24 @@ public abstract class AbstractBinaryScribe
         return WriteU8((u8)value);
     }
 
+    public bool ReadBool()
+    {
+        u8 b = ReadU8();
+        return b != 0;
+    }
+
+    public AbstractBinaryScribe WriteBool(bool value)
+    {
+        WriteU8((u8)(value ? 1 : 0));
+        return this;
+    }
+
+    public TEnum ReadEnum8<TEnum>() where TEnum : Enum
+    {
+        u8 b = ReadU8();
+        return (TEnum)Enum.ToObject(typeof(TEnum), b);
+    }
+
     #endregion
 
     #region Integers: 16-bit
@@ -382,10 +400,11 @@ public abstract class AbstractBinaryScribe
         WriteBytes(byteString.ToByteArray());
     }
 
-    public void WriteBytes(u8[] bytes)
+    public AbstractBinaryScribe WriteBytes(u8[] bytes)
     {
         Array.Copy(bytes, 0, BufferRef, (s32)Position, bytes.Length);
         Position += (u32)bytes.Length;
+        return this;
     }
 
     public void WriteCString(RomString str, int maxLen = 0, bool isNullTerminated = true)
@@ -393,7 +412,7 @@ public abstract class AbstractBinaryScribe
         WriteCString(str.Value, maxLen, isNullTerminated);
     }
 
-    public void WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)
+    public AbstractBinaryScribe WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)
     {
         if (maxLen > 0 && str.Length > maxLen)
         {
@@ -406,6 +425,7 @@ public abstract class AbstractBinaryScribe
             bytes = bytes.Concat(new u8[] { 0 }).ToArray();
         }
         WriteBytes(bytes);
+        return this;
     }
 
     public override string ToString()

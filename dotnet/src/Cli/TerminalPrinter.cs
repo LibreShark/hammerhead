@@ -256,7 +256,7 @@ public class TerminalPrinter : ICliPrinter
         var ruleStart = new Rule(Green(shortName))
         {
             Justification = Justify.Left,
-            Style = new Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold)
+            Style = new Style(foreground: ConsoleColor.Green, decoration: Decoration.Bold),
         };
         Console.WriteLine();
         AnsiConsole.Write(ruleStart);
@@ -467,20 +467,21 @@ public class TerminalPrinter : ICliPrinter
 
         List<Game> sortedGames = _codec.Games.ToList();
         sortedGames.Sort((g1, g2) =>
-            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.InvariantCulture));
+            string.Compare(g1.GameName.Value, g2.GameName.Value, StringComparison.CurrentCulture));
 
         foreach (Game game in sortedGames)
         {
             string gameName = game.GameName.Value.EscapeMarkup();
             if (game.IsGameActive)
             {
-                gameName = BoldUnderline(Green(gameName)) + " [ACTIVE]".EscapeMarkup();
+                gameName = BoldUnderline(Green(gameName)) + " " + Italic("(active)");
             }
             else
             {
-                gameName = Underline(gameName);
+                gameName = BoldUnderline(gameName);
             }
             table.AddRow(gameName, Bold($"{game.Cheats.Count}"), game.Warnings.Count > 0 ? $"{game.Warnings.Count}" : "");
+            table.AddRow("", "", "");
 
             if (@params.HideCheats)
             {
@@ -493,7 +494,7 @@ public class TerminalPrinter : ICliPrinter
                 string cheatName = cheat.CheatName.Value.EscapeMarkup();
                 if (cheat.IsCheatActive)
                 {
-                    cheatName = Bold(Green(cheatName)) + BoldItalic((" (active)".EscapeMarkup()));
+                    cheatName = Bold(Green(cheatName)) + Italic((" (active)".EscapeMarkup()));
                 }
 
                 string cheatNameCell =
@@ -516,6 +517,11 @@ public class TerminalPrinter : ICliPrinter
                         : Dim(codeString);
                     table.AddRow($"        {codeStringFormatted}{Dim(codeComment)}", "", "");
                 }
+            }
+
+            if (game != sortedGames.Last())
+            {
+                table.AddRow("", "", "");
             }
         }
 
@@ -765,8 +771,8 @@ public class TerminalPrinter : ICliPrinter
         name = $"[green b u]{name}[/]";
 
         AnsiConsole.Markup($"""
-[dim]                   ┏━IPL3 CRC┓ ┏━F/W CRC━┓ ┏━PC Addr━┓ CD
-                   ┃         ┃ ┃         ┃ ┃         ┃  ┃[/]
+[dim]                   ┏━━ 64-bit checksum ━━┓ ┏ EntryPt ┓ Chk
+                   ┃                     ┃ ┃         ┃  ┃[/]
 Active key code: [[ {formatted} ]] - {name}
 
 """);
@@ -786,8 +792,8 @@ Active key code: [[ {formatted} ]] - {name}
         if (IsColor && curKey.IsActiveKeyCode)
         {
             crc1 = $"[green u]{crc1}[/]";
-            crc2 = $"[red u]{crc2}[/]";
-            crc4 = $"[blue u]{crc4}[/]";
+            crc2 = $"[green u]{crc2}[/]";
+            crc4 = $"[red u]{crc4}[/]";
         }
 
         if (IsColor && bytes.Length > 9 && activeKey.Bytes.ToByteArray().Contains(bytes[8..12]))

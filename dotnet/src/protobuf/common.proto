@@ -51,7 +51,35 @@ message ParsedFile {
 
 message N64Data {
   repeated Code key_codes = 1;
+  N64GsUserPrefs user_prefs = 2;
 }
+
+message N64GsUserPrefs {
+  bool is_sound_enabled = 1;
+  bool is_bg_scroll_enabled = 2;
+  bool is_menu_scroll_enabled = 3;
+  Nn64GsBgPatternId bg_pattern_id = 4;
+  Nn64GsBgColorId bg_color_id = 5;
+
+  // A value of -1 indicates that no game is selected.
+  sint32 selected_game_index = 6;
+}
+
+enum Nn64GsBgPatternId {
+  SILK = 0x00;
+  ROCK = 0x01;
+  LOGO = 0x02;
+};
+
+enum Nn64GsBgColorId {
+  GREY   = 0x00;
+  TAN    = 0x01;
+  BLUE   = 0x02;
+  GREEN  = 0x03;
+  PINK   = 0x04;
+  YELLOW = 0x05;
+  RED    = 0x06;
+};
 
 // GBC Shark MX
 message GbcSmxData {

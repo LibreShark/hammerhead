@@ -110,15 +110,40 @@ public partial class N64GsVersion
     }
 
     [GeneratedRegex(@"(?<HH>\d\d):(?<mm>\d\d) (?<MMM>\w\w\w) (?<dd>\d\d?)(?: '?(?<yy>\d{2,4})?)?")]
-    private static partial Regex TimestampRegex();
+    private static partial Regex DatelTimestampRegex();
 
-    private static N64GsVersion? UnknownVersion(string raw, RomString? mainMenuTitle)
+    [GeneratedRegex(@"(?<yyyy>\d{4})(?<MM>\d\d)(?<dd>\d\d)T(?<HH>\d\d)(?<mm>\d\d)(?<ss>\d\d)Z")]
+    private static partial Regex IsoTimestampRegex();
+
+    private static N64GsVersion? UnknownVersion(string rawTs, RomString? mainMenuTitle)
     {
-        string trimmed = raw.Trim();
-        var match = TimestampRegex().Match(trimmed);
+        string trimmedTs = rawTs.Trim();
+        DateTime? timestamp = null;
+
+        if (IsoTimestampRegex().IsMatch(trimmedTs))
+        {
+            timestamp = DateTime.ParseExact(trimmedTs, "yyyyMMddTHHmmssZ", ENGLISH_US);
+        }
+        else if (DatelTimestampRegex().IsMatch(trimmedTs))
+        {
+            timestamp = ParseDatelTimestamp(trimmedTs, mainMenuTitle);
+        }
+
+        if (!timestamp.HasValue)
+        {
+            return null;
+        }
+
+        return Of(rawTs, 0.00, "MISSING FROM OUR DATABASE!", timestamp.Value);
+    }
+
+    private static DateTime? ParseDatelTimestamp(string trimmedTs, RomString? mainMenuTitle)
+    {
+        var match = DatelTimestampRegex().Match(trimmedTs);
         if (!match.Success)
         {
-            Console.Error.WriteLine($"ERROR: Invalid GS ROM build timestamp: '{trimmed}' (len = {trimmed.Length}). Expected HH:mm MMM dd [yy].");
+            Console.Error.WriteLine(
+                $"ERROR: Invalid GS ROM build timestamp: '{trimmedTs}' (len = {trimmedTs.Length}). Expected HH:mm MMM dd [yy].");
             return null;
         }
 
@@ -145,14 +170,15 @@ public partial class N64GsVersion
                 // header date stamp.
                 : "2000";
 
-        trimmed = $"{HH}:{mm} {MMM} {dd} {yyyy}";
-        if (!Is(trimmed, "HH:mm MMM d yyyy", out var timestamp))
+        trimmedTs = $"{HH}:{mm} {MMM} {dd} {yyyy}";
+        if (!Is(trimmedTs, "HH:mm MMM d yyyy", out DateTime timestamp))
         {
-            Console.Error.WriteLine($"ERROR: Invalid GS ROM build timestamp: '{trimmed}' (len = {trimmed.Length}). Expected HH:mm MMM dd yyyy.");
+            Console.Error.WriteLine(
+                $"ERROR: Invalid GS ROM build timestamp: '{trimmedTs}' (len = {trimmedTs.Length}). Expected HH:mm MMM dd yyyy.");
             return null;
         }
 
-        return Of(raw, 0.00, "MISSING FROM OUR DATABASE!", timestamp);
+        return timestamp;
     }
 
     private static bool Is(string rawDateTime, string dateTimeFormat, out DateTime datetime)
