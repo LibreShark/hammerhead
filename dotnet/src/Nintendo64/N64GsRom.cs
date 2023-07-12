@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
@@ -73,7 +74,7 @@ public sealed class N64GsRom : AbstractCodec
     private readonly N64GsVersion _version;
     private readonly Code _activeKeyCode;
 
-    private N64Data Data => Parsed.N64Data;
+    private N64Data? N64Data => Parsed.N64Data;
 
     private readonly List<EmbeddedFile> _rootCompressedFiles;
     private readonly List<EmbeddedFile> _shellCompressedFiles;
@@ -101,7 +102,7 @@ public sealed class N64GsRom : AbstractCodec
         Support.HasCheats = true;
         Support.HasFirmware = true;
 
-        _headerId = Scribe.Seek(HeaderIdAddr).ReadCStringUntilNull(0x10, false);
+        _headerId = Scribe.Seek(HeaderIdAddr).ReadPrintableCString(0x10, false);
         _rawTimestamp = Scribe.Seek(BuildTimestampAddr).ReadPrintableCString(16, true);
 
         Metadata.Identifiers.Add(_headerId);
@@ -123,6 +124,7 @@ public sealed class N64GsRom : AbstractCodec
         Metadata.SortableVersion = _version.Number; // TODO(CheatoBaggins): Account for April/May builds
         Metadata.IsKnownVersion = _version.IsKnown;
         Metadata.LanguageIetfCode = _version.Locale.Name;
+        Metadata.TvStandard = ReadTvStandard();
 
         _isV3Firmware        = Scribe.Seek(0x00001000).ReadU32() == 0x00000000;
         _isV1GameList        = Scribe.Seek(0x0002DFF0).ReadU32() == 0x00000000;
@@ -130,19 +132,19 @@ public sealed class N64GsRom : AbstractCodec
         _keyCodeListAddr     = (u32)(_isV3KeyCodeListAddr ? 0x0002FC00 : 0x0002D800);
 
         Support.SupportsUserPrefs = Scribe.Seek(0x0002FAF0).ReadU32() == 0xFFFFFFFF;
-        Support.HasKeyCodes       = Scribe.Seek(_keyCodeListAddr).ReadU32() != 0x00000000;
 
         _firmwareAddr  = (u32)(_isV3Firmware ? 0x00001080 : 0x00001000);
         _gameListAddr  = (u32)(_isV1GameList ? 0x0002E000 : 0x00030000);
         _userPrefsAddr = Support.SupportsUserPrefs ? 0x0002FB00 : 0xFFFFFFFF;
 
-        Data.KeyCodes.AddRange(ReadKeyCodes());
+        Parsed.N64Data.KeyCodes.AddRange(ReadKeyCodes());
         _activeKeyCode = ReadActiveKeyCode();
+        Support.HasKeyCodes = Parsed.N64Data.KeyCodes.Count > 0;
 
         Support.HasPristineUserPrefs = Support.SupportsUserPrefs &&
                                        Scribe.Seek(_userPrefsAddr).IsPadding();
 
-        Data.UserPrefs = ReadUserPrefs();
+        Parsed.N64Data.GsUserPrefs = ReadUserPrefs();
 
         Games.AddRange(ReadGames());
 
@@ -250,6 +252,31 @@ public sealed class N64GsRom : AbstractCodec
             IsBgScrollEnabled = isBgScrollEnabled,
             IsMenuScrollEnabled = isMenuScrollEnabled,
         };
+    }
+
+    private TvStandardId ReadTvStandard()
+    {
+        // Detect the machine code generated from this line in main.c:
+        //     vi_regs[6] = 525;
+        // https://github.com/Jhynjhiruu/gameshark/blob/8d082808b4eb4e7f4de9b1a91d5452bf18a00eb8/src/main.c#L127
+        //
+        // v2.50 and above ONLY!
+        // Earlier firmwares use different (as yet undiscovered) machine code.
+        bool isV3RomNtsc = Buffer.Contains("2403020DAC430018".HexToBytes());
+        if (isV3RomNtsc)
+            return TvStandardId.Ntsc;
+
+        // Detect the machine code generated from this line in main.c:
+        //     vi_regs[6] = 625;
+        // https://github.com/Jhynjhiruu/gameshark/blob/8d082808b4eb4e7f4de9b1a91d5452bf18a00eb8/src/main.c#L135
+        //
+        // v2.50 and above ONLY!
+        // Earlier firmwares use different (as yet undiscovered) machine code.
+        bool isV3RomPal = Buffer.Contains("24030271AC430018".HexToBytes());
+        if (isV3RomPal)
+            return TvStandardId.Pal;
+
+        return TvStandardId.UnspecifiedTvStandard;
     }
 
     #endregion
@@ -390,6 +417,10 @@ public sealed class N64GsRom : AbstractCodec
 
     protected override void SanitizeCustomProtoFields(ParsedFile parsed)
     {
+        if (parsed.N64Data == null)
+        {
+            return;
+        }
         foreach (var kc in parsed.N64Data.KeyCodes)
         {
             kc.CodeName = kc.CodeName.WithoutAddress();
@@ -414,11 +445,12 @@ public sealed class N64GsRom : AbstractCodec
 
     private Game ReadGame(u32 gameIdx)
     {
+        int selectedGameIndex = GetSelectedGameIndexPref();
         var game = new Game()
         {
             GameIndex = gameIdx,
             GameName = ReadName(),
-            IsGameActive = gameIdx == Data.UserPrefs.SelectedGameIndex,
+            IsGameActive = gameIdx == selectedGameIndex,
         };
         u8 cheatCount = Scribe.ReadU8();
         for (u8 cheatIdx = 0; cheatIdx < cheatCount; cheatIdx++)
@@ -426,6 +458,18 @@ public sealed class N64GsRom : AbstractCodec
             ReadCheat(game, cheatIdx);
         }
         return game;
+    }
+
+    private int GetSelectedGameIndexPref()
+    {
+        int selectedGameIndex = -1;
+        N64GsUserPrefs? prefs = N64Data?.GsUserPrefs;
+        if (prefs != null)
+        {
+            selectedGameIndex = prefs.SelectedGameIndex;
+        }
+
+        return selectedGameIndex;
     }
 
     private void ReadCheat(Game game, u8 cheatIdx)
@@ -495,9 +539,9 @@ public sealed class N64GsRom : AbstractCodec
         u8[] activePcBytes = Scribe.PeekBytesAt(ProgramCounterAddr, 4);
 
         RomString? name = null;
-        if (Data.KeyCodes.Count > 0)
+        if (N64Data?.KeyCodes.Count > 0)
         {
-            Code? matchingKeyCodeInList = Data.KeyCodes.ToList().Find(kc =>
+            Code? matchingKeyCodeInList = N64Data.KeyCodes.ToList().Find(kc =>
             {
                 u8[] curKeyCodeCrcBytes = kc.Bytes.ToArray()[..8];
                 return curKeyCodeCrcBytes.SequenceEqual(activeCrcBytes);
@@ -526,13 +570,15 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.Seek(_keyCodeListAddr);
         u8[] listBytes = Scribe.PeekBytes(0xA0);
         u32 maxPos = Scribe.Position + (u32)listBytes.Length;
-        s32 keyCodeByteLength = new s32[]
+        s32[] keyCodeByteLengths = new s32[]
         {
             listBytes.Find("Mario"),
             listBytes.Find("Diddy"),
             listBytes.Find("Yoshi"),
             listBytes.Find("Zelda"),
-        }.Min();
+        }.Where(idx => idx > -1).ToArray();
+
+        s32 keyCodeByteLength = keyCodeByteLengths.Length > 0 ? keyCodeByteLengths.Min() : -1;
 
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
@@ -569,9 +615,11 @@ public sealed class N64GsRom : AbstractCodec
         if (!Support.SupportsUserPrefs)
             return;
 
+        Parsed.N64Data ??= new N64Data();
+
         if (cmdParams.ResetUserPrefs.HasValue && cmdParams.ResetUserPrefs.Value)
         {
-            Data.UserPrefs = MakePristinePrefs();
+            Parsed.N64Data.GsUserPrefs = MakePristinePrefs();
             SetSelectedGameIndex(-1);
             return;
         }
@@ -592,7 +640,7 @@ public sealed class N64GsRom : AbstractCodec
             SetSelectedGameName(selectedGame);
         }
 
-        N64GsUserPrefs prefs = Data.UserPrefs ?? MakePristinePrefs();
+        N64GsUserPrefs prefs = Parsed.N64Data.GsUserPrefs ?? MakePristinePrefs();
 
         prefs.SelectedGameIndex =
             Games
@@ -623,7 +671,7 @@ public sealed class N64GsRom : AbstractCodec
         }
         if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
         {
-            foreach (Code kc in Data.KeyCodes)
+            foreach (Code kc in Parsed.N64Data.KeyCodes)
             {
                 string codeName = kc.CodeName.Value;
                 if (codeName.Contains("Mario"))
@@ -656,7 +704,12 @@ public sealed class N64GsRom : AbstractCodec
 
     public override void RecalculateKeyCodes(N64KeyCodeId[]? newCics = null)
     {
-        List<Code> oldKeyCodes = Data.KeyCodes.ToList();
+        if (N64Data == null)
+        {
+            return;
+        }
+
+        List<Code> oldKeyCodes = N64Data.KeyCodes.ToList();
         N64KeyCodeId[] oldCics = oldKeyCodes.Select(GetCicId).ToArray();
 
         if (newCics == null || newCics.Length == 0 ||
@@ -693,8 +746,8 @@ public sealed class N64GsRom : AbstractCodec
             return newKC;
         }).ToList();
 
-        Data.KeyCodes.Clear();
-        Data.KeyCodes.AddRange(newKeyCodes);
+        N64Data.KeyCodes.Clear();
+        N64Data.KeyCodes.AddRange(newKeyCodes);
     }
 
     private void WriteName(string str)
@@ -732,10 +785,15 @@ public sealed class N64GsRom : AbstractCodec
 
     private void WriteKeyCodes()
     {
+        if (N64Data == null)
+        {
+            return;
+        }
+
         // Recalculate CRCs and write key codes to list
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
         Scribe.Seek(_keyCodeListAddr);
-        foreach (Code kc in Data.KeyCodes)
+        foreach (Code kc in N64Data.KeyCodes)
         {
             u8[] bytes = N64GsChecksum.ComputeKeyCode(Buffer, GetCicId(kc));
 
@@ -754,7 +812,7 @@ public sealed class N64GsRom : AbstractCodec
         }
 
         // TODO(CheatoBaggins): What about v2.x ROMs with 9-byte key codes?
-        Code activeKC = Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
+        Code activeKC = N64Data.KeyCodes.First(kc => kc.IsActiveKeyCode);
         u8[] kcBytes = activeKC.Bytes.ToByteArray();
         u8[] checksum = kcBytes[..8];
         u8[] entrypoint = kcBytes[8..12];
@@ -764,7 +822,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private void WriteUserPrefs()
     {
-        N64GsUserPrefs? prefs = Data.UserPrefs;
+        N64GsUserPrefs? prefs = N64Data?.GsUserPrefs;
         if (!Support.SupportsUserPrefs)
         {
             return;
@@ -849,7 +907,7 @@ public sealed class N64GsRom : AbstractCodec
         {
             // -1 indicates that no game is selected.
             SelectedGameIndex = -1,
-            BgPatternId = Nn64GsBgPatternId.Silk,
+            BgPatternId = Nn64GsBgPatternId.Rough,
             BgColorId = Nn64GsBgColorId.Grey,
             IsSoundEnabled = true,
             IsBgScrollEnabled = true,
@@ -951,7 +1009,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintHeading("Key codes");
         printer.PrintN64ActiveKeyCode(_activeKeyCode);
         Console.WriteLine();
-        if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
+        if (Support.HasKeyCodes)
         {
             PrintKeyCodesTable(printer);
         }
@@ -975,7 +1033,12 @@ public sealed class N64GsRom : AbstractCodec
     {
         var table = printer.BuildTable();
         table.AddColumns("Name", "Value");
-        N64GsUserPrefs prefs = Data.UserPrefs;
+        N64GsUserPrefs? prefs = N64Data?.GsUserPrefs;
+        if (prefs == null)
+        {
+            return;
+        }
+
         int selectedGameIndex = prefs.SelectedGameIndex;
         string selectedGameName =
             selectedGameIndex == -1
@@ -1003,16 +1066,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private string BgPattern(Nn64GsBgPatternId patternId)
     {
-        var str = patternId.ToString();
-        if (patternId == Nn64GsBgPatternId.Logo)
-        {
-            return $"🦈 {str}";
-        }
-        if (patternId == Nn64GsBgPatternId.Rock)
-        {
-            return $"🪨 {str}";
-        }
-        return $"🌫️ {str}";
+        return patternId.ToString();
     }
 
     private string BgColor(Nn64GsBgColorId colorId)
@@ -1040,7 +1094,7 @@ public sealed class N64GsRom : AbstractCodec
         }
         if (colorId == Nn64GsBgColorId.Pink)
         {
-            return $"[pink]{str}[/]";
+            return $"[bold red]{str}[/]";
         }
         if (colorId == Nn64GsBgColorId.Tan)
         {
@@ -1071,20 +1125,37 @@ public sealed class N64GsRom : AbstractCodec
 
     private void PrintKeyCodesTable(ICliPrinter printer)
     {
+        if (N64Data == null)
+        {
+            return;
+        }
+
         Table table = printer.BuildTable()
-                .AddColumn(printer.HeaderCell("Games (CIC chip)"))
+                .AddColumn(printer.HeaderCell("Games"))
                 .AddColumn(printer.HeaderCell("Key code"))
+                .AddColumn(printer.HeaderCell("CIC chips"))
             ;
 
-        foreach (Code keyCode in Data.KeyCodes)
+        foreach (Code keyCode in N64Data.KeyCodes)
         {
             string keyCodeName = printer.FormatN64KeyCodeName(keyCode);
             string hexString = printer.FormatN64KeyCodeBytes(keyCode, _activeKeyCode);
+            string codeName = keyCode.CodeName.Value;
+            string cicChips = "";
+            if (codeName.Contains("Diddy"))
+                cicChips = "6103, 7103";
+            else if (codeName.Contains("Yoshi"))
+                cicChips = "6106, 7106";
+            else if (codeName.Contains("Zelda"))
+                cicChips = "6105, 7105";
+            else
+                cicChips = "6101, 6102, 7101, 7102";
             table.AddRow(
                 keyCode.IsActiveKeyCode
                     ? $"> {keyCodeName} " + printer.Italic("(active)")
                     : $"  {keyCodeName}",
-                hexString
+                hexString,
+                cicChips
             );
         }
 
