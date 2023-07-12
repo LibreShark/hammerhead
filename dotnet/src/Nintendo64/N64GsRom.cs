@@ -570,13 +570,15 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.Seek(_keyCodeListAddr);
         u8[] listBytes = Scribe.PeekBytes(0xA0);
         u32 maxPos = Scribe.Position + (u32)listBytes.Length;
-        s32 keyCodeByteLength = new s32[]
+        s32[] keyCodeByteLengths = new s32[]
         {
             listBytes.Find("Mario"),
             listBytes.Find("Diddy"),
             listBytes.Find("Yoshi"),
             listBytes.Find("Zelda"),
-        }.FirstOrDefault(idx => idx > -1, -1);
+        }.Where(idx => idx > -1).ToArray();
+
+        s32 keyCodeByteLength = keyCodeByteLengths.Length > 0 ? keyCodeByteLengths.Min() : -1;
 
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
