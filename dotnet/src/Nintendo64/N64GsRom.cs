@@ -576,7 +576,7 @@ public sealed class N64GsRom : AbstractCodec
             listBytes.Find("Diddy"),
             listBytes.Find("Yoshi"),
             listBytes.Find("Zelda"),
-        }.Min();
+        }.FirstOrDefault(idx => idx > -1, -1);
 
         // Valid key codes are either 9 or 13 bytes long.
         if (keyCodeByteLength < 9)
@@ -1007,7 +1007,7 @@ public sealed class N64GsRom : AbstractCodec
         printer.PrintHeading("Key codes");
         printer.PrintN64ActiveKeyCode(_activeKeyCode);
         Console.WriteLine();
-        if (Support is { SupportsKeyCodes: true, HasKeyCodes: true })
+        if (Support.HasKeyCodes)
         {
             PrintKeyCodesTable(printer);
         }
