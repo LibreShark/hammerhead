@@ -246,6 +246,18 @@ public class N64GsImageEncoder
         return EncodeStartupLogo(rgb);
     }
 
+    private class PixelComparator : IComparer<Rgb24>
+    {
+        public int Compare(Rgb24 x, Rgb24 y)
+        {
+            int bComparison = x.B.CompareTo(y.B);
+            if (bComparison != 0) return bComparison;
+            int gComparison = x.G.CompareTo(y.G);
+            if (gComparison != 0) return gComparison;
+            return x.R.CompareTo(y.R);
+        }
+    }
+
     public (u8[], u8[]) EncodeStartupLogo(Image<Rgb24> image)
     {
         if (image.Width != StartupLogoWidth || image.Height != StartupLogoHeight)
@@ -257,7 +269,7 @@ public class N64GsImageEncoder
         }
 
         var imagePixels = new List<Rgb24>();
-        var palettePixelSet = new SortedSet<Rgb24>();
+        var palettePixelSet = new SortedSet<Rgb24>(comparer: new PixelComparator());
         for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
         {
             for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
@@ -322,7 +334,7 @@ public class N64GsImageEncoder
         // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/
         // https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
         double fiveBitChannel = (double)eightBitChannel * 31 / 255;
-        return (u8)fiveBitChannel;
+        return (u8)Math.Ceiling(fiveBitChannel);
     }
 
     #endregion
