@@ -7,14 +7,25 @@ public class N64GsImageEncoder
     #region Tile images
 
     /// <summary>
-    /// Decodes a background tile image.
+    /// Decodes a Datel Tile Graphics (.tg~) image, in which each pixel
+    /// is stored as a custom-encoded 16-bit RGBA5551 color.
+    ///
+    /// <para>
+    /// This includes background tiles ("tile1.tg~"), the
+    /// menu border sprite ("menuf.tg~"), and "bits.tg~".
+    /// </para>
+    ///
+    /// <para>
+    /// See
+    /// https://n64squid.com/homebrew/n64-sdk/textures/image-formats/#16-bit
+    /// </para>
     /// </summary>
     /// <param name="imageBytes">Decompressed <c>tile1.tg~</c> bytes</param>
     /// <param name="fileName">Name of the embedded file (e.g., <c>tile1.tg~</c>)</param>
     /// <param name="width">Force a specific image width</param>
     /// <param name="height">Force a specific image height</param>
     /// <returns>Decoded tile image</returns>
-    public Image<Rgba32> Decode16BitRgba(u8[] imageBytes, string fileName = "", int width = 0, int height = 0)
+    public Image<Rgba32> DecodeTileGraphic(u8[] imageBytes, string fileName = "", int width = 0, int height = 0)
     {
         var pixels = new List<Rgba32>();
         for (int i = 0; i < imageBytes.Length;)
@@ -32,33 +43,63 @@ public class N64GsImageEncoder
 
             // Swap the first 9 bits with the last 7 bits.
             u32 encodedFirst9Bits = (u32)(encodedRgba5551 & 0xFF80); // 0xFF80 = 1111 1111 1000 0000
-            u32 encodedLast7Bits = (u32)(encodedRgba5551 & 0x007F);  // 0x007F = 0000 0000 0111 1111
+            u32 encodedLast7Bits  = (u32)(encodedRgba5551 & 0x007F); // 0x007F = 0000 0000 0111 1111
             u32 decodedFirst7Bits = encodedLast7Bits << 9;
-            u32 decodedLast9Bits = encodedFirst9Bits >> 7;
-            u32 decodedAllBits = (decodedFirst7Bits | decodedLast9Bits) >> 1;
+            u32 decodedLast9Bits  = encodedFirst9Bits >> 7;
+            u32 decodedBitsUnshifted = decodedFirst7Bits | decodedLast9Bits;
+            u32 decodedBitsShifted   = decodedBitsUnshifted >> 1;
 
-            // Clear the first bit of every channel and disable transparency.
+            // Clear the MS-bit of every channel and disable transparency.
             //
             //          b[0] b[1] b[2] b[3]
             // 0x7BDE = 0111 1011 1101 1110
             //        = 01111 01111 01111 0
             //            R     G     B   A
-            u32 finalVal = decodedAllBits & 0x7BDE;
+            //
+            // TODO(CheatoBaggins): This discards 4 bits of data, making
+            // the operation impossible to reverse. However, it also means that
+            // those 4 bits are not being used for image data, so the
+            // *effective* resolution of each channel is only 4-bit, not 5-bit.
+            u16 decodedRgba5551 = (u16)(decodedBitsShifted & 0x7BDE);
 
-            // 16-bit RGBA color. See
-            // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/#16-bit
-            u16 realRgba5551 = (u16)finalVal;
-
-            u8 r5 = (u8)((realRgba5551 >> 11) & 0x3E);
-            u8 g5 = (u8)((realRgba5551 >>  6) & 0x3E);
-            u8 b5 = (u8)((realRgba5551 >>  1) & 0x3E);
-            u8 a1 = (u8)((realRgba5551 >>  0) & 0x01);
+            u8 r5 = (u8)((decodedRgba5551 >> 11) & 0x1F); // 0x1F = 0001 1111
+            u8 g5 = (u8)((decodedRgba5551 >>  6) & 0x1F);
+            u8 b5 = (u8)((decodedRgba5551 >>  1) & 0x1F);
+            u8 a1 = (u8)((decodedRgba5551 >>  0) & 0x01);
             u8 r8 = Rgb5ToRgb8(r5);
             u8 g8 = Rgb5ToRgb8(g5);
             u8 b8 = Rgb5ToRgb8(b5);
             bool isTransparent = a1 == 0;
             u8 a8 = (u8)(isTransparent ? 0xFF : 0);
-            pixels.Add(new Rgba32(r8, g8, b8, a8));
+
+            var pixel = new Rgba32(r8, g8, b8, a8);
+
+            // TODO(CheatoBaggins): REVERSE THE CALCULATION
+            // 0x8421 = 1000 0100 0010 0001 = ~0x7BDE
+            // u16 reencodedReversed_1 = (u16)((decodedRgba5551 | 0x8421) << 1);
+            // u16 reencodedRgba5551_1 = (u16)((reencodedReversed_1 << 7) | (reencodedReversed_1 >> 9));
+            //
+            // u16 reencodedReversed_2 = (u16)((decodedRgba5551) << 1);
+            // u16 reencodedRgba5551_2 = (u16)((reencodedReversed_2 << 7) | (reencodedReversed_2 >> 9));
+            //
+            // if (reencodedReversed_1 == decodedBitsUnshifted)
+            // {
+            //     pixel = Rgba32.ParseHex("FFC0CB"); // Light pink
+            // }
+            // if (reencodedRgba5551_1 == encodedRgba5551)
+            // {
+            //     pixel = Rgba32.ParseHex("FF00FF"); // Bright pink
+            // }
+            // if (reencodedReversed_2 == decodedBitsUnshifted)
+            // {
+            //     pixel = Rgba32.ParseHex("228B22"); // Forest green
+            // }
+            // if (reencodedRgba5551_2 == encodedRgba5551)
+            // {
+            //     pixel = Rgba32.ParseHex("00FFFF"); // Cyan
+            // }
+
+            pixels.Add(pixel);
         }
 
         if (width == 0 || height == 0)
@@ -94,6 +135,44 @@ public class N64GsImageEncoder
             }
         }
         return image;
+    }
+
+
+    public u8[] EncodeTileGraphic(Image<Rgba32> png)
+    {
+        int width = png.Width;
+        int height = png.Height;
+
+        // 16 bits (2 bytes) per pixel
+        u8[] buffer = new u8[width * height * 2];
+        var scribe = new BigEndianScribe(buffer);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Rgba32 pixel = png[x, y];
+                bool isTransparent = pixel.A == 0xFF;
+                u8 r5 = Rgb8ToRgb5(pixel.R);
+                u8 g5 = Rgb8ToRgb5(pixel.G);
+                u8 b5 = Rgb8ToRgb5(pixel.B);
+                u8 a1 = (u8)(isTransparent ? 0 : 1);
+                u16 decodedRgba5551 = (u16)(
+                    (r5 << 11) |
+                    (g5 <<  6) |
+                    (b5 <<  1) |
+                    (a1 <<  0)
+                );
+
+                // TODO(CheatoBaggins): This doesn't work for all pixels.
+                u16 encodedReversed = (u16)((decodedRgba5551) << 1);
+                u16 encodedRgba5551 = (u16)((encodedReversed << 7) | (encodedReversed >> 9));
+
+                scribe.WriteU16(encodedRgba5551);
+            }
+        }
+
+        return buffer;
     }
 
     #endregion
@@ -149,6 +228,8 @@ public class N64GsImageEncoder
 
     #endregion
 
+    #region Pixel conversion
+
     /// <summary>
     /// Converts a 5-bit RGB channel value to the equivalent 8-bit value.
     /// </summary>
@@ -162,4 +243,20 @@ public class N64GsImageEncoder
         double eightBitChannel = (double)fiveBitChannel * 255 / 31;
         return (u8)eightBitChannel;
     }
+
+    /// <summary>
+    /// Converts an 8-bit RGB channel value to the equivalent 5-bit value.
+    /// </summary>
+    /// <param name="eightBitChannel">8-bit color value (RGB8, 0-255)</param>
+    /// <returns>Equivalent 5-bit color value (RGB5, 0-31)</returns>
+    private static u8 Rgb8ToRgb5(u8 eightBitChannel)
+    {
+        // See
+        // https://n64squid.com/homebrew/n64-sdk/textures/image-formats/
+        // https://developer.apple.com/documentation/accelerate/1642297-vimageconvert_rgba5551torgba8888
+        double fiveBitChannel = (double)eightBitChannel * 31 / 255;
+        return (u8)fiveBitChannel;
+    }
+
+    #endregion
 }

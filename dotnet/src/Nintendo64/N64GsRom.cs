@@ -311,7 +311,7 @@ public sealed class N64GsRom : AbstractCodec
             .Where(file => file.FileName.EndsWith(".tg~"))
             .Select(file =>
                 {
-                    Image<Rgba32> image = decoder.Decode16BitRgba(file.UncompressedBytes, file.FileName);
+                    Image<Rgba32> image = decoder.DecodeTileGraphic(file.UncompressedBytes, file.FileName);
                     return new EmbeddedImage(file.FileName, image);
                 }
             )

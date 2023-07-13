@@ -149,7 +149,7 @@ public class EmbeddedFileTest
     {
         var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
         var decoder = new N64GsImageEncoder();
-        using Image<Rgba32> image = decoder.Decode16BitRgba(imageBytes);
+        using Image<Rgba32> image = decoder.DecodeTileGraphic(imageBytes);
         image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
         u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");
         u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
