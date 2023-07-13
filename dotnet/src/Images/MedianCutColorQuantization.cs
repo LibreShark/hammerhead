@@ -32,34 +32,20 @@ public static class MedianCutColorQuantization
         return reducedImage;
     }
 
-    private static void MedianCutQuantize(Image<Rgb24> image, int[][] rgbxyArray)
-    {
-        u8 rAverage = (u8)rgbxyArray.Average(p => p[0]);
-        u8 gAverage = (u8)rgbxyArray.Average(p => p[1]);
-        u8 bAverage = (u8)rgbxyArray.Average(p => p[2]);
-
-        foreach (var data in rgbxyArray)
-        {
-            int x = data[3];
-            int y = data[4];
-            image[x, y] = new Rgb24(rAverage, gAverage, bAverage);
-        }
-    }
-
     private static void SplitIntoBuckets(Image<Rgb24> image, int[][] rgbxyArray, int depth)
     {
         if (rgbxyArray.Length == 0)
             return;
 
-        if (depth == 0)
+        if (depth == 0 || rgbxyArray.Length == 1)
         {
             MedianCutQuantize(image, rgbxyArray);
             return;
         }
 
-        int rRange = rgbxyArray.Max(p => p[0]) - rgbxyArray.Min(p => p[0]);
-        int gRange = rgbxyArray.Max(p => p[1]) - rgbxyArray.Min(p => p[1]);
-        int bRange = rgbxyArray.Max(p => p[2]) - rgbxyArray.Min(p => p[2]);
+        int rRange = rgbxyArray.Max(R) - rgbxyArray.Min(R);
+        int gRange = rgbxyArray.Max(G) - rgbxyArray.Min(G);
+        int bRange = rgbxyArray.Max(B) - rgbxyArray.Min(B);
 
         int spaceWithHighestRange = 0;
 
@@ -73,7 +59,37 @@ public static class MedianCutColorQuantization
         rgbxyArray = rgbxyArray.OrderBy(p => p[spaceWithHighestRange]).ToArray();
         int medianIndex = (rgbxyArray.Length + 1) / 2;
 
+        // TODO(CheatoBaggins): Fix bug here
         SplitIntoBuckets(image, rgbxyArray.Take(medianIndex).ToArray(), depth - 1);
         SplitIntoBuckets(image, rgbxyArray.Skip(medianIndex).ToArray(), depth - 1);
+    }
+
+    private static void MedianCutQuantize(Image<Rgb24> image, int[][] rgbxyArray)
+    {
+        u8 rAverage = (u8)rgbxyArray.Average(R);
+        u8 gAverage = (u8)rgbxyArray.Average(G);
+        u8 bAverage = (u8)rgbxyArray.Average(B);
+
+        foreach (int[] data in rgbxyArray)
+        {
+            int x = data[3];
+            int y = data[4];
+            image[x, y] = new Rgb24(rAverage, gAverage, bAverage);
+        }
+    }
+
+    private static int R(int[] rgbxyArray)
+    {
+        return rgbxyArray[0];
+    }
+
+    private static int G(int[] rgbxyArray)
+    {
+        return rgbxyArray[1];
+    }
+
+    private static int B(int[] rgbxyArray)
+    {
+        return rgbxyArray[2];
     }
 }

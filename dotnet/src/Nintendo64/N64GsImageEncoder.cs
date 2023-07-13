@@ -283,6 +283,7 @@ public class N64GsImageEncoder
         // Index values must fit inside a single u8
         if (palettePixelSet.Count > 255)
         {
+            // TODO(CheatoBaggins): Fix bug here - color palette never gets reduced
             return EncodeStartupLogo(MedianCutColorQuantization.ReduceColorPalette(image, 255));
         }
 
