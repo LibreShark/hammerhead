@@ -394,6 +394,8 @@ public sealed class N64GsRom : AbstractCodec
             {
                 break;
             }
+
+            u32 startPos = scribe.Position;
             u32 structLen = scribe.ReadU32();
 
             // Account for the length (4-byte u32) and name (12-byte string) fields.
@@ -402,11 +404,26 @@ public sealed class N64GsRom : AbstractCodec
             string curFileName = scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
             if (!FileNameRegex.IsMatch(curFileName))
             {
+                // We've reached the end of the stream of embedded files
                 break;
             }
 
             u8[] compressedBytes = scribe.ReadBytes(dataLen);
-            var file = new EmbeddedFile(curFileName, compressedBytes, decoder.Decode(compressedBytes));
+            u32 endPos = scribe.Position;
+
+            var file = new EmbeddedFile(
+                curFileName,
+                compressedBytes,
+                decoder.Decode(compressedBytes),
+                new RomRange()
+                {
+                    Name = curFileName,
+                    Length = endPos - startPos,
+                    StartIndex = startPos,
+                    EndIndex = endPos,
+                    RawBytes = ByteString.CopyFrom(compressedBytes),
+                }
+            );
             files.Add(file);
         }
 
