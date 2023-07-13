@@ -155,4 +155,17 @@ public class EmbeddedFileTest
         u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
         Assert.That(actualBytes, Is.EqualTo(expectedBytes));
     }
+
+    [Test]
+    public void Test_Write_StartupLogo()
+    {
+        var encoder = new N64GsImageEncoder();
+        Image<Rgba32> inputPng = Image.Load<Rgba32>("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
+        (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
+        Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
+        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-reencoded.png");
+        u8[] expectedPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
+        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-reencoded.png");
+        Assert.That(actualPngBytes, Is.EqualTo(expectedPngBytes));
+    }
 }
