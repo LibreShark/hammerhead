@@ -1,3 +1,4 @@
+using LibreShark.Hammerhead.Images;
 using LibreShark.Hammerhead.IO;
 
 namespace LibreShark.Hammerhead.Nintendo64;
@@ -224,6 +225,72 @@ public class N64GsImageEncoder
             }
         }
         return image;
+    }
+
+    public (u8[], u8[]) EncodeStartupLogo(
+        Image<Rgba32> rgba,
+        bool transparency = true,
+        Rgb24 transparentColor = new Rgb24() // black
+    )
+    {
+        var rgb = new Image<Rgb24>(StartupLogoWidth, StartupLogoHeight);
+        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
+        {
+            for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
+            {
+                Rgba32 pixel = rgba[x, y];
+                bool isTransparent = pixel.A == 0;
+                rgb[x, y] = transparency && isTransparent ? transparentColor : new Rgb24(pixel.R, pixel.G, pixel.B);
+            }
+        }
+        return EncodeStartupLogo(rgb);
+    }
+
+    public (u8[], u8[]) EncodeStartupLogo(Image<Rgb24> image)
+    {
+        if (image.Width != StartupLogoWidth || image.Height != StartupLogoHeight)
+        {
+            throw new ArgumentException(
+                $"Startup logo must be exactly {StartupLogoWidth}x{StartupLogoHeight}, " +
+                $"but got {image.Width}x{image.Height}."
+            );
+        }
+
+        var imagePixels = new List<Rgb24>();
+        var palettePixelSet = new SortedSet<Rgb24>();
+        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
+        {
+            for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
+            {
+                Rgb24 pixel = image[x, y];
+                imagePixels.Add(pixel);
+                palettePixelSet.Add(pixel);
+            }
+        }
+
+        // Index values must fit inside a single u8
+        if (palettePixelSet.Count > 255)
+        {
+            return EncodeStartupLogo(MedianCutColorQuantization.ReduceColorPalette(image, 255));
+        }
+
+        var palettePixelList = palettePixelSet.ToList();
+
+        u8[] paletteBytes = palettePixelSet.SelectMany(PixelToRgb555).ToArray();
+        u8[] dataBytes = imagePixels.Select(
+            pixel => (u8)palettePixelList.IndexOf(pixel)).ToArray();
+
+        return (paletteBytes, dataBytes);
+    }
+
+    private u8[] PixelToRgb555(Rgb24 pixel)
+    {
+        return new u8[]
+        {
+            Rgb8ToRgb5(pixel.R),
+            Rgb8ToRgb5(pixel.G),
+            Rgb8ToRgb5(pixel.B),
+        };
     }
 
     #endregion
