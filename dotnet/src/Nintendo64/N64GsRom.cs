@@ -296,9 +296,7 @@ public sealed class N64GsRom : AbstractCodec
             )
             let image = decoder.DecodeStartupLogo(
                 paletteFile.UncompressedBytes,
-                imageFile.UncompressedBytes,
-                true,
-                new Rgb24(0, 0, 0)
+                imageFile.UncompressedBytes
             )
             select new EmbeddedImage(paletteFile.FileName, image)
         ).ToList();

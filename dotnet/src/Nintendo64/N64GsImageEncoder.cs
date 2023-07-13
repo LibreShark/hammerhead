@@ -4,7 +4,12 @@ namespace LibreShark.Hammerhead.Nintendo64;
 
 public class N64GsImageEncoder
 {
-    #region Tile images
+    private const int StartupLogoWidth = 320;
+    private const int StartupLogoHeight = 224;
+    private const int StartupLogoPosX = 24;
+    private const int StartupLogoPosY = 40;
+
+    #region Tile Graphics (`*.tg~` files)
 
     /// <summary>
     /// Decodes a Datel Tile Graphics (.tg~) image, in which each pixel
@@ -185,22 +190,17 @@ public class N64GsImageEncoder
     /// This is a simple form of compression called "indexed color".
     /// </summary>
     /// <param name="paletteBytes">Decompressed <c>gslogo3.pal</c> bytes</param>
-    /// <param name="imageBytes">Decompressed <c>gslogo3.bin</c> bytes</param>
+    /// <param name="dataBytes">Decompressed <c>gslogo3.bin</c> bytes</param>
     /// <param name="transparency">Optionally enable transparent backgrounds</param>
     /// <param name="transparentColor">Color that will be replaced by a transparent pixel</param>
     /// <returns>Decoded logo image</returns>
     public Image<Rgba32> DecodeStartupLogo(
         u8[] paletteBytes,
-        u8[] imageBytes,
-        bool transparency = false,
-        Rgb24 transparentColor = new Rgb24()
+        u8[] dataBytes,
+        bool transparency = true,
+        Rgb24 transparentColor = new Rgb24() // black
     )
     {
-        const int posX = 24;
-        const int posY = 40;
-        const int width = 320;
-        const int height = 224;
-
         var indexedColors = new List<Rgba32>();
         for (int i = 0; i < paletteBytes.Length; )
         {
@@ -213,12 +213,12 @@ public class N64GsImageEncoder
             indexedColors.Add(rgba32Color);
         }
 
-        Rgba32[] pixels = imageBytes.Select(colorIndex => indexedColors[colorIndex]).ToArray();
-        var image = new Image<Rgba32>(width, height);
+        Rgba32[] pixels = dataBytes.Select(colorIndex => indexedColors[colorIndex]).ToArray();
+        var image = new Image<Rgba32>(StartupLogoWidth, StartupLogoHeight);
         int pixelPos = 0;
-        for (int y = posY + 1; y < height - posY + 1; y++)
+        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
         {
-            for (int x = posX; x < width - posX; x++)
+            for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
             {
                 image[x, y] = pixels[pixelPos++];
             }
