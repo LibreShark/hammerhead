@@ -64,4 +64,5 @@ public class N64GsConfigureCmdParams : CmdParams
     public FileInfo? StartupLogo { get; init; }
     public FileInfo? StartupTile { get; init; }
     public string? MainMenuTitle { get; init; }
+    public bool? DumpStartupScreen { get; init; }
 }

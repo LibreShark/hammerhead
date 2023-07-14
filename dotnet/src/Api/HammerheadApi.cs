@@ -384,8 +384,11 @@ public class HammerheadApi
             gsRom.WriteChangesToBuffer();
             File.WriteAllBytes(outputFile.FullName, gsRom.Buffer);
 
-            Image<Rgba32>? startupScreen = gsRom.StartupScreenComposite;
-            startupScreen?.SaveAsPng(outputFile.FullName + ".startup.png");
+            if (cmdParams.DumpStartupScreen.HasValue && cmdParams.DumpStartupScreen.Value)
+            {
+                Image<Rgba32>? startupScreen = gsRom.StartupScreenComposite;
+                startupScreen?.SaveAsPng(outputFile.FullName + ".startup.png");
+            }
         });
     }
 }

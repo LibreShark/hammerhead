@@ -171,6 +171,12 @@ public class CliCmd
         "Text to display in the main menu title. E.g.: 'LibreShark Pro Version 4.00'.\n" +
         "Max length: 28 chars.");
 
+    private static readonly Option<bool?> N64DumpStartupScreenOption = new Option<bool?>(
+        aliases: new string[] { "--dump-startup-screen" },
+        "Compute the composited startup screen that will be displayed " +
+        "when the GS first boots the cart, and write it to disk alongside " +
+        "the output ROM file.");
+
     #endregion
 
     #region Root command
@@ -315,6 +321,7 @@ public class CliCmd
         N64StartupLogoOption,
         N64StartupTileOption,
         N64MainMenuTitleOption,
+        N64DumpStartupScreenOption,
     };
 
     #endregion
@@ -403,6 +410,7 @@ public class CliCmd
             StartupLogo = N64StartupLogoOption.GetValue(ctx),
             StartupTile = N64StartupTileOption.GetValue(ctx),
             MainMenuTitle = N64MainMenuTitleOption.GetValue(ctx),
+            DumpStartupScreen = N64DumpStartupScreenOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
         OnN64GsConfigure?.Invoke(this, cmdParams);
