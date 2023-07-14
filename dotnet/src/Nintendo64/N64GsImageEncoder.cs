@@ -144,10 +144,12 @@ public class N64GsImageEncoder
     }
 
 
-    public u8[] EncodeTileGraphic(Image<Rgba32> png)
+    public u8[] EncodeTileGraphic(Image<Rgba32> tile)
     {
-        int width = png.Width;
-        int height = png.Height;
+        tile = ColorQuantizer.ReduceColorPalette(tile.CloneAs<Rgb24>(), 256).CloneAs<Rgba32>();
+
+        int width = tile.Width;
+        int height = tile.Height;
 
         // 16 bits (2 bytes) per pixel
         u8[] buffer = new u8[width * height * 2];
@@ -157,7 +159,7 @@ public class N64GsImageEncoder
         {
             for (int x = 0; x < width; x++)
             {
-                Rgba32 pixel = png[x, y];
+                Rgba32 pixel = tile[x, y];
                 bool isTransparent = pixel.A == 0xFF;
                 u8 r5 = Rgb8ToRgb5(pixel.R);
                 u8 g5 = Rgb8ToRgb5(pixel.G);

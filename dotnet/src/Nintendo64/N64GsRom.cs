@@ -916,8 +916,8 @@ public sealed class N64GsRom : AbstractCodec
             );
         }
 
-        var gs = new N64GsImageEncoder();
-        u8[] bytes = gs.EncodeTileGraphic(image);
+        var gsImg = new N64GsImageEncoder();
+        u8[] bytes = gsImg.EncodeTileGraphic(image);
         tileFiles[0].SetUncompressedBytes(bytes);
     }
 
