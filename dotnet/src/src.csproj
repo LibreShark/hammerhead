@@ -48,7 +48,9 @@
       <PackageReference Include="Ninject.Extensions.Logging.Log4net" Version="3.3.0" />
       <PackageReference Include="NUnit" Version="3.13.3" />
       <PackageReference Include="Protobuf.Text" Version="0.7.0" />
+      <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
       <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
       <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
       <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
@@ -85,5 +87,9 @@
 
     <ItemGroup>
       <Protobuf Include="protobuf\**\*.proto" ProtoRoot="protobuf" GrpcServices="None" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\Fonts\" />
     </ItemGroup>
 </Project>

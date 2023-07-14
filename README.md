@@ -74,7 +74,9 @@ dotnet run --project dotnet/src/src.csproj -- \
             --bg-scroll=false \
             --bg-pattern=logo \
             --bg-color=blue \
-            --update-timestamp
+            --update-timestamp \
+            --main-menu-title='N64 LibreShark Pro v4.00a' \
+            --startup-logo=path/to/320x224-logo.{png,gif,jpg,...}
 ```
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230712-info-n64-ls.png)

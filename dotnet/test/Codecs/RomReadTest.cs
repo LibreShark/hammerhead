@@ -253,7 +253,7 @@ public class RomReadTest
     [Test]
     public void Test_N64GsRom_LibreShark()
     {
-        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
+        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230710-mario.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
 
         var rom = N64GsRom.Create(romFilePath, romFileBytes);

@@ -20,7 +20,9 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
         <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
         <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
         <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
         <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
@@ -391,20 +393,40 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230709-cheatocodes.bin">
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.png" />
       <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-customprefs.bin">
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230711-cheatocodes-pristine.bin">
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

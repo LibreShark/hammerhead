@@ -154,6 +154,29 @@ public class CliCmd
         aliases: new string[] { "--reset-prefs" },
         "Clear all user-configurable preferences and restore them to factory defaults.");
 
+    private static readonly Option<FileInfo?> N64StartupLogoOption = new Option<FileInfo?>(
+        aliases: new string[] { "--startup-logo" },
+        "Path to a 320x224 image file (PNG, GIF, JPEG, WEBP, BMP, TIFF, TGA) " +
+        "to use for the startup logo.\n" +
+        "IMPORTANT: The left/right 24px and top/bottom 40px are ignored.\n" +
+        "IMPORTANT: Black pixels (#000000) will be displayed as TRANSPARENT!");
+
+    private static readonly Option<FileInfo?> N64StartupTileOption = new Option<FileInfo?>(
+        aliases: new string[] { "--startup-tile" },
+        "Path to a 64x48 image file (PNG, GIF, JPEG, WEBP, BMP, TIFF, TGA) " +
+        "to use for the startup background tile.");
+
+    private static readonly Option<string?> N64MainMenuTitleOption = new Option<string?>(
+        aliases: new string[] { "--main-menu-title" },
+        "Text to display in the main menu title. E.g.: 'LibreShark Pro Version 4.00'.\n" +
+        "Max length: 28 chars.");
+
+    private static readonly Option<bool?> N64DumpStartupScreenOption = new Option<bool?>(
+        aliases: new string[] { "--dump-startup-screen" },
+        "Compute the composited startup screen that will be displayed " +
+        "when the GS first boots the cart, and write it to disk alongside " +
+        "the output ROM file.");
+
     #endregion
 
     #region Root command
@@ -295,6 +318,10 @@ public class CliCmd
         N64BgColorOption,
         N64UpdateTimestampOption,
         N64RenameKeyCodesOption,
+        N64StartupLogoOption,
+        N64StartupTileOption,
+        N64MainMenuTitleOption,
+        N64DumpStartupScreenOption,
     };
 
     #endregion
@@ -380,6 +407,10 @@ public class CliCmd
             UpdateTimestamp = N64UpdateTimestampOption.GetValue(ctx),
             RenameKeyCodes = N64RenameKeyCodesOption.GetValue(ctx),
             ResetUserPrefs = N64ResetUserPrefsOption.GetValue(ctx),
+            StartupLogo = N64StartupLogoOption.GetValue(ctx),
+            StartupTile = N64StartupTileOption.GetValue(ctx),
+            MainMenuTitle = N64MainMenuTitleOption.GetValue(ctx),
+            DumpStartupScreen = N64DumpStartupScreenOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
         OnN64GsConfigure?.Invoke(this, cmdParams);

@@ -147,5 +147,19 @@ namespace LibreShark.Hammerhead {
                 return ((byte[])(obj));
             }
         }
+        
+        internal static byte[] FONT_PIXELMIX_STANDARD {
+            get {
+                object obj = ResourceManager.GetObject("FONT_PIXELMIX_STANDARD", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        internal static byte[] FONT_PIXELMIX_BOLD {
+            get {
+                object obj = ResourceManager.GetObject("FONT_PIXELMIX_BOLD", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
