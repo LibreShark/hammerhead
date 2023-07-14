@@ -159,7 +159,12 @@ public class CliCmd
         "Path to a 320x224 image file (PNG, GIF, JPEG, WEBP, BMP, TIFF, TGA) " +
         "to use for the startup logo.\n" +
         "IMPORTANT: The left/right 24px and top/bottom 40px are ignored.\n" +
-        "IMPORTANT: Black pixels (#000000) will be displayed as TRANSPARENT!\n");
+        "IMPORTANT: Black pixels (#000000) will be displayed as TRANSPARENT!");
+
+    private static readonly Option<FileInfo?> N64StartupTileOption = new Option<FileInfo?>(
+        aliases: new string[] { "--startup-tile" },
+        "Path to a 64x48 image file (PNG, GIF, JPEG, WEBP, BMP, TIFF, TGA) " +
+        "to use for the startup background tile.");
 
     private static readonly Option<string?> N64MainMenuTitleOption = new Option<string?>(
         aliases: new string[] { "--main-menu-title" },
@@ -308,6 +313,7 @@ public class CliCmd
         N64UpdateTimestampOption,
         N64RenameKeyCodesOption,
         N64StartupLogoOption,
+        N64StartupTileOption,
         N64MainMenuTitleOption,
     };
 
@@ -395,6 +401,7 @@ public class CliCmd
             RenameKeyCodes = N64RenameKeyCodesOption.GetValue(ctx),
             ResetUserPrefs = N64ResetUserPrefsOption.GetValue(ctx),
             StartupLogo = N64StartupLogoOption.GetValue(ctx),
+            StartupTile = N64StartupTileOption.GetValue(ctx),
             MainMenuTitle = N64MainMenuTitleOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);

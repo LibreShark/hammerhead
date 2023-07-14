@@ -726,12 +726,27 @@ public sealed class N64GsRom : AbstractCodec
             }
         }
 
-        if (cmdParams.StartupLogo?.Exists == true)
+        if (cmdParams.StartupLogo != null)
         {
             // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
             if (Support.IsFirmwareCompressed)
             {
-                SetStartupLogo(Image.Load<Rgba32>(cmdParams.StartupLogo.FullName));
+                using Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupLogo.FullName);
+                SetStartupLogo(img);
+            }
+            else
+            {
+                Printer.PrintHint("This firmware version does not support custom startup logos (yet!).");
+            }
+        }
+
+        if (cmdParams.StartupTile != null)
+        {
+            // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
+            if (Support.IsFirmwareCompressed)
+            {
+                using Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupTile.FullName);
+                SetStartupTile(img);
             }
             else
             {
@@ -838,6 +853,29 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw, 16);
     }
 
+    public void SetStartupTile(Image<Rgba32> image)
+    {
+        EmbeddedFile[] files = _rootCompressedFiles.Where(IsStartupTile).ToArray();
+        if (files.Length != 1)
+        {
+            return;
+        }
+
+        if (image.Width != 64 || image.Height != 48)
+        {
+            string dims = $"{image.Width}x{image.Height}";
+            throw new ArgumentException(
+                $"Background tiles must be exactly 64x48, but got {dims}."
+            );
+        }
+
+        var imageEncoder = new N64GsImageEncoder();
+
+        u8[] bytes = imageEncoder.EncodeTileGraphic(image);
+
+        files[0].SetUncompressedBytes(bytes);
+    }
+
     public void SetStartupLogo(Image<Rgba32> image)
     {
         EmbeddedFile[] files = _rootCompressedFiles.Where(IsStartupLogo).ToArray();
@@ -853,19 +891,16 @@ public sealed class N64GsRom : AbstractCodec
             return;
         }
 
+        // Don't overwrite the original image
+        image = image.Clone();
+
         // TODO(CheatoBaggins): Move this to an Images class
         string version = Metadata.DisplayVersion;
         string date = DateTime.Parse(Metadata.BuildDateIso).ToString("yyyy-MM-dd");
-        DrawText(image, version, textOptions =>
+        string text = $"{version} {date}";
+        DrawText(image, text, textOptions =>
         {
-            textOptions.Origin = new PointF(27, 134);
-            textOptions.VerticalAlignment = VerticalAlignment.Bottom;
-            textOptions.HorizontalAlignment = HorizontalAlignment.Left;
-            textOptions.TextAlignment = TextAlignment.Start;
-        });
-        DrawText(image, date, textOptions =>
-        {
-            textOptions.Origin = new PointF(294, 134);
+            textOptions.Origin = new PointF(296, 138);
             textOptions.VerticalAlignment = VerticalAlignment.Bottom;
             textOptions.HorizontalAlignment = HorizontalAlignment.Right;
             textOptions.TextAlignment = TextAlignment.End;
@@ -888,8 +923,14 @@ public sealed class N64GsRom : AbstractCodec
         Font font = family.CreateFont(8, FontStyle.Regular);
         TextOptions textOptions = new(font);
         configureFont(textOptions);
-        IBrush brush = Brushes.Solid(Color.White);
+        IBrush brush = Brushes.Solid(Color.DarkGray);
         image.Mutate(x => x.DrawText(textOptions, text, brush));
+    }
+
+    private static bool IsStartupTile(EmbeddedFile file)
+    {
+        string name = file.FileName;
+        return name is "tile1.tg~";
     }
 
     private static bool IsStartupLogo(EmbeddedFile file)
