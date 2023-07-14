@@ -75,7 +75,7 @@ public sealed class N64GsRom : AbstractCodec
     private readonly u32 _userPrefsAddr;
     private readonly RomString _headerId;
     private readonly RomString _rawTimestamp;
-    private readonly N64GsVersion _version;
+    private N64GsVersion _version;
     private readonly Code _activeKeyCode;
 
     private N64Data? N64Data => Parsed.N64Data;
@@ -168,15 +168,8 @@ public sealed class N64GsRom : AbstractCodec
         _rootCompressedFiles = ReadRootFiles();
         _shellCompressedFiles = ReadShellFiles();
 
-        _version = ReadVersion();
+        _version = ReadVersionMetadata();
 
-        Metadata.BrandId = _version.Brand;
-        Metadata.BuildDateRaw = _rawTimestamp;
-        Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
-        Metadata.DisplayVersion = _version.DisplayNumber;
-        Metadata.SortableVersion = _version.Number; // TODO(CheatoBaggins): Account for April/May builds
-        Metadata.IsKnownVersion = _version.IsKnown;
-        Metadata.LanguageIetfCode = _version.Locale.Name;
         Metadata.TvStandard = ReadTvStandard();
 
         _isV3Firmware        = Scribe.Seek(0x00001000).ReadU32() == 0x00000000;
@@ -206,6 +199,21 @@ public sealed class N64GsRom : AbstractCodec
         EmbeddedImages.AddRange(GetLogoImages(_rootCompressedFiles));
         EmbeddedImages.AddRange(GetTileImages(_rootCompressedFiles));
         EmbeddedImages.AddRange(GetTileImages(_shellCompressedFiles));
+    }
+
+    private N64GsVersion ReadVersionMetadata()
+    {
+        _version = ReadVersion();
+
+        Metadata.BrandId = _version.Brand;
+        Metadata.BuildDateRaw = _rawTimestamp;
+        Metadata.BuildDateIso = _version.DisplayBuildTimestampIso;
+        Metadata.DisplayVersion = _version.DisplayNumber;
+        Metadata.SortableVersion = _version.Number; // TODO(CheatoBaggins): Account for April/May builds
+        Metadata.IsKnownVersion = _version.IsKnown;
+        Metadata.LanguageIetfCode = _version.Locale.Name;
+
+        return _version;
     }
 
     #endregion
@@ -744,6 +752,8 @@ public sealed class N64GsRom : AbstractCodec
             }
             scribe.Seek(_mainMenuTitle.Addr.StartIndex);
             scribe.WriteBytes(cstring);
+
+            ReadVersionMetadata();
         }
 
         if (cmdParams.UpdateTimestamp.HasValue && cmdParams.UpdateTimestamp.Value)
