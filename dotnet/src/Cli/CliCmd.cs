@@ -154,6 +154,13 @@ public class CliCmd
         aliases: new string[] { "--reset-prefs" },
         "Clear all user-configurable preferences and restore them to factory defaults.");
 
+    private static readonly Option<FileInfo?> N64StartupLogoOption = new Option<FileInfo?>(
+        aliases: new string[] { "--startup-logo" },
+        "Path to a 320x224 image file (PNG, GIF, JPEG, WEBP, BMP, TIFF, TGA) " +
+        "to use for the startup logo.\n" +
+        "IMPORTANT: The left/right 24px and top/bottom 40px are ignored.\n" +
+        "IMPORTANT: Black pixels (#000000) will be displayed as TRANSPARENT!\n");
+
     #endregion
 
     #region Root command
@@ -295,6 +302,7 @@ public class CliCmd
         N64BgColorOption,
         N64UpdateTimestampOption,
         N64RenameKeyCodesOption,
+        N64StartupLogoOption,
     };
 
     #endregion
@@ -380,6 +388,7 @@ public class CliCmd
             UpdateTimestamp = N64UpdateTimestampOption.GetValue(ctx),
             RenameKeyCodes = N64RenameKeyCodesOption.GetValue(ctx),
             ResetUserPrefs = N64ResetUserPrefsOption.GetValue(ctx),
+            StartupLogo = N64StartupLogoOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
         OnN64GsConfigure?.Invoke(this, cmdParams);

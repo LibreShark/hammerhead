@@ -783,6 +783,7 @@ public sealed class N64GsRom : AbstractCodec
     public override ICodec WriteChangesToBuffer()
     {
         WriteHeader();
+        WriteEmbeddedFiles();
         WriteUserPrefs();
         WriteGames();
         // This must happen last because it calculates checksums from the ROM
@@ -794,6 +795,73 @@ public sealed class N64GsRom : AbstractCodec
     private void WriteHeader()
     {
         Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw, 16);
+    }
+
+    public void SetStartupLogo(Image<Rgba32> image)
+    {
+        EmbeddedFile[] files = _rootCompressedFiles.Where(IsStartupLogo).ToArray();
+        if (files.Length != 2)
+        {
+            return;
+        }
+
+        EmbeddedFile? paletteFile = files.FirstOrDefault(file => file.FileName.EndsWith(".pal"));
+        EmbeddedFile? dataFile = files.FirstOrDefault(file => file.FileName.EndsWith(".bin"));
+        if (paletteFile == null || dataFile == null)
+        {
+            return;
+        }
+
+        var imageEncoder = new N64GsImageEncoder();
+        var lzariEncoder = new N64GsLzariEncoder();
+
+        (u8[] paletteBytes, u8[] dataBytes) = imageEncoder.EncodeStartupLogo(image);
+
+        paletteFile.UncompressedBytes = paletteBytes;
+        paletteFile.CompressedBytes = lzariEncoder.Encode(paletteFile.UncompressedBytes);
+
+        dataFile.UncompressedBytes = dataBytes;
+        dataFile.CompressedBytes = lzariEncoder.Encode(dataFile.UncompressedBytes);
+    }
+
+    private static bool IsStartupLogo(EmbeddedFile file)
+    {
+        string name = file.FileName;
+        // Equalizer is the only brand whose logo filename doesn't contain
+        // the world "logo". All others are "gslogo2", "gslogo3", "arlogo3",
+        // "gblogo3", "lslogo4", etc.
+        return name.Contains("logo") || name.Contains("equal2") || name.Contains("equal3");
+    }
+
+    private void WriteEmbeddedFiles()
+    {
+        if (!Support.IsFirmwareCompressed || _rootCompressedFiles.Count == 0)
+        {
+            // TODO(CheatoBaggins): Figure out how to write images to
+            // uncompressed ROMs (v2.4 and earlier).
+            return;
+        }
+
+        u32 startIndex = _rootCompressedFiles.First().PositionInParentFile.StartIndex;
+        u32 endIndex = _rootCompressedFiles.Last().PositionInParentFile.EndIndex;
+        Scribe.Seek(startIndex);
+        foreach (EmbeddedFile file in _rootCompressedFiles)
+        {
+            u32 structLen = (u32)(4 + 12 + file.CompressedBytes.Length);
+            u8[] ascii = file.FileName.ToAsciiBytes();
+            u8[] cstring = new u8[12];
+            System.Buffer.BlockCopy(ascii, 0, cstring, 0, ascii.Length);
+
+            Scribe.WriteU32(structLen);
+            Scribe.WriteBytes(cstring);
+            Scribe.WriteBytes(file.CompressedBytes);
+        }
+
+        // Padding
+        while (Scribe.Position < endIndex)
+        {
+            Scribe.WriteU8(0xFF);
+        }
     }
 
     private void WriteKeyCodes()

@@ -372,6 +372,19 @@ public class HammerheadApi
                 _printer.PrintHint("This firmware version does not support custom user preferences.");
             }
 
+            if (cmdParams.StartupLogo?.Exists == true)
+            {
+                // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
+                if (support.IsFirmwareCompressed)
+                {
+                    gsRom.SetStartupLogo(Image.Load<Rgba32>(cmdParams.StartupLogo.FullName));
+                }
+                else
+                {
+                    _printer.PrintHint("This firmware version does not support custom startup logos (yet!).");
+                }
+            }
+
             gsRom.WriteChangesToBuffer();
             File.WriteAllBytes(outputFile.FullName, gsRom.Buffer);
         });
