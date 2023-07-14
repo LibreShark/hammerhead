@@ -217,7 +217,7 @@ public class N64GsImageEncoder
         Rgba32[] pixels = dataBytes.Select(colorIndex => indexedColors[colorIndex]).ToArray();
         var image = new Image<Rgba32>(StartupLogoWidth, StartupLogoHeight);
         int pixelPos = 0;
-        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
+        for (int y = StartupLogoPosY; y < StartupLogoHeight - StartupLogoPosY; y++)
         {
             for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
             {
@@ -234,7 +234,7 @@ public class N64GsImageEncoder
     )
     {
         var rgb = new Image<Rgb24>(StartupLogoWidth, StartupLogoHeight);
-        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
+        for (int y = StartupLogoPosY; y < StartupLogoHeight - StartupLogoPosY; y++)
         {
             for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
             {
