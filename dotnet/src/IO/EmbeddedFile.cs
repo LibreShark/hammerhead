@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using LibreShark.Hammerhead.Nintendo64;
 
 namespace LibreShark.Hammerhead.IO;
