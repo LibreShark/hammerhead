@@ -195,9 +195,9 @@ public sealed class N64GsRom : AbstractCodec
     {
         s32 titleLength = needle.Length + 5;
 
-        if (IsFirmwareCompressed() && ShellFile.HasValue)
+        if (IsFirmwareCompressed() && ShellFile != null)
         {
-            u8[] shellBytes = ShellFile.Value.UncompressedBytes;
+            u8[] shellBytes = ShellFile.UncompressedBytes;
             s32 titleVersionPos = shellBytes.Find(needle);
             if (titleVersionPos == -1)
             {
@@ -335,12 +335,12 @@ public sealed class N64GsRom : AbstractCodec
             return new List<EmbeddedFile>();
         }
 
-        if (!ShellFile.HasValue)
+        if (ShellFile == null)
         {
             return new List<EmbeddedFile>();
         }
 
-        return ReadAllFiles(ShellFile.Value.UncompressedBytes);
+        return ReadAllFiles(ShellFile.UncompressedBytes);
     }
 
     private List<EmbeddedFile> ReadAllFiles(u8[] fsblob)

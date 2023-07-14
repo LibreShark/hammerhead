@@ -1,6 +1,6 @@
 namespace LibreShark.Hammerhead.IO;
 
-public struct EmbeddedFile
+public class EmbeddedFile
 {
     public readonly string FileName;
     public readonly u8[] RawBytes;

@@ -1,6 +1,6 @@
 namespace LibreShark.Hammerhead.IO;
 
-public struct EmbeddedImage
+public class EmbeddedImage
 {
     public readonly string FileName;
     public readonly Image<Rgba32> Image;
