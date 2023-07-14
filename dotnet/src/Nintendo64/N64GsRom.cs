@@ -4,7 +4,12 @@ using LibreShark.Hammerhead.Api;
 using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp.Drawing.Processing;
 using Spectre.Console;
+using Color = SixLabors.ImageSharp.Color;
+using HorizontalAlignment = SixLabors.Fonts.HorizontalAlignment;
+using VerticalAlignment = SixLabors.Fonts.VerticalAlignment;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
@@ -848,12 +853,43 @@ public sealed class N64GsRom : AbstractCodec
             return;
         }
 
+        // TODO(CheatoBaggins): Move this to an Images class
+        string version = Metadata.DisplayVersion;
+        string date = DateTime.Parse(Metadata.BuildDateIso).ToString("yyyy-MM-dd");
+        DrawText(image, version, textOptions =>
+        {
+            textOptions.Origin = new PointF(27, 134);
+            textOptions.VerticalAlignment = VerticalAlignment.Bottom;
+            textOptions.HorizontalAlignment = HorizontalAlignment.Left;
+            textOptions.TextAlignment = TextAlignment.Start;
+        });
+        DrawText(image, date, textOptions =>
+        {
+            textOptions.Origin = new PointF(294, 134);
+            textOptions.VerticalAlignment = VerticalAlignment.Bottom;
+            textOptions.HorizontalAlignment = HorizontalAlignment.Right;
+            textOptions.TextAlignment = TextAlignment.End;
+        });
+
         var imageEncoder = new N64GsImageEncoder();
 
         (u8[] paletteBytes, u8[] dataBytes) = imageEncoder.EncodeStartupLogo(image);
 
         paletteFile.SetUncompressedBytes(paletteBytes);
         dataFile.SetUncompressedBytes(dataBytes);
+    }
+
+    // TODO(CheatoBaggins): Move this to an Images class
+    private static void DrawText(Image<Rgba32> image, string text, Action<TextOptions> configureFont)
+    {
+        // TODO(CheatoBaggins): Move this to an Images class
+        var fonts = new FontCollection();
+        FontFamily family = fonts.Add(new MemoryStream(Resources.FONT_PIXELMIX_STANDARD));
+        Font font = family.CreateFont(8, FontStyle.Regular);
+        TextOptions textOptions = new(font);
+        configureFont(textOptions);
+        IBrush brush = Brushes.Solid(Color.White);
+        image.Mutate(x => x.DrawText(textOptions, text, brush));
     }
 
     private static bool IsStartupLogo(EmbeddedFile file)

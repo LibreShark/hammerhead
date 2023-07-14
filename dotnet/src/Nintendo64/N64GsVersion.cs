@@ -17,7 +17,7 @@ public partial class N64GsVersion
     public readonly bool IsKnown;
     public readonly string RawTimestamp;
     public double Number { get; private set; }
-    public readonly string? Disambiguator;
+    public string? Disambiguator { get; private set; }
     public readonly DateTimeOffset BuildTimestamp;
     public BrandId Brand { get; private set; }
     public CultureInfo Locale { get; private set; }
@@ -232,6 +232,7 @@ public partial class N64GsVersion
                 case "LibreShark Pro":
                     Brand = BrandId.Libreshark;
                     Locale = ENGLISH_US;
+                    Disambiguator = null;
                     break;
             }
         }
