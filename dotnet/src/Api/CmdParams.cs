@@ -62,4 +62,5 @@ public class N64GsConfigureCmdParams : CmdParams
     public bool? RenameKeyCodes { get; init; }
     public bool? ResetUserPrefs { get; init; }
     public FileInfo? StartupLogo { get; init; }
+    public string? MainMenuTitle { get; init; }
 }

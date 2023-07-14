@@ -202,7 +202,7 @@ public partial class N64GsVersion
             return this;
         }
 
-        var match = Regex.Match(mainMenuTitle, "(?:N64 )?(?<brand>.+) Version (?<vernum>[0-9.]+)");
+        var match = Regex.Match(mainMenuTitle, "(?:N64 )?(?<brand>.+) (?:v|Version )(?<vernum>[0-9.]+)", RegexOptions.IgnoreCase);
         if (match.Success)
         {
             string brand = match.Groups["brand"].Value;

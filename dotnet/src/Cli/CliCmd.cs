@@ -161,6 +161,11 @@ public class CliCmd
         "IMPORTANT: The left/right 24px and top/bottom 40px are ignored.\n" +
         "IMPORTANT: Black pixels (#000000) will be displayed as TRANSPARENT!\n");
 
+    private static readonly Option<string?> N64MainMenuTitleOption = new Option<string?>(
+        aliases: new string[] { "--main-menu-title" },
+        "Text to display in the main menu title. E.g.: 'LibreShark Pro Version 4.00'.\n" +
+        "Max length: 28 chars.");
+
     #endregion
 
     #region Root command
@@ -303,6 +308,7 @@ public class CliCmd
         N64UpdateTimestampOption,
         N64RenameKeyCodesOption,
         N64StartupLogoOption,
+        N64MainMenuTitleOption,
     };
 
     #endregion
@@ -389,6 +395,7 @@ public class CliCmd
             RenameKeyCodes = N64RenameKeyCodesOption.GetValue(ctx),
             ResetUserPrefs = N64ResetUserPrefsOption.GetValue(ctx),
             StartupLogo = N64StartupLogoOption.GetValue(ctx),
+            MainMenuTitle = N64MainMenuTitleOption.GetValue(ctx),
         };
         Always?.Invoke(this, cmdParams);
         OnN64GsConfigure?.Invoke(this, cmdParams);

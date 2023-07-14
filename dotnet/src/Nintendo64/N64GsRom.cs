@@ -78,6 +78,8 @@ public sealed class N64GsRom : AbstractCodec
     private readonly List<EmbeddedFile> _rootCompressedFiles;
     private readonly List<EmbeddedFile> _shellCompressedFiles;
 
+    private RomString? _mainMenuTitle;
+
     #endregion
 
     #region Constructor
@@ -161,7 +163,7 @@ public sealed class N64GsRom : AbstractCodec
     // TODO(CheatoBaggins): Move this method to the N64GsVersion class
     private N64GsVersion ReadVersion()
     {
-        RomString? titleVersionNumberStr =
+        _mainMenuTitle =
             // Original brands
             ReadMainMenuTitle("N64 GameShark Version ") ??
             ReadMainMenuTitle("GameShark Pro Version ") ??
@@ -170,19 +172,23 @@ public sealed class N64GsRom : AbstractCodec
             ReadMainMenuTitle("N64 Equalizer Version ") ??
             ReadMainMenuTitle("N64 Game Buster Version ") ??
             // LibreShark
+            ReadMainMenuTitle("N64 LibreShark Pro Version ") ??
+            ReadMainMenuTitle("N64 LibreShark Pro v") ??
+            ReadMainMenuTitle("N64 LibreShark Version ") ??
+            ReadMainMenuTitle("N64 LibreShark v") ??
             ReadMainMenuTitle("LibreShark Version ") ??
+            ReadMainMenuTitle("LibreShark v") ??
             ReadMainMenuTitle("LibreShark Pro Version ") ??
-            ReadMainMenuTitle("LibreShark Version ") ??
-            ReadMainMenuTitle("LibreShark Pro Version ") ??
+            ReadMainMenuTitle("LibreShark Pro v") ??
             // Unknown
             null;
 
-        if (titleVersionNumberStr != null)
+        if (_mainMenuTitle != null)
         {
-            Metadata.Identifiers.Add(titleVersionNumberStr);
+            Metadata.Identifiers.Add(_mainMenuTitle);
         }
 
-        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, titleVersionNumberStr);
+        N64GsVersion? version = N64GsVersion.From(_rawTimestamp.Value, _mainMenuTitle);
         if (version == null)
         {
             throw new InvalidDataException("Failed to find N64 GameShark ROM version!");
@@ -193,8 +199,6 @@ public sealed class N64GsRom : AbstractCodec
 
     private RomString? ReadMainMenuTitle(string needle)
     {
-        s32 titleLength = needle.Length + 5;
-
         if (IsFirmwareCompressed() && ShellFile != null)
         {
             u8[] shellBytes = ShellFile.UncompressedBytes;
@@ -203,9 +207,7 @@ public sealed class N64GsRom : AbstractCodec
             {
                 return null;
             }
-
-            u8[] titleBytes = shellBytes[titleVersionPos..(titleVersionPos + titleLength)];
-            return titleBytes.ToAsciiString().ToRomString();
+            return new BigEndianScribe(shellBytes).Seek(titleVersionPos).ReadFixedLengthPrintableCString(28);
         }
         else
         {
@@ -215,8 +217,7 @@ public sealed class N64GsRom : AbstractCodec
             {
                 return null;
             }
-
-            return Scribe.Seek(titleVersionPos).ReadPrintableCString((u32)titleLength, true).Trim();
+            return Scribe.Seek(titleVersionPos).ReadFixedLengthPrintableCString(28);
         }
     }
 
@@ -672,6 +673,27 @@ public sealed class N64GsRom : AbstractCodec
             prefs.BgPatternId = cmdParams.BgPattern.Value;
         if (cmdParams.BgColor.HasValue)
             prefs.BgColorId = cmdParams.BgColor.Value;
+
+        if (!string.IsNullOrWhiteSpace(cmdParams.MainMenuTitle) && _mainMenuTitle != null)
+        {
+            _mainMenuTitle.Value =
+                cmdParams.MainMenuTitle.Length > 28
+                    ? cmdParams.MainMenuTitle[..28]
+                    : cmdParams.MainMenuTitle;
+
+            u8[] ascii = _mainMenuTitle.Value.ToAsciiBytes();
+            u8[] cstring = new u8[28];
+            System.Buffer.BlockCopy(ascii, 0, cstring, 0, ascii.Length);
+
+            AbstractBinaryScribe scribe = Scribe;
+            if (ShellFile != null)
+            {
+                scribe = new BigEndianScribe(ShellFile.UncompressedBytes);
+            }
+            scribe.Seek(_mainMenuTitle.Addr.StartIndex);
+            scribe.WriteBytes(cstring);
+        }
+
         if (cmdParams.UpdateTimestamp.HasValue && cmdParams.UpdateTimestamp.Value)
         {
             DateTimeOffset now = DateTimeOffset.Now;
@@ -682,6 +704,7 @@ public sealed class N64GsRom : AbstractCodec
             // Full ISO format
             Metadata.BuildDateIso = now.ToIsoString();
         }
+
         if (cmdParams.RenameKeyCodes.HasValue && cmdParams.RenameKeyCodes.Value)
         {
             foreach (Code kc in Parsed.N64Data.KeyCodes)
@@ -695,6 +718,19 @@ public sealed class N64GsRom : AbstractCodec
                     kc.CodeName = "Yoshi's Story, F-Zero, Cruis'n".ToRomString();
                 if (codeName.Contains("Zelda"))
                     kc.CodeName = "Zelda, Perfect Dark, Tooie, DK".ToRomString();
+            }
+        }
+
+        if (cmdParams.StartupLogo?.Exists == true)
+        {
+            // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
+            if (Support.IsFirmwareCompressed)
+            {
+                SetStartupLogo(Image.Load<Rgba32>(cmdParams.StartupLogo.FullName));
+            }
+            else
+            {
+                Printer.PrintHint("This firmware version does not support custom startup logos (yet!).");
             }
         }
     }
@@ -813,15 +849,11 @@ public sealed class N64GsRom : AbstractCodec
         }
 
         var imageEncoder = new N64GsImageEncoder();
-        var lzariEncoder = new N64GsLzariEncoder();
 
         (u8[] paletteBytes, u8[] dataBytes) = imageEncoder.EncodeStartupLogo(image);
 
-        paletteFile.UncompressedBytes = paletteBytes;
-        paletteFile.CompressedBytes = lzariEncoder.Encode(paletteFile.UncompressedBytes);
-
-        dataFile.UncompressedBytes = dataBytes;
-        dataFile.CompressedBytes = lzariEncoder.Encode(dataFile.UncompressedBytes);
+        paletteFile.SetUncompressedBytes(paletteBytes);
+        dataFile.SetUncompressedBytes(dataBytes);
     }
 
     private static bool IsStartupLogo(EmbeddedFile file)
@@ -847,6 +879,7 @@ public sealed class N64GsRom : AbstractCodec
         Scribe.Seek(startIndex);
         foreach (EmbeddedFile file in _rootCompressedFiles)
         {
+            file.Compress();
             u32 structLen = (u32)(4 + 12 + file.CompressedBytes.Length);
             u8[] ascii = file.FileName.ToAsciiBytes();
             u8[] cstring = new u8[12];
@@ -1193,7 +1226,7 @@ public sealed class N64GsRom : AbstractCodec
 
         string firmwareAddr = $"0x{_firmwareAddr:X8}";
         string gameListAddr = $"0x{_gameListAddr:X8}";
-        string keyCodeListAddr = Support.SupportsKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
+        string keyCodeListAddr = Support.HasKeyCodes ? $"0x{_keyCodeListAddr:X8}" : "Not supported";
         string userPrefsAddr = Support.SupportsUserPrefs ? $"0x{_userPrefsAddr:X8}" : "Not supported";
 
         table.AddRow("Firmware", firmwareAddr);
