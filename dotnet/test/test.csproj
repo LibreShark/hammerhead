@@ -393,12 +393,12 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-mario.bin">
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin" />
-      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.05-20230710-zelda.bin">
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-zelda.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-zelda.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.png" />

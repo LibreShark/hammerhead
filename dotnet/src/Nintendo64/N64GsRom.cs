@@ -908,6 +908,15 @@ public sealed class N64GsRom : AbstractCodec
     private void WriteHeader()
     {
         Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw, 16);
+        if (Metadata.BrandId == BrandId.Libreshark)
+        {
+            Scribe.Seek(0x100)
+                .WriteFixedLengthCString("https://n64brew.dev/", 64)
+                .WriteFixedLengthCString("https://github.com/LibreShark", 64)
+                .WriteFixedLengthCString("https://github.com/Jhynjhiruu", 64)
+                .WriteFixedLengthCString("https://github.com/RWeick", 64)
+                .WriteFixedLengthCString("https://github.com/CheatoBaggins", 64);
+        }
     }
 
     public void SetStartupTile(Image<Rgba32> image)

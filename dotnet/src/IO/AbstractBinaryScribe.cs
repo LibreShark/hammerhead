@@ -428,6 +428,18 @@ public abstract class AbstractBinaryScribe
         return this;
     }
 
+    public AbstractBinaryScribe WriteFixedLengthCString(string str, int len, bool isNullTerminated = true)
+    {
+        var startPos = Position;
+        WriteCString(str, len, isNullTerminated);
+        while (Position < startPos + len)
+        {
+            WriteU8(0);
+        }
+
+        return this;
+    }
+
     public override string ToString()
     {
         if (EndReached)
