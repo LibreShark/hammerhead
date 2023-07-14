@@ -30,7 +30,7 @@ public class EmbeddedFileTest
 
             // Test that the compressed input files are spliced correctly before
             // decompressing.
-            u8[] actualCompressed = file.RawBytes;
+            u8[] actualCompressed = file.CompressedBytes;
             u8[] expectedCompressed = File.ReadAllBytes(expectedCompressedFilePath);
             Assert.That(actualCompressed, Is.EqualTo(expectedCompressed));
 

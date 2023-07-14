@@ -420,7 +420,6 @@ public sealed class N64GsRom : AbstractCodec
                     Length = endPos - startPos,
                     StartIndex = startPos,
                     EndIndex = endPos,
-                    RawBytes = ByteString.CopyFrom(compressedBytes),
                 }
             );
             files.Add(file);
