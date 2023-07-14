@@ -403,6 +403,30 @@
       <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png" />
+      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

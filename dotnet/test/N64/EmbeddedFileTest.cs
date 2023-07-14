@@ -157,15 +157,28 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_Write_StartupLogo()
+    public void Test_Write_StartupLogo_ReencodeExisting()
     {
         var encoder = new N64GsImageEncoder();
         Image<Rgba32> inputPng = Image.Load<Rgba32>("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
         (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
         Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
-        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-reencoded.png");
+        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-test.png");
         u8[] expectedPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
-        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-reencoded.png");
+        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-test.png");
+        Assert.That(actualPngBytes, Is.EqualTo(expectedPngBytes));
+    }
+
+    [Test]
+    public void Test_Write_StartupLogo_Quantization_ReduceColorPalette()
+    {
+        var encoder = new N64GsImageEncoder();
+        Image<Rgba32> inputPng = Image.Load<Rgba32>("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-full-color.png");
+        (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
+        Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
+        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-actual.png");
+        u8[] expectedPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-expected.png");
+        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-actual.png");
         Assert.That(actualPngBytes, Is.EqualTo(expectedPngBytes));
     }
 }

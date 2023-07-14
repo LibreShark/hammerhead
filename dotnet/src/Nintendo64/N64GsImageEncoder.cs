@@ -246,18 +246,6 @@ public class N64GsImageEncoder
         return EncodeStartupLogo(rgb);
     }
 
-    private class PixelComparator : IComparer<Rgb24>
-    {
-        public int Compare(Rgb24 x, Rgb24 y)
-        {
-            int bComparison = x.B.CompareTo(y.B);
-            if (bComparison != 0) return bComparison;
-            int gComparison = x.G.CompareTo(y.G);
-            if (gComparison != 0) return gComparison;
-            return x.R.CompareTo(y.R);
-        }
-    }
-
     public (u8[], u8[]) EncodeStartupLogo(Image<Rgb24> image)
     {
         if (image.Width != StartupLogoWidth || image.Height != StartupLogoHeight)
@@ -280,11 +268,10 @@ public class N64GsImageEncoder
             }
         }
 
-        // Index values must fit inside a single u8
+        // Indexes must fit inside a single u8
         if (palettePixelSet.Count > 255)
         {
-            // TODO(CheatoBaggins): Fix bug here - color palette never gets reduced
-            return EncodeStartupLogo(MedianCutColorQuantization.ReduceColorPalette(image, 255));
+            return EncodeStartupLogo(ColorQuantizer.ReduceColorPalette(image, 255));
         }
 
         var palettePixelList = palettePixelSet.ToList();
@@ -294,6 +281,18 @@ public class N64GsImageEncoder
             pixel => (u8)palettePixelList.IndexOf(pixel)).ToArray();
 
         return (paletteBytes, dataBytes);
+    }
+
+    private class PixelComparator : IComparer<Rgb24>
+    {
+        public int Compare(Rgb24 x, Rgb24 y)
+        {
+            int bComparison = x.B.CompareTo(y.B);
+            if (bComparison != 0) return bComparison;
+            int gComparison = x.G.CompareTo(y.G);
+            if (gComparison != 0) return gComparison;
+            return x.R.CompareTo(y.R);
+        }
     }
 
     private u8[] PixelToRgb555(Rgb24 pixel)
