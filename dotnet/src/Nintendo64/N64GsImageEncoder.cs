@@ -283,6 +283,35 @@ public class N64GsImageEncoder
         return (paletteBytes, dataBytes);
     }
 
+    public Image<Rgba32>? CompositeStartupScreen(Image<Rgba32>? tile, Image<Rgba32>? logo)
+    {
+        if (logo == null && tile == null)
+        {
+            return null;
+        }
+
+        var image = new Image<Rgba32>(StartupLogoWidth, StartupLogoHeight);
+        image.Mutate(ctx =>
+        {
+            if (tile != null)
+            {
+                for (int x = 0; x < image.Width; x += tile.Width)
+                {
+                    for (int y = 0; y < image.Height; y += tile.Height)
+                    {
+                        var point = new Point(x, y);
+                        ctx.DrawImage(tile, point, 1);
+                    }
+                }
+            }
+            if (logo != null)
+            {
+                ctx.DrawImage(logo, 1);
+            }
+        });
+        return image;
+    }
+
     private class PixelComparator : IComparer<Rgb24>
     {
         public int Compare(Rgb24 x, Rgb24 y)

@@ -83,6 +83,53 @@ public sealed class N64GsRom : AbstractCodec
     private readonly List<EmbeddedFile> _rootCompressedFiles;
     private readonly List<EmbeddedFile> _shellCompressedFiles;
 
+    public Image<Rgba32>? StartupLogo
+    {
+        get
+        {
+            EmbeddedFile[] logoFiles = _rootCompressedFiles.Where(IsStartupLogo).ToArray();
+            if (logoFiles.Length != 2)
+            {
+                return null;
+            }
+
+            EmbeddedFile? paletteFile = logoFiles.FirstOrDefault(file => file.FileName.EndsWith(".pal"));
+            EmbeddedFile? dataFile = logoFiles.FirstOrDefault(file => file.FileName.EndsWith(".bin"));
+            if (paletteFile == null || dataFile == null)
+            {
+                return null;
+            }
+
+            var n64ImageEncoder = new N64GsImageEncoder();
+
+            Image<Rgba32> image = n64ImageEncoder.DecodeStartupLogo(paletteFile.UncompressedBytes, dataFile.UncompressedBytes);
+
+            return image;
+        }
+    }
+
+    public Image<Rgba32>? StartupTile
+    {
+        get
+        {
+            EmbeddedFile[] tileFiles = _rootCompressedFiles.Where(IsBackgroundTile).ToArray();
+            if (tileFiles.Length != 1)
+            {
+                return null;
+            }
+
+            var n64ImageEncoder = new N64GsImageEncoder();
+
+            EmbeddedFile tileFile = tileFiles[0];
+            Image<Rgba32> image = n64ImageEncoder.DecodeTileGraphic(tileFile.UncompressedBytes, tileFile.FileName);
+
+            return image;
+        }
+    }
+
+    public Image<Rgba32>? StartupScreenComposite =>
+        new N64GsImageEncoder().CompositeStartupScreen(StartupTile, StartupLogo);
+
     private RomString? _mainMenuTitle;
 
     #endregion
@@ -731,7 +778,7 @@ public sealed class N64GsRom : AbstractCodec
             // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
             if (Support.IsFirmwareCompressed)
             {
-                using Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupLogo.FullName);
+                Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupLogo.FullName);
                 SetStartupLogo(img);
             }
             else
@@ -745,7 +792,7 @@ public sealed class N64GsRom : AbstractCodec
             // TODO(CheatoBaggins): Figure out how to read/write logos from v2.4 and earlier
             if (Support.IsFirmwareCompressed)
             {
-                using Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupTile.FullName);
+                Image<Rgba32> img = Image.Load<Rgba32>(cmdParams.StartupTile.FullName);
                 SetStartupTile(img);
             }
             else
@@ -855,8 +902,8 @@ public sealed class N64GsRom : AbstractCodec
 
     public void SetStartupTile(Image<Rgba32> image)
     {
-        EmbeddedFile[] files = _rootCompressedFiles.Where(IsStartupTile).ToArray();
-        if (files.Length != 1)
+        EmbeddedFile[] tileFiles = _rootCompressedFiles.Where(IsBackgroundTile).ToArray();
+        if (tileFiles.Length != 1)
         {
             return;
         }
@@ -869,36 +916,33 @@ public sealed class N64GsRom : AbstractCodec
             );
         }
 
-        var imageEncoder = new N64GsImageEncoder();
-
-        u8[] bytes = imageEncoder.EncodeTileGraphic(image);
-
-        files[0].SetUncompressedBytes(bytes);
+        var gs = new N64GsImageEncoder();
+        u8[] bytes = gs.EncodeTileGraphic(image);
+        tileFiles[0].SetUncompressedBytes(bytes);
     }
 
-    public void SetStartupLogo(Image<Rgba32> image)
+    public void SetStartupLogo(Image<Rgba32> inputImage)
     {
-        EmbeddedFile[] files = _rootCompressedFiles.Where(IsStartupLogo).ToArray();
-        if (files.Length != 2)
+        EmbeddedFile[] logoFiles = _rootCompressedFiles.Where(IsStartupLogo).ToArray();
+        if (logoFiles.Length != 2)
         {
             return;
         }
 
-        EmbeddedFile? paletteFile = files.FirstOrDefault(file => file.FileName.EndsWith(".pal"));
-        EmbeddedFile? dataFile = files.FirstOrDefault(file => file.FileName.EndsWith(".bin"));
+        EmbeddedFile? paletteFile = logoFiles.FirstOrDefault(file => file.FileName.EndsWith(".pal"));
+        EmbeddedFile? dataFile = logoFiles.FirstOrDefault(file => file.FileName.EndsWith(".bin"));
         if (paletteFile == null || dataFile == null)
         {
             return;
         }
 
-        // Don't overwrite the original image
-        image = image.Clone();
+        Image<Rgba32> outputImage = inputImage.Clone();
 
         // TODO(CheatoBaggins): Move this to an Images class
         string version = Metadata.DisplayVersion;
         string date = DateTime.Parse(Metadata.BuildDateIso).ToString("yyyy-MM-dd");
         string text = $"{version} {date}";
-        DrawText(image, text, textOptions =>
+        DrawText(outputImage, text, textOptions =>
         {
             textOptions.Origin = new PointF(296, 138);
             textOptions.VerticalAlignment = VerticalAlignment.Bottom;
@@ -906,10 +950,8 @@ public sealed class N64GsRom : AbstractCodec
             textOptions.TextAlignment = TextAlignment.End;
         });
 
-        var imageEncoder = new N64GsImageEncoder();
-
-        (u8[] paletteBytes, u8[] dataBytes) = imageEncoder.EncodeStartupLogo(image);
-
+        var n64ImageEncoder = new N64GsImageEncoder();
+        (u8[] paletteBytes, u8[] dataBytes) = n64ImageEncoder.EncodeStartupLogo(outputImage);
         paletteFile.SetUncompressedBytes(paletteBytes);
         dataFile.SetUncompressedBytes(dataBytes);
     }
@@ -927,7 +969,7 @@ public sealed class N64GsRom : AbstractCodec
         image.Mutate(x => x.DrawText(textOptions, text, brush));
     }
 
-    private static bool IsStartupTile(EmbeddedFile file)
+    private static bool IsBackgroundTile(EmbeddedFile file)
     {
         string name = file.FileName;
         return name is "tile1.tg~";

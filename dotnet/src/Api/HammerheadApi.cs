@@ -147,13 +147,21 @@ public class HammerheadApi
                 using FileStream outputFileStream = outputFile.OpenWrite();
                 outputFileStream.Write(embeddedFile.UncompressedBytes);
             }
+
+            HashSet<string> filesWritten = new HashSet<string>();
             foreach (EmbeddedImage embeddedImage in codec.EmbeddedImages)
             {
                 string embeddedFileName = Path.ChangeExtension(embeddedImage.FileName, ".png");
+                if (filesWritten.Contains(embeddedFileName))
+                {
+                    _printer.PrintHint($"Already extracted a file named {embeddedFileName} - skipping");
+                    continue;
+                }
                 FileInfo outputFile = GetEmbeddedOutputFilePath(inputFile, romParams.OutputDir, embeddedFileName);
                 _printer.PrintLine($"Extracting embedded file to: {outputFile.FullName}");
                 using FileStream outputFileStream = outputFile.OpenWrite();
                 embeddedImage.Image.SaveAsPng(outputFileStream);
+                filesWritten.Add(embeddedFileName);
             }
         }
     }
@@ -375,6 +383,9 @@ public class HammerheadApi
 
             gsRom.WriteChangesToBuffer();
             File.WriteAllBytes(outputFile.FullName, gsRom.Buffer);
+
+            Image<Rgba32>? startupScreen = gsRom.StartupScreenComposite;
+            startupScreen?.SaveAsPng(outputFile.FullName + ".startup.png");
         });
     }
 }
