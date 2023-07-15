@@ -260,7 +260,7 @@ public class N64GsImageEncoder
 
         var imagePixels = new List<Rgb24>();
         var palettePixelSet = new SortedSet<Rgb24>(comparer: new PixelComparator());
-        for (int y = StartupLogoPosY + 1; y < StartupLogoHeight - StartupLogoPosY + 1; y++)
+        for (int y = StartupLogoPosY; y < StartupLogoHeight - StartupLogoPosY; y++)
         {
             for (int x = StartupLogoPosX; x < StartupLogoWidth - StartupLogoPosX; x++)
             {

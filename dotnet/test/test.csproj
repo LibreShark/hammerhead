@@ -350,49 +350,16 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\Cheats.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\Cheats.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.bin.dec.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.pal.dec.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\KeyCodes.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\shell.bin.dec.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.tg~.dec.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\tile1.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\tile1.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario.bin" />
       <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -402,31 +369,379 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\gslogo3.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.bin">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.pal">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\lslogo4.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\lslogo4.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-255-color.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
       <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-full-color.png">
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png" />
+      <None Remove="TestData\RomFiles\N64\GsRomSplit\gslogo3-expected.png" />
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\bits.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\bits.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Remove="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png" />
-      <Content Include="TestData\RomFiles\N64\GsRomSplit\libreshark-logo-expected.png">
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\bits.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.pal" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\gslogo3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\menuf.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\menuf.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile3.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile4.png" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile4.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile4.tg~" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\tile4.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\trainer.bin" />
+      <Content Include="TestData\RomFiles\N64\gspro-3.30-20000404-pristine\trainer.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\bits.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\bits.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\bits.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.pal" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\menuf.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\menuf.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile3.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile4.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile4.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile4.tg~" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\tile4.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\trainer.bin" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\trainer.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\bits.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\bits.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\bits.tg~">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.bin">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.pal" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.pal">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\gslogo2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\menuf.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\menuf.tg~">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\shell.bin">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile1.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile1.tg~">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile3.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile3.tg~">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile4.png" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile4.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile4.tg~" />
+      <Content Include="TestData\RomFiles\N64\gs-2.50-xxxx0504-v3.3-codes\tile4.tg~">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\bits.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\bits.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\bits.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.bin" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.pal" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\gblogo3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\menuf.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\menuf.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\tile3.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\titletle.png" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\titletle.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\titletle.tg~" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\titletle.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\gb-3.21-19990805-dirty\trainer.bin" />
+      <Content Include="TestData\RomFiles\N64\gb-3.21-19990805-dirty\trainer.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\bits.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\bits.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\bits.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.bin" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.pal" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\equal3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\menuf.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\menuf.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\tile3.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\titletle.png" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\titletle.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\titletle.tg~" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\titletle.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\trainer.bin" />
+      <Content Include="TestData\RomFiles\N64\eq-3.00-19990720-dirty-dump1\trainer.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.bin" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.pal" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.pal">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\arlogo3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\bits.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\bits.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\bits.tg~" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\bits.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\menuf.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\menuf.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\menuf.tg~" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\menuf.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\shell.bin" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\shell.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile1.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile1.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile1.tg~" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile1.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile3.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile3.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile3.tg~" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\tile3.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\titletle.png" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\titletle.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\titletle.tg~" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\titletle.tg~">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\trainer.bin" />
+      <Content Include="TestData\RomFiles\N64\arpro-3.3-20000418-dirty\trainer.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4-full-color.png" />
+      <Content Include="TestData\RomFiles\N64\libreshark-pro-v4.01-20230714-mario\lslogo4-full-color.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

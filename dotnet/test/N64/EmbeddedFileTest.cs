@@ -21,8 +21,8 @@ public class EmbeddedFileTest
 
         foreach (EmbeddedFile file in compressedFiles)
         {
-            string expectedCompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}";
-            string expectedUncompressedFilePath = $"TestData/RomFiles/N64/GsRomSplit/{file.FileName}.dec.bin";
+            string expectedCompressedFilePath = $"TestData/RomFiles/N64/gspro-3.30-20000404-pristine/{file.FileName}";
+            string expectedUncompressedFilePath = $"TestData/RomFiles/N64/gspro-3.30-20000404-pristine/{file.FileName}.dec.bin";
             if (!File.Exists(expectedCompressedFilePath) || !File.Exists(expectedUncompressedFilePath))
             {
                 continue;
@@ -42,7 +42,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_GameShark_V250()
+    public void Test_Read_GameShark_V250()
     {
         const string romFilePath = "TestData/RomFiles/N64/gs-2.50-xxxx0504-v3.3-codes.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -57,7 +57,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_GameShark_V330()
+    public void Test_Read_GameShark_V330()
     {
         const string romFilePath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -72,7 +72,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_ActionReplay_V330()
+    public void Test_Read_ActionReplay_V330()
     {
         const string romFilePath = "TestData/RomFiles/N64/arpro-3.3-20000418-dirty.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -87,7 +87,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_Equalizer_V300()
+    public void Test_Read_Equalizer_V300()
     {
         const string romFilePath = "TestData/RomFiles/N64/eq-3.00-19990720-dirty-dump1.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -102,7 +102,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_GameBuster_V321()
+    public void Test_Read_GameBuster_V321()
     {
         const string romFilePath = "TestData/RomFiles/N64/gb-3.21-19990805-dirty.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -117,7 +117,7 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_LibreShark_V4XX()
+    public void Test_Read_LibreShark_V4XX()
     {
         const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
@@ -132,53 +132,85 @@ public class EmbeddedFileTest
     }
 
     [Test]
-    public void Test_StartupLogo()
+    public void Test_Read_StartupLogo()
     {
-        var paletteBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.pal.dec.bin");
-        var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.bin.dec.bin");
-        var decoder = new N64GsImageEncoder();
-        using Image<Rgba32> image = decoder.DecodeStartupLogo(paletteBytes, imageBytes);
-        image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
-        u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
-        u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-extracted.png");
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+        const string romPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
+        const string actualPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/gslogo3-actual.png";
+        const string expectedPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/gslogo3.png";
+
+        var gsRom = N64GsRom.Create(romPath, File.ReadAllBytes(romPath));
+        gsRom.StartupLogo?.SaveAsPng(actualPngPath);
+        List<Rgba32> expectedPixels = GetPixels(expectedPngPath);
+        List<Rgba32> actualPixels = GetPixels(actualPngPath);
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
     }
 
     [Test]
-    public void Test_StartupTile()
+    public void Test_Read_StartupTile()
     {
-        var imageBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.tg~.dec.bin");
-        var decoder = new N64GsImageEncoder();
-        using Image<Rgba32> image = decoder.DecodeTileGraphic(imageBytes);
-        image.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
-        u8[] expectedBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1.png");
-        u8[] actualBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/tile1-extracted.png");
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+        const string romPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine.bin";
+        const string actualPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/tile1-actual.png";
+        const string expectedPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/tile1.png";
+
+        var gsRom = N64GsRom.Create(romPath, File.ReadAllBytes(romPath));
+        gsRom.StartupTile?.SaveAsPng(actualPngPath);
+        List<Rgba32> expectedPixels = GetPixels(expectedPngPath);
+        List<Rgba32> actualPixels = GetPixels(actualPngPath);
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
     }
 
     [Test]
     public void Test_Write_StartupLogo_ReencodeExisting()
     {
-        var encoder = new N64GsImageEncoder();
-        Image<Rgba32> inputPng = Image.Load<Rgba32>("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
-        (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
-        Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
-        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/gslogo3-test.png");
-        u8[] expectedPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3.png");
-        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/gslogo3-test.png");
-        Assert.That(actualPngBytes, Is.EqualTo(expectedPngBytes));
+        const string expectedPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/gslogo3.png";
+        const string actualPngPath = "TestData/RomFiles/N64/gspro-3.30-20000404-pristine/gslogo3-actual.png";
+
+        var imageEncoder = new N64GsImageEncoder();
+
+        Image<Rgba32> inputPng = Image.Load<Rgba32>(expectedPngPath);
+        (u8[] paletteBytes, u8[] dataBytes) = imageEncoder.EncodeStartupLogo(inputPng);
+        Image<Rgba32> outputPng = imageEncoder.DecodeStartupLogo(paletteBytes, dataBytes);
+        outputPng.SaveAsPng(actualPngPath);
+
+        List<Rgba32> expectedPixels = GetPixels(inputPng);
+        List<Rgba32> actualPixels = GetPixels(outputPng);
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
     }
 
     [Test]
     public void Test_Write_StartupLogo_Quantization_ReduceColorPalette()
     {
+        const string fullColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4-full-color.png";
+        const string actualColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4-actual.png";
+        const string expectedColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4.png";
+
         var encoder = new N64GsImageEncoder();
-        Image<Rgba32> inputPng = Image.Load<Rgba32>("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-full-color.png");
+
+        Image<Rgba32> inputPng = Image.Load<Rgba32>(fullColorPath);
         (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
         Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
-        outputPng.SaveAsPng("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-actual.png");
-        u8[] expectedPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-expected.png");
-        u8[] actualPngBytes = File.ReadAllBytes("TestData/RomFiles/N64/GsRomSplit/libreshark-logo-actual.png");
-        Assert.That(actualPngBytes, Is.EqualTo(expectedPngBytes));
+        outputPng.SaveAsPng(actualColorPath);
+
+        List<Rgba32> expectedPixels = GetPixels(expectedColorPath);
+        List<Rgba32> actualPixels = GetPixels(outputPng);
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
+    }
+
+    private static List<Rgba32> GetPixels(string imagePath)
+    {
+        return GetPixels(Image.Load<Rgba32>(imagePath));
+    }
+
+    private static List<Rgba32> GetPixels(Image<Rgba32> image)
+    {
+        var pixels = new List<Rgba32>();
+        for (var x = 0; x < image.Width; x++)
+        {
+            for (var y = 0; y < image.Height; y++)
+            {
+                pixels.Add(image[x, y]);
+            }
+        }
+        return pixels;
     }
 }
