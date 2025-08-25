@@ -1,3 +1,6 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
 namespace LibreShark.Hammerhead.Nintendo64;
 
 public class N64GsImageDecoder

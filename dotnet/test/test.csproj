@@ -26,11 +26,11 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
         <PackageReference Include="Spectre.Console" Version="0.50.1-preview.0.26" />
         <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
         <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
-        <PackageReference Include="Spectre.Console.ImageSharp" Version="0.47.1-preview.0.8" />
+        <PackageReference Include="Spectre.Console.ImageSharp" Version="0.50.1-preview.0.26" />
         <PackageReference Include="Spectre.Console.Json" Version="0.50.1-preview.0.26" />
         <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />

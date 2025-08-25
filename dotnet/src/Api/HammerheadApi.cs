@@ -3,6 +3,7 @@ using LibreShark.Hammerhead.Cli;
 using LibreShark.Hammerhead.Codecs;
 using LibreShark.Hammerhead.IO;
 using LibreShark.Hammerhead.Nintendo64;
+using SixLabors.ImageSharp;
 
 namespace LibreShark.Hammerhead.Api;
 
