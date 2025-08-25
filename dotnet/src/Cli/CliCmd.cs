@@ -318,28 +318,28 @@ public class CliCmd
 
     public CliCmd()
     {
-        _rootCmd.AddGlobalOption(HideBannerOption);
-        _rootCmd.AddGlobalOption(NoColorOption);
-        _rootCmd.AddGlobalOption(ColorOption);
-        _rootCmd.AddGlobalOption(PrintFormatIdOption);
-        _rootCmd.AddGlobalOption(CleanOption);
+        _rootCmd.Add(HideBannerOption);
+        _rootCmd.Add(NoColorOption);
+        _rootCmd.Add(ColorOption);
+        _rootCmd.Add(PrintFormatIdOption);
+        _rootCmd.Add(CleanOption);
 
-        _rootCmd.AddCommand(_infoCmd);
-        _rootCmd.AddCommand(_cheatsCmd);
-        _rootCmd.AddCommand(_n64Cmd);
+        _rootCmd.Add(_infoCmd);
+        _rootCmd.Add(_cheatsCmd);
+        _rootCmd.Add(_n64Cmd);
 
-        _cheatsCmd.AddCommand(_dumpCheatsCmd);
-        _cheatsCmd.AddCommand(_copyCheatsCmd);
+        _cheatsCmd.Add(_dumpCheatsCmd);
+        _cheatsCmd.Add(_copyCheatsCmd);
 
-        _n64Cmd.AddCommand(_n64GsCmd);
-        _n64GsCmd.AddCommand(_n64GsConfigureCmd);
-        _n64GsCmd.AddCommand(_encryptRomCmd);
-        _n64GsCmd.AddCommand(_decryptRomCmd);
-        _n64GsCmd.AddCommand(_extractRomCmd);
+        _n64Cmd.Add(_n64GsCmd);
+        _n64GsCmd.Add(_n64GsConfigureCmd);
+        _n64GsCmd.Add(_encryptRomCmd);
+        _n64GsCmd.Add(_decryptRomCmd);
+        _n64GsCmd.Add(_extractRomCmd);
 
-        _n64Cmd.AddCommand(_n64XpCmd);
-        _n64XpCmd.AddCommand(_scrambleRomCmd);
-        _n64XpCmd.AddCommand(_unscrambleRomCmd);
+        _n64Cmd.Add(_n64XpCmd);
+        _n64XpCmd.Add(_scrambleRomCmd);
+        _n64XpCmd.Add(_unscrambleRomCmd);
 
         _infoCmd.Handler = new CliCmdHandler(Info);
         _encryptRomCmd.Handler = new CliCmdHandler(EncryptRom);
