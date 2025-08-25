@@ -910,7 +910,7 @@ public sealed class N64GsRom : AbstractCodec
 
     private void WriteHeader()
     {
-        Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw, 16);
+        Scribe.Seek(BuildTimestampAddr).WriteCString(Metadata.BuildDateRaw?.Value ?? Metadata.BuildDateIso, 16);
         if (Metadata.BrandId == BrandId.Libreshark)
         {
             Scribe.Seek(0x100)
