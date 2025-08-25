@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -31,35 +31,35 @@
 
     <ItemGroup>
       <PackageReference Include="Crc32.NET" Version="1.2.0" />
-      <PackageReference Include="GitVersion.MsBuild" Version="6.0.0-beta.3">
+      <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Google.Protobuf" Version="3.23.2" />
-      <PackageReference Include="Grpc.Tools" Version="2.54.0">
+      <PackageReference Include="Google.Protobuf" Version="3.32.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.72.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="log4net" Version="2.0.15" />
+      <PackageReference Include="log4net" Version="3.2.0" />
       <PackageReference Include="NeoSmart.PrettySize" Version="3.1.1" />
       <PackageReference Include="Ninject" Version="4.0.0-beta.1" />
       <PackageReference Include="Ninject.Extensions.Factory" Version="3.3.3" />
       <PackageReference Include="Ninject.Extensions.Logging" Version="3.3.0" />
       <PackageReference Include="Ninject.Extensions.Logging.Log4net" Version="3.3.0" />
-      <PackageReference Include="NUnit" Version="3.13.3" />
-      <PackageReference Include="Protobuf.Text" Version="0.7.0" />
+      <PackageReference Include="NUnit" Version="4.4.0" />
+      <PackageReference Include="Protobuf.Text" Version="0.7.2" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
-      <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
+      <PackageReference Include="Spectre.Console" Version="0.50.1-preview.0.26" />
       <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
       <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
       <PackageReference Include="Spectre.Console.ImageSharp" Version="0.47.1-preview.0.8" />
-      <PackageReference Include="Spectre.Console.Json" Version="0.47.1-preview.0.8" />
+      <PackageReference Include="Spectre.Console.Json" Version="0.50.1-preview.0.26" />
       <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
       <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
       <PackageReference Include="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1" />
-      <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
-      <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="19.2.29" />
-      <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="1.0.42" />
+      <PackageReference Include="System.IO.Abstractions" Version="22.0.15" />
+      <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="22.0.15" />
+      <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="22.0.4" />
     </ItemGroup>
 
     <ItemGroup>
