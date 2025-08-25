@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -10,30 +10,36 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="log4net" Version="2.0.15" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+        <PackageReference Include="log4net" Version="3.2.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageReference Include="Ninject" Version="4.0.0-beta.1" />
         <PackageReference Include="Ninject.Extensions.Factory" Version="3.3.3" />
         <PackageReference Include="Ninject.Extensions.Logging" Version="3.3.0" />
         <PackageReference Include="Ninject.Extensions.Logging.Log4net" Version="3.3.0" />
-        <PackageReference Include="NUnit" Version="3.13.3" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
-        <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
-        <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="NUnit" Version="4.4.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+        <PackageReference Include="NUnit.Analyzers" Version="4.10.0">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta19" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
         <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
-        <PackageReference Include="Spectre.Console" Version="0.47.1-preview.0.8" />
+        <PackageReference Include="Spectre.Console" Version="0.50.1-preview.0.26" />
         <PackageReference Include="Spectre.Console.Extensions.Progress" Version="1.0.0" />
         <PackageReference Include="Spectre.Console.Extensions.Table" Version="1.0.0" />
-        <PackageReference Include="Spectre.Console.ImageSharp" Version="0.47.1-preview.0.8" />
-        <PackageReference Include="Spectre.Console.Json" Version="0.47.1-preview.0.8" />
+        <PackageReference Include="Spectre.Console.ImageSharp" Version="0.50.1-preview.0.26" />
+        <PackageReference Include="Spectre.Console.Json" Version="0.50.1-preview.0.26" />
         <PackageReference Include="Spectre.Console.Next.Markdown" Version="0.1.0" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1" />
-        <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
-        <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="19.2.29" />
-        <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="1.0.42" />
+        <PackageReference Include="System.IO.Abstractions" Version="22.0.15" />
+        <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="22.0.15" />
+        <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="22.0.4" />
     </ItemGroup>
 
     <ItemGroup>

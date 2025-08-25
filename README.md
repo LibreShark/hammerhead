@@ -6,7 +6,21 @@ A Swiss Army Knife for reading, writing, encrypting, and decrypting "video game 
 
 Written in cross-platform C# and .NET.
 
-## Usage examples
+Supports Windows, macOS, and Linux.
+
+## Usage
+
+1. [Install the .NET 8 or .NET 9 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/)
+
+2. [Download N64 GameShark firmware images](https://github.com/LibreShark/sharkdumps)
+
+3. Run the CLI with no arguments to see a list of supported commands:
+
+    ```bash
+    dotnet run --project dotnet/src/src.csproj
+    ```
+
+## Examples
 
 ### View parsed ROM data
 
@@ -170,18 +184,6 @@ Cheat code files:
 | GBC BrainBoy / Monster Brain ROMs | Yes    |      |       |         |
 | GBA TV Tuner ROMs                 | Yes    |      |       |         |
 | N64 GB Hunter ROMs                | Yes    |      |       |         |
-
-## Usage
-
-1. [Install the .NET 7 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/)
-
-2. [Download N64 GameShark firmware images](https://github.com/LibreShark/sharkdumps)
-
-3. Run the CLI with no arguments to see a list of supported commands:
-
-    ```bash
-    dotnet run --project dotnet/src/src.csproj
-    ```
 
 ## Credits
 

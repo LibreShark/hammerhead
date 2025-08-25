@@ -1,5 +1,8 @@
 using LibreShark.Hammerhead.Images;
 using LibreShark.Hammerhead.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace LibreShark.Hammerhead.Nintendo64;
 
