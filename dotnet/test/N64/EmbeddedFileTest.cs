@@ -142,6 +142,7 @@ public class EmbeddedFileTest
 
         var gsRom = N64GsRom.Create(romPath, File.ReadAllBytes(romPath));
         gsRom.StartupLogo?.SaveAsPng(actualPngPath);
+
         List<Rgba32> expectedPixels = GetPixels(expectedPngPath);
         List<Rgba32> actualPixels = GetPixels(actualPngPath);
         Assert.That(actualPixels, Is.EqualTo(expectedPixels));
@@ -156,6 +157,7 @@ public class EmbeddedFileTest
 
         var gsRom = N64GsRom.Create(romPath, File.ReadAllBytes(romPath));
         gsRom.StartupTile?.SaveAsPng(actualPngPath);
+
         List<Rgba32> expectedPixels = GetPixels(expectedPngPath);
         List<Rgba32> actualPixels = GetPixels(actualPngPath);
         Assert.That(actualPixels, Is.EqualTo(expectedPixels));
@@ -174,28 +176,35 @@ public class EmbeddedFileTest
         Image<Rgba32> outputPng = imageEncoder.DecodeStartupLogo(paletteBytes, dataBytes);
         outputPng.SaveAsPng(actualPngPath);
 
+        string cwd = Path.GetDirectoryName(typeof(EmbeddedFileTest).Assembly.Location) ?? "";
+
         List<Rgba32> expectedPixels = GetPixels(inputPng);
         List<Rgba32> actualPixels = GetPixels(outputPng);
-        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
+        string expectedMsg = $"Expected: {cwd}/{expectedPngPath}";
+        string actualMsg = $"Actual:   {cwd}/{actualPngPath}";
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels), $"\n\n{expectedMsg}\n{actualMsg}\n");
     }
 
     [Test]
     public void Test_Write_StartupLogo_Quantization_ReduceColorPalette()
     {
+        const string romPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario.bin";
         const string fullColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4-full-color.png";
-        const string actualColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4-actual.png";
-        const string expectedColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4.png";
+        const string actualReducedColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4-actual.png";
+        const string expectedReducedColorPath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario/lslogo4.png";
 
-        var encoder = new N64GsImageEncoder();
+        var gsRom = N64GsRom.Create(romPath, File.ReadAllBytes(romPath));
+        gsRom.SetStartupLogo(Image.Load<Rgba32>(fullColorPath));
+        gsRom.StartupLogo?.SaveAsPng(actualReducedColorPath);
 
-        Image<Rgba32> inputPng = Image.Load<Rgba32>(fullColorPath);
-        (u8[] paletteBytes, u8[] dataBytes) = encoder.EncodeStartupLogo(inputPng);
-        Image<Rgba32> outputPng = encoder.DecodeStartupLogo(paletteBytes, dataBytes);
-        outputPng.SaveAsPng(actualColorPath);
+        string cwd = Path.GetDirectoryName(typeof(EmbeddedFileTest).Assembly.Location) ?? "";
 
-        List<Rgba32> expectedPixels = GetPixels(expectedColorPath);
-        List<Rgba32> actualPixels = GetPixels(outputPng);
-        Assert.That(actualPixels, Is.EqualTo(expectedPixels));
+        List<Rgba32> expectedPixels = GetPixels(expectedReducedColorPath);
+        List<Rgba32> actualPixels = GetPixels(actualReducedColorPath);
+        string originalMsg = $"Original: {cwd}/{fullColorPath}";
+        string expectedMsg = $"Expected: {cwd}/{expectedReducedColorPath}";
+        string actualMsg = $"Actual:   {cwd}/{actualReducedColorPath}";
+        Assert.That(actualPixels, Is.EqualTo(expectedPixels), $"\n\n{originalMsg}\n{expectedMsg}\n{actualMsg}\n");
     }
 
     private static List<Rgba32> GetPixels(string imagePath)
@@ -210,7 +219,16 @@ public class EmbeddedFileTest
         {
             for (var y = 0; y < image.Height; y++)
             {
-                pixels.Add(image[x, y]);
+                // Ensure that fully transparent pixels are comparable, regardless of their "color".
+                // E.g., (0, 0, 0, 0) and (0, 0, 0, 255) should be considered equal.
+                var pixel = image[x, y];
+                if (pixel.A == 0)
+                {
+                    pixel.R = 0;
+                    pixel.G = 0;
+                    pixel.B = 0;
+                }
+                pixels.Add(pixel);
             }
         }
         return pixels;
