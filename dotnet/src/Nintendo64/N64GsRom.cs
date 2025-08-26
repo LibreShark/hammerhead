@@ -24,14 +24,15 @@ namespace LibreShark.Hammerhead.Nintendo64;
 /// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/gameshark.us.yaml
 /// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c#L619
 /// </summary>
-public sealed class N64GsRom : AbstractCodec
+public sealed partial class N64GsRom : AbstractCodec
 {
     private const ConsoleId ThisConsoleId = ConsoleId.Nintendo64;
     private const CodecId ThisCodecId = CodecId.N64GamesharkRom;
 
     public static readonly CodecFileFactory Factory = new(Is, Is, Create);
 
-    private static readonly Regex FileNameRegex = new Regex(@"^[\w~.]+$");
+    [GeneratedRegex(@"^[\w~.]+$")]
+    private static partial Regex FileNameRegex();
 
     public override CodecId DefaultCheatOutputCodec => CodecId.N64GamesharkText;
 
@@ -465,7 +466,7 @@ public sealed class N64GsRom : AbstractCodec
             u32 dataLen = structLen - 0x10;
 
             string curFileName = scribe.ReadFixedLengthPrintableCString(12).Value.Trim();
-            if (!FileNameRegex.IsMatch(curFileName))
+            if (!FileNameRegex().IsMatch(curFileName))
             {
                 // We've reached the end of the stream of embedded files
                 break;
