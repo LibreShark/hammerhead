@@ -17,7 +17,7 @@ public partial class N64GsVersion
     public readonly bool IsKnown;
     public readonly string RawTimestamp;
     public double Number { get; private set; }
-    public readonly string? Disambiguator;
+    public string? Disambiguator { get; private set; }
     public readonly DateTimeOffset BuildTimestamp;
     public BrandId Brand { get; private set; }
     public CultureInfo Locale { get; private set; }
@@ -36,7 +36,7 @@ public partial class N64GsVersion
         RawTimestamp = raw;
         Number = number;
         Disambiguator = disambiguator;
-        BuildTimestamp = buildTimestamp.WithTimeZone("GMT");
+        BuildTimestamp = buildTimestamp.ToUniversalTime();
         Brand = brand;
         Locale = locale;
         IsKnown = Brand != BrandId.UnknownBrand;
@@ -202,7 +202,7 @@ public partial class N64GsVersion
             return this;
         }
 
-        var match = Regex.Match(mainMenuTitle, "(?:N64 )?(?<brand>.+) Version (?<vernum>[0-9.]+)");
+        var match = Regex.Match(mainMenuTitle, "(?:N64 )?(?<brand>.+) (?:v|Version )(?<vernum>[0-9.]+)", RegexOptions.IgnoreCase);
         if (match.Success)
         {
             string brand = match.Groups["brand"].Value;
@@ -232,6 +232,7 @@ public partial class N64GsVersion
                 case "LibreShark Pro":
                     Brand = BrandId.Libreshark;
                     Locale = ENGLISH_US;
+                    Disambiguator = null;
                     break;
             }
         }

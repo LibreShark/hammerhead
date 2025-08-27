@@ -1,15 +1,31 @@
+using LibreShark.Hammerhead.Nintendo64;
+
 namespace LibreShark.Hammerhead.IO;
 
-public struct EmbeddedFile
+public class EmbeddedFile
 {
     public readonly string FileName;
-    public readonly u8[] RawBytes;
-    public readonly u8[] UncompressedBytes;
 
-    public EmbeddedFile(string fileName, u8[] rawBytes, u8[]? uncompressedBytes = null)
+    public u8[] CompressedBytes { get; private set; }
+    public u8[] UncompressedBytes { get; private set; }
+    public readonly RomRange PositionInParentFile;
+
+    public EmbeddedFile(string fileName, u8[] compressedBytes, u8[]? uncompressedBytes = null, RomRange? range = null)
     {
         FileName = fileName;
-        RawBytes = rawBytes;
-        UncompressedBytes = uncompressedBytes ?? rawBytes;
+        CompressedBytes = compressedBytes;
+        UncompressedBytes = uncompressedBytes ?? compressedBytes;
+        PositionInParentFile = range ?? new RomRange();
+    }
+
+    public void Compress()
+    {
+        CompressedBytes = new N64GsLzariEncoder().Encode(UncompressedBytes);
+    }
+
+    public void SetUncompressedBytes(u8[] uncompressed)
+    {
+        UncompressedBytes = uncompressed;
+        Compress();
     }
 }

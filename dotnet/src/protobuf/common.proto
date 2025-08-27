@@ -51,7 +51,13 @@ message ParsedFile {
 
 message N64Data {
   repeated Code key_codes = 1;
-  N64GsUserPrefs user_prefs = 2;
+  N64GsUserPrefs gs_user_prefs = 2;
+}
+
+enum TvStandardId {
+  UNSPECIFIED_TV_STANDARD = 0;
+  NTSC = 1;
+  PAL = 2;
 }
 
 message N64GsUserPrefs {
@@ -66,9 +72,9 @@ message N64GsUserPrefs {
 }
 
 enum Nn64GsBgPatternId {
-  SILK = 0x00;
-  ROCK = 0x01;
-  LOGO = 0x02;
+  ROUGH  = 0x00;
+  SMOOTH = 0x01;
+  LOGO   = 0x02;
 };
 
 enum Nn64GsBgColorId {
@@ -136,6 +142,8 @@ message FileMetadata {
   bool is_known_version = 16;
 
   repeated RomRange file_sections = 17;
+
+  TvStandardId tv_standard = 18;
 }
 
 message CodecFeatureSupport {

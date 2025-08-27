@@ -21,8 +21,6 @@ public abstract class AbstractCodec : ICodec
         GbcCbRom.Factory,
         GbcGsV3Rom.Factory,
         GbcGsV4Rom.Factory,
-        GbcGsV3CodeFile.Factory,
-        GbcGsV3CodeDb.Factory,
         GbcMonsterBrainRom.Factory,
         GbcSharkMxRom.Factory,
         GbcXpRom.Factory,
@@ -43,6 +41,11 @@ public abstract class AbstractCodec : ICodec
         // Generic
         ProtobufJson.Factory,
         UnknownCodec.Factory,
+
+        // These need to come last because they have the least-precise
+        // auto-detection.
+        GbcGsV3CodeFile.Factory,
+        GbcGsV3CodeDb.Factory,
     };
 
     public ImmutableArray<u8> RawInput { get; }
