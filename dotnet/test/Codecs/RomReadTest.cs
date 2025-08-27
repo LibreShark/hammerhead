@@ -261,7 +261,7 @@ public class RomReadTest
         {
             Assert.That(rom.Metadata.BrandId, Is.EqualTo(BrandId.Libreshark));
             Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.01));
-            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-14T16:05:26+00:00"));
+            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-14T21:05:26+00:00"));
         });
     }
 

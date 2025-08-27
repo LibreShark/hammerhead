@@ -36,7 +36,7 @@ public partial class N64GsVersion
         RawTimestamp = raw;
         Number = number;
         Disambiguator = disambiguator;
-        BuildTimestamp = buildTimestamp.WithTimeZone("GMT");
+        BuildTimestamp = buildTimestamp.ToUniversalTime();
         Brand = brand;
         Locale = locale;
         IsKnown = Brand != BrandId.UnknownBrand;
