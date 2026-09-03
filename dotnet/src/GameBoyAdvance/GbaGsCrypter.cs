@@ -1,4 +1,4 @@
-/* GSAcrypt - Gameboy Advance AR Crypto Program
+/* GSAcrypt - Game Boy Advance AR Crypto Program
  *
  * Copyright notice for this file:
  *  Copyright (C) 2001-2003 Parasyte

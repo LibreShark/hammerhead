@@ -56,8 +56,8 @@ public class N64GsConfigureCmdParams : CmdParams
     public bool? IsSoundEnabled { get; init; }
     public bool? IsMenuScrollEnabled { get; init; }
     public bool? IsBgScrollEnabled { get; init; }
-    public Nn64GsBgPatternId? BgPattern { get; init; }
-    public Nn64GsBgColorId? BgColor { get; init; }
+    public N64GsBgPatternId? BgPattern { get; init; }
+    public N64GsBgColorId? BgColor { get; init; }
     public bool? UpdateTimestamp { get; init; }
     public bool? RenameKeyCodes { get; init; }
     public bool? ResetUserPrefs { get; init; }
