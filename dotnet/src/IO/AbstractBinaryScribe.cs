@@ -407,24 +407,46 @@ public abstract class AbstractBinaryScribe
         return this;
     }
 
-    public void WriteCString(RomString str, int maxLen = 0, bool isNullTerminated = true)
+    public void WriteCString(RomString? str, int maxLen = 0, bool isNullTerminated = true)
     {
-        WriteCString(str.Value, maxLen, isNullTerminated);
+        if (str is null)
+        {
+            Console.WriteLine("WARNING: Trying to write null RomString in WriteCString().");
+        }
+        
+        WriteCString(str?.Value, maxLen, isNullTerminated);
     }
 
-    public AbstractBinaryScribe WriteCString(string str, int maxLen = 0, bool isNullTerminated = true)
+    public AbstractBinaryScribe WriteCString(string? str, int maxLen = 0, bool isNullTerminated = true)
     {
-        if (maxLen > 0 && str.Length > maxLen)
+        if (str is null)
+        {
+            Console.WriteLine("WARNING: Trying to write null string in WriteCString().");
+        }
+
+        if (maxLen > 0 && str?.Length > maxLen)
         {
             str = str[..maxLen];
         }
-        var bytes = str.ToAsciiBytes();
+        var bytes = str?.ToAsciiBytes() ?? [];
         if (isNullTerminated && bytes.Last() != 0)
         {
             // C strings must be null-terminated
             bytes = bytes.Concat(new u8[] { 0 }).ToArray();
         }
         WriteBytes(bytes);
+        return this;
+    }
+
+    public AbstractBinaryScribe WriteFixedLengthCString(string? str, int len, bool isNullTerminated = true)
+    {
+        var startPos = Position;
+        WriteCString(str, len, isNullTerminated);
+        while (Position < startPos + len)
+        {
+            WriteU8(0);
+        }
+
         return this;
     }
 

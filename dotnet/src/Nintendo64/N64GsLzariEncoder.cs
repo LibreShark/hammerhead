@@ -11,14 +11,14 @@ namespace LibreShark.Hammerhead.Nintendo64;
 ///
 /// <para>
 /// This is a C# port of
-/// https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/src/lzari.c
+/// https://github.com/Jhynjhiruu/gameshark/blob/37e3ec626/src/loader/lzari.c
 /// which was decompiled to C from an N64 GameShark Pro v3.30 (April) ROM by
 /// Jhynjhiruu.
 /// </para>
 ///
 /// <para>
 /// The GameShark source code is in turn based on
-/// https://github.com/e-n-f/lzss/blob/f370a64a7ce5e4c54cfe122ca441671c3faccc24/LZARI.C,
+/// https://github.com/e-n-f/lzss/blob/f370a64a7/LZARI.C
 /// <c>1989-04-07</c> by Haruhiko Okumura.
 /// </para>
 ///
@@ -61,8 +61,8 @@ namespace LibreShark.Hammerhead.Nintendo64;
 ///
 /// <para>See also:</para>
 /// <list type="bullet">
-///   <item>https://github.com/Jhynjhiruu/fsblob/blob/716e921e97b95ca075bf86b96589b89f7ef75b17/src/lib.rs</item>
-///   <item>https://github.com/Jhynjhiruu/gameshark/blob/aeed3cb6478904f9479f56743238d0d0ecfbce78/tools/splat_ext/fsblob.py</item>
+///   <item>https://github.com/Jhynjhiruu/fsblob/blob/569a05795/src/lib.rs</item>
+///   <item>https://github.com/Jhynjhiruu/gameshark/blob/37e3ec626/tools/splat_ext/fsblob.py</item>
 /// </list>
 /// </summary>
 public class N64GsLzariEncoder

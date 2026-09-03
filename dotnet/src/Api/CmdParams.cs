@@ -61,4 +61,8 @@ public class N64GsConfigureCmdParams : CmdParams
     public bool? UpdateTimestamp { get; init; }
     public bool? RenameKeyCodes { get; init; }
     public bool? ResetUserPrefs { get; init; }
+    public FileInfo? StartupLogo { get; init; }
+    public FileInfo? StartupTile { get; init; }
+    public string? MainMenuTitle { get; init; }
+    public bool? DumpStartupScreen { get; init; }
 }

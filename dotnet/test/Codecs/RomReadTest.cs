@@ -253,15 +253,15 @@ public class RomReadTest
     [Test]
     public void Test_N64GsRom_LibreShark()
     {
-        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.05-20230709-cheatocodes.bin";
+        const string romFilePath = "TestData/RomFiles/N64/libreshark-pro-v4.01-20230714-mario.bin";
         u8[] romFileBytes = File.ReadAllBytes(romFilePath);
 
         var rom = N64GsRom.Create(romFilePath, romFileBytes);
         Assert.Multiple(() =>
         {
             Assert.That(rom.Metadata.BrandId, Is.EqualTo(BrandId.Libreshark));
-            Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.00));
-            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-10T04:27:00+00:00"));
+            Assert.That(rom.Metadata.SortableVersion, Is.EqualTo(4.01));
+            Assert.That(rom.Metadata.BuildDateIso, Is.EqualTo("2023-07-14T21:05:26+00:00"));
         });
     }
 
