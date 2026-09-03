@@ -62,6 +62,26 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ![screenshot](/assets/screenshots/hammerhead-screenshot-20230705-cheats-copy-xp-to-gs.png)
 
+### Import Datel cheats into an N64 GameShark ROM
+
+Start with a decrypted copy of the destination ROM. Hammerhead uses the existing
+ROM as a firmware template; it does not create a ROM from a cheat list alone.
+
+```bash
+cp gspro-3.30-original.bin gspro-3.30-custom-cheats.bin
+
+dotnet run --project dotnet/src/src.csproj -- \
+    cheats copy \
+        n64-datel-v3.30-custom-cheats.txt \
+        gspro-3.30-custom-cheats.bin \
+        --overwrite
+```
+
+This replaces the complete game and cheat list while retaining the destination
+ROM's identity, key codes, and user preferences. The selected game is remapped
+by name when it remains in the imported list, or cleared otherwise. Encrypt the
+result afterward if required by your flashing or update tool.
+
 ### Encrypt a ROM file
 
 Encrypt a GameShark ROM file for use with Datel's official N64 Utils:

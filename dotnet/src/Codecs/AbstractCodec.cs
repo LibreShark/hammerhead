@@ -108,6 +108,22 @@ public abstract class AbstractCodec : ICodec
     {
     }
 
+    protected virtual void PrepareImportedGames(List<Game> games)
+    {
+    }
+
+    public ICodec ImportCheats(IEnumerable<Game> games)
+    {
+        List<Game> importedGames = games.Select(game => new Game(game)).ToList();
+        PrepareImportedGames(importedGames);
+
+        Games.Clear();
+        Games.AddRange(importedGames);
+        Support.HasCheats = Games.Count > 0;
+
+        return WriteChangesAndUpdateChecksum();
+    }
+
     public ICodec ImportFromProto(ParsedFile parsed)
     {
         var old = Parsed;
@@ -120,6 +136,11 @@ public abstract class AbstractCodec : ICodec
                 FilePath = old.Metadata.FilePath,
             },
         };
+        return WriteChangesAndUpdateChecksum();
+    }
+
+    private ICodec WriteChangesAndUpdateChecksum()
+    {
         WriteChangesToBuffer();
         Parsed.Metadata.FileChecksum = Buffer.ComputeChecksums();
         return this;

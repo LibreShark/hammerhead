@@ -276,7 +276,14 @@ public class HammerheadApi
                 return;
             }
 
-            outputCodec.ImportFromProto(inputCodec.ToFullProto());
+            if (outputCodec is ProtobufJson)
+            {
+                outputCodec.ImportFromProto(inputCodec.ToFullProto());
+            }
+            else
+            {
+                outputCodec.ImportCheats(inputCodec.Games);
+            }
 
             File.WriteAllBytes(outputFile.FullName, outputCodec.Buffer);
         });

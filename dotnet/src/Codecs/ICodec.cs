@@ -25,6 +25,15 @@ public interface ICodec
     CodecId DefaultCheatOutputCodec { get; }
     List<EmbeddedFile> EmbeddedFiles { get; }
     List<EmbeddedImage> EmbeddedImages { get; }
+
+    /// <summary>
+    /// Replaces the cheat list while preserving destination-specific file data.
+    /// </summary>
+    ICodec ImportCheats(IEnumerable<Game> games);
+
+    /// <summary>
+    /// Replaces the complete parsed document.
+    /// </summary>
     ICodec ImportFromProto(ParsedFile parsed);
     ParsedFile ToFullProto();
     ParsedFile ToSlimProto();
