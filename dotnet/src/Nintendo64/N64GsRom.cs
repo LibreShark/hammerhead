@@ -300,8 +300,8 @@ public sealed partial class N64GsRom : AbstractCodec
         // Ignore magic "GT" bytes
         Scribe.Skip(2);
         bool isSoundEnabled = Scribe.ReadBool();
-        var bgPattern = Scribe.ReadEnum8<Nn64GsBgPatternId>();
-        var bgColor = Scribe.ReadEnum8<Nn64GsBgColorId>();
+        var bgPattern = Scribe.ReadEnum8<N64GsBgPatternId>();
+        var bgColor = Scribe.ReadEnum8<N64GsBgColorId>();
         u8 selectedGameIndexStartingAt1 = Scribe.ReadU8();
         Scribe.Skip(1);
         bool isBgScrollEnabled = Scribe.ReadBool();
@@ -1163,8 +1163,8 @@ public sealed partial class N64GsRom : AbstractCodec
         {
             // -1 indicates that no game is selected.
             SelectedGameIndex = -1,
-            BgPatternId = Nn64GsBgPatternId.Rough,
-            BgColorId = Nn64GsBgColorId.Grey,
+            BgPatternId = N64GsBgPatternId.Rough,
+            BgColorId = N64GsBgColorId.Grey,
             IsSoundEnabled = true,
             IsBgScrollEnabled = true,
             IsMenuScrollEnabled = true,
@@ -1320,39 +1320,39 @@ public sealed partial class N64GsRom : AbstractCodec
         printer.PrintTable(table);
     }
 
-    private string BgPattern(Nn64GsBgPatternId patternId)
+    private string BgPattern(N64GsBgPatternId patternId)
     {
         return patternId.ToString();
     }
 
-    private string BgColor(Nn64GsBgColorId colorId)
+    private string BgColor(N64GsBgColorId colorId)
     {
         var str = colorId.ToString();
-        if (colorId == Nn64GsBgColorId.Grey)
+        if (colorId == N64GsBgColorId.Grey)
         {
             return $"[gray]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Blue)
+        if (colorId == N64GsBgColorId.Blue)
         {
             return $"[blue]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Green)
+        if (colorId == N64GsBgColorId.Green)
         {
             return $"[green]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Red)
+        if (colorId == N64GsBgColorId.Red)
         {
             return $"[red]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Yellow)
+        if (colorId == N64GsBgColorId.Yellow)
         {
             return $"[yellow]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Pink)
+        if (colorId == N64GsBgColorId.Pink)
         {
             return $"[bold red]{str}[/]";
         }
-        if (colorId == Nn64GsBgColorId.Tan)
+        if (colorId == N64GsBgColorId.Tan)
         {
             return $"[tan]{str}[/]";
         }

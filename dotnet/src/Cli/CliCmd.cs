@@ -134,11 +134,11 @@ public class CliCmd
         aliases: new string[] { "--bg-scroll" },
         "Enable or disable background scrolling in the UI.");
 
-    private static readonly Option<Nn64GsBgPatternId?> N64BgPatternOption = new Option<Nn64GsBgPatternId?>(
+    private static readonly Option<N64GsBgPatternId?> N64BgPatternOption = new Option<N64GsBgPatternId?>(
         aliases: new string[] { "--bg-pattern" },
         "Set the background tile pattern in the UI.");
 
-    private static readonly Option<Nn64GsBgColorId?> N64BgColorOption = new Option<Nn64GsBgColorId?>(
+    private static readonly Option<N64GsBgColorId?> N64BgColorOption = new Option<N64GsBgColorId?>(
         aliases: new string[] { "--bg-color" },
         "Set the background tile color in the UI.");
 
