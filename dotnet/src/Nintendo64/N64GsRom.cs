@@ -688,6 +688,30 @@ public sealed partial class N64GsRom : AbstractCodec
 
     #region Writing
 
+    protected override void PrepareImportedGames(List<Game> games)
+    {
+        int selectedGameIndex = GetSelectedGameIndexPref();
+        string? selectedGameName =
+            selectedGameIndex >= 0 && selectedGameIndex < Games.Count
+                ? Games[selectedGameIndex].GameName.Value
+                : null;
+        int importedSelectedGameIndex = selectedGameName == null
+            ? -1
+            : games.FindIndex(game => game.GameName.Value.Equals(
+                selectedGameName,
+                StringComparison.OrdinalIgnoreCase));
+
+        for (int gameIndex = 0; gameIndex < games.Count; gameIndex++)
+        {
+            games[gameIndex].IsGameActive = gameIndex == importedSelectedGameIndex;
+        }
+
+        if (N64Data?.GsUserPrefs != null)
+        {
+            N64Data.GsUserPrefs.SelectedGameIndex = importedSelectedGameIndex;
+        }
+    }
+
     public void UpdateUserPrefs(N64GsConfigureCmdParams cmdParams)
     {
         if (!Support.SupportsUserPrefs)
