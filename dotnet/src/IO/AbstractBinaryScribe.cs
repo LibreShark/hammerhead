@@ -152,7 +152,7 @@ public abstract class AbstractBinaryScribe
         }
         if (addr + count > BufferRef.Length)
         {
-            throw new IndexOutOfRangeException($"Invalid position: {addr+count} (0x{addr+count:X8}). Must be between 0 and {BufferRef.Length} (0x{BufferRef.Length:X8}).");
+            throw new IndexOutOfRangeException($"Invalid position: {addr + count} (0x{addr + count:X8}). Must be between 0 and {BufferRef.Length} (0x{BufferRef.Length:X8}).");
         }
         return BufferRef.Skip((int)addr).Take((int)count).ToArray();
     }
@@ -413,7 +413,7 @@ public abstract class AbstractBinaryScribe
         {
             Console.WriteLine("WARNING: Trying to write null RomString in WriteCString().");
         }
-        
+
         WriteCString(str?.Value, maxLen, isNullTerminated);
     }
 
@@ -429,7 +429,7 @@ public abstract class AbstractBinaryScribe
             str = str[..maxLen];
         }
         var bytes = str?.ToAsciiBytes() ?? [];
-        if (isNullTerminated && bytes.Last() != 0)
+        if (isNullTerminated && (bytes.Length == 0 || bytes[^1] != 0))
         {
             // C strings must be null-terminated
             bytes = bytes.Concat(new u8[] { 0 }).ToArray();
