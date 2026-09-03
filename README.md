@@ -1,6 +1,7 @@
 # Hammerhead
 
-A Swiss Army Knife for reading, writing, encrypting, and decrypting "video game enhancer" firmware dumps.
+A Swiss Army Knife for reading, writing, encrypting, and decrypting "video game
+enhancer" firmware dumps.
 
 ![Hammerhead icon](/assets/images/hammerhead-icon-256.png)
 
@@ -16,15 +17,16 @@ Supports Windows, macOS, and Linux.
 
 3. Run the CLI with no arguments to see a list of supported commands:
 
-    ```bash
-    dotnet run --project dotnet/src/src.csproj
-    ```
+   ```bash
+   dotnet run --project dotnet/src/src.csproj
+   ```
 
 ## Examples
 
 ### View parsed ROM data
 
-View all information extracted by Hammerhead from a directory of ROM and cheat text files:
+View all information extracted by Hammerhead from a directory of ROM and cheat
+text files:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
@@ -35,7 +37,8 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ### Dump cheats from ROM files to plain text
 
-Dump the cheats from all supported input files to their default text file formats:
+Dump the cheats from all supported input files to their default text file
+formats:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
@@ -46,7 +49,8 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ### Copy cheats from one ROM to another
 
-Copy decrypted cheats from a scrambled Xplorer 64 ROM file to an encrypted GameShark ROM file:
+Copy decrypted cheats from a scrambled Xplorer 64 ROM file to an encrypted
+GameShark ROM file:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
@@ -109,7 +113,8 @@ dotnet run --project dotnet/src/src.csproj -- \
 
 ### Extract embedded files from ROMs
 
-Decompress all embedded files from N64 GameShark, Action Replay, Equalizer, and Game Buster ROMs:
+Decompress all embedded files from N64 GameShark, Action Replay, Equalizer, and
+Game Buster ROMs:
 
 ```bash
 dotnet run --project dotnet/src/src.csproj -- \
@@ -142,14 +147,14 @@ tile4.tg~
 Firmware (ROM) files:
 
 | File format         | Detect | Read | Write | Extract |
-|:------------------- |:------ |:---- |:----- |:------- |
+| :------------------ | :----- | :--- | :---- | :------ |
 | N64 GameShark ROMs  | Yes    | Yes  | Yes   | Yes     |
 | N64 Xplorer 64 ROMs | Yes    | Yes  | Yes   |         |
 
 Cheat code files:
 
 | File format                | Detect | Read | Write |
-|:-------------------------- |:------ |:---- |:----- |
+| :------------------------- | :----- | :--- | :---- |
 | N64 GameShark Datel cheats | Yes    | Yes  | Yes   |
 | N64 Xplorer 64 FCD cheats  | Yes    | Yes  | Yes   |
 | Hammerhead JSON cheats     | Yes    | Yes  | Yes   |
@@ -158,7 +163,7 @@ Cheat code files:
 ### In progress
 
 | File format                           | Detect | Read | Write | Extract |
-|:------------------------------------- |:------ |:---- |:----- |:------- |
+| :------------------------------------ | :----- | :--- | :---- | :------ |
 | GB GameShark v2.x ROMs                | Yes    | Yes  |       |         |
 | GBC Code Breaker ROMs                 | Yes    | Yes  |       |         |
 | GBC GameShark v3.x ROMs               | Yes    | Yes  |       |         |
@@ -171,7 +176,7 @@ Cheat code files:
 ### Planned
 
 | File format                        | Detect | Read | Write |
-|:---------------------------------- |:------ |:---- |:----- |
+| :--------------------------------- | :----- | :--- | :---- |
 | GBC GameShark v3.x cheats (\*.gcf) |        |      |       |
 | OpenEmu XML cheats                 |        |      |       |
 | N64 Project 64 v1.x cheats         |        |      |       |
@@ -180,14 +185,15 @@ Cheat code files:
 ### Limited support
 
 | File format                       | Detect | Read | Write | Extract |
-|:--------------------------------- |:------ |:---- |:----- |:------- |
+| :-------------------------------- | :----- | :--- | :---- | :------ |
 | GBC BrainBoy / Monster Brain ROMs | Yes    |      |       |         |
 | GBA TV Tuner ROMs                 | Yes    |      |       |         |
 | N64 GB Hunter ROMs                | Yes    |      |       |         |
 
 ## Credits
 
-This tool would not be possible without the _amazing_ reverse engineering work of:
+This tool would not be possible without the _amazing_ reverse engineering work
+of:
 
 - [@parasyte](https://github.com/parasyte)
 - [@RWeick](https://github.com/RWeick/REF1329-N64-Gameshark-Clone)
